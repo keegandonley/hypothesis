@@ -39,7 +39,7 @@ export default function HomePage() {
         </div>
 
         <div className={styles.footer}>
-          tools for thinking |{" "}
+          tools for thinking | A project by{" "}
           <a
             href="https://keegan.codes"
             className={styles.footerLink}
