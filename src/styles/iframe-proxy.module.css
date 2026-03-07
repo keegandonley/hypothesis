@@ -1,0 +1,225 @@
+.topBar {
+  position: fixed;
+  top: 6px;
+  left: 0;
+  right: 0;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  z-index: 9999;
+  box-sizing: border-box;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  background-color: #7ee8a218;
+  border: 1px solid #7ee8a233;
+  border-radius: 4px;
+  padding: 4px 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.urlText {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.panelHeader {
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+  flex-shrink: 0;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.docsLink {
+  display: flex;
+  align-items: center;
+  color: var(--accent);
+  transition: opacity 0.15s ease;
+}
+
+.docsLink:hover {
+  opacity: 0.7;
+}
+
+.icon {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.panelTitle {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.panelTagline {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0 0 12px;
+  letter-spacing: 0.02em;
+}
+
+.messageCount {
+  display: inline-block;
+  padding: 4px 8px;
+  background-color: #7ee8a218;
+  border: 1px solid #7ee8a233;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.panelBody {
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.messageList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 24px 12px;
+  color: var(--muted);
+  font-size: 13px;
+  background-color: var(--card-bg);
+  border-radius: 6px;
+  border: 1px dashed var(--border);
+}
+
+.messageCard {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  background-color: var(--card-bg);
+}
+
+.messageCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.messageCardMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.messageIndex {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.directionBadge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.directionDown {
+  background-color: var(--card-bg);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.directionUp {
+  background-color: #7ee8a218;
+  color: var(--accent);
+  border: 1px solid #7ee8a233;
+}
+
+.messageTime {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.dataLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.dataPre {
+  padding: 8px;
+  background-color: var(--bg);
+  color: var(--text);
+  border-radius: 4px;
+  overflow: auto;
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0;
+  white-space: pre;
+  border: 1px solid var(--border);
+}
+
+.errorState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.errorCode {
+  margin: 0 4px;
+  color: var(--accent);
+}
