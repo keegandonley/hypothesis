@@ -1,0 +1,50 @@
+export function DocIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 15 15"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      className={className}
+    >
+      <rect
+        x="2.5"
+        y="1.5"
+        width="10"
+        height="12"
+        rx="1"
+        stroke="currentColor"
+        strokeWidth="1.2"
+      />
+      <line
+        x1="5"
+        y1="5.5"
+        x2="10"
+        y2="5.5"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+      <line
+        x1="5"
+        y1="8"
+        x2="10"
+        y2="8"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+      <line
+        x1="5"
+        y1="10.5"
+        x2="8"
+        y2="10.5"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}

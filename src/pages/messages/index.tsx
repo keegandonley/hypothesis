@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
+import styles from "../../styles/messages.module.css";
+import { DocIcon } from "@/components/icons/doc";
+import Link from "next/link";
 
 interface Message {
   id: string;
@@ -13,36 +16,36 @@ export default function MessagesPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('seed') === 'true') {
+    if (params.get("seed") === "true") {
       setMessages([
         {
-          id: 'seed-1',
+          id: "seed-1",
           timestamp: Date.now(),
           data: {
-            type: 'example',
-            action: 'test',
+            type: "example",
+            action: "test",
             payload: {
               userId: 123,
-              status: 'active',
+              status: "active",
               metadata: {
-                source: 'parent-frame',
-                version: '1.0.0',
+                source: "parent-frame",
+                version: "1.0.0",
               },
             },
           },
-          origin: 'https://example.com',
+          origin: "https://example.com",
         },
       ]);
     }
 
-    const context = params.get('context');
+    const context = params.get("context");
 
     if (context) {
       try {
         const decodedContext = atob(context);
         setContext(JSON.parse(decodedContext));
       } catch (ex) {
-        console.error('Context could not be decoded', ex);
+        console.error("Context could not be decoded", ex);
       }
     }
 
@@ -58,195 +61,71 @@ export default function MessagesPage() {
       setMessages((prev) => [newMessage, ...prev]);
     };
 
-    window.addEventListener('message', handleMessage);
+    window.addEventListener("message", handleMessage);
 
     return () => {
-      window.removeEventListener('message', handleMessage);
+      window.removeEventListener("message", handleMessage);
     };
   }, []);
 
   return (
-    <div
-      style={{
-        padding: '0 12px 12px 12px',
-        fontFamily:
-          '"SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace',
-      }}
-    >
-      <div style={{ marginBottom: '12px' }}>
-        <h1
-          style={{
-            fontSize: '18px',
-            fontWeight: '700',
-            marginBottom: '4px',
-            color: '#111',
-          }}
-        >
-          Frame Messages
-        </h1>
-        <p style={{ color: '#666', fontSize: '12px', marginBottom: '6px' }}>
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <div className={styles.eyebrow}>
+          hypothesis.sh |{" "}
+          <Link
+            href="/docs/messages"
+            className={styles.docsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <DocIcon className={styles.icon} /> docs
+          </Link>
+        </div>
+        <h1 className={styles.title}>Frame Messages</h1>
+        <p className={styles.tagline}>
           Listening for messages from parent frame...
         </p>
-        <div
-          style={{
-            display: 'inline-block',
-            padding: '4px 8px',
-            backgroundColor: '#e0e7ff',
-            borderRadius: '4px',
-            fontSize: '12px',
-            fontWeight: '600',
-            color: '#4338ca',
-          }}
-        >
-          {messages.length} {messages.length === 1 ? 'message' : 'messages'}
+        <div className={styles.badge}>
+          {messages.length} {messages.length === 1 ? "message" : "messages"}
         </div>
       </div>
 
+      <hr className={styles.divider} />
+
       {context && (
-        <div style={{ marginBottom: '12px' }}>
-          <div
-            style={{
-              fontSize: '10px',
-              textTransform: 'uppercase',
-              fontWeight: '600',
-              color: '#9ca3af',
-              letterSpacing: '0.5px',
-              marginBottom: '4px',
-            }}
-          >
-            Context
-          </div>
-          <pre
-            style={{
-              padding: '8px',
-              backgroundColor: '#f3f4f6',
-              color: '#1f2937',
-              borderRadius: '4px',
-              overflow: 'auto',
-              fontSize: '11px',
-              lineHeight: '1.5',
-              margin: 0,
-              whiteSpace: 'pre',
-              border: '1px solid #e5e7eb',
-            }}
-          >
-            {JSON.stringify(context, null, 2)}
-          </pre>
+        <div className={styles.contextBlock}>
+          <div className={styles.fieldLabel}>Context</div>
+          <pre className={styles.pre}>{JSON.stringify(context, null, 2)}</pre>
         </div>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div className={styles.list}>
         {messages.length === 0 ? (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '24px 12px',
-              color: '#999',
-              fontSize: '13px',
-              backgroundColor: '#fafafa',
-              borderRadius: '6px',
-              border: '2px dashed #e0e0e0',
-            }}
-          >
-            No messages received yet
-          </div>
+          <div className={styles.empty}>No messages received yet</div>
         ) : (
           messages.map((message, index) => (
-            <div
-              key={message.id}
-              style={{
-                border: '1px solid #e5e7eb',
-                borderRadius: '6px',
-                padding: '12px',
-                backgroundColor: '#fff',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '8px',
-                  paddingBottom: '8px',
-                  borderBottom: '1px solid #f3f4f6',
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: '11px',
-                    fontWeight: '600',
-                    color: '#6b7280',
-                  }}
-                >
+            <div key={message.id} className={styles.card}>
+              <div className={styles.cardHeader}>
+                <div className={styles.cardIndex}>
                   #{messages.length - index}
                 </div>
-                <div
-                  style={{
-                    fontSize: '11px',
-                    color: '#6b7280',
-                  }}
-                >
+                <div className={styles.cardTime}>
                   {new Date(message.timestamp).toLocaleTimeString()}
                 </div>
               </div>
 
-              <div style={{ marginBottom: '8px' }}>
-                <div
-                  style={{
-                    fontSize: '10px',
-                    textTransform: 'uppercase',
-                    fontWeight: '600',
-                    color: '#9ca3af',
-                    letterSpacing: '0.5px',
-                    marginBottom: '4px',
-                  }}
-                >
-                  Origin
+              <div className={styles.cardBody}>
+                <div>
+                  <div className={styles.fieldLabel}>Origin</div>
+                  <div className={styles.fieldValue}>{message.origin}</div>
                 </div>
-                <div
-                  style={{
-                    fontSize: '12px',
-                    color: '#374151',
-                    backgroundColor: '#f9fafb',
-                    padding: '6px 8px',
-                    borderRadius: '4px',
-                    overflowX: 'auto',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {message.origin}
+                <div>
+                  <div className={styles.fieldLabel}>Data</div>
+                  <pre className={styles.pre}>
+                    {JSON.stringify(message.data, null, 2)}
+                  </pre>
                 </div>
-              </div>
-
-              <div>
-                <div
-                  style={{
-                    fontSize: '10px',
-                    textTransform: 'uppercase',
-                    fontWeight: '600',
-                    color: '#9ca3af',
-                    letterSpacing: '0.5px',
-                    marginBottom: '4px',
-                  }}
-                >
-                  Data
-                </div>
-                <pre
-                  style={{
-                    padding: '8px',
-                    backgroundColor: '#1f2937',
-                    color: '#f3f4f6',
-                    borderRadius: '4px',
-                    overflow: 'auto',
-                    fontSize: '11px',
-                    lineHeight: '1.5',
-                    margin: 0,
-                    whiteSpace: 'pre',
-                  }}
-                >
-                  {JSON.stringify(message.data, null, 2)}
-                </pre>
               </div>
             </div>
           ))
