@@ -31,6 +31,7 @@ export default function IframeProxyPage() {
   const [debug, setDebug] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [messages, setMessages] = useState<RelayedMessage[]>([]);
+  const [panelOpen, setPanelOpen] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
@@ -93,30 +94,48 @@ export default function IframeProxyPage() {
         <div className={styles.topBar}>
           <span className={styles.badge}>proxied url</span>
           <span className={styles.urlText}>{url}</span>
+          <span className={styles.topBarBrand}>
+            hypothesis.sh |{" "}
+            <Link
+              href="/docs/iframe-proxy"
+              className={styles.docsLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <DocIcon className={styles.icon} /> docs
+            </Link>
+          </span>
+          <button
+            className={styles.toggleBtn}
+            onClick={() => setPanelOpen((o) => !o)}
+            aria-label={panelOpen ? "Close debug panel" : "Open debug panel"}
+          >
+            {panelOpen ? "✕" : "⚙"}
+            {!panelOpen && messages.length > 0 && (
+              <span className={styles.toggleBadge}>{messages.length}</span>
+            )}
+          </button>
         </div>
       )}
 
       <iframe
         ref={iframeRef}
         src={url}
-        style={{
-          position: "fixed",
-          top: debug ? DEBUG_BAR_HEIGHT + 12 : 0,
-          left: debug ? 12 : 0,
-          bottom: debug ? 12 : 0,
-          width: debug ? `calc(100% - ${PANEL_WIDTH}px - 32px)` : "100%",
-          height: debug ? `calc(100% - ${DEBUG_BAR_HEIGHT}px - 24px)` : "100%",
-          border: "none",
-          borderRadius: debug ? "8px" : 0,
-          boxShadow: debug
-            ? "0 8px 32px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3)"
-            : "none",
-          overflow: "hidden",
-        }}
+        className={`${styles.iframe} ${debug ? styles.iframeDebug : ""}`}
       />
 
+      {debug && panelOpen && (
+        <div
+          className={styles.backdrop}
+          onClick={() => setPanelOpen(false)}
+        />
+      )}
+
       {debug && (
-        <div className={styles.panel} style={{ top: DEBUG_BAR_HEIGHT + 12 }}>
+        <div
+          className={`${styles.panel} ${panelOpen ? styles.panelOpen : ""}`}
+          style={{ top: DEBUG_BAR_HEIGHT + 12 }}
+        >
           <div className={styles.panelHeader}>
             <div className={styles.eyebrow}>
               hypothesis.sh |{" "}
