@@ -80,14 +80,21 @@
 
 .card {
   display: flex;
-  align-items: center;
-  gap: 20px;
+  flex-direction: column;
   background-color: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 20px 24px;
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
+  user-select: none;
+  overflow: hidden;
+}
+
+.cardMain {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
 }
 
 .card:hover {
@@ -137,6 +144,28 @@
 }
 
 .card:hover .arrow {
+  color: var(--accent);
+}
+
+.cardFooter {
+  border-top: 1px solid var(--border);
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+}
+
+.docsLink {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+
+.docsLink:hover {
   color: var(--accent);
 }
 
