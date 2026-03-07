@@ -1,3 +1,13 @@
+:root {
+  --accent: #7ee8a2;
+  --bg: #0c0c10;
+  --card-bg: #13131a;
+  --border: #1e1e2e;
+  --text: #f0ede8;
+  --muted: #5a5a6e;
+  --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -10,9 +20,4 @@ html, body {
 a {
   color: inherit;
   text-decoration: none;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
 }

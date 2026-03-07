@@ -1,14 +1,5 @@
 import Link from "next/link";
-
-const FONT =
-  '"SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace';
-
-const ACCENT = "#7ee8a2";
-const BG = "#0c0c10";
-const CARD_BG = "#13131a";
-const BORDER = "#1e1e2e";
-const TEXT = "#f0ede8";
-const MUTED = "#5a5a6e";
+import styles from "../styles/index.module.css";
 
 const experiments = [
   {
@@ -28,112 +19,28 @@ const experiments = [
 
 export default function HomePage() {
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: BG,
-        backgroundImage: `radial-gradient(circle, ${BORDER} 1px, transparent 1px)`,
-        backgroundSize: "28px 28px",
-        fontFamily: FONT,
-        color: TEXT,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "48px 24px",
-      }}
-    >
-      <div style={{ width: "100%", maxWidth: "560px" }}>
-        {/* Header */}
-        <header style={{ marginBottom: "48px" }}>
-          <div
-            style={{
-              fontSize: "11px",
-              letterSpacing: "0.2em",
-              color: ACCENT,
-              textTransform: "uppercase",
-              marginBottom: "16px",
-            }}
-          >
-            lab / v0.1.0
-          </div>
-          <h1
-            style={{
-              margin: 0,
-              fontSize: "clamp(32px, 6vw, 48px)",
-              fontWeight: "700",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: TEXT,
-              lineHeight: 1,
-              display: "flex",
-              alignItems: "baseline",
-              gap: "4px",
-            }}
-          >
+    <div className={styles.page}>
+      <div className={styles.inner}>
+        <header className={styles.header}>
+          <div className={styles.eyebrow}>v0.1.0</div>
+          <h1 className={styles.title}>
             hypothesis
-            <span
-              style={{
-                display: "inline-block",
-                width: "3px",
-                height: "0.85em",
-                backgroundColor: ACCENT,
-                marginLeft: "2px",
-                animation: "blink 1.2s step-end infinite",
-                verticalAlign: "baseline",
-                borderRadius: "1px",
-              }}
-            />
+            <span className={styles.cursor} />
           </h1>
-          <p
-            style={{
-              margin: "16px 0 0",
-              fontSize: "13px",
-              color: MUTED,
-              lineHeight: "1.6",
-              letterSpacing: "0.02em",
-            }}
-          >
-            A workbench for web experiments.
-          </p>
+          <p className={styles.tagline}>A workbench for web experiments</p>
         </header>
 
-        {/* Divider */}
-        <div
-          style={{
-            borderTop: `1px solid ${BORDER}`,
-            marginBottom: "32px",
-          }}
-        />
+        <hr className={styles.divider} />
 
-        {/* Experiment list */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div className={styles.experiments}>
           {experiments.map((exp) => (
             <ExperimentCard key={exp.id} {...exp} />
           ))}
         </div>
 
-        {/* Footer */}
-        <div
-          style={{
-            marginTop: "64px",
-            fontSize: "11px",
-            color: MUTED,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-          }}
-        >
-          tools for thinking | A project by{" "}
-          <a
-            href="https://keegan.codes"
-            style={{ color: MUTED, transition: "color 0.15s ease" }}
-            onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLAnchorElement).style.color = ACCENT)
-            }
-            onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLAnchorElement).style.color = MUTED)
-            }
-          >
+        <div className={styles.footer}>
+          tools for thinking |{" "}
+          <a href="https://keegan.codes" className={styles.footerLink}>
             keegan donley
           </a>
         </div>
@@ -155,81 +62,13 @@ function ExperimentCard({
 }) {
   return (
     <Link href={href} style={{ display: "block" }}>
-      <div
-        style={{
-          backgroundColor: CARD_BG,
-          border: `1px solid ${BORDER}`,
-          borderRadius: "8px",
-          padding: "20px 24px",
-          display: "flex",
-          alignItems: "center",
-          gap: "20px",
-          transition: "border-color 0.15s ease, background-color 0.15s ease",
-          cursor: "pointer",
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLDivElement).style.borderColor = ACCENT + "55";
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = "#16161f";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLDivElement).style.borderColor = BORDER;
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = CARD_BG;
-        }}
-      >
-        {/* ID badge */}
-        <div
-          style={{
-            fontSize: "10px",
-            fontWeight: "700",
-            letterSpacing: "0.12em",
-            color: ACCENT,
-            backgroundColor: ACCENT + "18",
-            border: `1px solid ${ACCENT}33`,
-            borderRadius: "4px",
-            padding: "4px 8px",
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-          }}
-        >
-          {id}
+      <div className={styles.card}>
+        <div className={styles.badge}>{id}</div>
+        <div className={styles.cardBody}>
+          <div className={styles.cardName}>{name}</div>
+          <div className={styles.cardDesc}>{description}</div>
         </div>
-
-        {/* Text */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              fontSize: "14px",
-              fontWeight: "600",
-              color: TEXT,
-              marginBottom: "4px",
-              letterSpacing: "0.02em",
-            }}
-          >
-            {name}
-          </div>
-          <div
-            style={{
-              fontSize: "12px",
-              color: MUTED,
-              lineHeight: "1.5",
-              letterSpacing: "0.01em",
-            }}
-          >
-            {description}
-          </div>
-        </div>
-
-        {/* Arrow */}
-        <div
-          style={{
-            fontSize: "18px",
-            color: MUTED,
-            flexShrink: 0,
-            lineHeight: 1,
-          }}
-        >
-          →
-        </div>
+        <div className={styles.arrow}>→</div>
       </div>
     </Link>
   );
