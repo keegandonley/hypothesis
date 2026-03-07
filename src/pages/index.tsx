@@ -40,7 +40,12 @@ export default function HomePage() {
 
         <div className={styles.footer}>
           tools for thinking |{" "}
-          <a href="https://keegan.codes" className={styles.footerLink}>
+          <a
+            href="https://keegan.codes"
+            className={styles.footerLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             keegan donley
           </a>
         </div>
