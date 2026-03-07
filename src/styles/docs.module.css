@@ -1,0 +1,143 @@
+.page {
+  min-height: 100dvh;
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 28px 28px;
+  font-family: var(--font-mono);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px;
+}
+
+.inner {
+  width: 100%;
+  max-width: 680px;
+}
+
+.nav {
+  margin-bottom: 48px;
+}
+
+.backLink {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.backLink:hover {
+  color: var(--accent);
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0 0 40px;
+}
+
+/* Markdown content */
+
+.content h1 {
+  margin: 0 0 8px;
+  font-size: clamp(24px, 5vw, 36px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  line-height: 1;
+}
+
+.content h2 {
+  margin: 40px 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.content h3 {
+  margin: 24px 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.content p {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+.content ul {
+  margin: 0 0 16px;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.content li {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  padding-left: 16px;
+  position: relative;
+}
+
+.content li::before {
+  content: "–";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+.content code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  background-color: #7ee8a212;
+  border: 1px solid #7ee8a220;
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+
+.content pre {
+  margin: 0 0 20px;
+  padding: 16px 20px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.content strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.content em {
+  color: var(--muted);
+  font-style: italic;
+}
