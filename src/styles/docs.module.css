@@ -141,3 +141,28 @@
   color: var(--muted);
   font-style: italic;
 }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 20px;
+  font-size: 12px;
+}
+
+.table th,
+.table td {
+  padding: 7px 12px;
+  text-align: left;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.table th {
+  background-color: var(--card-bg);
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 10px;
+}

@@ -28,7 +28,8 @@ type Node =
   | { type: "h1" | "h2" | "h3"; text: string }
   | { type: "p"; text: string }
   | { type: "ul"; items: string[] }
-  | { type: "pre"; lang: string; code: string };
+  | { type: "pre"; lang: string; code: string }
+  | { type: "table"; headers: string[]; rows: string[][] };
 
 function parseMarkdown(md: string): Node[] {
   const lines = md.split("\n");
@@ -66,6 +67,23 @@ function parseMarkdown(md: string): Node[] {
     if (line.startsWith("# ")) {
       nodes.push({ type: "h1", text: line.slice(2) });
       i++;
+      continue;
+    }
+
+    // Table
+    if (line.startsWith("|")) {
+      const parseRow = (l: string) =>
+        l.split("|").slice(1, -1).map((c) => c.trim());
+      const headers = parseRow(line);
+      i++;
+      // skip separator row (---|---)
+      if (i < lines.length && lines[i].startsWith("|")) i++;
+      const rows: string[][] = [];
+      while (i < lines.length && lines[i].startsWith("|")) {
+        rows.push(parseRow(lines[i]));
+        i++;
+      }
+      nodes.push({ type: "table", headers, rows });
       continue;
     }
 
@@ -176,6 +194,27 @@ function MarkdownContent({ content, actionType }: { content: string; actionType:
               <pre key={i}>
                 <code>{node.code}</code>
               </pre>
+            );
+          case "table":
+            return (
+              <table key={i} className={styles.table}>
+                <thead>
+                  <tr>
+                    {node.headers.map((h, j) => (
+                      <th key={j}><Inline text={h} /></th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {node.rows.map((row, j) => (
+                    <tr key={j}>
+                      {row.map((cell, k) => (
+                        <td key={k}><Inline text={cell} /></td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             );
         }
       })}

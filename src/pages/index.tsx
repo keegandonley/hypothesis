@@ -32,6 +32,14 @@ const tools = [
     href: "/base64",
     docsHref: "/docs/base64",
   },
+  {
+    id: "TOOL-2",
+    name: "urlencode",
+    description:
+      "Encode and decode URL strings with live sync and shareable permalinks.",
+    href: "/urlencode",
+    docsHref: "/docs/urlencode",
+  },
 ];
 
 export default function HomePage() {
