@@ -1,9 +1,10 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { GetServerSideProps } from "next";
 import styles from "../styles/index.module.css";
 import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
+import { useBranding, getBranding } from "@/lib/branding";
 
 const experiments = [
   {
@@ -58,12 +59,39 @@ const tools = [
   },
 ];
 
-export default function HomePage() {
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  const host = req.headers.host ?? "hypothesis.sh";
+  const hostname = host.split(":")[0];
+  const branding = getBranding(hostname);
+  const protocol = req.headers["x-forwarded-proto"] ?? "https";
+  const baseUrl = `${protocol}://${host}`;
+  return { props: { ogImageUrl: `${baseUrl}/api/og?domain=${hostname}`, ogTitle: branding.name, ogDescription: branding.tagline } };
+};
+
+export default function HomePage({
+  ogImageUrl,
+  ogTitle,
+  ogDescription,
+}: {
+  ogImageUrl: string;
+  ogTitle: string;
+  ogDescription: string;
+}) {
   const branding = useBranding();
   return (
     <div className={styles.page}>
       <Head>
         <title>{branding.name}</title>
+        <meta property="og:title" content={ogTitle} />
+        <meta property="og:description" content={ogDescription} />
+        <meta property="og:image" content={ogImageUrl} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={ogTitle} />
+        <meta name="twitter:description" content={ogDescription} />
+        <meta name="twitter:image" content={ogImageUrl} />
       </Head>
       <div className={styles.inner}>
         <header className={styles.header}>
