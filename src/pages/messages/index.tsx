@@ -8,11 +8,28 @@ interface Message {
   timestamp: number;
   data: any;
   origin: string;
+  direction: "sent" | "received";
 }
 
 export default function MessagesPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [context, setContext] = useState<Record<string, unknown> | null>(null);
+  const [sendInput, setSendInput] = useState("");
+
+  const handleSend = () => {
+    const data = { action: "hypothesis-test", content: sendInput };
+    window.parent.postMessage(data, "*");
+    setMessages((prev) => [
+      {
+        id: `${Date.now()}-${Math.random()}`,
+        timestamp: Date.now(),
+        data,
+        origin: window.location.origin,
+        direction: "sent",
+      },
+      ...prev,
+    ]);
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -34,6 +51,7 @@ export default function MessagesPage() {
             },
           },
           origin: "https://example.com",
+          direction: "received",
         },
       ]);
     }
@@ -56,6 +74,7 @@ export default function MessagesPage() {
         timestamp: Date.now(),
         data: event.data,
         origin: event.origin,
+        direction: "received",
       };
 
       setMessages((prev) => [newMessage, ...prev]);
@@ -93,6 +112,23 @@ export default function MessagesPage() {
 
       <hr className={styles.divider} />
 
+      <div className={styles.sendSection}>
+        <div className={styles.fieldLabel}>Send to Parent</div>
+        <input
+          type="text"
+          className={styles.sendInput}
+          value={sendInput}
+          onChange={(e) => setSendInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          placeholder="Enter message content..."
+        />
+        <button className={styles.sendBtn} onClick={handleSend}>
+          Send Message
+        </button>
+      </div>
+
+      <hr className={styles.divider} />
+
       {context && (
         <div className={styles.contextBlock}>
           <div className={styles.fieldLabel}>Context</div>
@@ -105,10 +141,18 @@ export default function MessagesPage() {
           <div className={styles.empty}>No messages received yet</div>
         ) : (
           messages.map((message, index) => (
-            <div key={message.id} className={styles.card}>
+            <div
+              key={message.id}
+              className={`${styles.card} ${message.direction === "sent" ? styles.cardSent : styles.cardReceived}`}
+            >
               <div className={styles.cardHeader}>
-                <div className={styles.cardIndex}>
-                  #{messages.length - index}
+                <div className={styles.cardHeaderLeft}>
+                  <div className={styles.cardIndex}>
+                    #{messages.length - index}
+                  </div>
+                  <div className={`${styles.directionBadge} ${message.direction === "sent" ? styles.directionSent : styles.directionReceived}`}>
+                    {message.direction === "sent" ? "↑ sent" : "↓ received"}
+                  </div>
                 </div>
                 <div className={styles.cardTime}>
                   {new Date(message.timestamp).toLocaleTimeString()}

@@ -48,32 +48,39 @@ export default function IframeProxyPage() {
     const handleMessage = (event: MessageEvent) => {
       if (event.source === window.parent) {
         iframeRef.current?.contentWindow?.postMessage(event.data, "*");
-        setMessages((prev) => [
-          {
-            id: `${Date.now()}-${Math.random()}`,
-            timestamp: Date.now(),
-            data: event.data,
-            direction: "parent-to-frame",
-          },
-          ...prev,
-        ]);
+
+        if (debug) {
+          setMessages((prev) => [
+            {
+              id: `${Date.now()}-${Math.random()}`,
+              timestamp: Date.now(),
+              data: event.data,
+              direction: "parent-to-frame",
+            },
+            ...prev,
+          ]);
+        }
       } else if (event.source === iframeRef.current?.contentWindow) {
         window.parent.postMessage(event.data, "*");
-        setMessages((prev) => [
-          {
-            id: `${Date.now()}-${Math.random()}`,
-            timestamp: Date.now(),
-            data: event.data,
-            direction: "frame-to-parent",
-          },
-          ...prev,
-        ]);
+
+        if (debug) {
+          setMessages((prev) => [
+            {
+              id: `${Date.now()}-${Math.random()}`,
+              timestamp: Date.now(),
+              data: event.data,
+              direction: "frame-to-parent",
+            },
+            ...prev,
+          ]);
+        }
       }
     };
 
     window.addEventListener("message", handleMessage);
+
     return () => window.removeEventListener("message", handleMessage);
-  }, []);
+  }, [debug]);
 
   if (!mounted) {
     return null;
@@ -125,10 +132,7 @@ export default function IframeProxyPage() {
       />
 
       {debug && panelOpen && (
-        <div
-          className={styles.backdrop}
-          onClick={() => setPanelOpen(false)}
-        />
+        <div className={styles.backdrop} onClick={() => setPanelOpen(false)} />
       )}
 
       {debug && (
