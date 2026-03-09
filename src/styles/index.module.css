@@ -110,7 +110,7 @@
 }
 
 .card:hover {
-  border-color: #7ee8a255;
+  border-color: var(--accent-hover-strong);
   background-color: #16161f;
 }
 
@@ -120,8 +120,8 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   color: var(--accent);
-  background-color: #7ee8a218;
-  border: 1px solid #7ee8a233;
+  background-color: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
   border-radius: 4px;
   padding: 4px 8px;
   white-space: nowrap;

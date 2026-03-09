@@ -43,14 +43,18 @@ export default function HomePage() {
       </Head>
       <div className={styles.inner}>
         <header className={styles.header}>
-          <div className={styles.eyebrow}>v0.1.0</div>
+          <div className={styles.eyebrow}>{branding.tagline}</div>
           <h1 className={styles.title}>
             {branding.name}
             <span className={styles.cursor} />
           </h1>
           <p className={styles.tagline}>
-            {branding.tagline}{" | "}
-            <Link href="/docs/multi-domain" className={styles.docsLink} style={{ display: "inline-flex", verticalAlign: "middle" }}>
+            {/* {branding.tagline}{" | "} */}
+            <Link
+              href="/docs/multi-domain"
+              className={styles.docsLink}
+              style={{ display: "inline-flex", verticalAlign: "middle" }}
+            >
               <DocIcon />
               docs
             </Link>

@@ -57,8 +57,8 @@
 .badge {
   display: inline-block;
   padding: 2px 7px;
-  background-color: #7ee8a218;
-  border: 1px solid #7ee8a233;
+  background-color: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
   border-radius: 4px;
   font-size: 10px;
   font-weight: 700;
@@ -160,8 +160,8 @@
 .copyBtn {
   flex-shrink: 0;
   padding: 6px 14px;
-  background-color: #7ee8a218;
-  border: 1px solid #7ee8a233;
+  background-color: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
   border-radius: 4px;
   font-family: var(--font-mono);
   font-size: 10px;
@@ -174,7 +174,7 @@
 }
 
 .copyBtn:hover {
-  background-color: #7ee8a230;
+  background-color: var(--accent-hover);
 }
 
 .copyBtn.copied {
@@ -238,7 +238,7 @@
 }
 
 .toggleBtn.active {
-  border-color: #7ee8a233;
+  border-color: var(--accent-border);
   color: var(--accent);
 }
 
@@ -270,8 +270,8 @@
 }
 
 .formatBtn:active:not(:disabled) {
-  background-color: #7ee8a218;
-  border-color: #7ee8a233;
+  background-color: var(--accent-subtle);
+  border-color: var(--accent-border);
   color: var(--accent);
 }
 

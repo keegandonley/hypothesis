@@ -108,8 +108,8 @@
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--accent);
-  background-color: #7ee8a212;
-  border: 1px solid #7ee8a220;
+  background-color: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
   border-radius: 3px;
   padding: 1px 5px;
 }

@@ -181,7 +181,7 @@ export default function IframeProxyPage() {
                           <div
                             className={`${styles.directionBadge} ${isDown ? styles.directionDown : styles.directionUp}`}
                           >
-                            {isDown ? "↓ parent→frame" : "↑ frame→parent"}
+                            {isDown ? "↓ parent → frame" : "↑ frame → parent"}
                           </div>
                         </div>
                         <div className={styles.messageTime}>

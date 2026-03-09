@@ -40,8 +40,8 @@
 .badge {
   display: inline-block;
   padding: 4px 8px;
-  background-color: #7ee8a218;
-  border: 1px solid #7ee8a233;
+  background-color: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
   border-radius: 4px;
   font-size: 10px;
   font-weight: 700;
@@ -132,8 +132,8 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   color: var(--accent);
-  background-color: #7ee8a218;
-  border: 1px solid #7ee8a233;
+  background-color: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
   border-radius: 4px;
   padding: 2px 6px;
 }
@@ -212,8 +212,8 @@
 .sendBtn {
   align-self: flex-start;
   padding: 6px 14px;
-  background-color: #7ee8a218;
-  border: 1px solid #7ee8a233;
+  background-color: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
   border-radius: 4px;
   font-family: var(--font-mono);
   font-size: 10px;
@@ -225,7 +225,7 @@
 }
 
 .sendBtn:hover {
-  background-color: #7ee8a230;
+  background-color: var(--accent-hover);
 }
 
 .contextBlock {
