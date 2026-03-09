@@ -10,7 +10,7 @@ export type Branding = {
 const defaultBranding: Branding = {
   name: "hypothesis",
   domain: "hypothesis.sh",
-  tagline: "A workbench for web experiments",
+  tagline: "A workbench for web experimentation",
   actionType: "hypothesis-test",
 };
 
@@ -18,13 +18,13 @@ const configs: Record<string, Branding> = {
   "conclusion.sh": {
     name: "conclusion",
     domain: "conclusion.sh",
-    tagline: "A workbench for web experiments",
+    tagline: "A workbench for web experimentation",
     actionType: "conclusion-test",
   },
   "falsify.sh": {
     name: "falsify",
     domain: "falsify.sh",
-    tagline: "A workbench for web experiments",
+    tagline: "A workbench for web experimentation",
     actionType: "falsify-test",
   },
 };

@@ -21,8 +21,11 @@ const experiments = [
     href: "/messages",
     docsHref: "/docs/messages",
   },
+];
+
+const tools = [
   {
-    id: "EXP-003",
+    id: "TOOL-1",
     name: "base64",
     description:
       "Encode and decode base64 strings with live sync and shareable permalinks.",
@@ -56,10 +59,21 @@ export default function HomePage() {
 
         <hr className={styles.divider} />
 
-        <div className={styles.experiments}>
-          {experiments.map((exp) => (
-            <ExperimentCard key={exp.id} {...exp} />
-          ))}
+        <div className={styles.section}>
+          <div className={styles.sectionLabel}>Experiments</div>
+          <div className={styles.cards}>
+            {experiments.map((exp) => (
+              <ExperimentCard key={exp.id} {...exp} />
+            ))}
+          </div>
+        </div>
+        <div className={styles.section}>
+          <div className={styles.sectionLabel}>Tools</div>
+          <div className={styles.cards}>
+            {tools.map((tool) => (
+              <ExperimentCard key={tool.id} {...tool} />
+            ))}
+          </div>
         </div>
 
         <div className={styles.footer}>

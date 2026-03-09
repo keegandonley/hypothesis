@@ -72,7 +72,19 @@
   margin: 0 0 32px;
 }
 
-.experiments {
+.section {
+  margin-bottom: 24px;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.cards {
   display: flex;
   flex-direction: column;
   gap: 12px;
