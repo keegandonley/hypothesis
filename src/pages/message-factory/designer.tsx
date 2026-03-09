@@ -168,11 +168,10 @@ export default function DesignerPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow}>
-          EXP-003.A ·{" "}
-          <Link href="/message-factory" className={styles.backLink}>
-            message-factory
-          </Link>{" "}
-          |{" "}
+          <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
+            {branding.domain}
+          </Link>
+          {"·"}
           <Link
             href="/docs/message-factory"
             className={styles.docsLink}

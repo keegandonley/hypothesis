@@ -92,7 +92,10 @@ export default function UrlEncodePage() {
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>
-          {branding.domain} |{" "}
+          <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
+            {branding.domain}
+          </Link>
+          {"·"}
           <Link
             href="/docs/urlencode"
             className={styles.docsLink}

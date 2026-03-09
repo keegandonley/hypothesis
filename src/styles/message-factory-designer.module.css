@@ -19,7 +19,6 @@
   text-transform: uppercase;
   margin-bottom: 8px;
   display: flex;
-  align-items: center;
   gap: 4px;
 }
 
@@ -328,6 +327,13 @@
 
 .docsLink:hover {
   color: var(--accent);
+}
+
+.domainLink {
+  display: flex;
+  align-items: center;
+  color: var(--accent);
+  transition: color 0.15s ease;
 }
 
 .icon {

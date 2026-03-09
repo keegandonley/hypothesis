@@ -97,7 +97,10 @@ export default function MessagesPage() {
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>
-          {branding.domain} |{" "}
+          <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
+            {branding.domain}
+          </Link>
+          {"·"}
           <Link
             href="/docs/message-stream"
             className={styles.docsLink}

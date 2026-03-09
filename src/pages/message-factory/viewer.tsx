@@ -90,11 +90,10 @@ export default function ViewerPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow}>
-          EXP-003.B ·{" "}
-          <Link href="/message-factory" className={styles.backLink} target="_blank" rel="noreferrer">
-            message-factory
-          </Link>{" "}
-          |{" "}
+          <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
+            {branding.domain}
+          </Link>
+          {"·"}
           <Link
             href="/docs/message-factory"
             className={styles.docsLink}

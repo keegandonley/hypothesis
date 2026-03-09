@@ -19,7 +19,7 @@
   text-transform: uppercase;
   margin-bottom: 8px;
   display: flex;
-  align-items: center;
+  gap: 0.4em;
 }
 
 .title {
@@ -45,7 +45,6 @@
 }
 
 .icon {
-  margin-left: 4px;
   margin-right: 4px;
 }
 
@@ -58,6 +57,13 @@
 
 .docsLink:hover {
   color: var(--accent);
+}
+
+.domainLink {
+  display: flex;
+  align-items: center;
+  color: var(--accent);
+  transition: color 0.15s ease;
 }
 
 .badge {

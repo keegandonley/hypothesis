@@ -160,7 +160,10 @@ export default function RegexPage() {
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>
-          {branding.domain} |{" "}
+          <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
+            {branding.domain}
+          </Link>
+          {"·"}
           <Link
             href="/docs/regex"
             className={styles.docsLink}

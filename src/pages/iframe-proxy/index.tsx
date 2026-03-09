@@ -108,7 +108,10 @@ export default function IframeProxyPage() {
           <span className={styles.badge}>proxied url</span>
           <span className={styles.urlText}>{url}</span>
           <span className={styles.topBarBrand}>
-            {branding.domain} |{" "}
+            <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
+              {branding.domain}
+            </Link>
+            {"·"}
             <Link
               href="/docs/iframe-proxy"
               className={styles.docsLink}
@@ -148,7 +151,10 @@ export default function IframeProxyPage() {
         >
           <div className={styles.panelHeader}>
             <div className={styles.eyebrow}>
-              {branding.domain} |{" "}
+              <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
+                {branding.domain}
+              </Link>
+              {"·"}
               <Link
                 href="/docs/iframe-proxy"
                 className={styles.docsLink}
