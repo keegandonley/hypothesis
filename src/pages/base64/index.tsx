@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import Head from "next/head";
 import styles from "../../styles/base64.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -61,6 +62,9 @@ export default function Base64Page() {
 
   return (
     <div className={styles.page}>
+      <Head>
+        <title>base64 — {branding.name}</title>
+      </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>
           {branding.domain} |{" "}

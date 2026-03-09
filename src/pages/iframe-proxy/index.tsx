@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import Head from "next/head";
 import Link from "next/link";
 import styles from "../../styles/iframe-proxy.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -99,6 +100,9 @@ export default function IframeProxyPage() {
 
   return (
     <>
+      <Head>
+        <title>iframe-proxy — {branding.name}</title>
+      </Head>
       {debug && (
         <div className={styles.topBar}>
           <span className={styles.badge}>proxied url</span>

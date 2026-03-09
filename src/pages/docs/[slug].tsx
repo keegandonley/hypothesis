@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import Head from "next/head";
 import Link from "next/link";
 import { GetStaticPaths, GetStaticProps } from "next";
 import styles from "../../styles/docs.module.css";
@@ -185,6 +186,7 @@ function MarkdownContent({ content, actionType }: { content: string; actionType:
 // ── Page ───────────────────────────────────────────────────────────────────────
 
 export default function DocsPage({
+  slug,
   content,
 }: {
   slug: string;
@@ -193,6 +195,9 @@ export default function DocsPage({
   const branding = useBranding();
   return (
     <div className={styles.page}>
+      <Head>
+        <title>{slug} docs — {branding.name}</title>
+      </Head>
       <div className={styles.inner}>
         <nav className={styles.nav}>
           <Link href="/" className={styles.backLink}>

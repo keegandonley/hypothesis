@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Head from "next/head";
 import styles from "../../styles/messages.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -91,6 +92,9 @@ export default function MessagesPage() {
 
   return (
     <div className={styles.page}>
+      <Head>
+        <title>messages — {branding.name}</title>
+      </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>
           {branding.domain} |{" "}

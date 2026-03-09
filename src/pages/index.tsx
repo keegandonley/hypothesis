@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "../styles/index.module.css";
@@ -34,6 +35,9 @@ export default function HomePage() {
   const branding = useBranding();
   return (
     <div className={styles.page}>
+      <Head>
+        <title>{branding.name}</title>
+      </Head>
       <div className={styles.inner}>
         <header className={styles.header}>
           <div className={styles.eyebrow}>v0.1.0</div>
