@@ -11,6 +11,8 @@ export default function Base64Page() {
   const [encoded, setEncoded] = useState("");
   const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
+  const [jsonMode, setJsonMode] = useState(false);
+  const [jsonValid, setJsonValid] = useState<boolean | null>(null);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -27,8 +29,22 @@ export default function Base64Page() {
     setUrl(window.location.href);
   }, []);
 
+  const validateJson = (value: string) => {
+    if (value.length === 0) {
+      setJsonValid(null);
+      return;
+    }
+    try {
+      JSON.parse(value);
+      setJsonValid(true);
+    } catch {
+      setJsonValid(false);
+    }
+  };
+
   const handlePlainChange = (value: string) => {
     setPlain(value);
+    if (jsonMode) validateJson(value);
     const enc = btoa(unescape(encodeURIComponent(value)));
     setEncoded(enc);
     const newUrl = value
@@ -50,6 +66,22 @@ export default function Base64Page() {
       : `${window.location.origin}${window.location.pathname}`;
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
+  };
+
+  const handleFormat = () => {
+    try {
+      const formatted = JSON.stringify(JSON.parse(plain), null, 2);
+      handlePlainChange(formatted);
+    } catch {
+      /* no-op */
+    }
+  };
+
+  const handleJsonToggle = () => {
+    const next = !jsonMode;
+    setJsonMode(next);
+    if (next) validateJson(plain);
+    else setJsonValid(null);
   };
 
   const handleCopy = () => {
@@ -86,16 +118,45 @@ export default function Base64Page() {
       <div className={styles.panels}>
         <div className={styles.panel}>
           <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Plain Text</span>
-            <span className={styles.badge}>{plain.length} chars</span>
+            <span className={styles.panelLabel}>
+              {jsonMode ? "JSON" : "Plain Text"}
+            </span>
+            <div className={styles.panelHeaderRight}>
+              <button
+                className={`${styles.toggleBtn}${jsonMode ? ` ${styles.active}` : ""}`}
+                onClick={handleJsonToggle}
+              >
+                JSON Mode {jsonMode ? "ON" : "OFF"}
+              </button>
+              {jsonMode ? (
+                plain.length > 0 && (
+                  jsonValid
+                    ? <span className={styles.badge}>valid</span>
+                    : <span className={styles.badgeError}>invalid</span>
+                )
+              ) : (
+                <span className={styles.badge}>{plain.length} chars</span>
+              )}
+            </div>
           </div>
-          <textarea
-            className={styles.textarea}
-            value={plain}
-            onChange={(e) => handlePlainChange(e.target.value)}
-            placeholder="Type plain text here..."
-            spellCheck={false}
-          />
+          <div className={styles.textareaWrapper}>
+            <textarea
+              className={styles.textarea}
+              value={plain}
+              onChange={(e) => handlePlainChange(e.target.value)}
+              placeholder="Type plain text here..."
+              spellCheck={false}
+            />
+            {jsonMode && (
+              <button
+                className={styles.formatBtn}
+                disabled={!jsonValid}
+                onClick={handleFormat}
+              >
+                Format
+              </button>
+            )}
+          </div>
         </div>
 
         <div className={styles.panel}>

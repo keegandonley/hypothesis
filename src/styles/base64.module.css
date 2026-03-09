@@ -112,6 +112,10 @@
   margin-bottom: 4px;
 }
 
+.textareaWrapper {
+  position: relative;
+}
+
 .textarea {
   width: 100%;
   min-height: 200px;
@@ -177,4 +181,94 @@
   background-color: var(--accent);
   border-color: var(--accent);
   color: var(--bg);
+}
+
+.panelHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 5px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.toggleBtn::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.toggleBtn.active {
+  border-color: #7ee8a233;
+  color: var(--accent);
+}
+
+.toggleBtn.active::before {
+  background: var(--accent);
+}
+
+.formatBtn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.formatBtn:hover:not(:disabled) {
+  background-color: var(--border);
+  color: var(--text);
+}
+
+.formatBtn:active:not(:disabled) {
+  background-color: #7ee8a218;
+  border-color: #7ee8a233;
+  color: var(--accent);
+}
+
+.formatBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.badgeError {
+  display: inline-block;
+  padding: 2px 7px;
+  background-color: #fbbf2418;
+  border: 1px solid #fbbf2433;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #fbbf24;
+  text-transform: uppercase;
 }
