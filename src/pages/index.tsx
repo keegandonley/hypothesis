@@ -40,6 +40,14 @@ const tools = [
     href: "/urlencode",
     docsHref: "/docs/urlencode",
   },
+  {
+    id: "TOOL-3",
+    name: "regex",
+    description:
+      "Test regular expressions against strings with live match results and shareable permalinks.",
+    href: "/regex",
+    docsHref: "/docs/regex",
+  },
 ];
 
 export default function HomePage() {
