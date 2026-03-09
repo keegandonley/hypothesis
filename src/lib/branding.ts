@@ -21,6 +21,12 @@ const configs: Record<string, Branding> = {
     tagline: "A workbench for web experiments",
     actionType: "conclusion-test",
   },
+  "falsify.sh": {
+    name: "falsify",
+    domain: "falsify.sh",
+    tagline: "A workbench for web experiments",
+    actionType: "falsify-test",
+  },
 };
 
 export function getBranding(hostname: string): Branding {
