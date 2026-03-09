@@ -31,14 +31,25 @@ const context = btoa(JSON.stringify({ env: 'staging', run: 42 }));
 const url = `/messages?context=${context}`;
 ```
 
+## Sending Messages
+
+The page includes a text field for sending test messages to the parent frame. Enter any string and press **Send Message** (or hit Enter). The message is posted as:
+
+```js
+{ action: "hypothesis-test", content: "<your input>" }
+```
+
+Sent messages appear in the feed alongside received messages, clearly labeled so you can follow the full conversation.
+
 ## Message Feed
 
-Each received message is shown as a card with:
+Each message is shown as a card with:
 
+- **Direction badge** — `↓ received` (green) for messages from the parent, `↑ sent` (blue) for messages sent to the parent
 - **Index** — sequential number in reverse order (newest first)
-- **Timestamp** — local time of receipt
-- **Origin** — the `event.origin` of the sender
-- **Data** — the full `event.data` payload as formatted JSON
+- **Timestamp** — local time of receipt or send
+- **Origin** — the `event.origin` of the sender (for received messages, your own origin for sent)
+- **Data** — the full payload as formatted JSON
 
 Messages accumulate for the lifetime of the page. There is no cap or auto-clear.
 
@@ -57,4 +68,4 @@ const frame = document.getElementById('receiver');
 frame.contentWindow.postMessage({ type: 'hello', value: 1 }, '*');
 ```
 
-Each message appears in the feed immediately. Combine with `seed=true` during development to see the layout populated before wiring up real message sources.
+Each message appears in the feed immediately. Use the send field inside the frame to post replies back to the parent and verify bidirectional handling. Combine with `seed=true` during development to see the layout populated before wiring up real message sources.

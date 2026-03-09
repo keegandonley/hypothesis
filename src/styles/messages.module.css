@@ -116,15 +116,15 @@
 }
 
 .directionReceived {
-  color: var(--accent);
-  background-color: #7ee8a218;
-  border: 1px solid #7ee8a233;
-}
-
-.directionSent {
   color: #60a5fa;
   background-color: #60a5fa18;
   border: 1px solid #60a5fa33;
+}
+
+.directionSent {
+  color: #fbbf24;
+  background-color: #fbbf2418;
+  border: 1px solid #fbbf2433;
 }
 
 .cardIndex {
