@@ -4,6 +4,7 @@ import styles from "../../styles/urlencode.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
+import { copyToClipboard } from "@/lib/copyToClipboard";
 
 export default function UrlEncodePage() {
   const branding = useBranding();
@@ -77,7 +78,7 @@ export default function UrlEncodePage() {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(url).then(() => {
+    copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
       copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);

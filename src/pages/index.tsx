@@ -21,6 +21,14 @@ const experiments = [
     href: "/messages",
     docsHref: "/docs/messages",
   },
+  {
+    id: "EXP-003",
+    name: "message-factory",
+    description:
+      "Design and trigger postMessage actions with an interactive viewer and designer.",
+    href: "/message-factory",
+    docsHref: "/docs/message-factory",
+  },
 ];
 
 const tools = [

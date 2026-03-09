@@ -4,6 +4,7 @@ import styles from "../../styles/regex.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
+import { copyToClipboard } from "@/lib/copyToClipboard";
 
 const FLAGS = ["g", "i", "m", "s", "u"] as const;
 type Flag = (typeof FLAGS)[number];
@@ -141,7 +142,7 @@ export default function RegexPage() {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(url).then(() => {
+    copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
       copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);

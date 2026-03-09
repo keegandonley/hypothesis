@@ -4,6 +4,7 @@ import styles from "../../styles/base64.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
+import { copyToClipboard } from "@/lib/copyToClipboard";
 
 export default function Base64Page() {
   const branding = useBranding();
@@ -153,7 +154,7 @@ export default function Base64Page() {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(url).then(() => {
+    copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
       copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
