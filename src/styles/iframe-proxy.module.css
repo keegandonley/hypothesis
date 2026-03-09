@@ -307,6 +307,30 @@
   color: var(--accent);
 }
 
+.urlInlineForm {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+}
+
+.urlInlineInput {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.urlInlineInput::placeholder {
+  color: var(--border);
+}
+
 @media (max-width: 640px) {
   .iframeDebug {
     left: 0;

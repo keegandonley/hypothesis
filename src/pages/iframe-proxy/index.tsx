@@ -35,6 +35,8 @@ export default function IframeProxyPage() {
   const [mounted, setMounted] = useState(false);
   const [messages, setMessages] = useState<RelayedMessage[]>([]);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [inputUrl, setInputUrl] = useState("");
+  const [urlFromParam, setUrlFromParam] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
@@ -43,6 +45,10 @@ export default function IframeProxyPage() {
     const rawUrl = params.get("url");
     const safeUrl = validateIframeUrl(rawUrl);
     setUrl(safeUrl);
+    if (safeUrl) {
+      setUrlFromParam(true);
+      setInputUrl(safeUrl);
+    }
     setDebug(isDebug);
     setMounted(true);
   }, []);
@@ -89,7 +95,7 @@ export default function IframeProxyPage() {
     return null;
   }
 
-  if (!url) {
+  if (!url && !debug) {
     return (
       <div className={styles.errorState}>
         Missing required <code className={styles.errorCode}>url</code> query
@@ -106,7 +112,27 @@ export default function IframeProxyPage() {
       {debug && (
         <div className={styles.topBar}>
           <span className={styles.badge}>proxied url</span>
-          <span className={styles.urlText}>{url}</span>
+          {urlFromParam ? (
+            <span className={styles.urlText}>{url}</span>
+          ) : (
+            <form
+              className={styles.urlInlineForm}
+              onSubmit={(e) => {
+                e.preventDefault();
+                const validated = validateIframeUrl(inputUrl);
+                if (validated) setUrl(validated);
+              }}
+            >
+              <input
+                className={styles.urlInlineInput}
+                type="url"
+                placeholder="https://example.com"
+                value={inputUrl}
+                onChange={(e) => setInputUrl(e.target.value)}
+                autoFocus
+              />
+            </form>
+          )}
           <span className={styles.topBarBrand}>
             <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
               {branding.domain}
@@ -134,11 +160,13 @@ export default function IframeProxyPage() {
         </div>
       )}
 
-      <iframe
-        ref={iframeRef}
-        src={url}
-        className={`${styles.iframe} ${debug ? styles.iframeDebug : ""}`}
-      />
+      {url && (
+        <iframe
+          ref={iframeRef}
+          src={url}
+          className={`${styles.iframe} ${debug ? styles.iframeDebug : ""}`}
+        />
+      )}
 
       {debug && panelOpen && (
         <div className={styles.backdrop} onClick={() => setPanelOpen(false)} />

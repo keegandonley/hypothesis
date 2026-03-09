@@ -8,9 +8,9 @@ Proxy iframes securely with full event handling and introspection for debugging.
 
 ## Query Parameters
 
-### `url` (required)
+### `url`
 
-The URL to embed. Must be a valid `http:` or `https:` URL. If omitted or invalid, the page shows an error.
+The URL to embed. Must be a valid `http:` or `https:` URL. If omitted in non-debug mode, the page shows an error. If omitted in debug mode, an inline input appears in the top bar where you can type a URL and press Enter to load it.
 
 ```
 /iframe-proxy?url=https://example.com
@@ -22,6 +22,12 @@ Set to `true` to enable debug mode. When active, the iframe is inset from the ed
 
 ```
 /iframe-proxy?url=https://example.com&debug=true
+```
+
+In debug mode without a `url` param, the page can be used as a standalone tool — just type a URL into the top bar to get started:
+
+```
+/iframe-proxy?debug=true
 ```
 
 ## Message Relay

@@ -12,7 +12,7 @@ const experiments = [
     name: "iframe-proxy",
     description:
       "Proxy iframes securely with full event handling and introspection for debugging.",
-    href: "/iframe-proxy",
+    href: "/iframe-proxy?debug=true",
     docsHref: "/docs/iframe-proxy",
   },
   {
