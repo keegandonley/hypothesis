@@ -30,7 +30,7 @@ function computeResults(
   const globalFlags = flagStr.includes("g") ? flagStr : flagStr + "g";
   const lines = testInput.split("\n");
   return lines.map((line) => {
-    const matches = [...line.matchAll(new RegExp(pattern, globalFlags))];
+    const matches = Array.from(line.matchAll(new RegExp(pattern, globalFlags)));
     return {
       input: line,
       matched: matches.length > 0,
