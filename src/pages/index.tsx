@@ -33,7 +33,13 @@ export default function HomePage() {
             {branding.name}
             <span className={styles.cursor} />
           </h1>
-          <p className={styles.tagline}>{branding.tagline}</p>
+          <p className={styles.tagline}>
+            {branding.tagline}{" | "}
+            <Link href="/docs/multi-domain" className={styles.docsLink} style={{ display: "inline-flex", verticalAlign: "middle" }}>
+              <DocIcon />
+              docs
+            </Link>
+          </p>
         </header>
 
         <hr className={styles.divider} />
