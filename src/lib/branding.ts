@@ -35,6 +35,13 @@ const configs: Record<string, Branding> = {
     actionType: "falsify-test",
     colors: { accent: "#5eead4" },
   },
+  "observation.sh": {
+    name: "observation",
+    domain: "observation.sh",
+    tagline: "A tool for observing web behavior",
+    actionType: "observation-test",
+    colors: { accent: "#818cf8" },
+  },
 };
 
 export function getBranding(hostname: string): Branding {
