@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "../../styles/iframe-proxy.module.css";
 import { DocIcon } from "@/components/icons/doc";
+import { useBranding } from "@/lib/branding";
 
 interface RelayedMessage {
   id: string;
@@ -27,6 +28,7 @@ function validateIframeUrl(rawUrl: string | null): string | null {
 }
 
 export default function IframeProxyPage() {
+  const branding = useBranding();
   const [url, setUrl] = useState<string | null>(null);
   const [debug, setDebug] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -102,7 +104,7 @@ export default function IframeProxyPage() {
           <span className={styles.badge}>proxied url</span>
           <span className={styles.urlText}>{url}</span>
           <span className={styles.topBarBrand}>
-            hypothesis.sh |{" "}
+            {branding.domain} |{" "}
             <Link
               href="/docs/iframe-proxy"
               className={styles.docsLink}
@@ -142,7 +144,7 @@ export default function IframeProxyPage() {
         >
           <div className={styles.panelHeader}>
             <div className={styles.eyebrow}>
-              hypothesis.sh |{" "}
+              {branding.domain} |{" "}
               <Link
                 href="/docs/iframe-proxy"
                 className={styles.docsLink}

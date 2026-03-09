@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "../styles/index.module.css";
 import { DocIcon } from "@/components/icons/doc";
+import { useBranding } from "@/lib/branding";
 
 const experiments = [
   {
@@ -22,16 +23,17 @@ const experiments = [
 ];
 
 export default function HomePage() {
+  const branding = useBranding();
   return (
     <div className={styles.page}>
       <div className={styles.inner}>
         <header className={styles.header}>
           <div className={styles.eyebrow}>v0.1.0</div>
           <h1 className={styles.title}>
-            hypothesis
+            {branding.name}
             <span className={styles.cursor} />
           </h1>
-          <p className={styles.tagline}>A workbench for web experiments</p>
+          <p className={styles.tagline}>{branding.tagline}</p>
         </header>
 
         <hr className={styles.divider} />
@@ -43,7 +45,7 @@ export default function HomePage() {
         </div>
 
         <div className={styles.footer}>
-          tools for thinking | A project by{" "}
+          A project by{" "}
           <a
             href="https://keegan.codes"
             className={styles.footerLink}

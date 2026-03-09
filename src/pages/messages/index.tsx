@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styles from "../../styles/messages.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
+import { useBranding } from "@/lib/branding";
 
 interface Message {
   id: string;
@@ -12,12 +13,13 @@ interface Message {
 }
 
 export default function MessagesPage() {
+  const branding = useBranding();
   const [messages, setMessages] = useState<Message[]>([]);
   const [context, setContext] = useState<Record<string, unknown> | null>(null);
   const [sendInput, setSendInput] = useState("");
 
   const handleSend = () => {
-    const data = { action: "hypothesis-test", content: sendInput };
+    const data = { action: branding.actionType, content: sendInput };
     window.parent.postMessage(data, "*");
     setMessages((prev) => [
       {
@@ -91,7 +93,7 @@ export default function MessagesPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <div className={styles.eyebrow}>
-          hypothesis.sh |{" "}
+          {branding.domain} |{" "}
           <Link
             href="/docs/messages"
             className={styles.docsLink}

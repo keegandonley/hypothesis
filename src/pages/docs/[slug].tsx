@@ -3,6 +3,7 @@ import path from "path";
 import Link from "next/link";
 import { GetStaticPaths, GetStaticProps } from "next";
 import styles from "../../styles/docs.module.css";
+import { useBranding } from "@/lib/branding";
 
 const DOCS_DIR = path.join(process.cwd(), "src/content/docs");
 
@@ -128,8 +129,9 @@ function Inline({ text }: { text: string }) {
   );
 }
 
-function MarkdownContent({ content }: { content: string }) {
-  const nodes = parseMarkdown(content);
+function MarkdownContent({ content, actionType }: { content: string; actionType: string }) {
+  const substituted = content.replace(/hypothesis-test/g, actionType);
+  const nodes = parseMarkdown(substituted);
   return (
     <div className={styles.content}>
       {nodes.map((node, i) => {
@@ -188,18 +190,19 @@ export default function DocsPage({
   slug: string;
   content: string;
 }) {
+  const branding = useBranding();
   return (
     <div className={styles.page}>
       <div className={styles.inner}>
         <nav className={styles.nav}>
           <Link href="/" className={styles.backLink}>
-            ← hypothesis
+            ← {branding.name}
           </Link>
         </nav>
 
         <hr className={styles.divider} />
 
-        <MarkdownContent content={content} />
+        <MarkdownContent content={content} actionType={branding.actionType} />
       </div>
     </div>
   );
