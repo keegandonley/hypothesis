@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "../../styles/message-factory.module.css";
+import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 
 const subExperiments = [
@@ -11,6 +12,7 @@ const subExperiments = [
     description:
       "Build arrays of postMessage actions with name, id, and payload. Shareable permalinks.",
     href: "/message-factory/designer",
+    docsHref: "/docs/message-factory#message-designer",
   },
   {
     id: "EXP-003.B",
@@ -18,6 +20,7 @@ const subExperiments = [
     description:
       "Load actions from URL and render buttons that trigger postMessage to the parent frame.",
     href: "/message-factory/viewer",
+    docsHref: "/docs/message-factory#message-viewer",
   },
 ];
 
@@ -63,11 +66,13 @@ function SubExperimentCard({
   name,
   description,
   href,
+  docsHref,
 }: {
   id: string;
   name: string;
   description: string;
   href: string;
+  docsHref: string;
 }) {
   const router = useRouter();
   return (
@@ -79,6 +84,16 @@ function SubExperimentCard({
           <div className={styles.cardDesc}>{description}</div>
         </div>
         <div className={styles.arrow}>→</div>
+      </div>
+      <div className={styles.cardFooter}>
+        <Link
+          href={docsHref}
+          className={styles.docsLink}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <DocIcon />
+          docs
+        </Link>
       </div>
     </div>
   );

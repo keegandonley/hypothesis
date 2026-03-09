@@ -163,13 +163,13 @@ function MarkdownContent({ content, actionType }: { content: string; actionType:
             );
           case "h2":
             return (
-              <h2 key={i}>
+              <h2 key={i} id={node.text.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")}>
                 <Inline text={node.text} />
               </h2>
             );
           case "h3":
             return (
-              <h3 key={i}>
+              <h3 key={i} id={node.text.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")}>
                 <Inline text={node.text} />
               </h3>
             );
