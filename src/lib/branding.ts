@@ -38,7 +38,7 @@ const configs: Record<string, Branding> = {
   "observation.sh": {
     name: "observation",
     domain: "observation.sh",
-    tagline: "A tool for observing web behavior",
+    tagline: "Tools for observing web behavior",
     actionType: "observation-test",
     colors: { accent: "#818cf8" },
   },
