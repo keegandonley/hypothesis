@@ -30,18 +30,39 @@ Decoding uses the reverse pipeline:
 decodeURIComponent(escape(atob(value)))
 ```
 
+## JSON mode
+
+Toggle **JSON Mode** in the Plain Text panel header to enable JSON-specific features:
+
+- **Validation badge** — shows `valid` or `invalid` next to the toggle as you type.
+- **Format button** — pretty-prints the JSON with 2-space indentation. Only enabled when the content is valid JSON.
+- **Tab indentation** — pressing Tab inserts 2 spaces at the cursor; Shift+Tab removes up to 2 leading spaces from the current line.
+
+JSON mode state is saved in the permalink (`?json=1`), so sharing or reloading the URL restores JSON mode automatically.
+
 ## Permalinks
 
-The `?value=` query parameter holds the current base64 string. The URL updates live as you type — no button required.
+The URL updates live as you type — no button required. Two query parameters are used:
 
-Share or bookmark the URL to return to the same content. The page reads `?value=` on load and pre-populates both panels.
+- `value` — the current base64-encoded string
+- `json` — set to `1` when JSON mode is active
 
-### Example permalink
+Share or bookmark the URL to return to the same content. Both panels and JSON mode are restored on load.
+
+### Example permalinks
 
 ```
 /base64?value=SGVsbG8sIHdvcmxkIQ==
 ```
 
-This decodes to `Hello, world!`.
+Decodes to `Hello, world!` in plain text mode.
+
+```
+/base64?value=eyJoZWxsbyI6IndvcmxkIn0=&json=1
+```
+
+Decodes to `{"hello":"world"}` with JSON mode active.
 
 Use the **Copy** button in the Permalink row to copy the current URL to your clipboard.
+
+Use the **Reset** button to clear both panels, turn off JSON mode, and return the URL to the bare `/base64` path.
