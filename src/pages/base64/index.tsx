@@ -14,18 +14,38 @@ export default function Base64Page() {
   const [jsonMode, setJsonMode] = useState(false);
   const [jsonValid, setJsonValid] = useState<boolean | null>(null);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const plainRef = useRef<HTMLTextAreaElement>(null);
+
+  const buildUrl = (enc: string, json: boolean) => {
+    if (!enc) return `${window.location.origin}${window.location.pathname}`;
+    const params = new URLSearchParams({ value: enc });
+    if (json) params.set("json", "1");
+    return `${window.location.origin}${window.location.pathname}?${params}`;
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const value = params.get("value");
+    const jsonParam = params.get("json") === "1";
+
     if (value) {
       setEncoded(value);
       try {
-        setPlain(decodeURIComponent(escape(atob(value))));
+        const decoded = decodeURIComponent(escape(atob(value)));
+        setPlain(decoded);
+        if (jsonParam) {
+          try {
+            JSON.parse(decoded);
+            setJsonValid(true);
+          } catch {
+            setJsonValid(false);
+          }
+        }
       } catch {
         setPlain("");
       }
     }
+    if (jsonParam) setJsonMode(true);
     setUrl(window.location.href);
   }, []);
 
@@ -47,23 +67,22 @@ export default function Base64Page() {
     if (jsonMode) validateJson(value);
     const enc = btoa(unescape(encodeURIComponent(value)));
     setEncoded(enc);
-    const newUrl = value
-      ? `${window.location.origin}${window.location.pathname}?value=${enc}`
-      : `${window.location.origin}${window.location.pathname}`;
+    const newUrl = buildUrl(enc, jsonMode);
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
   const handleEncodedChange = (value: string) => {
     setEncoded(value);
+    let decoded = "";
     try {
-      setPlain(decodeURIComponent(escape(atob(value))));
+      decoded = decodeURIComponent(escape(atob(value)));
+      setPlain(decoded);
     } catch {
       setPlain("");
     }
-    const newUrl = value
-      ? `${window.location.origin}${window.location.pathname}?value=${value}`
-      : `${window.location.origin}${window.location.pathname}`;
+    if (jsonMode) validateJson(decoded);
+    const newUrl = buildUrl(value, jsonMode);
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
@@ -82,6 +101,55 @@ export default function Base64Page() {
     setJsonMode(next);
     if (next) validateJson(plain);
     else setJsonValid(null);
+    const newUrl = buildUrl(encoded, next);
+    history.replaceState(null, "", newUrl);
+    setUrl(window.location.href);
+  };
+
+  const handlePlainKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (!jsonMode || e.key !== "Tab") return;
+    e.preventDefault();
+
+    const ta = e.currentTarget;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const val = ta.value;
+
+    if (!e.shiftKey) {
+      const newVal = val.slice(0, start) + "  " + val.slice(end);
+      handlePlainChange(newVal);
+      requestAnimationFrame(() => {
+        if (plainRef.current) {
+          plainRef.current.selectionStart = plainRef.current.selectionEnd =
+            start + 2;
+        }
+      });
+    } else {
+      const lineStart = val.lastIndexOf("\n", start - 1) + 1;
+      const stripped = val.slice(lineStart).match(/^ {1,2}/)?.[0] ?? "";
+      if (stripped.length > 0) {
+        const newVal =
+          val.slice(0, lineStart) + val.slice(lineStart + stripped.length);
+        handlePlainChange(newVal);
+        requestAnimationFrame(() => {
+          if (plainRef.current) {
+            const pos = Math.max(lineStart, start - stripped.length);
+            plainRef.current.selectionStart = plainRef.current.selectionEnd =
+              pos;
+          }
+        });
+      }
+    }
+  };
+
+  const handleReset = () => {
+    setPlain("");
+    setEncoded("");
+    setJsonMode(false);
+    setJsonValid(null);
+    const newUrl = `${window.location.origin}${window.location.pathname}`;
+    history.replaceState(null, "", newUrl);
+    setUrl(window.location.href);
   };
 
   const handleCopy = () => {
@@ -129,11 +197,12 @@ export default function Base64Page() {
                 JSON Mode {jsonMode ? "ON" : "OFF"}
               </button>
               {jsonMode ? (
-                plain.length > 0 && (
-                  jsonValid
-                    ? <span className={styles.badge}>valid</span>
-                    : <span className={styles.badgeError}>invalid</span>
-                )
+                plain.length > 0 &&
+                (jsonValid ? (
+                  <span className={styles.badge}>valid</span>
+                ) : (
+                  <span className={styles.badgeError}>invalid</span>
+                ))
               ) : (
                 <span className={styles.badge}>{plain.length} chars</span>
               )}
@@ -141,10 +210,12 @@ export default function Base64Page() {
           </div>
           <div className={styles.textareaWrapper}>
             <textarea
+              ref={plainRef}
               className={styles.textarea}
               value={plain}
               onChange={(e) => handlePlainChange(e.target.value)}
-              placeholder="Type plain text here..."
+              onKeyDown={handlePlainKeyDown}
+              placeholder={`Type or paste ${jsonMode ? "JSON" : "plain text"} here...`}
               spellCheck={false}
             />
             {jsonMode && (
@@ -184,6 +255,9 @@ export default function Base64Page() {
           onClick={handleCopy}
         >
           {copied ? "Copied!" : "Copy"}
+        </button>
+        <button className={styles.resetBtn} onClick={handleReset}>
+          Reset
         </button>
       </div>
     </div>
