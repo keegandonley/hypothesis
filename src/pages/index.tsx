@@ -20,6 +20,14 @@ const experiments = [
     href: "/messages",
     docsHref: "/docs/messages",
   },
+  {
+    id: "EXP-003",
+    name: "base64",
+    description:
+      "Encode and decode base64 strings with live sync and shareable permalinks.",
+    href: "/base64",
+    docsHref: "/docs/base64",
+  },
 ];
 
 export default function HomePage() {
