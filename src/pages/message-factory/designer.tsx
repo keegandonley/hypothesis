@@ -284,7 +284,7 @@ export default function DesignerPage() {
           <a href={viewerUrl} className={styles.viewerLink} target="_blank" rel="noreferrer">
             Open Viewer →
           </a>
-          <a href={`${viewerUrl}&debug=true`} className={styles.viewerLink} target="_blank" rel="noreferrer">
+          <a href={`${viewerUrl}${viewerUrl.includes("?") ? "&" : "?"}debug=true`} className={styles.viewerLink} target="_blank" rel="noreferrer">
             Open Viewer (debug) →
           </a>
         </div>
