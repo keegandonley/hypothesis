@@ -52,6 +52,12 @@
 .docsLink {
   display: flex;
   align-items: center;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+
+.docsLink:hover {
+  color: var(--accent);
 }
 
 .badge {

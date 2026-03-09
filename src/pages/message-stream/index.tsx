@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import styles from "../../styles/messages.module.css";
+import styles from "../../styles/message-stream.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
@@ -93,13 +93,13 @@ export default function MessagesPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>messages — {branding.name}</title>
+        <title>message-stream — {branding.name}</title>
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>
           {branding.domain} |{" "}
           <Link
-            href="/docs/messages"
+            href="/docs/message-stream"
             className={styles.docsLink}
             target="_blank"
             rel="noopener noreferrer"

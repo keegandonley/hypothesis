@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import styles from "../../styles/message-factory-viewer.module.css";
+import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 
@@ -92,6 +93,15 @@ export default function ViewerPage() {
           EXP-003.B ·{" "}
           <Link href="/message-factory" className={styles.backLink} target="_blank" rel="noreferrer">
             message-factory
+          </Link>{" "}
+          |{" "}
+          <Link
+            href="/docs/message-factory"
+            className={styles.docsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <DocIcon className={styles.icon} /> docs
           </Link>
         </div>
         <h1 className={styles.title}>message-viewer</h1>

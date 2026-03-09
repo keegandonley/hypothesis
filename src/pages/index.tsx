@@ -16,10 +16,10 @@ const experiments = [
   },
   {
     id: "EXP-002",
-    name: "messages",
+    name: "message-stream",
     description: "Capture and inspect frame messages in real time.",
-    href: "/messages",
-    docsHref: "/docs/messages",
+    href: "/message-stream",
+    docsHref: "/docs/message-stream",
   },
   {
     id: "EXP-003",

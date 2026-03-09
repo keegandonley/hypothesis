@@ -318,3 +318,18 @@
 .viewerLink:hover {
   opacity: 0.75;
 }
+
+.docsLink {
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+
+.docsLink:hover {
+  color: var(--accent);
+}
+
+.icon {
+  margin-right: 4px;
+}
