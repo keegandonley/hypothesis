@@ -99,8 +99,8 @@ export default function ViewerPage() {
           <Link
             href="/docs/message-factory"
             className={styles.docsLink}
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <DocIcon className={styles.icon} /> docs
           </Link>

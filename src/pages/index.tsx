@@ -80,6 +80,14 @@ const tools = [
     href: "/uuid",
     docsHref: "/docs/uuid",
   },
+  {
+    id: "TOOL-6",
+    name: "datetime",
+    description:
+      "Convert timestamps and dates between many formats at once with live sync and shareable permalinks.",
+    href: "/datetime",
+    docsHref: "/docs/datetime",
+  },
 ];
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {

@@ -173,8 +173,8 @@ export default function RegexPage() {
           <Link
             href="/docs/regex"
             className={styles.docsLink}
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <DocIcon className={styles.icon} /> docs
           </Link>
