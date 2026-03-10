@@ -69,7 +69,7 @@ If you navigate away or close the tab, heartbeats stop. After **5 minutes of ina
 
 There are two distinct inactivity thresholds:
 
-1. **Webhook receiver timeout — 5 minutes.** If no heartbeat or incoming request has been seen for 5 minutes, the server returns `410 Gone` for any new requests to that webhook URL. The session still exists; it just stops accepting requests until the page is open again.
+1. **Webhook receiver timeout — 5 minutes.** If no heartbeat has been seen for 5 minutes, the server returns `410 Gone` for any new requests to that webhook URL. The session still exists; it just stops accepting requests until the page is open again.
 
 2. **Database cleanup — 1 hour.** Sessions that have been inactive for more than 1 hour are permanently deleted. This runs daily at **02:00 UTC**.
 

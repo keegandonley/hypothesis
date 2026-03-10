@@ -64,8 +64,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
+    const STRIP_HEADER_PREFIXES = ["x-vercel-", "x-forwarded-"];
+    const STRIP_HEADERS = new Set(["forwarded", "x-real-ip", "x-matched-path", "connection"]);
+
     const headersObj: Record<string, string> = {};
     Object.entries(req.headers).forEach(([k, v]) => {
+      if (STRIP_HEADERS.has(k) || STRIP_HEADER_PREFIXES.some((p) => k.startsWith(p))) return;
       headersObj[k] = Array.isArray(v) ? v.join(", ") : (v ?? "");
     });
 
