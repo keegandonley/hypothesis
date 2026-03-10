@@ -176,6 +176,14 @@
   letter-spacing: 0.05em;
 }
 
+.sensitiveWarning {
+  padding: 10px 14px;
+  font-size: 11px;
+  color: #f97316;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--border);
+}
+
 .eventsPanel {
   flex: 1;
   display: flex;

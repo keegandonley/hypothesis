@@ -46,9 +46,11 @@ export default function WebhookPage() {
   const [status, setStatus] = useState<"loading" | "ready" | "error">(
     "loading",
   );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [curlMethod, setCurlMethod] = useState("POST");
   const [curlCopied, setCurlCopied] = useState(false);
+  const [sendState, setSendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [events, setEvents] = useState<WebhookEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<WebhookEvent | null>(null);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -84,6 +86,7 @@ export default function WebhookPage() {
     currentSessionIdRef.current = null;
     latestReceivedAtRef.current = null;
     setStatus("loading");
+    setErrorMessage(null);
     setEvents([]);
     setSelectedEvent(null);
 
@@ -92,8 +95,17 @@ export default function WebhookPage() {
       headers: { "Content-Type": "application/json" },
       body: sessionId ? JSON.stringify({ sessionId }) : "{}",
     })
-      .then((r) => r.json())
+      .then(async (r) => {
+        const data = await r.json();
+        if (r.status === 429) {
+          setErrorMessage(data.error ?? "rate limit exceeded");
+          setStatus("ready");
+          return;
+        }
+        return data;
+      })
       .then((data) => {
+        if (!data) return;
         currentSessionIdRef.current = data.sessionId;
         if (!skipLocalStorage) {
           localStorage.setItem("webhookSessionId", data.sessionId);
@@ -139,6 +151,23 @@ export default function WebhookPage() {
     }
     return `curl -X ${method.toUpperCase()} ${url}`;
   }
+
+  const handleSendRequest = () => {
+    if (!session || sendState === "sending") return;
+    setSendState("sending");
+    const hasBody = ["POST", "PUT", "PATCH"].includes(curlMethod.toUpperCase());
+    fetch(session.webhookUrl, {
+      method: curlMethod,
+      credentials: "omit",
+      ...(hasBody ? {
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hello: "world" }),
+      } : {}),
+    })
+      .then((r) => setSendState(r.ok ? "sent" : "error"))
+      .catch(() => setSendState("error"))
+      .finally(() => setTimeout(() => setSendState("idle"), 2000));
+  };
 
   const handleCurlCopy = () => {
     const url = session?.webhookUrl ?? "";
@@ -203,6 +232,10 @@ export default function WebhookPage() {
         <div className={styles.errorText}>failed to initialize session</div>
       )}
 
+      {status === "ready" && !session && errorMessage && (
+        <div className={styles.errorText}>{errorMessage}</div>
+      )}
+
       {status === "ready" && session && (
         <>
           <div className={styles.panels}>
@@ -225,6 +258,9 @@ export default function WebhookPage() {
                 </div>
               </div>
               <div className={styles.urlDisplay}>{session.webhookUrl}</div>
+              {errorMessage && (
+                <div className={styles.errorText}>{errorMessage}</div>
+              )}
             </div>
 
             <div className={styles.panel}>
@@ -258,6 +294,13 @@ export default function WebhookPage() {
                   onClick={handleCurlCopy}
                 >
                   {curlCopied ? "Copied!" : "Copy"}
+                </button>
+                <button
+                  className={`${styles.copyBtn}${sendState === "sent" ? ` ${styles.copied}` : ""}`}
+                  onClick={handleSendRequest}
+                  disabled={sendState === "sending"}
+                >
+                  {sendState === "sending" ? "Sending..." : sendState === "sent" ? "Sent!" : sendState === "error" ? "Error" : "Send request"}
                 </button>
               </div>
             </div>
@@ -299,6 +342,11 @@ export default function WebhookPage() {
             </div>
             {selectedEvent && (
               <div className={styles.eventDetail}>
+                {["authorization", "cookie", "x-api-key"].some((h) => h in selectedEvent.headers) && (
+                  <div className={styles.sensitiveWarning}>
+                    Warning: this request contains sensitive headers (e.g. Authorization, Cookie). Do not share this session URL.
+                  </div>
+                )}
                 <div className={styles.detailSection}>
                   <div className={styles.detailLabel}>Headers</div>
                   <pre className={styles.detailCode}>

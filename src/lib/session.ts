@@ -33,13 +33,20 @@ export async function createSession(
   return (await getSession(id))!;
 }
 
+export async function countRecentSessionsByIp(ipAddress: string): Promise<number> {
+  const result = await pool.query(
+    "SELECT COUNT(*) FROM sessions WHERE ip_address = $1 AND created_at > NOW() - INTERVAL '10 minutes'",
+    [ipAddress]
+  );
+  return parseInt(result.rows[0].count, 10);
+}
+
 export async function touchSession(
-  id: string,
-  ipAddress: string
+  id: string
 ): Promise<Session | null> {
   await pool.query(
-    "UPDATE sessions SET ip_address = $1, updated_at = NOW() WHERE id = $2",
-    [ipAddress, id]
+    "UPDATE sessions SET updated_at = NOW() WHERE id = $1",
+    [id]
   );
   return getSession(id);
 }

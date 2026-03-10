@@ -31,6 +31,14 @@ export async function insertEvent(params: {
   );
 }
 
+export async function countRecentEvents(sessionId: string): Promise<number> {
+  const result = await pool.query(
+    "SELECT COUNT(*) FROM webhook_events WHERE session_id = $1 AND received_at > NOW() - INTERVAL '1 hour'",
+    [sessionId]
+  );
+  return parseInt(result.rows[0].count, 10);
+}
+
 export async function getEvents(params: {
   sessionId: string;
   after?: string;

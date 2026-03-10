@@ -32,7 +32,10 @@ The panel polls for new requests every **2.5 seconds**.
 
 ## curl helper
 
-The curl panel generates a ready-to-run curl command pointed at your webhook URL. Use the method toggle to switch between GET, POST, PUT, PATCH, and DELETE — the command updates automatically. Click **Copy** to copy it to your clipboard.
+The curl panel generates a ready-to-run curl command pointed at your webhook URL. Use the method toggle to switch between GET, POST, PUT, PATCH, and DELETE — the command updates automatically.
+
+- **Copy** — copies the curl command to your clipboard.
+- **Send request** — fires the request directly from your browser using `fetch`. POST, PUT, and PATCH requests include a `Content-Type: application/json` body of `{"hello":"world"}`. The button shows "Sending…" while in-flight and "Sent!" or "Error" once complete.
 
 ## Sessions
 
@@ -71,6 +74,16 @@ There are two distinct inactivity thresholds:
 2. **Database cleanup — 1 hour.** Sessions that have been inactive for more than 1 hour are permanently deleted. This runs daily at **02:00 UTC**.
 
 While the webhook page is open, the 60-second heartbeat resets both clocks, so neither threshold is reached during normal use.
+
+## Limits
+
+These limits apply to protect the service and keep it available for everyone.
+
+**Session creation** — a maximum of **3 sessions** can be created per IP address within any 10-minute window. Restoring an existing session (via `localStorage` or `?s=`) does not count against this limit.
+
+**Requests per session** — each webhook URL accepts a maximum of **500 requests per hour**. Requests beyond this limit receive `HTTP 429 Too Many Requests`. The counter resets on a rolling hourly basis.
+
+**Request body size** — incoming request bodies are capped at **1 MB**. Requests with a larger body receive `HTTP 413 Content Too Large`.
 
 ## URL state
 

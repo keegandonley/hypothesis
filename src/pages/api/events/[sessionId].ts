@@ -13,6 +13,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     limit?: string;
   };
 
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_RE.test(sessionId)) {
+    return res.status(404).json({ error: "session not found" });
+  }
+
   if (afterParam) {
     const ts = Date.parse(afterParam);
     if (isNaN(ts)) {
