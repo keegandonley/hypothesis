@@ -45,9 +45,6 @@ importers:
       '@types/pg':
         specifier: ^8.18.0
         version: 8.18.0
-      '@types/uuid':
-        specifier: ^11.0.0
-        version: 11.0.0
 
 packages:
 
@@ -287,10 +284,6 @@ packages:
 
   '@types/react@19.2.11':
     resolution: {integrity: sha512-tORuanb01iEzWvMGVGv2ZDhYZVeRMrw453DCSAIn/5yvcSVnMoUMTyf33nQJLahYEnv9xqrTNbgz4qY5EfSh0g==}
-
-  '@types/uuid@11.0.0':
-    resolution: {integrity: sha512-HVyk8nj2m+jcFRNazzqyVKiZezyhDKrGUA3jlEcg/nZ6Ms+qHwocba1Y/AaVaznJTAM9xpdFSh+ptbNrhOGvZA==}
-    deprecated: This is a stub types definition. uuid provides its own type definitions, so you do not need this installed.
 
   '@vercel/analytics@1.6.1':
     resolution: {integrity: sha512-oH9He/bEM+6oKlv3chWuOOcp8Y6fo6/PSro8hEkgCW3pu9/OiCXiUpRUogDh3Fs3LH2sosDrx8CxeOLBEE+afg==}
@@ -711,10 +704,6 @@ snapshots:
   '@types/react@19.2.11':
     dependencies:
       csstype: 3.2.3
-
-  '@types/uuid@11.0.0':
-    dependencies:
-      uuid: 13.0.0
 
   '@vercel/analytics@1.6.1(next@16.1.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)':
     optionalDependencies:

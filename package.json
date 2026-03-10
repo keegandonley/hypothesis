@@ -22,7 +22,6 @@
   },
   "packageManager": "pnpm@10.28.2+sha256.afa99b0b4b3d11c1dad2b472f9318ae2c78673829749ded527f89f09071479a7",
   "devDependencies": {
-    "@types/pg": "^8.18.0",
-    "@types/uuid": "^11.0.0"
+    "@types/pg": "^8.18.0"
   }
 }
