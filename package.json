@@ -14,6 +14,7 @@
     "@vercel/analytics": "^1.6.1",
     "@vercel/og": "^0.11.1",
     "next": "16.1.6",
+    "pg": "^8.20.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "typescript": "^5.9.3",
@@ -21,6 +22,7 @@
   },
   "packageManager": "pnpm@10.28.2+sha256.afa99b0b4b3d11c1dad2b472f9318ae2c78673829749ded527f89f09071479a7",
   "devDependencies": {
+    "@types/pg": "^8.18.0",
     "@types/uuid": "^11.0.0"
   }
 }
