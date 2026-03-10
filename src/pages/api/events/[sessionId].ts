@@ -1,26 +1,22 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "@/lib/session";
 import { getEvents } from "@/lib/events";
 
-export const config = { runtime: "edge" };
-
-export default async function handler(req: NextRequest) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "GET") {
-    return NextResponse.json({ error: "method not allowed" }, { status: 405 });
+    return res.status(405).json({ error: "method not allowed" });
   }
 
-  const url = new URL(req.url);
-  const sessionId = url.pathname.split("/").pop()!;
-  const afterParam = url.searchParams.get("after");
-  const limitParam = url.searchParams.get("limit");
+  const { sessionId, after: afterParam, limit: limitParam } = req.query as {
+    sessionId: string;
+    after?: string;
+    limit?: string;
+  };
 
   if (afterParam) {
     const ts = Date.parse(afterParam);
     if (isNaN(ts)) {
-      return NextResponse.json(
-        { error: "invalid 'after' parameter — expected ISO 8601 date" },
-        { status: 400 }
-      );
+      return res.status(400).json({ error: "invalid 'after' parameter — expected ISO 8601 date" });
     }
   }
 
@@ -29,18 +25,13 @@ export default async function handler(req: NextRequest) {
   try {
     const session = await getSession(sessionId);
     if (!session) {
-      return NextResponse.json({ error: "session not found" }, { status: 404 });
+      return res.status(404).json({ error: "session not found" });
     }
 
-    const events = await getEvents({
-      sessionId: session.id,
-      after: afterParam ?? undefined,
-      limit,
-    });
-
-    return NextResponse.json({ events, count: events.length });
+    const events = await getEvents({ sessionId: session.id, after: afterParam, limit });
+    return res.json({ events, count: events.length });
   } catch (err) {
     console.error("events error", err);
-    return NextResponse.json({ error: "internal server error" }, { status: 500 });
+    return res.status(500).json({ error: "internal server error" });
   }
 }

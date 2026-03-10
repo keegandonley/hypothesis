@@ -1,10 +1,10 @@
 import { Pool } from "pg";
 
 export const pool = new Pool({
-  host: process.env.DATABASE_HOST,
-  port: Number(process.env.DATABASE_PORT),
-  user: process.env.DATABASE_USERNAME,
-  password: process.env.DATABASE_PASSWORD,
-  database: process.env.DATABASE_NAME,
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  user: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
   ssl: { rejectUnauthorized: false },
 });

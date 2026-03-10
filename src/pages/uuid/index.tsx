@@ -10,7 +10,7 @@ import { v1, v4, v7 } from "uuid";
 const generators = { 1: v1, 4: v4, 7: v7 } as const;
 
 function generate(ver: 1 | 4 | 7): string {
-  return generators[ver]();
+  return (generators[ver] as () => string)();
 }
 
 export default function UuidPage() {

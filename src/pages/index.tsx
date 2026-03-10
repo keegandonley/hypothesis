@@ -30,6 +30,13 @@ const experiments = [
     href: "/message-factory",
     docsHref: "/docs/message-factory",
   },
+  {
+    id: "EXP-004",
+    name: "webhook",
+    description: "Capture and inspect incoming HTTP webhook requests in real time.",
+    href: "/webhook",
+    docsHref: "/docs/webhook",
+  },
 ];
 
 const tools = [

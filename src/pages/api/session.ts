@@ -1,41 +1,33 @@
-import { NextRequest, NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { createSession, touchSession } from "@/lib/session";
 
-export const config = { runtime: "edge" };
-
-export default async function handler(req: NextRequest) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
-    return NextResponse.json({ error: "method not allowed" }, { status: 405 });
+    return res.status(405).json({ error: "method not allowed" });
   }
 
   const ip =
-    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-    req.headers.get("x-real-ip") ??
+    (req.headers["x-forwarded-for"] as string)?.split(",")[0].trim() ??
+    (req.headers["x-real-ip"] as string) ??
     "0.0.0.0";
 
   let body: { sessionId?: string } = {};
-  const contentType = req.headers.get("content-type") ?? "";
+  const contentType = (req.headers["content-type"] as string) ?? "";
   if (contentType.includes("application/json")) {
-    try {
-      body = await req.json();
-    } catch {
-      return NextResponse.json({ error: "invalid JSON" }, { status: 400 });
-    }
+    body = req.body ?? {};
   }
 
   try {
-    const webhookBase = new URL(req.url).origin;
+    const protocol = (req.headers["x-forwarded-proto"] as string) ?? "http";
+    const host = req.headers.host;
+    const webhookBase = `${protocol}://${host}`;
 
     if (body.sessionId) {
       const session = await touchSession(body.sessionId, ip);
       if (!session) {
-        return NextResponse.json(
-          { error: "session not found" },
-          { status: 404 }
-        );
+        return res.status(404).json({ error: "session not found" });
       }
-      return NextResponse.json({
+      return res.json({
         sessionId: session.id,
         webhookUrl: `${webhookBase}/api/webhook/${session.id}`,
         createdAt: session.createdAt,
@@ -43,9 +35,9 @@ export default async function handler(req: NextRequest) {
       });
     }
 
-    const sessionId = uuidv4();
+    const sessionId = crypto.randomUUID();
     const session = await createSession(sessionId, ip);
-    return NextResponse.json({
+    return res.json({
       sessionId: session.id,
       webhookUrl: `${webhookBase}/api/webhook/${session.id}`,
       createdAt: session.createdAt,
@@ -53,6 +45,6 @@ export default async function handler(req: NextRequest) {
     });
   } catch (err) {
     console.error("session error", err);
-    return NextResponse.json({ error: "internal server error" }, { status: 500 });
+    return res.status(500).json({ error: "internal server error" });
   }
 }

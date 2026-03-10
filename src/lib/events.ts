@@ -6,6 +6,7 @@ export type WebhookEvent = {
   method: string;
   headers: Record<string, string>;
   payload: unknown | null;
+  rawBody: string | null;
   receivedAt: string;
 };
 
@@ -38,12 +39,12 @@ export async function getEvents(params: {
   let result;
   if (params.after) {
     result = await pool.query(
-      "SELECT id, session_id, method, headers, payload, received_at FROM webhook_events WHERE session_id = $1 AND received_at > $2 ORDER BY received_at DESC LIMIT $3",
+      "SELECT id, session_id, method, headers, payload, raw_body, received_at FROM webhook_events WHERE session_id = $1 AND received_at > $2 ORDER BY received_at DESC LIMIT $3",
       [params.sessionId, params.after, params.limit]
     );
   } else {
     result = await pool.query(
-      "SELECT id, session_id, method, headers, payload, received_at FROM webhook_events WHERE session_id = $1 ORDER BY received_at DESC LIMIT $2",
+      "SELECT id, session_id, method, headers, payload, raw_body, received_at FROM webhook_events WHERE session_id = $1 ORDER BY received_at DESC LIMIT $2",
       [params.sessionId, params.limit]
     );
   }
@@ -54,6 +55,7 @@ export async function getEvents(params: {
     method: row.method,
     headers: row.headers,
     payload: row.payload ?? null,
+    rawBody: row.raw_body ?? null,
     receivedAt: new Date(row.received_at).toISOString(),
   }));
 }

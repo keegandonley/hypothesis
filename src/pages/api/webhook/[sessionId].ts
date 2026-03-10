@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "@/lib/session";
 import { insertEvent } from "@/lib/events";
 
-export const config = { runtime: "edge" };
+export const config = { api: { bodyParser: false } };
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,33 +10,47 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "*",
 };
 
-export default async function handler(req: NextRequest) {
+function readBody(req: NextApiRequest): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let data = "";
+    req.on("data", (chunk) => { data += chunk; });
+    req.on("end", () => resolve(data));
+    req.on("error", reject);
+  });
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  Object.entries(corsHeaders).forEach(([k, v]) => res.setHeader(k, v));
+
   if (req.method === "OPTIONS") {
-    return new NextResponse(null, { status: 204, headers: corsHeaders });
+    return res.status(204).end();
   }
 
-  const { pathname } = new URL(req.url);
-  const sessionId = pathname.split("/").pop()!;
+  const { sessionId } = req.query as { sessionId: string };
+
+  const SESSION_TIMEOUT_MS = 5 * 60 * 1000;
 
   try {
     const session = await getSession(sessionId);
     if (!session) {
-      return NextResponse.json(
-        { error: "session not found" },
-        { status: 404, headers: corsHeaders }
-      );
+      return res.status(404).json({ error: "session not found" });
+    }
+
+    const age = Date.now() - new Date(session.updatedAt).getTime();
+    if (age > SESSION_TIMEOUT_MS) {
+      return res.status(410).json({ error: "session expired" });
     }
 
     const headersObj: Record<string, string> = {};
-    req.headers.forEach((v, k) => {
-      headersObj[k] = v;
+    Object.entries(req.headers).forEach(([k, v]) => {
+      headersObj[k] = Array.isArray(v) ? v.join(", ") : (v ?? "");
     });
 
     let payload: unknown = null;
     let rawBody: string | null = null;
 
-    const contentType = req.headers.get("content-type") ?? "";
-    const bodyText = await req.text();
+    const contentType = (req.headers["content-type"] as string) ?? "";
+    const bodyText = await readBody(req);
 
     if (bodyText) {
       rawBody = bodyText;
@@ -51,25 +64,19 @@ export default async function handler(req: NextRequest) {
       }
     }
 
-    const eventId = uuidv4();
+    const eventId = crypto.randomUUID();
     await insertEvent({
       id: eventId,
       sessionId: session.id,
-      method: req.method,
+      method: req.method!,
       headers: headersObj,
       payload,
       rawBody,
     });
 
-    return NextResponse.json(
-      { ok: true, eventId },
-      { status: 200, headers: corsHeaders }
-    );
+    return res.status(200).json({ ok: true, eventId });
   } catch (err) {
     console.error("webhook error", err);
-    return NextResponse.json(
-      { error: "internal server error" },
-      { status: 500, headers: corsHeaders }
-    );
+    return res.status(500).json({ error: "internal server error" });
   }
 }
