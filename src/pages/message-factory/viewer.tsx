@@ -85,7 +85,7 @@ export default function ViewerPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>message-viewer — {branding.name}</title>
+        <title>{branding.name.toUpperCase()} — MESSAGE VIEWER</title>
       </Head>
 
       <div className={styles.header}>
@@ -103,7 +103,7 @@ export default function ViewerPage() {
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>
-        <h1 className={styles.title}>message-viewer</h1>
+        <h1 className={styles.title}>Message Viewer</h1>
         <p className={styles.tagline}>
           Click a button to trigger a postMessage to the parent frame.
         </p>

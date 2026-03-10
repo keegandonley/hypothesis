@@ -90,7 +90,7 @@ export default function PrettyPrintPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>pretty-print — {branding.name}</title>
+        <title>{branding.name.toUpperCase()} — PRETTY PRINT</title>
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>

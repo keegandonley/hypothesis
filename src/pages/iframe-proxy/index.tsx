@@ -107,7 +107,7 @@ export default function IframeProxyPage() {
   return (
     <>
       <Head>
-        <title>iframe-proxy — {branding.name}</title>
+        <title>{branding.name.toUpperCase()} — IFRAME PROXY</title>
       </Head>
       {debug && (
         <div className={styles.topBar}>
@@ -134,7 +134,12 @@ export default function IframeProxyPage() {
             </form>
           )}
           <span className={styles.topBarBrand}>
-            <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
+            <Link
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.domainLink}
+            >
               {branding.domain}
             </Link>
             {"·"}
@@ -179,7 +184,12 @@ export default function IframeProxyPage() {
         >
           <div className={styles.panelHeader}>
             <div className={styles.eyebrow}>
-              <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
+              <Link
+                href="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.domainLink}
+              >
                 {branding.domain}
               </Link>
               {"·"}
@@ -192,7 +202,7 @@ export default function IframeProxyPage() {
                 <DocIcon className={styles.icon} /> docs
               </Link>
             </div>
-            <h1 className={styles.panelTitle}>iframe-proxy</h1>
+            <h1 className={styles.panelTitle}>iframe proxy</h1>
             <p className={styles.panelTagline}>Relaying iframe messages...</p>
             <span className={styles.messageCount}>
               {messages.length} {messages.length === 1 ? "message" : "messages"}

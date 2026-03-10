@@ -8,7 +8,7 @@ import { useBranding } from "@/lib/branding";
 const subExperiments = [
   {
     id: "EXP-003.A",
-    name: "message-designer",
+    name: "message designer",
     description:
       "Build arrays of postMessage actions with name, id, and payload. Shareable permalinks.",
     href: "/message-factory/designer",
@@ -16,7 +16,7 @@ const subExperiments = [
   },
   {
     id: "EXP-003.B",
-    name: "message-viewer",
+    name: "message viewer",
     description:
       "Load actions from URL and render buttons that trigger postMessage to the parent frame.",
     href: "/message-factory/viewer",
@@ -29,12 +29,12 @@ export default function MessageFactoryPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>message-factory — {branding.name}</title>
+        <title>{branding.name.toUpperCase()} — MESSAGE FACTORY</title>
       </Head>
       <div className={styles.inner}>
         <header className={styles.header}>
           <div className={styles.eyebrow}>EXP-003</div>
-          <h1 className={styles.title}>message-factory</h1>
+          <h1 className={styles.title}>Message Factory</h1>
           <p className={styles.tagline}>
             Design and trigger postMessage actions with an interactive viewer
             and designer.

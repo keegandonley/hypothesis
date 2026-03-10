@@ -88,7 +88,7 @@ export default function UrlEncodePage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>urlencode — {branding.name}</title>
+        <title>{branding.name.toUpperCase()} — URL ENCODE</title>
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>

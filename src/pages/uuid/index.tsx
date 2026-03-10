@@ -55,7 +55,7 @@ export default function UuidPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>uuid — {branding.name}</title>
+        <title>{branding.name.toUpperCase()} — UUID</title>
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>

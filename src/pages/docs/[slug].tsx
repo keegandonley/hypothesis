@@ -235,7 +235,7 @@ export default function DocsPage({
   return (
     <div className={styles.page}>
       <Head>
-        <title>{slug} docs — {branding.name}</title>
+        <title>{branding.name.toUpperCase()} — {slug.toUpperCase()} DOCS</title>
       </Head>
       <div className={styles.inner}>
         <nav className={styles.nav}>

@@ -155,7 +155,7 @@ export default function RegexPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>regex — {branding.name}</title>
+        <title>{branding.name.toUpperCase()} — REGEX</title>
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>

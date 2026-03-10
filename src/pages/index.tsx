@@ -9,7 +9,7 @@ import { useBranding, getBranding } from "@/lib/branding";
 const experiments = [
   {
     id: "EXP-001",
-    name: "iframe-proxy",
+    name: "iframe proxy",
     description:
       "Proxy iframes securely with full event handling and introspection for debugging.",
     href: "/iframe-proxy?debug=true",
@@ -17,14 +17,14 @@ const experiments = [
   },
   {
     id: "EXP-002",
-    name: "message-stream",
+    name: "message stream",
     description: "Capture and inspect frame messages in real time.",
     href: "/message-stream",
     docsHref: "/docs/message-stream",
   },
   {
     id: "EXP-003",
-    name: "message-factory",
+    name: "message factory",
     description:
       "Design and trigger postMessage actions with an interactive viewer and designer.",
     href: "/message-factory",
@@ -50,7 +50,7 @@ const tools = [
   },
   {
     id: "TOOL-2",
-    name: "urlencode",
+    name: "url encode",
     description:
       "Encode and decode URL strings with live sync and shareable permalinks.",
     href: "/urlencode",
@@ -66,7 +66,7 @@ const tools = [
   },
   {
     id: "TOOL-4",
-    name: "pretty-print",
+    name: "pretty print",
     description:
       "Format and validate JSON with live pretty-printing and shareable permalinks.",
     href: "/pretty-print",
@@ -104,7 +104,7 @@ export default function HomePage({
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name}</title>
+        <title>{branding.name.toUpperCase()}</title>
         <meta property="og:title" content={ogTitle} />
         <meta property="og:description" content={ogDescription} />
         <meta property="og:image" content={ogImageUrl} />

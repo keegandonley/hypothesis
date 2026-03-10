@@ -93,11 +93,16 @@ export default function MessagesPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>message-stream — {branding.name}</title>
+        <title>{branding.name.toUpperCase()} — MESSAGE STREAM</title>
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>
-          <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
+          <Link
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -110,7 +115,7 @@ export default function MessagesPage() {
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>
-        <h1 className={styles.title}>Frame Messages</h1>
+        <h1 className={styles.title}>Message Stream</h1>
         <p className={styles.tagline}>
           Listening for messages from parent frame...
         </p>
@@ -159,7 +164,9 @@ export default function MessagesPage() {
                   <div className={styles.cardIndex}>
                     #{messages.length - index}
                   </div>
-                  <div className={`${styles.directionBadge} ${message.direction === "sent" ? styles.directionSent : styles.directionReceived}`}>
+                  <div
+                    className={`${styles.directionBadge} ${message.direction === "sent" ? styles.directionSent : styles.directionReceived}`}
+                  >
                     {message.direction === "sent" ? "↑ sent" : "↓ received"}
                   </div>
                 </div>

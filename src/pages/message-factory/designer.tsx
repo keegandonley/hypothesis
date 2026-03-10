@@ -163,7 +163,7 @@ export default function DesignerPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>message-designer — {branding.name}</title>
+        <title>{branding.name.toUpperCase()} — MESSAGE DESIGNER</title>
       </Head>
 
       <div className={styles.header}>
@@ -181,7 +181,7 @@ export default function DesignerPage() {
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>
-        <h1 className={styles.title}>message-designer</h1>
+        <h1 className={styles.title}>Message Designer</h1>
         <p className={styles.tagline}>
           Build arrays of postMessage actions with shareable permalinks.
         </p>

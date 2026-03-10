@@ -164,7 +164,7 @@ export default function Base64Page() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>base64 — {branding.name}</title>
+        <title>{branding.name.toUpperCase()} — BASE64</title>
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>

@@ -205,7 +205,7 @@ export default function WebhookPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>webhook — {branding.name}</title>
+        <title>{branding.name.toUpperCase()} — WEBHOOK</title>
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>
