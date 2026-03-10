@@ -5,6 +5,7 @@ import styles from "../../styles/message-factory-viewer.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
+import { useIsIframe } from "@/lib/useIsIframe";
 
 interface Action {
   id: string;
@@ -31,6 +32,7 @@ function decodeActions(raw: string): Action[] {
 
 export default function ViewerPage() {
   const branding = useBranding();
+  const isIframe = useIsIframe();
   const [actions, setActions] = useState<Action[]>([]);
   const [url, setUrl] = useState("");
   const [designerUrl, setDesignerUrl] = useState("");
@@ -90,15 +92,15 @@ export default function ViewerPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow}>
-          <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
+          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
             {branding.domain}
           </Link>
           {"·"}
           <Link
             href="/docs/message-factory"
             className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
           >
             <DocIcon className={styles.icon} /> docs
           </Link>

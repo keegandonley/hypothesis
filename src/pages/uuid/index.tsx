@@ -5,6 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
+import { useIsIframe } from "@/lib/useIsIframe";
 import { v1, v4, v7 } from "uuid";
 
 const generators = { 1: v1, 4: v4, 7: v7 } as const;
@@ -15,6 +16,7 @@ function generate(ver: 1 | 4 | 7): string {
 
 export default function UuidPage() {
   const branding = useBranding();
+  const isIframe = useIsIframe();
   const [uuid, setUuid] = useState("");
   const [version, setVersion] = useState<1 | 4 | 7>(4);
   const [copied, setCopied] = useState(false);
@@ -59,15 +61,15 @@ export default function UuidPage() {
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>
-          <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
+          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
             {branding.domain}
           </Link>
           {"·"}
           <Link
             href="/docs/uuid"
             className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
           >
             <DocIcon className={styles.icon} /> docs
           </Link>

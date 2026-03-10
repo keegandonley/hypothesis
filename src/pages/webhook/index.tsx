@@ -6,6 +6,7 @@ import styles from "../../styles/webhook.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
+import { useIsIframe } from "@/lib/useIsIframe";
 import type { WebhookEvent } from "@/lib/events";
 
 type Session = {
@@ -42,6 +43,7 @@ function relativeTime(iso: string): string {
 export default function WebhookPage() {
   const router = useRouter();
   const branding = useBranding();
+  const isIframe = useIsIframe();
   const [session, setSession] = useState<Session | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">(
     "loading",
@@ -211,8 +213,8 @@ export default function WebhookPage() {
         <div className={styles.eyebrow}>
           <Link
             href="/"
-            target="_blank"
-            rel="noopener noreferrer"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
             className={styles.domainLink}
           >
             {branding.domain}
@@ -221,8 +223,8 @@ export default function WebhookPage() {
           <Link
             href="/docs/webhook"
             className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
           >
             <DocIcon className={styles.icon} /> docs
           </Link>

@@ -5,9 +5,11 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
+import { useIsIframe } from "@/lib/useIsIframe";
 
 export default function Base64Page() {
   const branding = useBranding();
+  const isIframe = useIsIframe();
   const [plain, setPlain] = useState("");
   const [encoded, setEncoded] = useState("");
   const [copied, setCopied] = useState(false);
@@ -168,15 +170,15 @@ export default function Base64Page() {
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>
-          <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
+          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
             {branding.domain}
           </Link>
           {"·"}
           <Link
             href="/docs/base64"
             className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
           >
             <DocIcon className={styles.icon} /> docs
           </Link>

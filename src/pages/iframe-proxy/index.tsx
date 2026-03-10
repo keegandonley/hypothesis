@@ -4,6 +4,7 @@ import Link from "next/link";
 import styles from "../../styles/iframe-proxy.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
+import { useIsIframe } from "@/lib/useIsIframe";
 
 interface RelayedMessage {
   id: string;
@@ -30,6 +31,7 @@ function validateIframeUrl(rawUrl: string | null): string | null {
 
 export default function IframeProxyPage() {
   const branding = useBranding();
+  const isIframe = useIsIframe();
   const [url, setUrl] = useState<string | null>(null);
   const [debug, setDebug] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -136,8 +138,8 @@ export default function IframeProxyPage() {
           <span className={styles.topBarBrand}>
             <Link
               href="/"
-              target="_blank"
-              rel="noopener noreferrer"
+              target={isIframe ? "_blank" : undefined}
+              rel={isIframe ? "noopener noreferrer" : undefined}
               className={styles.domainLink}
             >
               {branding.domain}
@@ -146,8 +148,8 @@ export default function IframeProxyPage() {
             <Link
               href="/docs/iframe-proxy"
               className={styles.docsLink}
-              target="_blank"
-              rel="noopener noreferrer"
+              target={isIframe ? "_blank" : undefined}
+              rel={isIframe ? "noopener noreferrer" : undefined}
             >
               <DocIcon className={styles.icon} /> docs
             </Link>
@@ -186,8 +188,8 @@ export default function IframeProxyPage() {
             <div className={styles.eyebrow}>
               <Link
                 href="/"
-                target="_blank"
-                rel="noopener noreferrer"
+                target={isIframe ? "_blank" : undefined}
+                rel={isIframe ? "noopener noreferrer" : undefined}
                 className={styles.domainLink}
               >
                 {branding.domain}
@@ -196,8 +198,8 @@ export default function IframeProxyPage() {
               <Link
                 href="/docs/iframe-proxy"
                 className={styles.docsLink}
-                target="_blank"
-                rel="noopener noreferrer"
+                target={isIframe ? "_blank" : undefined}
+                rel={isIframe ? "noopener noreferrer" : undefined}
               >
                 <DocIcon className={styles.icon} /> docs
               </Link>

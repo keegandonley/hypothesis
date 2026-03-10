@@ -4,6 +4,7 @@ import styles from "../../styles/message-stream.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
+import { useIsIframe } from "@/lib/useIsIframe";
 
 interface Message {
   id: string;
@@ -15,6 +16,7 @@ interface Message {
 
 export default function MessagesPage() {
   const branding = useBranding();
+  const isIframe = useIsIframe();
   const [messages, setMessages] = useState<Message[]>([]);
   const [context, setContext] = useState<Record<string, unknown> | null>(null);
   const [sendInput, setSendInput] = useState("");
@@ -99,8 +101,8 @@ export default function MessagesPage() {
         <div className={styles.eyebrow}>
           <Link
             href="/"
-            target="_blank"
-            rel="noopener noreferrer"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
             className={styles.domainLink}
           >
             {branding.domain}
@@ -109,8 +111,8 @@ export default function MessagesPage() {
           <Link
             href="/docs/message-stream"
             className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
           >
             <DocIcon className={styles.icon} /> docs
           </Link>

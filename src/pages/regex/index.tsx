@@ -5,6 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
+import { useIsIframe } from "@/lib/useIsIframe";
 
 const FLAGS = ["g", "i", "m", "s", "u"] as const;
 type Flag = (typeof FLAGS)[number];
@@ -61,6 +62,7 @@ function getPatternStatus(
 
 export default function RegexPage() {
   const branding = useBranding();
+  const isIframe = useIsIframe();
   const [pattern, setPattern] = useState("");
   const [flags, setFlags] = useState<Record<Flag, boolean>>({
     g: true,
@@ -161,8 +163,8 @@ export default function RegexPage() {
         <div className={styles.eyebrow}>
           <Link
             href="/"
-            target="_blank"
-            rel="noopener noreferrer"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
             className={styles.domainLink}
           >
             {branding.domain}
@@ -171,8 +173,8 @@ export default function RegexPage() {
           <Link
             href="/docs/regex"
             className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
           >
             <DocIcon className={styles.icon} /> docs
           </Link>
