@@ -50,7 +50,9 @@ export default function WebhookPage() {
   const [copied, setCopied] = useState(false);
   const [curlMethod, setCurlMethod] = useState("POST");
   const [curlCopied, setCurlCopied] = useState(false);
-  const [sendState, setSendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [sendState, setSendState] = useState<
+    "idle" | "sending" | "sent" | "error"
+  >("idle");
   const [events, setEvents] = useState<WebhookEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<WebhookEvent | null>(null);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -79,10 +81,14 @@ export default function WebhookPage() {
     }
   }
 
-  function startSession(sessionId?: string, { skipLocalStorage = false }: { skipLocalStorage?: boolean } = {}) {
+  function startSession(
+    sessionId?: string,
+    { skipLocalStorage = false }: { skipLocalStorage?: boolean } = {},
+  ) {
     if (intervalRef.current) clearInterval(intervalRef.current);
     if (heartbeatRef.current) clearInterval(heartbeatRef.current);
-    if (!sessionId && !skipLocalStorage) localStorage.removeItem("webhookSessionId");
+    if (!sessionId && !skipLocalStorage)
+      localStorage.removeItem("webhookSessionId");
     currentSessionIdRef.current = null;
     latestReceivedAtRef.current = null;
     setStatus("loading");
@@ -102,6 +108,11 @@ export default function WebhookPage() {
           setStatus("ready");
           return;
         }
+        if (!r.ok) {
+          setErrorMessage(data.error ?? "unknown error");
+          setStatus("error");
+          return;
+        }
         return data;
       })
       .then((data) => {
@@ -109,7 +120,9 @@ export default function WebhookPage() {
         currentSessionIdRef.current = data.sessionId;
         if (!skipLocalStorage) {
           localStorage.setItem("webhookSessionId", data.sessionId);
-          router.replace({ query: { s: data.sessionId } }, undefined, { shallow: true });
+          router.replace({ query: { s: data.sessionId } }, undefined, {
+            shallow: true,
+          });
         }
         setSession(data);
         setStatus("ready");
@@ -159,10 +172,12 @@ export default function WebhookPage() {
     fetch(session.webhookUrl, {
       method: curlMethod,
       credentials: "omit",
-      ...(hasBody ? {
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hello: "world" }),
-      } : {}),
+      ...(hasBody
+        ? {
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ hello: "world" }),
+          }
+        : {}),
     })
       .then((r) => setSendState(r.ok ? "sent" : "error"))
       .catch(() => setSendState("error"))
@@ -300,7 +315,13 @@ export default function WebhookPage() {
                   onClick={handleSendRequest}
                   disabled={sendState === "sending"}
                 >
-                  {sendState === "sending" ? "Sending..." : sendState === "sent" ? "Sent!" : sendState === "error" ? "Error" : "Send request"}
+                  {sendState === "sending"
+                    ? "Sending..."
+                    : sendState === "sent"
+                      ? "Sent!"
+                      : sendState === "error"
+                        ? "Error"
+                        : "Send request"}
                 </button>
               </div>
             </div>
@@ -342,9 +363,12 @@ export default function WebhookPage() {
             </div>
             {selectedEvent && (
               <div className={styles.eventDetail}>
-                {["authorization", "cookie", "x-api-key"].some((h) => h in selectedEvent.headers) && (
+                {["authorization", "cookie", "x-api-key"].some(
+                  (h) => h in selectedEvent.headers,
+                ) && (
                   <div className={styles.sensitiveWarning}>
-                    Warning: this request contains sensitive headers (e.g. Authorization, Cookie). Do not share this session URL.
+                    Warning: this request contains sensitive headers (e.g.
+                    Authorization, Cookie). Do not share this session URL.
                   </div>
                 )}
                 <div className={styles.detailSection}>
