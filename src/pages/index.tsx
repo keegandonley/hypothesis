@@ -57,6 +57,14 @@ const tools = [
     href: "/regex",
     docsHref: "/docs/regex",
   },
+  {
+    id: "TOOL-4",
+    name: "pretty-print",
+    description:
+      "Format and validate JSON with live pretty-printing and shareable permalinks.",
+    href: "/pretty-print",
+    docsHref: "/docs/pretty-print",
+  },
 ];
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {

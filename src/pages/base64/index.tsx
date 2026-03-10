@@ -239,13 +239,15 @@ export default function Base64Page() {
             <span className={styles.panelLabel}>Base64</span>
             <span className={styles.badge}>{encoded.length} chars</span>
           </div>
-          <textarea
-            className={styles.textarea}
-            value={encoded}
-            onChange={(e) => handleEncodedChange(e.target.value)}
-            placeholder="Paste base64 here..."
-            spellCheck={false}
-          />
+          <div className={styles.textareaWrapper}>
+            <textarea
+              className={styles.textarea}
+              value={encoded}
+              onChange={(e) => handleEncodedChange(e.target.value)}
+              placeholder="Paste base64 here..."
+              spellCheck={false}
+            />
+          </div>
         </div>
       </div>
 

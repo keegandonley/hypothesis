@@ -82,6 +82,19 @@
   text-transform: uppercase;
 }
 
+.badgeError {
+  display: inline-block;
+  padding: 2px 7px;
+  background-color: #fbbf2418;
+  border: 1px solid #fbbf2433;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #fbbf24;
+  text-transform: uppercase;
+}
+
 .panels {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -107,12 +120,6 @@
   min-height: 0;
 }
 
-.textareaWrapper {
-  flex: 1;
-  min-height: 0;
-  position: relative;
-}
-
 .panelHeader {
   display: flex;
   justify-content: space-between;
@@ -129,6 +136,12 @@
   letter-spacing: 0.12em;
 }
 
+.panelHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .fieldLabel {
   font-size: 10px;
   text-transform: uppercase;
@@ -136,6 +149,12 @@
   color: var(--muted);
   letter-spacing: 0.12em;
   margin-bottom: 4px;
+}
+
+.textareaWrapper {
+  flex: 1;
+  min-height: 0;
+  position: relative;
 }
 
 .textarea {
@@ -179,6 +198,12 @@
   font-family: var(--font-mono);
 }
 
+.permalinkDisabled {
+  color: var(--muted);
+  font-style: italic;
+  opacity: 0.6;
+}
+
 .copyBtn {
   flex-shrink: 0;
   padding: 6px 14px;
@@ -205,6 +230,12 @@
   color: var(--bg);
 }
 
+.copyBtnDisabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
 .resetBtn {
   flex-shrink: 0;
   padding: 6px 14px;
@@ -225,45 +256,31 @@
   background-color: #ef444430;
 }
 
-.panelHeaderRight {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.toggleBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 8px 3px 5px;
-  background: transparent;
+.formatBtn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  background-color: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 100px;
+  border-radius: 4px;
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: var(--muted);
+  color: var(--text);
   text-transform: uppercase;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
 }
 
-.toggleBtn::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--border);
-  flex-shrink: 0;
-  transition: background 0.15s;
+.formatBtn:hover {
+  background-color: var(--border);
+  color: var(--text);
 }
 
-.toggleBtn.active {
+.formatBtn:active {
+  background-color: var(--accent-subtle);
   border-color: var(--accent-border);
   color: var(--accent);
-}
-
-.toggleBtn.active::before {
-  background: var(--accent);
 }

@@ -19,7 +19,7 @@ interface ResultRow {
 function computeResults(
   pattern: string,
   flagStr: string,
-  testInput: string
+  testInput: string,
 ): ResultRow[] {
   if (!pattern) return [];
   try {
@@ -44,9 +44,9 @@ function computeResults(
 function getPatternStatus(
   pattern: string,
   flagStr: string,
-  results: ResultRow[]
-): { label: string; type: "badge" | "badgeError" | null } {
-  if (!pattern) return { label: "", type: null };
+  results: ResultRow[],
+): { label: string; type: "badge" | "badgeError" | "badgeReady" | null } {
+  if (!pattern) return { label: "ready", type: "badgeReady" };
   try {
     new RegExp(pattern, flagStr);
   } catch (e) {
@@ -77,10 +77,9 @@ export default function RegexPage() {
   const flagStr = FLAGS.filter((f) => flags[f]).join("");
 
   const buildUrl = (p: string, f: string, s: string) => {
-    if (!p && !s)
-      return `${window.location.origin}${window.location.pathname}`;
+    if (!p && !s) return `${window.location.origin}${window.location.pathname}`;
     const payload = btoa(
-      unescape(encodeURIComponent(JSON.stringify({ p, f, s })))
+      unescape(encodeURIComponent(JSON.stringify({ p, f, s }))),
     );
     return `${window.location.origin}${window.location.pathname}?v=${payload}`;
   };
@@ -160,7 +159,12 @@ export default function RegexPage() {
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>
-          <Link href="/" target="_blank" rel="noopener noreferrer" className={styles.domainLink}>
+          <Link
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -223,15 +227,19 @@ export default function RegexPage() {
         <div className={styles.panel}>
           <div className={styles.panelHeader}>
             <span className={styles.panelLabel}>Test Strings</span>
-            <span className={styles.badge}>{lineCount} line{lineCount !== 1 ? "s" : ""}</span>
+            <span className={styles.badge}>
+              {lineCount} line{lineCount !== 1 ? "s" : ""}
+            </span>
           </div>
-          <textarea
-            className={styles.textarea}
-            value={testInput}
-            onChange={(e) => handleTestInputChange(e.target.value)}
-            placeholder={"Enter test strings, one per line..."}
-            spellCheck={false}
-          />
+          <div className={styles.textareaWrapper}>
+            <textarea
+              className={styles.textarea}
+              value={testInput}
+              onChange={(e) => handleTestInputChange(e.target.value)}
+              placeholder={"Enter test strings, one per line..."}
+              spellCheck={false}
+            />
+          </div>
         </div>
 
         <div className={styles.panel}>
@@ -240,11 +248,17 @@ export default function RegexPage() {
           </div>
           <div className={styles.resultsPanel}>
             {!pattern ? (
-              <div className={styles.emptyState}>Enter a pattern to see results</div>
+              <div className={styles.emptyState}>
+                Enter a pattern to see results
+              </div>
             ) : status.type === "badgeError" ? (
-              <div className={styles.emptyState}>Fix the pattern error to see results</div>
+              <div className={styles.emptyState}>
+                Fix the pattern error to see results
+              </div>
             ) : results.filter((r) => r.input !== "").length === 0 ? (
-              <div className={styles.emptyState}>Enter test strings to see results</div>
+              <div className={styles.emptyState}>
+                Enter test strings to see results
+              </div>
             ) : (
               results
                 .filter((r) => r.input !== "")
@@ -254,7 +268,8 @@ export default function RegexPage() {
                       <span className={styles.resultString}>{row.input}</span>
                       {row.matched ? (
                         <span className={styles.matchBadge}>
-                          {row.matchCount} match{row.matchCount !== 1 ? "es" : ""}
+                          {row.matchCount} match
+                          {row.matchCount !== 1 ? "es" : ""}
                         </span>
                       ) : (
                         <span className={styles.noMatchBadge}>no match</span>
@@ -263,7 +278,9 @@ export default function RegexPage() {
                     {row.groups.length > 0 && (
                       <div className={styles.groupChips}>
                         {row.groups.map((g, j) => (
-                          <span key={j} className={styles.groupChip}>{g}</span>
+                          <span key={j} className={styles.groupChip}>
+                            {g}
+                          </span>
                         ))}
                       </div>
                     )}
@@ -295,10 +312,15 @@ export default function RegexPage() {
 
 function flagTitle(flag: Flag): string {
   switch (flag) {
-    case "g": return "global — find all matches";
-    case "i": return "ignore case";
-    case "m": return "multiline — ^ and $ match line boundaries";
-    case "s": return "dotAll — . matches newlines";
-    case "u": return "unicode";
+    case "g":
+      return "global — find all matches";
+    case "i":
+      return "ignore case";
+    case "m":
+      return "multiline — ^ and $ match line boundaries";
+    case "s":
+      return "dotAll — . matches newlines";
+    case "u":
+      return "unicode";
   }
 }

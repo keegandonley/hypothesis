@@ -1,5 +1,8 @@
 .page {
-  min-height: 100dvh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background-color: var(--bg);
   background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
   background-size: 28px 28px;
@@ -83,6 +86,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  flex: 1;
+  min-height: 0;
   margin-bottom: 16px;
 }
 
@@ -93,10 +98,13 @@
 }
 
 .panel {
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--border);
   border-radius: 8px;
   background-color: var(--card-bg);
   overflow: hidden;
+  min-height: 0;
 }
 
 .panelHeader {
@@ -125,12 +133,14 @@
 }
 
 .textareaWrapper {
+  flex: 1;
+  min-height: 0;
   position: relative;
 }
 
 .textarea {
   width: 100%;
-  min-height: 200px;
+  height: 100%;
   padding: 12px 14px;
   background-color: var(--card-bg);
   color: var(--text);

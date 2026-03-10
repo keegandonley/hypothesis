@@ -127,13 +127,15 @@ export default function UrlEncodePage() {
               <span className={styles.badge}>{decoded.length} chars</span>
             </div>
           </div>
-          <textarea
-            className={styles.textarea}
-            value={decoded}
-            onChange={(e) => handleDecodedChange(e.target.value)}
-            placeholder="Type or paste text here..."
-            spellCheck={false}
-          />
+          <div className={styles.textareaWrapper}>
+            <textarea
+              className={styles.textarea}
+              value={decoded}
+              onChange={(e) => handleDecodedChange(e.target.value)}
+              placeholder="Type or paste text here..."
+              spellCheck={false}
+            />
+          </div>
         </div>
 
         <div className={styles.panel}>
@@ -141,13 +143,15 @@ export default function UrlEncodePage() {
             <span className={styles.panelLabel}>URL Encoded</span>
             <span className={styles.badge}>{encoded.length} chars</span>
           </div>
-          <textarea
-            className={styles.textarea}
-            value={encoded}
-            onChange={(e) => handleEncodedChange(e.target.value)}
-            placeholder="Paste encoded string here..."
-            spellCheck={false}
-          />
+          <div className={styles.textareaWrapper}>
+            <textarea
+              className={styles.textarea}
+              value={encoded}
+              onChange={(e) => handleEncodedChange(e.target.value)}
+              placeholder="Paste encoded string here..."
+              spellCheck={false}
+            />
+          </div>
         </div>
       </div>
 
