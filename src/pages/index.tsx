@@ -30,6 +30,13 @@ const experiments = [
     href: "/message-factory",
     docsHref: "/docs/message-factory",
   },
+  {
+    id: "EXP-004",
+    name: "webhook",
+    description: "Capture and inspect incoming HTTP webhook requests in real time.",
+    href: "/webhook",
+    docsHref: "/docs/webhook",
+  },
 ];
 
 const tools = [
@@ -64,6 +71,14 @@ const tools = [
       "Format and validate JSON with live pretty-printing and shareable permalinks.",
     href: "/pretty-print",
     docsHref: "/docs/pretty-print",
+  },
+  {
+    id: "TOOL-5",
+    name: "uuid",
+    description:
+      "Generate UUIDs of any version with one click and shareable permalinks.",
+    href: "/uuid",
+    docsHref: "/docs/uuid",
   },
 ];
 
