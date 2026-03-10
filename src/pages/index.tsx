@@ -65,6 +65,14 @@ const tools = [
     href: "/pretty-print",
     docsHref: "/docs/pretty-print",
   },
+  {
+    id: "TOOL-5",
+    name: "uuid",
+    description:
+      "Generate UUIDs of any version with one click and shareable permalinks.",
+    href: "/uuid",
+    docsHref: "/docs/uuid",
+  },
 ];
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
