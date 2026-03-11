@@ -108,7 +108,10 @@ export default function WebhookPage() {
 
   function startSession(
     sessionId?: string,
-    { skipLocalStorage = false }: { skipLocalStorage?: boolean } = {},
+    {
+      skipLocalStorage = false,
+      fromLocalStorage = false,
+    }: { skipLocalStorage?: boolean; fromLocalStorage?: boolean } = {},
   ) {
     if (intervalRef.current) clearInterval(intervalRef.current);
     if (heartbeatRef.current) clearInterval(heartbeatRef.current);
@@ -134,6 +137,11 @@ export default function WebhookPage() {
           return;
         }
         if (r.status === 404) {
+          if (fromLocalStorage) {
+            localStorage.removeItem("webhookSessionId");
+            startSession();
+            return;
+          }
           setStatus("deleted");
           return;
         }
@@ -173,11 +181,15 @@ export default function WebhookPage() {
 
   useEffect(() => {
     const urlParam = new URLSearchParams(window.location.search).get("s");
+    const stored = localStorage.getItem("webhookSessionId") ?? undefined;
+
     if (urlParam) {
-      startSession(urlParam, { skipLocalStorage: true });
+      startSession(urlParam, {
+        skipLocalStorage: urlParam !== stored,
+        fromLocalStorage: !!stored && urlParam === stored,
+      });
     } else {
-      const stored = localStorage.getItem("webhookSessionId") ?? undefined;
-      startSession(stored);
+      startSession(stored, { fromLocalStorage: !!stored });
     }
 
     return () => {
