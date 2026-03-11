@@ -102,10 +102,12 @@ export default function DateTimePage() {
   const liveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const relativeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const buildUrl = (val: string) => {
-    if (!val) return `${window.location.origin}${window.location.pathname}`;
-    const params = new URLSearchParams({ value: val });
-    return `${window.location.origin}${window.location.pathname}?${params}`;
+  const buildUrl = (val: string, live: boolean) => {
+    const params = new URLSearchParams();
+    if (val) params.set("value", val);
+    if (live) params.set("live", "true");
+    const qs = params.toString();
+    return `${window.location.origin}${window.location.pathname}${qs ? `?${qs}` : ""}`;
   };
 
   useEffect(() => {
@@ -115,6 +117,8 @@ export default function DateTimePage() {
       setInput(value);
       setParsedDate(parseInput(value));
     }
+    const live = params.get("live") === "true";
+    if (live) setLiveMode(true);
     setUrl(window.location.href);
   }, []);
 
@@ -137,7 +141,7 @@ export default function DateTimePage() {
   const handleInputChange = (value: string) => {
     setInput(value);
     setParsedDate(parseInput(value));
-    const newUrl = buildUrl(value);
+    const newUrl = buildUrl(value, liveMode);
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
@@ -146,7 +150,7 @@ export default function DateTimePage() {
     const now = String(Date.now());
     setInput(now);
     setParsedDate(new Date(parseInt(now, 10)));
-    const newUrl = buildUrl(now);
+    const newUrl = buildUrl(now, liveMode);
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
@@ -171,7 +175,7 @@ export default function DateTimePage() {
     setInput("");
     setParsedDate(null);
     setCopied(null);
-    const newUrl = `${window.location.origin}${window.location.pathname}`;
+    const newUrl = buildUrl("", liveMode);
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
@@ -190,7 +194,15 @@ export default function DateTimePage() {
     };
   }, [relativeLive, liveMode]);
 
-  const handleLiveToggle = () => setLiveMode((prev) => !prev);
+  const handleLiveToggle = () => {
+    setLiveMode((prev) => {
+      const next = !prev;
+      const newUrl = buildUrl(next ? "" : input, next);
+      history.replaceState(null, "", newUrl);
+      setUrl(newUrl);
+      return next;
+    });
+  };
   const handleRelativeLiveToggle = () => setRelativeLive((prev) => !prev);
 
   const displayDate = liveMode ? liveDate : parsedDate;
