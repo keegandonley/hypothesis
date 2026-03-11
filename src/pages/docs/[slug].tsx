@@ -3,6 +3,7 @@ import path from "path";
 import Head from "next/head";
 import Link from "next/link";
 import { GetStaticPaths, GetStaticProps } from "next";
+import { useRouter } from "next/router";
 import styles from "../../styles/docs.module.css";
 import { useBranding } from "@/lib/branding";
 
@@ -232,20 +233,25 @@ export default function DocsPage({
   content: string;
 }) {
   const branding = useBranding();
+  const router = useRouter();
+  const embed = router.query.embed === "true";
   return (
     <div className={styles.page}>
       <Head>
         <title>{branding.name.toUpperCase()} — {slug.toUpperCase()} DOCS</title>
       </Head>
       <div className={styles.inner}>
-        <nav className={styles.nav}>
-          <Link href="/" className={styles.backLink}>
-            ← {branding.name}
-          </Link>
-        </nav>
+        {!embed && (
+          <>
+            <nav className={styles.nav}>
+              <Link href="/" className={styles.backLink}>
+                ← {branding.name}
+              </Link>
+            </nav>
 
-        <hr className={styles.divider} />
-
+            <hr className={styles.divider} />
+          </>
+        )}
         <MarkdownContent content={content} actionType={branding.actionType} />
       </div>
     </div>
