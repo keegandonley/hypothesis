@@ -16,6 +16,27 @@ type Session = {
   updatedAt: string;
 };
 
+function StatusCard({
+  variant = "info",
+  message,
+  action,
+}: {
+  variant?: "info" | "error";
+  message: string;
+  action?: { label: string; onClick: () => void };
+}) {
+  return (
+    <div className={`${styles.statusCard} ${variant === "error" ? styles.statusCardError : ""}`}>
+      <span className={styles.statusCardMessage}>{message}</span>
+      {action && (
+        <button className={styles.statusCardAction} onClick={action.onClick}>
+          {action.label}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function methodColor(method: string): string {
   switch (method.toUpperCase()) {
     case "GET":
@@ -45,7 +66,7 @@ export default function WebhookPage() {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [session, setSession] = useState<Session | null>(null);
-  const [status, setStatus] = useState<"loading" | "ready" | "error">(
+  const [status, setStatus] = useState<"loading" | "ready" | "error" | "deleted">(
     "loading",
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -108,6 +129,10 @@ export default function WebhookPage() {
         if (r.status === 429) {
           setErrorMessage(data.error ?? "rate limit exceeded");
           setStatus("ready");
+          return;
+        }
+        if (r.status === 404) {
+          setStatus("deleted");
           return;
         }
         if (!r.ok) {
@@ -241,16 +266,22 @@ export default function WebhookPage() {
 
       <hr className={styles.divider} />
 
-      {status === "loading" && (
-        <div className={styles.statusText}>initializing...</div>
-      )}
+      {status === "loading" && <StatusCard message="initializing..." />}
 
       {status === "error" && (
-        <div className={styles.errorText}>failed to initialize session</div>
+        <StatusCard variant="error" message="failed to initialize session" />
+      )}
+
+      {status === "deleted" && (
+        <StatusCard
+          variant="error"
+          message="session has been deleted"
+          action={{ label: "Generate new session", onClick: () => startSession() }}
+        />
       )}
 
       {status === "ready" && !session && errorMessage && (
-        <div className={styles.errorText}>{errorMessage}</div>
+        <StatusCard variant="error" message={errorMessage} />
       )}
 
       {status === "ready" && session && (
