@@ -2,6 +2,10 @@ import { ImageResponse } from "@vercel/og";
 import { NextRequest } from "next/server";
 import { getBranding } from "@/lib/branding";
 
+export const config = {
+  runtime: "edge",
+};
+
 export default function handler(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const domain = searchParams.get("domain") ?? "hypothesis.sh";
@@ -32,7 +36,7 @@ export default function handler(req: NextRequest) {
         color: text,
         alignItems: "center",
         justifyContent: "center",
-        padding: "80px",
+        padding: "40px",
       }}
     >
       {/* Card container */}
@@ -44,7 +48,7 @@ export default function handler(req: NextRequest) {
           border: `1px solid ${border}`,
           borderRadius: "16px",
           padding: "64px 72px",
-          width: "880px",
+          width: "100%",
           gap: "0px",
         }}
       >
