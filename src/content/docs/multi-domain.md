@@ -1,4 +1,4 @@
-# multi-domain
+# multi-domain support
 
 The app is available on multiple domains, to facilitate cross-domain testing and experimentation.
 

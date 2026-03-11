@@ -272,12 +272,14 @@ export default function DesignerPage() {
       <div className={styles.permalinkRow}>
         <span className={styles.permalinkLabel}>Permalink</span>
         <span className={styles.permalinkUrl}>{url}</span>
-        <button
-          className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-          onClick={handleCopy}
-        >
-          {copied ? "Copied!" : "Copy"}
-        </button>
+        {!isIframe && (
+          <button
+            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
+            onClick={handleCopy}
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        )}
         <button className={styles.resetBtn} onClick={handleReset}>
           Reset
         </button>
@@ -285,12 +287,14 @@ export default function DesignerPage() {
 
       {/* Open Viewer row */}
       <div className={styles.viewerRow}>
-        <button
-          className={`${styles.copyBtn}${copiedViewer ? ` ${styles.copied}` : ""}`}
-          onClick={handleCopyViewer}
-        >
-          {copiedViewer ? "Copied!" : "Copy Viewer Link"}
-        </button>
+        {!isIframe && (
+          <button
+            className={`${styles.copyBtn}${copiedViewer ? ` ${styles.copied}` : ""}`}
+            onClick={handleCopyViewer}
+          >
+            {copiedViewer ? "Copied!" : "Copy Viewer Link"}
+          </button>
+        )}
         <div className={styles.viewerLinks}>
           <a href={viewerUrl} className={styles.viewerLink} target="_blank" rel="noreferrer">
             Open Viewer →

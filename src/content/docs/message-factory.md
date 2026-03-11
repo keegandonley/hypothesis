@@ -1,4 +1,4 @@
-# message-factory
+# message factory
 
 Design and trigger postMessage actions with an interactive viewer and designer.
 
@@ -63,7 +63,7 @@ Embed the viewer in a parent page and listen for messages:
 ```
 
 ```js
-window.addEventListener('message', (event) => {
+window.addEventListener("message", (event) => {
   console.log(event.data); // { id: '...', payload: { ... } }
 });
 ```

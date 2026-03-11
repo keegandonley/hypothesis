@@ -314,12 +314,14 @@ export default function WebhookPage() {
                   >
                     New session
                   </button>
-                  <button
-                    className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-                    onClick={handleCopy}
-                  >
-                    {copied ? "Copied!" : "Copy Webhook URL"}
-                  </button>
+                  {!isIframe && (
+                    <button
+                      className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
+                      onClick={handleCopy}
+                    >
+                      {copied ? "Copied!" : "Copy Webhook URL"}
+                    </button>
+                  )}
                 </div>
               </div>
               <div className={styles.urlDisplay}>{session.webhookUrl}</div>
@@ -354,12 +356,14 @@ export default function WebhookPage() {
                 <pre className={styles.curlCode}>
                   {buildCurlCommand(curlMethod, session.webhookUrl)}
                 </pre>
-                <button
-                  className={`${styles.copyBtn}${curlCopied ? ` ${styles.copied}` : ""}`}
-                  onClick={handleCurlCopy}
-                >
-                  {curlCopied ? "Copied!" : "Copy"}
-                </button>
+                {!isIframe && (
+                  <button
+                    className={`${styles.copyBtn}${curlCopied ? ` ${styles.copied}` : ""}`}
+                    onClick={handleCurlCopy}
+                  >
+                    {curlCopied ? "Copied!" : "Copy"}
+                  </button>
+                )}
                 <button
                   className={`${styles.copyBtn}${sendState === "sent" ? ` ${styles.copied}` : ""}`}
                   onClick={handleSendRequest}

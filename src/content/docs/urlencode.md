@@ -1,4 +1,4 @@
-# urlencode
+# url encode
 
 Encode and decode URL strings with live sync and shareable permalinks.
 
@@ -13,7 +13,7 @@ Type or paste any text into the **Decoded** panel. The **URL Encoded** panel upd
 Default encoding uses `encodeURIComponent`:
 
 ```js
-encodeURIComponent(value)
+encodeURIComponent(value);
 ```
 
 This encodes all characters except: `A–Z a–z 0–9 - _ . ! ~ * ' ( )`
@@ -27,7 +27,7 @@ If the input contains an invalid percent-escape sequence, the decoded field is c
 Decoding uses:
 
 ```js
-decodeURIComponent(value)
+decodeURIComponent(value);
 ```
 
 ## URI Mode
@@ -35,19 +35,19 @@ decodeURIComponent(value)
 Toggle **URI Mode** in the Decoded panel header to switch the encoding function from `encodeURIComponent` to `encodeURI`.
 
 ```js
-encodeURI(value)
+encodeURI(value);
 ```
 
 `encodeURI` preserves characters that have structural meaning in a full URI:
 
 | Character | Component mode | URI mode |
-|-----------|---------------|----------|
-| `?`       | `%3F`         | `?`      |
-| `=`       | `%3D`         | `=`      |
-| `&`       | `%26`         | `&`      |
-| `/`       | `%2F`         | `/`      |
-| `#`       | `%23`         | `#`      |
-| `:`       | `%3A`         | `:`      |
+| --------- | -------------- | -------- |
+| `?`       | `%3F`          | `?`      |
+| `=`       | `%3D`          | `=`      |
+| `&`       | `%26`          | `&`      |
+| `/`       | `%2F`          | `/`      |
+| `#`       | `%23`          | `#`      |
+| `:`       | `%3A`          | `:`      |
 
 Use **URI Mode** when encoding a complete URL. Use the default (component) mode when encoding a single query parameter value.
 

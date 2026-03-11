@@ -292,7 +292,7 @@ export default function DateTimePage() {
                     {liveMode ? "Live Unavailable" : `Live ${relativeLive ? "ON" : "OFF"}`}
                   </button>
                 )}
-                {value !== null ? (
+                {!isIframe && (value !== null ? (
                   <button
                     className={`${styles.copyRowBtn}${isCopied ? ` ${styles.copied}` : ""}`}
                     onClick={() => handleRowCopy(row.id, value)}
@@ -301,7 +301,7 @@ export default function DateTimePage() {
                   </button>
                 ) : (
                   <span className={styles.copyRowBtnDisabled}>Copy</span>
-                )}
+                ))}
               </div>
             </div>
           );
@@ -313,12 +313,14 @@ export default function DateTimePage() {
       <div className={styles.permalinkRow}>
         <span className={styles.fieldLabel}>Permalink</span>
         <span className={styles.permalinkUrl}>{url}</span>
-        <button
-          className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-          onClick={handlePermalinkCopy}
-        >
-          {permalinkCopied ? "Copied!" : "Copy"}
-        </button>
+        {!isIframe && (
+          <button
+            className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
+            onClick={handlePermalinkCopy}
+          >
+            {permalinkCopied ? "Copied!" : "Copy"}
+          </button>
+        )}
         <button className={styles.resetBtn} onClick={handleReset}>
           Reset
         </button>

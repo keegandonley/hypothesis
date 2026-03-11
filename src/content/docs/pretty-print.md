@@ -1,4 +1,4 @@
-# pretty-print
+# pretty print
 
 Format and validate JSON with live pretty-printing and shareable permalinks.
 
@@ -34,7 +34,7 @@ Reloading or sharing the URL restores the input and re-formats the output automa
 
 Because JSON can be arbitrarily large, the permalink is only shareable when the full URL stays under 2000 characters. When the limit is exceeded:
 
-- The URL field shows *url too long to share* in muted text
+- The URL field shows _url too long to share_ in muted text
 - The **Copy** button is disabled and greyed out
 
 Use the **Reset** button to clear both panels and return the URL to the bare `/pretty-print` path.

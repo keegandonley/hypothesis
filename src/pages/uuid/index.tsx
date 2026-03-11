@@ -104,12 +104,14 @@ export default function UuidPage() {
               readOnly
               spellCheck={false}
             />
-            <button
-              className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-              onClick={handleCopy}
-            >
-              {copied ? "Copied!" : "Copy"}
-            </button>
+            {!isIframe && (
+              <button
+                className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
+                onClick={handleCopy}
+              >
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            )}
           </div>
         </div>
       </div>

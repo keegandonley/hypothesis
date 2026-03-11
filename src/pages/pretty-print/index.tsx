@@ -149,7 +149,7 @@ export default function PrettyPrintPage() {
               placeholder="Formatted output appears here..."
               spellCheck={false}
             />
-            {output.length > 0 && (
+            {output.length > 0 && !isIframe && (
               <button className={styles.formatBtn} onClick={handleCopyOutput}>
                 Copy
               </button>
@@ -165,13 +165,15 @@ export default function PrettyPrintPage() {
         <span className={`${styles.permalinkUrl}${urlTooLong ? ` ${styles.permalinkDisabled}` : ""}`}>
           {urlTooLong ? "url too long to share" : url}
         </span>
-        <button
-          className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}${urlTooLong ? ` ${styles.copyBtnDisabled}` : ""}`}
-          onClick={handleCopy}
-          disabled={urlTooLong}
-        >
-          {copied ? "Copied!" : "Copy"}
-        </button>
+        {!isIframe && (
+          <button
+            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}${urlTooLong ? ` ${styles.copyBtnDisabled}` : ""}`}
+            onClick={handleCopy}
+            disabled={urlTooLong}
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        )}
         <button className={styles.resetBtn} onClick={handleReset}>
           Reset
         </button>

@@ -162,12 +162,14 @@ export default function UrlEncodePage() {
       <div className={styles.permalinkRow}>
         <span className={styles.fieldLabel}>Permalink</span>
         <span className={styles.permalinkUrl}>{url}</span>
-        <button
-          className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-          onClick={handleCopy}
-        >
-          {copied ? "Copied!" : "Copy"}
-        </button>
+        {!isIframe && (
+          <button
+            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
+            onClick={handleCopy}
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        )}
         <button className={styles.resetBtn} onClick={handleReset}>
           Reset
         </button>

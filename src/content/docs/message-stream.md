@@ -1,4 +1,4 @@
-# message-stream
+# message stream
 
 Capture and inspect frame messages in real time.
 
@@ -27,7 +27,7 @@ A base64-encoded JSON string displayed as a separate "Context" block above the m
 Building the value in JavaScript:
 
 ```js
-const context = btoa(JSON.stringify({ env: 'staging', run: 42 }));
+const context = btoa(JSON.stringify({ env: "staging", run: 42 }));
 const url = `/message-stream?context=${context}`;
 ```
 
@@ -64,8 +64,8 @@ Embed the page in a parent document:
 Then send messages from the parent:
 
 ```js
-const frame = document.getElementById('receiver');
-frame.contentWindow.postMessage({ type: 'hello', value: 1 }, '*');
+const frame = document.getElementById("receiver");
+frame.contentWindow.postMessage({ type: "hello", value: 1 }, "*");
 ```
 
 Each message appears in the feed immediately. Use the send field inside the frame to post replies back to the parent and verify bidirectional handling. Combine with `seed=true` during development to see the layout populated before wiring up real message sources.

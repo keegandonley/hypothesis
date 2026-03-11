@@ -1,4 +1,4 @@
-# iframe-proxy
+# iframe proxy
 
 Proxy iframes securely with full event handling and introspection for debugging.
 
@@ -58,8 +58,8 @@ Embed a page and watch its messages:
 From a parent page, send a message to the embedded frame:
 
 ```js
-const proxy = document.querySelector('iframe');
-proxy.contentWindow.postMessage({ type: 'ping' }, '*');
+const proxy = document.querySelector("iframe");
+proxy.contentWindow.postMessage({ type: "ping" }, "*");
 ```
 
 The proxy relays it to the embedded frame, and the debug panel logs the exchange.
