@@ -26,7 +26,9 @@ function StatusCard({
   action?: { label: string; onClick: () => void };
 }) {
   return (
-    <div className={`${styles.statusCard} ${variant === "error" ? styles.statusCardError : ""}`}>
+    <div
+      className={`${styles.statusCard} ${variant === "error" ? styles.statusCardError : ""}`}
+    >
       <span className={styles.statusCardMessage}>{message}</span>
       {action && (
         <button className={styles.statusCardAction} onClick={action.onClick}>
@@ -66,9 +68,9 @@ export default function WebhookPage() {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [session, setSession] = useState<Session | null>(null);
-  const [status, setStatus] = useState<"loading" | "ready" | "error" | "deleted">(
-    "loading",
-  );
+  const [status, setStatus] = useState<
+    "loading" | "ready" | "error" | "deleted"
+  >("loading");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [curlMethod, setCurlMethod] = useState("POST");
@@ -275,8 +277,11 @@ export default function WebhookPage() {
       {status === "deleted" && (
         <StatusCard
           variant="error"
-          message="session has been deleted"
-          action={{ label: "Generate new session", onClick: () => startSession() }}
+          message="session has expired"
+          action={{
+            label: "Generate new session",
+            onClick: () => startSession(),
+          }}
         />
       )}
 
