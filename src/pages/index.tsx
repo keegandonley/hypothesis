@@ -42,7 +42,6 @@ const experiments = [
 
 const tools = [
   {
-    id: "TOOL-1",
     name: "base64",
     description:
       "Encode and decode base64 strings with live sync and shareable permalinks.",
@@ -50,103 +49,6 @@ const tools = [
     docsHref: "/docs/base64",
   },
   {
-    id: "TOOL-2",
-    name: "url encode",
-    description:
-      "Encode and decode URL strings with live sync and shareable permalinks.",
-    href: "/urlencode",
-    docsHref: "/docs/urlencode",
-  },
-  {
-    id: "TOOL-3",
-    name: "regex",
-    description:
-      "Test regular expressions against strings with live match results and shareable permalinks.",
-    href: "/regex",
-    docsHref: "/docs/regex",
-  },
-  {
-    id: "TOOL-4",
-    name: "pretty print",
-    description:
-      "Format and validate JSON with live pretty-printing and shareable permalinks.",
-    href: "/pretty-print",
-    docsHref: "/docs/pretty-print",
-  },
-  {
-    id: "TOOL-5",
-    name: "uuid",
-    description:
-      "Generate UUIDs of any version with one click and shareable permalinks.",
-    href: "/uuid",
-    docsHref: "/docs/uuid",
-  },
-  {
-    id: "TOOL-6",
-    name: "datetime",
-    description:
-      "Convert timestamps and dates between many formats at once with live sync and shareable permalinks.",
-    href: "/datetime",
-    docsHref: "/docs/datetime",
-  },
-  {
-    id: "TOOL-7",
-    name: "number base",
-    description:
-      "Convert integers between binary, octal, decimal, and hex with live sync and shareable permalinks.",
-    href: "/numbase",
-    docsHref: "/docs/numbase",
-  },
-  {
-    id: "TOOL-8",
-    name: "jwt",
-    description:
-      "Decode JWT tokens and inspect header, payload claims, and expiry status.",
-    href: "/jwt",
-    docsHref: "/docs/jwt",
-  },
-  {
-    id: "TOOL-9",
-    name: "color",
-    description:
-      "Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with live preview.",
-    href: "/color",
-    docsHref: "/docs/color",
-  },
-  {
-    id: "TOOL-10",
-    name: "hash",
-    description:
-      "Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text input.",
-    href: "/hash",
-    docsHref: "/docs/hash",
-  },
-  {
-    id: "TOOL-11",
-    name: "chmod",
-    description:
-      "Convert between numeric and symbolic Unix file permission modes with a visual breakdown table.",
-    href: "/chmod",
-    docsHref: "/docs/chmod",
-  },
-  {
-    id: "TOOL-12",
-    name: "cidr",
-    description:
-      "Calculate subnet details from CIDR notation: network address, broadcast, mask, host range, and more.",
-    href: "/cidr",
-    docsHref: "/docs/cidr",
-  },
-  {
-    id: "TOOL-13",
-    name: "cron",
-    description:
-      "Parse cron expressions into plain English and preview the next 10 scheduled run times.",
-    href: "/cron",
-    docsHref: "/docs/cron",
-  },
-  {
-    id: "TOOL-14",
     name: "bitwise",
     description:
       "Visualize AND, OR, XOR, NAND, NOR, and shift operations with binary and decimal output side by side.",
@@ -154,7 +56,55 @@ const tools = [
     docsHref: "/docs/bitwise",
   },
   {
-    id: "TOOL-15",
+    name: "chmod",
+    description:
+      "Convert between numeric and symbolic Unix file permission modes with a visual breakdown table.",
+    href: "/chmod",
+    docsHref: "/docs/chmod",
+  },
+  {
+    name: "cidr",
+    description:
+      "Calculate subnet details from CIDR notation: network address, broadcast, mask, host range, and more.",
+    href: "/cidr",
+    docsHref: "/docs/cidr",
+  },
+  {
+    name: "color",
+    description:
+      "Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with live preview.",
+    href: "/color",
+    docsHref: "/docs/color",
+  },
+  {
+    name: "cron",
+    description:
+      "Parse cron expressions into plain English and preview the next 10 scheduled run times.",
+    href: "/cron",
+    docsHref: "/docs/cron",
+  },
+  {
+    name: "datetime",
+    description:
+      "Convert timestamps and dates between many formats at once with live sync and shareable permalinks.",
+    href: "/datetime",
+    docsHref: "/docs/datetime",
+  },
+  {
+    name: "hash",
+    description:
+      "Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text input.",
+    href: "/hash",
+    docsHref: "/docs/hash",
+  },
+  {
+    name: "jwt",
+    description:
+      "Decode JWT tokens and inspect header, payload claims, and expiry status.",
+    href: "/jwt",
+    docsHref: "/docs/jwt",
+  },
+  {
     name: "lorem ipsum",
     description:
       "Generate lorem ipsum placeholder text by words, sentences, or paragraphs with one click.",
@@ -162,12 +112,46 @@ const tools = [
     docsHref: "/docs/lorem",
   },
   {
-    id: "TOOL-16",
+    name: "number base",
+    description:
+      "Convert integers between binary, octal, decimal, and hex with live sync and shareable permalinks.",
+    href: "/numbase",
+    docsHref: "/docs/numbase",
+  },
+  {
+    name: "pretty print",
+    description:
+      "Format and validate JSON with live pretty-printing and shareable permalinks.",
+    href: "/pretty-print",
+    docsHref: "/docs/pretty-print",
+  },
+  {
     name: "qr code",
     description:
       "Generate QR codes from any text or URL and download as SVG or PNG.",
     href: "/qr",
     docsHref: "/docs/qr",
+  },
+  {
+    name: "regex",
+    description:
+      "Test regular expressions against strings with live match results and shareable permalinks.",
+    href: "/regex",
+    docsHref: "/docs/regex",
+  },
+  {
+    name: "url encode",
+    description:
+      "Encode and decode URL strings with live sync and shareable permalinks.",
+    href: "/urlencode",
+    docsHref: "/docs/urlencode",
+  },
+  {
+    name: "uuid",
+    description:
+      "Generate UUIDs of any version with one click and shareable permalinks.",
+    href: "/uuid",
+    docsHref: "/docs/uuid",
   },
 ];
 
@@ -245,8 +229,8 @@ export default function HomePage({
         <div className={styles.section}>
           <div className={styles.sectionLabel}>Tools</div>
           <div className={styles.toolCards}>
-            {tools.map((tool) => (
-              <ExperimentCard key={tool.id} {...tool} compact />
+            {[...tools].sort((a, b) => a.name.localeCompare(b.name)).map((tool) => (
+              <ExperimentCard key={tool.name} {...tool} compact />
             ))}
           </div>
         </div>
@@ -303,7 +287,7 @@ function ExperimentCard({
   docsHref,
   compact,
 }: {
-  id: string;
+  id?: string;
   name: string;
   description: string;
   href: string;
@@ -316,7 +300,6 @@ function ExperimentCard({
       {compact ? (
         <div className={styles.cardMainCompact}>
           <div className={styles.cardHeader}>
-            <div className={styles.badge}>{id}</div>
             <div className={styles.cardBody}>
               <div className={styles.cardName}>{name}</div>
             </div>
@@ -336,7 +319,7 @@ function ExperimentCard({
           </div>
         </div>
       )}
-      <div className={styles.cardFooter}>
+      <div className={compact ? styles.cardFooterCompact : styles.cardFooter}>
         <Link href={docsHref} className={styles.docsLink}>
           <DocIcon />
           docs
