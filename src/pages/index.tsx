@@ -88,6 +88,14 @@ const tools = [
     href: "/datetime",
     docsHref: "/docs/datetime",
   },
+  {
+    id: "TOOL-7",
+    name: "number base",
+    description:
+      "Convert integers between binary, octal, decimal, and hex with live sync and shareable permalinks.",
+    href: "/numbase",
+    docsHref: "/docs/numbase",
+  },
 ];
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
