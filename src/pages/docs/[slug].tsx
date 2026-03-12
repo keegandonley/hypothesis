@@ -27,9 +27,13 @@ function extractFirstParagraph(md: string): string {
       !line.startsWith("```") &&
       !line.startsWith("-") &&
       !line.startsWith("*") &&
-      !line.startsWith("|")
+      !line.startsWith("|") &&
+      !/^\d+\./.test(line)
     ) {
-      return line.replace(/\*\*([^*]+)\*\*/g, "$1").replace(/`([^`]+)`/g, "$1").slice(0, 160);
+      return line
+        .replace(/\*\*([^*]+)\*\*/g, "$1")
+        .replace(/`([^`]+)`/g, "$1")
+        .slice(0, 160);
     }
   }
   return "";
@@ -48,6 +52,7 @@ type Node =
   | { type: "h1" | "h2" | "h3"; text: string }
   | { type: "p"; text: string }
   | { type: "ul"; items: string[] }
+  | { type: "ol"; items: string[] }
   | { type: "pre"; lang: string; code: string }
   | { type: "table"; headers: string[]; rows: string[][] };
 
@@ -93,7 +98,10 @@ function parseMarkdown(md: string): Node[] {
     // Table
     if (line.startsWith("|")) {
       const parseRow = (l: string) =>
-        l.split("|").slice(1, -1).map((c) => c.trim());
+        l
+          .split("|")
+          .slice(1, -1)
+          .map((c) => c.trim());
       const headers = parseRow(line);
       i++;
       // skip separator row (---|---)
@@ -121,6 +129,17 @@ function parseMarkdown(md: string): Node[] {
       continue;
     }
 
+    // Ordered list
+    if (/^\d+\.\s/.test(line)) {
+      const items: string[] = [];
+      while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
+        items.push(lines[i].replace(/^\d+\.\s/, ""));
+        i++;
+      }
+      nodes.push({ type: "ol", items });
+      continue;
+    }
+
     // Empty line
     if (line.trim() === "") {
       i++;
@@ -135,7 +154,8 @@ function parseMarkdown(md: string): Node[] {
       !lines[i].startsWith("#") &&
       !lines[i].startsWith("```") &&
       !lines[i].startsWith("- ") &&
-      !lines[i].startsWith("* ")
+      !lines[i].startsWith("* ") &&
+      !/^\d+\.\s/.test(lines[i])
     ) {
       paraLines.push(lines[i]);
       i++;
@@ -168,7 +188,13 @@ function Inline({ text }: { text: string }) {
   );
 }
 
-function MarkdownContent({ content, actionType }: { content: string; actionType: string }) {
+function MarkdownContent({
+  content,
+  actionType,
+}: {
+  content: string;
+  actionType: string;
+}) {
   const substituted = content.replace(/hypothesis-test/g, actionType);
   const nodes = parseMarkdown(substituted);
   return (
@@ -183,13 +209,25 @@ function MarkdownContent({ content, actionType }: { content: string; actionType:
             );
           case "h2":
             return (
-              <h2 key={i} id={node.text.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")}>
+              <h2
+                key={i}
+                id={node.text
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/[^a-z0-9-]/g, "")}
+              >
                 <Inline text={node.text} />
               </h2>
             );
           case "h3":
             return (
-              <h3 key={i} id={node.text.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")}>
+              <h3
+                key={i}
+                id={node.text
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/[^a-z0-9-]/g, "")}
+              >
                 <Inline text={node.text} />
               </h3>
             );
@@ -209,6 +247,16 @@ function MarkdownContent({ content, actionType }: { content: string; actionType:
                 ))}
               </ul>
             );
+          case "ol":
+            return (
+              <ol key={i}>
+                {node.items.map((item, j) => (
+                  <li key={j}>
+                    <Inline text={item} />
+                  </li>
+                ))}
+              </ol>
+            );
           case "pre":
             return (
               <pre key={i}>
@@ -221,7 +269,9 @@ function MarkdownContent({ content, actionType }: { content: string; actionType:
                 <thead>
                   <tr>
                     {node.headers.map((h, j) => (
-                      <th key={j}><Inline text={h} /></th>
+                      <th key={j}>
+                        <Inline text={h} />
+                      </th>
                     ))}
                   </tr>
                 </thead>
@@ -229,7 +279,9 @@ function MarkdownContent({ content, actionType }: { content: string; actionType:
                   {node.rows.map((row, j) => (
                     <tr key={j}>
                       {row.map((cell, k) => (
-                        <td key={k}><Inline text={cell} /></td>
+                        <td key={k}>
+                          <Inline text={cell} />
+                        </td>
                       ))}
                     </tr>
                   ))}
@@ -260,15 +312,24 @@ export default function DocsPage({
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — {slug.toUpperCase()} DOCS</title>
+        <title>
+          {branding.name.toUpperCase()} — {slug.toUpperCase()} DOCS
+        </title>
         {description && <meta name="description" content={description} />}
         <meta property="og:title" content={ogTitle} />
-        {description && <meta property="og:description" content={description} />}
-        <meta property="og:url" content={`https://hypothesis.sh/docs/${slug}`} />
+        {description && (
+          <meta property="og:description" content={description} />
+        )}
+        <meta
+          property="og:url"
+          content={`https://hypothesis.sh/docs/${slug}`}
+        />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content={ogTitle} />
-        {description && <meta name="twitter:description" content={description} />}
+        {description && (
+          <meta name="twitter:description" content={description} />
+        )}
         <link rel="canonical" href={`https://hypothesis.sh/docs/${slug}`} />
       </Head>
       <div className={styles.inner}>

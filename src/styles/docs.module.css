@@ -88,6 +88,18 @@
   gap: 6px;
 }
 
+.content ol {
+  margin: 0 0 16px;
+  padding-left: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.content ol li {
+  padding-left: 0;
+}
+
 .content li {
   font-size: 13px;
   color: var(--muted);
@@ -97,7 +109,7 @@
   position: relative;
 }
 
-.content li::before {
+.content ul li::before {
   content: "–";
   position: absolute;
   left: 0;
