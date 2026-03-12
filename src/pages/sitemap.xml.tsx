@@ -23,6 +23,9 @@ const staticRoutes = [
   "/chmod",
   "/cidr",
   "/cron",
+  "/bitwise",
+  "/lorem",
+  "/qr",
 ];
 
 function generateSitemap(baseUrl: string, docSlugs: string[]): string {

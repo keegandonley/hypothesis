@@ -146,6 +146,30 @@ const tools = [
     href: "/cron",
     docsHref: "/docs/cron",
   },
+  {
+    id: "TOOL-14",
+    name: "bitwise",
+    description:
+      "Visualize AND, OR, XOR, NAND, NOR, and shift operations with binary and decimal output side by side.",
+    href: "/bitwise",
+    docsHref: "/docs/bitwise",
+  },
+  {
+    id: "TOOL-15",
+    name: "lorem ipsum",
+    description:
+      "Generate lorem ipsum placeholder text by words, sentences, or paragraphs with one click.",
+    href: "/lorem",
+    docsHref: "/docs/lorem",
+  },
+  {
+    id: "TOOL-16",
+    name: "qr code",
+    description:
+      "Generate QR codes from any text or URL and download as SVG or PNG.",
+    href: "/qr",
+    docsHref: "/docs/qr",
+  },
 ];
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
