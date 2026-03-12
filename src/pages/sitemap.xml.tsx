@@ -19,6 +19,7 @@ const staticRoutes = [
   "/message-factory",
   "/jwt",
   "/color",
+  "/hash",
 ];
 
 function generateSitemap(baseUrl: string, docSlugs: string[]): string {

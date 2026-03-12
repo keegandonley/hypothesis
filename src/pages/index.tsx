@@ -114,6 +114,14 @@ const tools = [
     href: "/color",
     docsHref: "/docs/color",
   },
+  {
+    id: "TOOL-10",
+    name: "hash",
+    description:
+      "Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text input.",
+    href: "/hash",
+    docsHref: "/docs/hash",
+  },
 ];
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {

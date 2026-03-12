@@ -169,7 +169,7 @@ function parseMarkdown(md: string): Node[] {
 }
 
 function Inline({ text }: { text: string }) {
-  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g);
   return (
     <>
       {parts.map((part, i) => {
@@ -181,6 +181,19 @@ function Inline({ text }: { text: string }) {
         }
         if (part.startsWith("`") && part.endsWith("`")) {
           return <code key={i}>{part.slice(1, -1)}</code>;
+        }
+        const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+        if (linkMatch) {
+          const isExternal = /^https?:\/\//.test(linkMatch[2]);
+          return (
+            <a
+              key={i}
+              href={linkMatch[2]}
+              {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            >
+              {linkMatch[1]}
+            </a>
+          );
         }
         return part;
       })}

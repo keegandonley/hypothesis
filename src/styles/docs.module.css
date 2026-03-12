@@ -144,6 +144,17 @@
   line-height: 1.6;
 }
 
+.content a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.15s ease;
+}
+
+.content a:hover {
+  opacity: 0.75;
+}
+
 .content strong {
   color: var(--text);
   font-weight: 700;
