@@ -98,6 +98,14 @@ const tools = [
     href: "/numbase",
     docsHref: "/docs/numbase",
   },
+  {
+    id: "TOOL-8",
+    name: "jwt",
+    description:
+      "Decode JWT tokens and inspect header, payload claims, and expiry status.",
+    href: "/jwt",
+    docsHref: "/docs/jwt",
+  },
 ];
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
