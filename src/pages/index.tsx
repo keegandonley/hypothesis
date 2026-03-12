@@ -106,6 +106,14 @@ const tools = [
     href: "/jwt",
     docsHref: "/docs/jwt",
   },
+  {
+    id: "TOOL-9",
+    name: "color",
+    description:
+      "Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with live preview.",
+    href: "/color",
+    docsHref: "/docs/color",
+  },
 ];
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
