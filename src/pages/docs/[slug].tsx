@@ -8,6 +8,12 @@ import styles from "../../styles/docs.module.css";
 import { useBranding } from "@/lib/branding";
 
 const DOCS_DIR = path.join(process.cwd(), "src/content/docs");
+const EXPERIMENT_SLUGS = new Set([
+  "iframe-proxy",
+  "message-stream",
+  "message-factory",
+  "webhook",
+]);
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const files = fs.readdirSync(DOCS_DIR);
@@ -43,7 +49,15 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const slug = params!.slug as string;
   const content = fs.readFileSync(path.join(DOCS_DIR, `${slug}.md`), "utf-8");
   const description = extractFirstParagraph(content);
-  return { props: { slug, content, description } };
+  const toolPageExists = fs.existsSync(
+    path.join(process.cwd(), "src/pages", slug),
+  );
+  const itemLabel = toolPageExists
+    ? EXPERIMENT_SLUGS.has(slug)
+      ? "experiment"
+      : "tool"
+    : null;
+  return { props: { slug, content, description, itemLabel } };
 };
 
 // ── Markdown renderer ──────────────────────────────────────────────────────────
@@ -169,7 +183,9 @@ function parseMarkdown(md: string): Node[] {
 }
 
 function Inline({ text }: { text: string }) {
-  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g);
+  const parts = text.split(
+    /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g,
+  );
   return (
     <>
       {parts.map((part, i) => {
@@ -189,7 +205,9 @@ function Inline({ text }: { text: string }) {
             <a
               key={i}
               href={linkMatch[2]}
-              {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              {...(isExternal
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
             >
               {linkMatch[1]}
             </a>
@@ -313,10 +331,12 @@ export default function DocsPage({
   slug,
   content,
   description,
+  itemLabel,
 }: {
   slug: string;
   content: string;
   description: string;
+  itemLabel: "tool" | "experiment" | null;
 }) {
   const branding = useBranding();
   const router = useRouter();
@@ -350,8 +370,23 @@ export default function DocsPage({
           <>
             <nav className={styles.nav}>
               <Link href="/" className={styles.backLink}>
-                ← {branding.name}
+                <span
+                  style={{
+                    marginBottom: "3px",
+                  }}
+                >
+                  ←
+                </span>{" "}
+                {branding.name}
               </Link>
+              {itemLabel && (
+                <Link href={`/${slug}`} className={styles.toolLink}>
+                  open {itemLabel}{" "}
+                  <span style={{ letterSpacing: 0, marginBottom: "3px" }}>
+                    →
+                  </span>
+                </Link>
+              )}
             </nav>
 
             <hr className={styles.divider} />

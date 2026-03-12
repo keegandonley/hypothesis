@@ -17,7 +17,33 @@
 }
 
 .nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 48px;
+}
+
+.toolLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background-color: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  text-decoration: none;
+  line-height: 1;
+  transition: background-color 0.15s;
+}
+
+.toolLink:hover {
+  background-color: var(--accent-hover);
 }
 
 .backLink {
