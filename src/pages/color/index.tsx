@@ -459,24 +459,26 @@ export default function ColorPage() {
           const isCopied = copiedId === id;
           return (
             <div key={id} className={styles.outputCard}>
-              <div className={styles.cardTop}>
-                <span className={styles.cardLabel}>{label}</span>
-                <div className={styles.miniCheckerboard}>
-                  <div
-                    className={styles.miniSwatch}
-                    style={{ backgroundColor: swatchColor ?? "transparent" }}
-                  />
-                </div>
+              <div className={styles.cardSwatch}>
+                <div
+                  className={styles.cardSwatchColor}
+                  style={{ backgroundColor: swatchColor ?? "transparent" }}
+                />
               </div>
-              <div className={styles.cardBottom}>
-                <span className={styles.cardValue}>{value}</span>
-                <button
-                  className={`${styles.copyBtn}${isCopied ? ` ${styles.copied}` : ""}`}
-                  onClick={() => handleCopyFormat(id)}
-                  disabled={!color}
-                >
-                  {isCopied ? "Copied!" : "Copy"}
-                </button>
+              <div className={styles.cardContent}>
+                <div className={styles.cardTop}>
+                  <span className={styles.cardLabel}>{label}</span>
+                </div>
+                <div className={styles.cardBottom}>
+                  <span className={styles.cardValue}>{value}</span>
+                  <button
+                    className={`${styles.copyBtn}${isCopied ? ` ${styles.copied}` : ""}`}
+                    onClick={() => handleCopyFormat(id)}
+                    disabled={!color}
+                  >
+                    {isCopied ? "Copied!" : "Copy"}
+                  </button>
+                </div>
               </div>
             </div>
           );
