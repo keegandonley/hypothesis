@@ -7,8 +7,8 @@ import styles from "../styles/index.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding, getBranding } from "@/lib/branding";
 
-type Tag = 'encoding' | 'security' | 'conversion' | 'web' | 'sysadmin';
-const ALL_TAGS: Tag[] = ['encoding', 'security', 'conversion', 'web', 'sysadmin'];
+type Tag = 'encoding' | 'security' | 'conversion' | 'web' | 'sysadmin' | 'text' | 'css' | 'analysis';
+const ALL_TAGS: Tag[] = ['encoding', 'security', 'conversion', 'web', 'sysadmin', 'text', 'css', 'analysis'];
 
 const TAG_COLORS: Record<Tag, { color: string; subtle: string }> = {
   encoding:   { color: '#60a5fa', subtle: '#60a5fa18' },
@@ -16,6 +16,9 @@ const TAG_COLORS: Record<Tag, { color: string; subtle: string }> = {
   conversion: { color: '#c084fc', subtle: '#c084fc18' },
   web:        { color: '#2dd4bf', subtle: '#2dd4bf18' },
   sysadmin:   { color: '#fbbf24', subtle: '#fbbf2418' },
+  text:       { color: '#34d399', subtle: '#34d39918' },
+  css:        { color: '#fb923c', subtle: '#fb923c18' },
+  analysis:   { color: '#a78bfa', subtle: '#a78bfa18' },
 };
 
 const experiments = [
@@ -94,6 +97,14 @@ const tools: { name: string; description: string; href: string; docsHref: string
     tags: ["conversion"],
   },
   {
+    name: "css unit",
+    description:
+      "Convert between CSS units: px, rem, em, %, vh, vw, pt, cm, mm, in with adjustable context.",
+    href: "/css-unit",
+    docsHref: "/docs/css-unit",
+    tags: ["css", "conversion", "web"],
+  },
+  {
     name: "cron",
     description:
       "Parse cron expressions into plain English and preview the next 10 scheduled run times.",
@@ -116,6 +127,14 @@ const tools: { name: string; description: string; href: string; docsHref: string
     href: "/hash",
     docsHref: "/docs/hash",
     tags: ["encoding", "security", "sysadmin"],
+  },
+  {
+    name: "html entity",
+    description:
+      "Encode and decode HTML entities for safe display in web pages with multiple encoding modes.",
+    href: "/html-entity",
+    docsHref: "/docs/html-entity",
+    tags: ["encoding", "web"],
   },
   {
     name: "jwt",
@@ -164,6 +183,14 @@ const tools: { name: string; description: string; href: string; docsHref: string
     href: "/regex",
     docsHref: "/docs/regex",
     tags: ["web"],
+  },
+  {
+    name: "text stats",
+    description:
+      "Analyze text statistics: character count, word count, reading time, and word frequency analysis.",
+    href: "/text-stats",
+    docsHref: "/docs/text-stats",
+    tags: ["text", "analysis"],
   },
   {
     name: "url encode",
