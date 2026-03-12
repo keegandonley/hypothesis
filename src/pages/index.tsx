@@ -122,6 +122,30 @@ const tools = [
     href: "/hash",
     docsHref: "/docs/hash",
   },
+  {
+    id: "TOOL-11",
+    name: "chmod",
+    description:
+      "Convert between numeric and symbolic Unix file permission modes with a visual breakdown table.",
+    href: "/chmod",
+    docsHref: "/docs/chmod",
+  },
+  {
+    id: "TOOL-12",
+    name: "cidr",
+    description:
+      "Calculate subnet details from CIDR notation: network address, broadcast, mask, host range, and more.",
+    href: "/cidr",
+    docsHref: "/docs/cidr",
+  },
+  {
+    id: "TOOL-13",
+    name: "cron",
+    description:
+      "Parse cron expressions into plain English and preview the next 10 scheduled run times.",
+    href: "/cron",
+    docsHref: "/docs/cron",
+  },
 ];
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {

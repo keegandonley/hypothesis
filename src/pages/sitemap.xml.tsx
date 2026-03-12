@@ -20,6 +20,9 @@ const staticRoutes = [
   "/jwt",
   "/color",
   "/hash",
+  "/chmod",
+  "/cidr",
+  "/cron",
 ];
 
 function generateSitemap(baseUrl: string, docSlugs: string[]): string {

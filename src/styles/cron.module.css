@@ -1,0 +1,341 @@
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 28px 28px;
+  font-family: var(--font-mono);
+  color: var(--text);
+  padding: 20px;
+}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 0.4em;
+}
+
+.title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.tagline {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0 0 16px;
+}
+
+.icon {
+  margin-right: 4px;
+}
+
+.docsLink {
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+
+.docsLink:hover {
+  color: var(--accent);
+}
+
+.domainLink {
+  display: flex;
+  align-items: center;
+  color: var(--accent);
+  transition: color 0.15s ease;
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.input {
+  flex: 1;
+  max-width: 480px;
+  padding: 10px 14px;
+  background-color: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.inputError {
+  border-color: #fbbf24;
+}
+
+.badgeError {
+  display: inline-block;
+  padding: 2px 7px;
+  background-color: #fbbf2418;
+  border: 1px solid #fbbf2433;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #fbbf24;
+  text-transform: uppercase;
+}
+
+.examplesRow {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.exampleBtn {
+  padding: 4px 10px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.exampleBtn:hover {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.exampleActive {
+  background-color: var(--accent-subtle);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.panelLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+}
+
+.descPanel {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--card-bg);
+  overflow: hidden;
+  margin-bottom: 12px;
+  max-width: 720px;
+}
+
+.descHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.descValue {
+  padding: 14px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.copyFieldBtn {
+  padding: 3px 9px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.copyFieldBtn:hover {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.copyFieldBtn.copied {
+  background-color: var(--accent-subtle);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.runsPanel {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--card-bg);
+  overflow: hidden;
+  margin-bottom: 16px;
+  max-width: 720px;
+}
+
+.runsHeader {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.runsList {
+  overflow: hidden;
+}
+
+.runRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+}
+
+.runRow:last-child {
+  border-bottom: none;
+}
+
+.runRow:nth-child(odd) {
+  background-color: var(--card-bg);
+}
+
+.runRow:nth-child(even) {
+  background-color: var(--bg);
+}
+
+.runIndex {
+  color: var(--muted);
+  font-size: 10px;
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.runLocal {
+  color: var(--text);
+  flex: 1;
+}
+
+.runUtc {
+  color: var(--muted);
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .runUtc {
+    display: none;
+  }
+}
+
+.fieldLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+}
+
+.permalinkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.permalinkUrl {
+  flex: 1;
+  font-size: 11px;
+  color: var(--text);
+  background-color: var(--bg);
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-mono);
+}
+
+.copyBtn {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  background-color: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.copyBtn:hover {
+  background-color: var(--accent-hover);
+}
+
+.copyBtn.copied {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+.resetBtn {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  background-color: #ef444418;
+  border: 1px solid #ef444433;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #ef4444;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.resetBtn:hover {
+  background-color: #ef444430;
+}
