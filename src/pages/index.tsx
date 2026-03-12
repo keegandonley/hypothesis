@@ -1,10 +1,22 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { GetServerSideProps } from "next";
 import styles from "../styles/index.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding, getBranding } from "@/lib/branding";
+
+type Tag = 'encoding' | 'security' | 'conversion' | 'web' | 'sysadmin';
+const ALL_TAGS: Tag[] = ['encoding', 'security', 'conversion', 'web', 'sysadmin'];
+
+const TAG_COLORS: Record<Tag, { color: string; subtle: string }> = {
+  encoding:   { color: '#60a5fa', subtle: '#60a5fa18' },
+  security:   { color: '#f87171', subtle: '#f8717118' },
+  conversion: { color: '#c084fc', subtle: '#c084fc18' },
+  web:        { color: '#2dd4bf', subtle: '#2dd4bf18' },
+  sysadmin:   { color: '#fbbf24', subtle: '#fbbf2418' },
+};
 
 const experiments = [
   {
@@ -40,13 +52,14 @@ const experiments = [
   },
 ];
 
-const tools = [
+const tools: { name: string; description: string; href: string; docsHref: string; tags: Tag[] }[] = [
   {
     name: "base64",
     description:
       "Encode and decode base64 strings with live sync and shareable permalinks.",
     href: "/base64",
     docsHref: "/docs/base64",
+    tags: ["encoding"],
   },
   {
     name: "bitwise",
@@ -54,6 +67,7 @@ const tools = [
       "Visualize AND, OR, XOR, NAND, NOR, and shift operations with binary and decimal output side by side.",
     href: "/bitwise",
     docsHref: "/docs/bitwise",
+    tags: ["conversion"],
   },
   {
     name: "chmod",
@@ -61,6 +75,7 @@ const tools = [
       "Convert between numeric and symbolic Unix file permission modes with a visual breakdown table.",
     href: "/chmod",
     docsHref: "/docs/chmod",
+    tags: ["conversion", "sysadmin"],
   },
   {
     name: "cidr",
@@ -68,6 +83,7 @@ const tools = [
       "Calculate subnet details from CIDR notation: network address, broadcast, mask, host range, and more.",
     href: "/cidr",
     docsHref: "/docs/cidr",
+    tags: ["web", "sysadmin"],
   },
   {
     name: "color",
@@ -75,6 +91,7 @@ const tools = [
       "Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with live preview.",
     href: "/color",
     docsHref: "/docs/color",
+    tags: ["conversion"],
   },
   {
     name: "cron",
@@ -82,6 +99,7 @@ const tools = [
       "Parse cron expressions into plain English and preview the next 10 scheduled run times.",
     href: "/cron",
     docsHref: "/docs/cron",
+    tags: ["sysadmin"],
   },
   {
     name: "datetime",
@@ -89,6 +107,7 @@ const tools = [
       "Convert timestamps and dates between many formats at once with live sync and shareable permalinks.",
     href: "/datetime",
     docsHref: "/docs/datetime",
+    tags: ["conversion"],
   },
   {
     name: "hash",
@@ -96,6 +115,7 @@ const tools = [
       "Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text input.",
     href: "/hash",
     docsHref: "/docs/hash",
+    tags: ["encoding", "security", "sysadmin"],
   },
   {
     name: "jwt",
@@ -103,6 +123,7 @@ const tools = [
       "Decode JWT tokens and inspect header, payload claims, and expiry status.",
     href: "/jwt",
     docsHref: "/docs/jwt",
+    tags: ["security", "web"],
   },
   {
     name: "lorem ipsum",
@@ -110,6 +131,7 @@ const tools = [
       "Generate lorem ipsum placeholder text by words, sentences, or paragraphs with one click.",
     href: "/lorem",
     docsHref: "/docs/lorem",
+    tags: ["web"],
   },
   {
     name: "number base",
@@ -117,6 +139,7 @@ const tools = [
       "Convert integers between binary, octal, decimal, and hex with live sync and shareable permalinks.",
     href: "/numbase",
     docsHref: "/docs/numbase",
+    tags: ["conversion"],
   },
   {
     name: "pretty print",
@@ -124,6 +147,7 @@ const tools = [
       "Format and validate JSON with live pretty-printing and shareable permalinks.",
     href: "/pretty-print",
     docsHref: "/docs/pretty-print",
+    tags: ["web"],
   },
   {
     name: "qr code",
@@ -131,6 +155,7 @@ const tools = [
       "Generate QR codes from any text or URL and download as SVG or PNG.",
     href: "/qr",
     docsHref: "/docs/qr",
+    tags: ["web"],
   },
   {
     name: "regex",
@@ -138,6 +163,7 @@ const tools = [
       "Test regular expressions against strings with live match results and shareable permalinks.",
     href: "/regex",
     docsHref: "/docs/regex",
+    tags: ["web"],
   },
   {
     name: "url encode",
@@ -145,6 +171,7 @@ const tools = [
       "Encode and decode URL strings with live sync and shareable permalinks.",
     href: "/urlencode",
     docsHref: "/docs/urlencode",
+    tags: ["encoding", "web"],
   },
   {
     name: "uuid",
@@ -152,6 +179,7 @@ const tools = [
       "Generate UUIDs of any version with one click and shareable permalinks.",
     href: "/uuid",
     docsHref: "/docs/uuid",
+    tags: ["security", "sysadmin"],
   },
 ];
 
@@ -180,6 +208,17 @@ export default function HomePage({
   ogDescription: string;
 }) {
   const branding = useBranding();
+  const [activeTags, setActiveTags] = useState<Tag[]>([]);
+
+  const filteredTools = activeTags.length === 0
+    ? tools
+    : tools.filter(t => t.tags.some(tag => activeTags.includes(tag)));
+
+  function toggleTag(tag: Tag) {
+    setActiveTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    );
+  }
   return (
     <div className={styles.page}>
       <Head>
@@ -228,8 +267,20 @@ export default function HomePage({
         </div>
         <div className={styles.section}>
           <div className={styles.sectionLabel}>Tools</div>
+          <div className={styles.tagFilters}>
+            {ALL_TAGS.map(tag => (
+              <button
+                key={tag}
+                className={`${styles.tagButton} ${activeTags.includes(tag) ? styles.tagButtonActive : ''}`}
+                style={{ '--tag-color': TAG_COLORS[tag].color, '--tag-color-subtle': TAG_COLORS[tag].subtle } as React.CSSProperties}
+                onClick={() => toggleTag(tag)}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
           <div className={styles.toolCards}>
-            {[...tools].sort((a, b) => a.name.localeCompare(b.name)).map((tool) => (
+            {[...filteredTools].sort((a, b) => a.name.localeCompare(b.name)).map((tool) => (
               <ExperimentCard key={tool.name} {...tool} compact />
             ))}
           </div>
@@ -286,6 +337,7 @@ function ExperimentCard({
   href,
   docsHref,
   compact,
+  tags,
 }: {
   id?: string;
   name: string;
@@ -293,6 +345,7 @@ function ExperimentCard({
   href: string;
   docsHref: string;
   compact?: boolean;
+  tags?: Tag[];
 }) {
   return (
     <div className={styles.card}>
@@ -324,6 +377,20 @@ function ExperimentCard({
           <DocIcon />
           docs
         </Link>
+        {tags && tags.length > 0 && (
+          <div className={styles.cardTags}>
+            {tags.map(tag => (
+              <span
+                key={tag}
+                className={styles.cardTagDot}
+                title={tag}
+                style={{ '--tag-color': TAG_COLORS[tag].color } as React.CSSProperties}
+              >
+                {tag.slice(0, 2).toUpperCase()}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
