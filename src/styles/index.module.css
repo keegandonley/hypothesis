@@ -106,6 +106,12 @@
   transition: border-color 0.15s ease, background-color 0.15s ease;
   user-select: none;
   overflow: hidden;
+  position: relative;
+}
+
+.cardLink {
+  position: absolute;
+  inset: 0;
 }
 
 .cardMain {
@@ -193,6 +199,8 @@
   padding: 8px 24px;
   display: flex;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .docsLink {

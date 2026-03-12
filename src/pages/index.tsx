@@ -1,7 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import styles from "../styles/index.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -311,9 +310,9 @@ function ExperimentCard({
   docsHref: string;
   compact?: boolean;
 }) {
-  const router = useRouter();
   return (
-    <div className={styles.card} onClick={() => router.push(href)}>
+    <div className={styles.card}>
+      <Link href={href} className={styles.cardLink} aria-label={name} />
       {compact ? (
         <div className={styles.cardMainCompact}>
           <div className={styles.cardHeader}>
@@ -338,11 +337,7 @@ function ExperimentCard({
         </div>
       )}
       <div className={styles.cardFooter}>
-        <Link
-          href={docsHref}
-          className={styles.docsLink}
-          onClick={(e) => e.stopPropagation()}
-        >
+        <Link href={docsHref} className={styles.docsLink}>
           <DocIcon />
           docs
         </Link>
