@@ -148,6 +148,14 @@
   white-space: nowrap;
 }
 
+.cardBodyRow {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+}
+
 .cardBody {
   flex: 1;
   min-width: 0;
@@ -217,4 +225,85 @@
 
 .footerLink:hover {
   color: var(--accent);
+}
+
+.blogCard {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  padding: 12px 16px;
+  gap: 16px;
+}
+
+.blogCard:hover {
+  border-color: var(--accent-hover-strong);
+  background-color: #16161f;
+}
+
+.blogCoverPlaceholder {
+  flex-shrink: 0;
+  width: 88px;
+  height: 56px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background-color: var(--bg);
+}
+
+.blogCover {
+  flex-shrink: 0;
+  width: 88px;
+  height: 56px;
+  border-radius: 4px;
+  object-fit: cover;
+  display: block;
+}
+
+.blogContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.blogTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;
+}
+
+.blogTagline {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .toolCards {
+    grid-template-columns: 1fr;
+  }
+
+  .cardMain {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .blogCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .blogCover {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
 }

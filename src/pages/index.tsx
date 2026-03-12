@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
@@ -33,7 +34,8 @@ const experiments = [
   {
     id: "EXP-004",
     name: "webhook",
-    description: "Capture and inspect incoming HTTP webhook requests in real time.",
+    description:
+      "Capture and inspect incoming HTTP webhook requests in real time.",
     href: "/webhook",
     docsHref: "/docs/webhook",
   },
@@ -104,7 +106,13 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const branding = getBranding(hostname);
   const protocol = req.headers["x-forwarded-proto"] ?? "https";
   const baseUrl = `${protocol}://${host}`;
-  return { props: { ogImageUrl: `${baseUrl}/api/og?domain=${hostname}`, ogTitle: branding.name, ogDescription: branding.tagline } };
+  return {
+    props: {
+      ogImageUrl: `${baseUrl}/api/og?domain=${hostname}`,
+      ogTitle: branding.name,
+      ogDescription: branding.tagline,
+    },
+  };
 };
 
 export default function HomePage({
@@ -171,6 +179,34 @@ export default function HomePage({
           </div>
         </div>
 
+        <div className={styles.section}>
+          <div className={styles.sectionLabel}>About this project</div>
+          <a
+            href="https://keegan.codes/blog/claude-code-developer-tools"
+            className={styles.blogCard}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              src="https://static.donley.xyz/claude-code-dev-tools-cover.png"
+              alt="Blog post cover"
+              width={1920}
+              height={1080}
+              sizes="88px"
+              className={styles.blogCover}
+            />
+            <div className={styles.blogContent}>
+              <div className={styles.blogTitle}>
+                Claude Code is Great at Building Developer Tools
+              </div>
+              <div className={styles.blogTagline}>
+                An analysis of leveraging Claude Code to generate developer
+                tools on the fly.
+              </div>
+            </div>
+          </a>
+        </div>
+
         <div className={styles.footer}>
           A project by{" "}
           <a
@@ -219,11 +255,13 @@ function ExperimentCard({
       ) : (
         <div className={styles.cardMain}>
           <div className={styles.badge}>{id}</div>
-          <div className={styles.cardBody}>
-            <div className={styles.cardName}>{name}</div>
-            <div className={styles.cardDesc}>{description}</div>
+          <div className={styles.cardBodyRow}>
+            <div className={styles.cardBody}>
+              <div className={styles.cardName}>{name}</div>
+              <div className={styles.cardDesc}>{description}</div>
+            </div>
+            <div className={styles.arrow}>→</div>
           </div>
-          <div className={styles.arrow}>→</div>
         </div>
       )}
       <div className={styles.cardFooter}>
