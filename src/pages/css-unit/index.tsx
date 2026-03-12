@@ -232,9 +232,9 @@ export default function CssUnitPage() {
       </div>
 
       <div className={styles.contextSection}>
-        <div className={styles.contextRow}>
-          <label className={styles.contextLabel}>
-            Base Font Size:
+        <div className={styles.contextCard}>
+          <label className={styles.contextLabel}>Base Font Size</label>
+          <div className={styles.contextInputRow}>
             <input
               type="number"
               className={styles.contextInput}
@@ -244,9 +244,11 @@ export default function CssUnitPage() {
               step="1"
             />
             <span className={styles.contextUnit}>px</span>
-          </label>
-          <label className={styles.contextLabel}>
-            Viewport Width:
+          </div>
+        </div>
+        <div className={styles.contextCard}>
+          <label className={styles.contextLabel}>Viewport Width</label>
+          <div className={styles.contextInputRow}>
             <input
               type="number"
               className={styles.contextInput}
@@ -256,9 +258,11 @@ export default function CssUnitPage() {
               step="1"
             />
             <span className={styles.contextUnit}>px</span>
-          </label>
-          <label className={styles.contextLabel}>
-            Viewport Height:
+          </div>
+        </div>
+        <div className={styles.contextCard}>
+          <label className={styles.contextLabel}>Viewport Height</label>
+          <div className={styles.contextInputRow}>
             <input
               type="number"
               className={styles.contextInput}
@@ -268,7 +272,7 @@ export default function CssUnitPage() {
               step="1"
             />
             <span className={styles.contextUnit}>px</span>
-          </label>
+          </div>
         </div>
       </div>
 

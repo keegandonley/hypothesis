@@ -7,18 +7,23 @@ import styles from "../styles/index.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding, getBranding } from "@/lib/branding";
 
-type Tag = 'encoding' | 'security' | 'conversion' | 'web' | 'sysadmin' | 'text' | 'css' | 'analysis';
-const ALL_TAGS: Tag[] = ['encoding', 'security', 'conversion', 'web', 'sysadmin', 'text', 'css', 'analysis'];
+type Tag = "encoding" | "security" | "conversion" | "web" | "sysadmin" | "text";
+const ALL_TAGS: Tag[] = [
+  "encoding",
+  "security",
+  "conversion",
+  "web",
+  "sysadmin",
+  "text",
+];
 
 const TAG_COLORS: Record<Tag, { color: string; subtle: string }> = {
-  encoding:   { color: '#60a5fa', subtle: '#60a5fa18' },
-  security:   { color: '#f87171', subtle: '#f8717118' },
-  conversion: { color: '#c084fc', subtle: '#c084fc18' },
-  web:        { color: '#2dd4bf', subtle: '#2dd4bf18' },
-  sysadmin:   { color: '#fbbf24', subtle: '#fbbf2418' },
-  text:       { color: '#34d399', subtle: '#34d39918' },
-  css:        { color: '#fb923c', subtle: '#fb923c18' },
-  analysis:   { color: '#a78bfa', subtle: '#a78bfa18' },
+  encoding: { color: "#60a5fa", subtle: "#60a5fa18" },
+  security: { color: "#f87171", subtle: "#f8717118" },
+  conversion: { color: "#c084fc", subtle: "#c084fc18" },
+  web: { color: "#2dd4bf", subtle: "#2dd4bf18" },
+  sysadmin: { color: "#fbbf24", subtle: "#fbbf2418" },
+  text: { color: "#34d399", subtle: "#34d39918" },
 };
 
 const experiments = [
@@ -55,14 +60,20 @@ const experiments = [
   },
 ];
 
-const tools: { name: string; description: string; href: string; docsHref: string; tags: Tag[] }[] = [
+const tools: {
+  name: string;
+  description: string;
+  href: string;
+  docsHref: string;
+  tags: Tag[];
+}[] = [
   {
     name: "base64",
     description:
       "Encode and decode base64 strings with live sync and shareable permalinks.",
     href: "/base64",
     docsHref: "/docs/base64",
-    tags: ["encoding"],
+    tags: ["encoding", "web", "text", "conversion"],
   },
   {
     name: "bitwise",
@@ -70,7 +81,7 @@ const tools: { name: string; description: string; href: string; docsHref: string
       "Visualize AND, OR, XOR, NAND, NOR, and shift operations with binary and decimal output side by side.",
     href: "/bitwise",
     docsHref: "/docs/bitwise",
-    tags: ["conversion"],
+    tags: ["sysadmin"],
   },
   {
     name: "chmod",
@@ -86,7 +97,7 @@ const tools: { name: string; description: string; href: string; docsHref: string
       "Calculate subnet details from CIDR notation: network address, broadcast, mask, host range, and more.",
     href: "/cidr",
     docsHref: "/docs/cidr",
-    tags: ["web", "sysadmin"],
+    tags: ["sysadmin"],
   },
   {
     name: "color",
@@ -94,7 +105,7 @@ const tools: { name: string; description: string; href: string; docsHref: string
       "Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with live preview.",
     href: "/color",
     docsHref: "/docs/color",
-    tags: ["conversion"],
+    tags: ["conversion", "web"],
   },
   {
     name: "css unit",
@@ -102,7 +113,7 @@ const tools: { name: string; description: string; href: string; docsHref: string
       "Convert between CSS units: px, rem, em, %, vh, vw, pt, cm, mm, in with adjustable context.",
     href: "/css-unit",
     docsHref: "/docs/css-unit",
-    tags: ["css", "conversion", "web"],
+    tags: ["conversion", "web"],
   },
   {
     name: "cron",
@@ -118,7 +129,7 @@ const tools: { name: string; description: string; href: string; docsHref: string
       "Convert timestamps and dates between many formats at once with live sync and shareable permalinks.",
     href: "/datetime",
     docsHref: "/docs/datetime",
-    tags: ["conversion"],
+    tags: ["conversion", "web"],
   },
   {
     name: "hash",
@@ -126,7 +137,7 @@ const tools: { name: string; description: string; href: string; docsHref: string
       "Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text input.",
     href: "/hash",
     docsHref: "/docs/hash",
-    tags: ["encoding", "security", "sysadmin"],
+    tags: ["encoding", "security", "sysadmin", "web", "text"],
   },
   {
     name: "html entity",
@@ -134,7 +145,7 @@ const tools: { name: string; description: string; href: string; docsHref: string
       "Encode and decode HTML entities for safe display in web pages with multiple encoding modes.",
     href: "/html-entity",
     docsHref: "/docs/html-entity",
-    tags: ["encoding", "web"],
+    tags: ["encoding", "web", "text"],
   },
   {
     name: "jwt",
@@ -150,7 +161,7 @@ const tools: { name: string; description: string; href: string; docsHref: string
       "Generate lorem ipsum placeholder text by words, sentences, or paragraphs with one click.",
     href: "/lorem",
     docsHref: "/docs/lorem",
-    tags: ["web"],
+    tags: ["web", "text"],
   },
   {
     name: "number base",
@@ -182,7 +193,7 @@ const tools: { name: string; description: string; href: string; docsHref: string
       "Test regular expressions against strings with live match results and shareable permalinks.",
     href: "/regex",
     docsHref: "/docs/regex",
-    tags: ["web"],
+    tags: ["web", "sysadmin", "text"],
   },
   {
     name: "text stats",
@@ -190,7 +201,7 @@ const tools: { name: string; description: string; href: string; docsHref: string
       "Analyze text statistics: character count, word count, reading time, and word frequency analysis.",
     href: "/text-stats",
     docsHref: "/docs/text-stats",
-    tags: ["text", "analysis"],
+    tags: ["text"],
   },
   {
     name: "url encode",
@@ -198,7 +209,7 @@ const tools: { name: string; description: string; href: string; docsHref: string
       "Encode and decode URL strings with live sync and shareable permalinks.",
     href: "/urlencode",
     docsHref: "/docs/urlencode",
-    tags: ["encoding", "web"],
+    tags: ["encoding", "web", "text"],
   },
   {
     name: "uuid",
@@ -206,7 +217,7 @@ const tools: { name: string; description: string; href: string; docsHref: string
       "Generate UUIDs of any version with one click and shareable permalinks.",
     href: "/uuid",
     docsHref: "/docs/uuid",
-    tags: ["security", "sysadmin"],
+    tags: ["security", "sysadmin", "web"],
   },
 ];
 
@@ -237,13 +248,14 @@ export default function HomePage({
   const branding = useBranding();
   const [activeTags, setActiveTags] = useState<Tag[]>([]);
 
-  const filteredTools = activeTags.length === 0
-    ? tools
-    : tools.filter(t => t.tags.some(tag => activeTags.includes(tag)));
+  const filteredTools =
+    activeTags.length === 0
+      ? tools
+      : tools.filter((t) => t.tags.some((tag) => activeTags.includes(tag)));
 
   function toggleTag(tag: Tag) {
-    setActiveTags(prev =>
-      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    setActiveTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   }
   return (
@@ -287,11 +299,16 @@ export default function HomePage({
         <div className={styles.section}>
           <div className={styles.sectionLabel}>Tools</div>
           <div className={styles.tagFilters}>
-            {ALL_TAGS.map(tag => (
+            {ALL_TAGS.map((tag) => (
               <button
                 key={tag}
-                className={`${styles.tagButton} ${activeTags.includes(tag) ? styles.tagButtonActive : ''}`}
-                style={{ '--tag-color': TAG_COLORS[tag].color, '--tag-color-subtle': TAG_COLORS[tag].subtle } as React.CSSProperties}
+                className={`${styles.tagButton} ${activeTags.includes(tag) ? styles.tagButtonActive : ""}`}
+                style={
+                  {
+                    "--tag-color": TAG_COLORS[tag].color,
+                    "--tag-color-subtle": TAG_COLORS[tag].subtle,
+                  } as React.CSSProperties
+                }
                 onClick={() => toggleTag(tag)}
               >
                 {tag}
@@ -299,9 +316,11 @@ export default function HomePage({
             ))}
           </div>
           <div className={styles.toolCards}>
-            {[...filteredTools].sort((a, b) => a.name.localeCompare(b.name)).map((tool) => (
-              <ExperimentCard key={tool.name} {...tool} compact />
-            ))}
+            {[...filteredTools]
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((tool) => (
+                <ExperimentCard key={tool.name} {...tool} compact />
+              ))}
           </div>
         </div>
         <div className={styles.section}>
@@ -406,12 +425,16 @@ function ExperimentCard({
         </Link>
         {tags && tags.length > 0 && (
           <div className={styles.cardTags}>
-            {tags.map(tag => (
+            {tags.map((tag) => (
               <span
                 key={tag}
                 className={styles.cardTagDot}
                 title={tag}
-                style={{ '--tag-color': TAG_COLORS[tag].color } as React.CSSProperties}
+                style={
+                  {
+                    "--tag-color": TAG_COLORS[tag].color,
+                  } as React.CSSProperties
+                }
               >
                 {tag.slice(0, 2).toUpperCase()}
               </span>
