@@ -247,6 +247,15 @@ export default function WebhookPage() {
     <div className={styles.page}>
       <Head>
         <title>{branding.name.toUpperCase()} — WEBHOOK</title>
+        <meta name="description" content="Inspect incoming webhooks with a temporary endpoint." />
+        <meta property="og:title" content="Webhook Inspector" />
+        <meta property="og:description" content="Inspect incoming webhooks with a temporary endpoint." />
+        <meta property="og:url" content="https://hypothesis.sh/webhook" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Webhook Inspector" />
+        <meta name="twitter:description" content="Inspect incoming webhooks with a temporary endpoint." />
+        <link rel="canonical" href="https://hypothesis.sh/webhook" />
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>

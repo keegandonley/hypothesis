@@ -17,10 +17,29 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths, fallback: false };
 };
 
+function extractFirstParagraph(md: string): string {
+  const lines = md.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (
+      line.length > 0 &&
+      !line.startsWith("#") &&
+      !line.startsWith("```") &&
+      !line.startsWith("-") &&
+      !line.startsWith("*") &&
+      !line.startsWith("|")
+    ) {
+      return line.replace(/\*\*([^*]+)\*\*/g, "$1").replace(/`([^`]+)`/g, "$1").slice(0, 160);
+    }
+  }
+  return "";
+}
+
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const slug = params!.slug as string;
   const content = fs.readFileSync(path.join(DOCS_DIR, `${slug}.md`), "utf-8");
-  return { props: { slug, content } };
+  const description = extractFirstParagraph(content);
+  return { props: { slug, content, description } };
 };
 
 // ── Markdown renderer ──────────────────────────────────────────────────────────
@@ -228,17 +247,29 @@ function MarkdownContent({ content, actionType }: { content: string; actionType:
 export default function DocsPage({
   slug,
   content,
+  description,
 }: {
   slug: string;
   content: string;
+  description: string;
 }) {
   const branding = useBranding();
   const router = useRouter();
   const embed = router.query.embed === "true";
+  const ogTitle = `${slug.charAt(0).toUpperCase()}${slug.slice(1)} Docs`;
   return (
     <div className={styles.page}>
       <Head>
         <title>{branding.name.toUpperCase()} — {slug.toUpperCase()} DOCS</title>
+        {description && <meta name="description" content={description} />}
+        <meta property="og:title" content={ogTitle} />
+        {description && <meta property="og:description" content={description} />}
+        <meta property="og:url" content={`https://hypothesis.sh/docs/${slug}`} />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={ogTitle} />
+        {description && <meta name="twitter:description" content={description} />}
+        <link rel="canonical" href={`https://hypothesis.sh/docs/${slug}`} />
       </Head>
       <div className={styles.inner}>
         {!embed && (

@@ -213,6 +213,15 @@ export default function DateTimePage() {
     <div className={styles.page}>
       <Head>
         <title>{branding.name.toUpperCase()} — DATETIME</title>
+        <meta name="description" content="Parse, convert, and format dates and timestamps across timezones." />
+        <meta property="og:title" content="Datetime Converter" />
+        <meta property="og:description" content="Parse, convert, and format dates and timestamps across timezones." />
+        <meta property="og:url" content="https://hypothesis.sh/datetime" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Datetime Converter" />
+        <meta name="twitter:description" content="Parse, convert, and format dates and timestamps across timezones." />
+        <link rel="canonical" href="https://hypothesis.sh/datetime" />
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>

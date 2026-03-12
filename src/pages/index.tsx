@@ -139,6 +139,7 @@ export default function HomePage({
         <meta name="twitter:title" content={ogTitle} />
         <meta name="twitter:description" content={ogDescription} />
         <meta name="twitter:image" content={ogImageUrl} />
+        <link rel="canonical" href="https://hypothesis.sh/" />
       </Head>
       <div className={styles.inner}>
         <header className={styles.header}>

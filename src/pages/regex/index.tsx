@@ -158,6 +158,15 @@ export default function RegexPage() {
     <div className={styles.page}>
       <Head>
         <title>{branding.name.toUpperCase()} — REGEX</title>
+        <meta name="description" content="Test regular expressions with live match highlighting." />
+        <meta property="og:title" content="Regex Tester" />
+        <meta property="og:description" content="Test regular expressions with live match highlighting." />
+        <meta property="og:url" content="https://hypothesis.sh/regex" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Regex Tester" />
+        <meta name="twitter:description" content="Test regular expressions with live match highlighting." />
+        <link rel="canonical" href="https://hypothesis.sh/regex" />
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>

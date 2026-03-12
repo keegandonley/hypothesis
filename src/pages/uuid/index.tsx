@@ -58,6 +58,15 @@ export default function UuidPage() {
     <div className={styles.page}>
       <Head>
         <title>{branding.name.toUpperCase()} — UUID</title>
+        <meta name="description" content="Generate UUIDs (v4) and inspect existing ones." />
+        <meta property="og:title" content="UUID Generator" />
+        <meta property="og:description" content="Generate UUIDs (v4) and inspect existing ones." />
+        <meta property="og:url" content="https://hypothesis.sh/uuid" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="UUID Generator" />
+        <meta name="twitter:description" content="Generate UUIDs (v4) and inspect existing ones." />
+        <link rel="canonical" href="https://hypothesis.sh/uuid" />
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>

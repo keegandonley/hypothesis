@@ -93,6 +93,15 @@ export default function PrettyPrintPage() {
     <div className={styles.page}>
       <Head>
         <title>{branding.name.toUpperCase()} — PRETTY PRINT</title>
+        <meta name="description" content="Format and validate JSON with syntax highlighting." />
+        <meta property="og:title" content="JSON Pretty Printer" />
+        <meta property="og:description" content="Format and validate JSON with syntax highlighting." />
+        <meta property="og:url" content="https://hypothesis.sh/pretty-print" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="JSON Pretty Printer" />
+        <meta name="twitter:description" content="Format and validate JSON with syntax highlighting." />
+        <link rel="canonical" href="https://hypothesis.sh/pretty-print" />
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>

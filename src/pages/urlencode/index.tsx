@@ -91,6 +91,15 @@ export default function UrlEncodePage() {
     <div className={styles.page}>
       <Head>
         <title>{branding.name.toUpperCase()} — URL ENCODE</title>
+        <meta name="description" content="Encode and decode URL-encoded strings." />
+        <meta property="og:title" content="URL Encoder / Decoder" />
+        <meta property="og:description" content="Encode and decode URL-encoded strings." />
+        <meta property="og:url" content="https://hypothesis.sh/urlencode" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="URL Encoder / Decoder" />
+        <meta name="twitter:description" content="Encode and decode URL-encoded strings." />
+        <link rel="canonical" href="https://hypothesis.sh/urlencode" />
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>
