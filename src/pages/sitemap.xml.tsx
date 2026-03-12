@@ -17,6 +17,7 @@ const staticRoutes = [
   "/iframe-proxy",
   "/message-stream",
   "/message-factory",
+  "/jwt",
 ];
 
 function generateSitemap(baseUrl: string, docSlugs: string[]): string {
