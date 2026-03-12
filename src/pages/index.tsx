@@ -258,14 +258,6 @@ export default function HomePage({
         <hr className={styles.divider} />
 
         <div className={styles.section}>
-          <div className={styles.sectionLabel}>Experiments</div>
-          <div className={styles.cards}>
-            {experiments.map((exp) => (
-              <ExperimentCard key={exp.id} {...exp} />
-            ))}
-          </div>
-        </div>
-        <div className={styles.section}>
           <div className={styles.sectionLabel}>Tools</div>
           <div className={styles.tagFilters}>
             {ALL_TAGS.map(tag => (
@@ -282,6 +274,14 @@ export default function HomePage({
           <div className={styles.toolCards}>
             {[...filteredTools].sort((a, b) => a.name.localeCompare(b.name)).map((tool) => (
               <ExperimentCard key={tool.name} {...tool} compact />
+            ))}
+          </div>
+        </div>
+        <div className={styles.section}>
+          <div className={styles.sectionLabel}>Experiments</div>
+          <div className={styles.cards}>
+            {experiments.map((exp) => (
+              <ExperimentCard key={exp.id} {...exp} />
             ))}
           </div>
         </div>
