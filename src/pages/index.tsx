@@ -164,9 +164,9 @@ export default function HomePage({
         </div>
         <div className={styles.section}>
           <div className={styles.sectionLabel}>Tools</div>
-          <div className={styles.cards}>
+          <div className={styles.toolCards}>
             {tools.map((tool) => (
-              <ExperimentCard key={tool.id} {...tool} />
+              <ExperimentCard key={tool.id} {...tool} compact />
             ))}
           </div>
         </div>
@@ -193,24 +193,39 @@ function ExperimentCard({
   description,
   href,
   docsHref,
+  compact,
 }: {
   id: string;
   name: string;
   description: string;
   href: string;
   docsHref: string;
+  compact?: boolean;
 }) {
   const router = useRouter();
   return (
     <div className={styles.card} onClick={() => router.push(href)}>
-      <div className={styles.cardMain}>
-        <div className={styles.badge}>{id}</div>
-        <div className={styles.cardBody}>
-          <div className={styles.cardName}>{name}</div>
+      {compact ? (
+        <div className={styles.cardMainCompact}>
+          <div className={styles.cardHeader}>
+            <div className={styles.badge}>{id}</div>
+            <div className={styles.cardBody}>
+              <div className={styles.cardName}>{name}</div>
+            </div>
+            <div className={styles.arrow}>→</div>
+          </div>
           <div className={styles.cardDesc}>{description}</div>
         </div>
-        <div className={styles.arrow}>→</div>
-      </div>
+      ) : (
+        <div className={styles.cardMain}>
+          <div className={styles.badge}>{id}</div>
+          <div className={styles.cardBody}>
+            <div className={styles.cardName}>{name}</div>
+            <div className={styles.cardDesc}>{description}</div>
+          </div>
+          <div className={styles.arrow}>→</div>
+        </div>
+      )}
       <div className={styles.cardFooter}>
         <Link
           href={docsHref}
