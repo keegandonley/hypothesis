@@ -258,7 +258,41 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  transition: all 0.15s;
+  transition: border-color 0.15s, background-color 0.15s;
+  cursor: pointer;
+}
+
+.conversionCard:hover {
+  border-color: var(--accent-border);
+}
+
+.conversionCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cardCopyBtn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.1s, color 0.1s;
+}
+
+.conversionCard:hover .cardCopyBtn {
+  opacity: 1;
+}
+
+.cardCopyBtn:hover {
+  color: var(--accent);
 }
 
 .conversionCard.active {
@@ -340,19 +374,19 @@
 .resetBtn {
   flex-shrink: 0;
   padding: 6px 14px;
-  background-color: #ef444418;
-  border: 1px solid #ef444433;
+  background-color: var(--danger-subtle);
+  border: 1px solid var(--danger-border);
   border-radius: 4px;
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.12em;
-  color: #ef4444;
+  color: var(--danger);
   text-transform: uppercase;
   cursor: pointer;
   transition: background-color 0.15s;
 }
 
 .resetBtn:hover {
-  background-color: #ef444430;
+  background-color: var(--danger-hover);
 }

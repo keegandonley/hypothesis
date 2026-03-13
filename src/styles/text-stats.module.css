@@ -326,19 +326,19 @@
 .resetBtn {
   flex-shrink: 0;
   padding: 6px 14px;
-  background-color: #ef444418;
-  border: 1px solid #ef444433;
+  background-color: var(--danger-subtle);
+  border: 1px solid var(--danger-border);
   border-radius: 4px;
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.12em;
-  color: #ef4444;
+  color: var(--danger);
   text-transform: uppercase;
   cursor: pointer;
   transition: background-color 0.15s;
 }
 
 .resetBtn:hover {
-  background-color: #ef444430;
+  background-color: var(--danger-hover);
 }

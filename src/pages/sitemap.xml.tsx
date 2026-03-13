@@ -26,6 +26,9 @@ const staticRoutes = [
   "/bitwise",
   "/lorem",
   "/qr",
+  "/text-stats",
+  "/css-unit",
+  "/html-entity",
 ];
 
 function generateSitemap(baseUrl: string, docSlugs: string[]): string {

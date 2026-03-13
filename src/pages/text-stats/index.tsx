@@ -21,6 +21,9 @@ interface TextStats {
   charFrequency: Array<{ char: string; count: number }>;
 }
 
+const DEFAULT_WPM = 250;
+const SPEAKING_WPM = 150;
+
 function analyzeText(text: string, wpm: number): TextStats {
   if (!text) {
     return {
@@ -60,7 +63,7 @@ function analyzeText(text: string, wpm: number): TextStats {
   const readingSecs = Math.round((readingMinutes - readingMins) * 60);
 
   // Speaking time (150 WPM for speaking)
-  const speakingMinutes = words / 150;
+  const speakingMinutes = words / SPEAKING_WPM;
   const speakingMins = Math.floor(speakingMinutes);
   const speakingSecs = Math.round((speakingMinutes - speakingMins) * 60);
 
@@ -68,8 +71,11 @@ function analyzeText(text: string, wpm: number): TextStats {
   const totalWordLength = wordsArray.reduce((sum, word) => sum + word.length, 0);
   const avgWordLength = words > 0 ? totalWordLength / words : 0;
 
-  // Longest word
-  const longestWord = wordsArray.reduce((longest, word) => (word.length > longest.length ? word : longest), "");
+  // Longest word (strip punctuation before comparing)
+  const longestWord = wordsArray
+    .map((w) => w.replace(/[^a-zA-Z0-9]/g, ""))
+    .filter((w) => w.length > 0)
+    .reduce((longest, word) => (word.length > longest.length ? word : longest), "");
 
   // Word frequency (top 20, case-insensitive, alphabetic only)
   const wordMap = new Map<string, number>();
@@ -115,7 +121,7 @@ export default function TextStatsPage() {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [text, setText] = useState("");
-  const [wpm, setWpm] = useState(250);
+  const [wpm, setWpm] = useState(DEFAULT_WPM);
   const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -126,7 +132,7 @@ export default function TextStatsPage() {
     if (!txt) return `${window.location.origin}${window.location.pathname}`;
     const encoded = btoa(encodeURIComponent(txt));
     const params = new URLSearchParams({ v: encoded });
-    if (wordsPerMin !== 250) params.set("wpm", wordsPerMin.toString());
+    if (wordsPerMin !== DEFAULT_WPM) params.set("wpm", wordsPerMin.toString());
     return `${window.location.origin}${window.location.pathname}?${params}`;
   };
 
@@ -176,7 +182,7 @@ export default function TextStatsPage() {
 
   const handleReset = () => {
     setText("");
-    setWpm(250);
+    setWpm(DEFAULT_WPM);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
@@ -228,7 +234,7 @@ export default function TextStatsPage() {
                   type="number"
                   className={styles.wpmInput}
                   value={wpm}
-                  onChange={(e) => handleWpmChange(parseInt(e.target.value, 10) || 250)}
+                  onChange={(e) => handleWpmChange(parseInt(e.target.value, 10) || DEFAULT_WPM)}
                   min="50"
                   max="1000"
                   step="10"
@@ -301,8 +307,8 @@ export default function TextStatsPage() {
             <div className={styles.frequencySection}>
               <h2 className={styles.sectionTitle}>Word Frequency</h2>
               <div className={styles.frequencyList}>
-                {stats.wordFrequency.map(({ word, count }, idx) => (
-                  <div key={`${word}-${idx}`} className={styles.frequencyItem}>
+                {stats.wordFrequency.map(({ word, count }) => (
+                  <div key={word} className={styles.frequencyItem}>
                     <span className={styles.frequencyWord}>{word}</span>
                     <span className={styles.frequencyCount}>{count}</span>
                   </div>
@@ -315,8 +321,8 @@ export default function TextStatsPage() {
             <div className={styles.frequencySection}>
               <h2 className={styles.sectionTitle}>Character Frequency</h2>
               <div className={styles.frequencyList}>
-                {stats.charFrequency.map(({ char, count }, idx) => (
-                  <div key={`${char}-${idx}`} className={styles.frequencyItem}>
+                {stats.charFrequency.map(({ char, count }) => (
+                  <div key={char} className={styles.frequencyItem}>
                     <span className={styles.frequencyWord}>{char}</span>
                     <span className={styles.frequencyCount}>{count}</span>
                   </div>

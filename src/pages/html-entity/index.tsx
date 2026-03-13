@@ -160,7 +160,7 @@ for (const [char, entity] of Object.entries(htmlEntities)) {
   reverseEntities[entity] = char;
 }
 
-type EncodeMode = "all" | "special" | "ascii";
+type EncodeMode = "all" | "special" | "non-ascii";
 
 function encodeHtmlEntities(text: string, mode: EncodeMode): string {
   if (!text) return "";
@@ -173,7 +173,7 @@ function encodeHtmlEntities(text: string, mode: EncodeMode): string {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&apos;");
-  } else if (mode === "ascii") {
+  } else if (mode === "non-ascii") {
     // Encode non-ASCII characters
     return text.replace(/[^\x00-\x7F]/g, (char) => {
       return htmlEntities[char] || `&#${char.charCodeAt(0)};`;
@@ -223,7 +223,7 @@ export default function HtmlEntityPage() {
 
     if (value) {
       setDecoded(value);
-      const mode = modeParam && ["all", "special", "ascii"].includes(modeParam) ? modeParam : "special";
+      const mode = modeParam && ["all", "special", "non-ascii"].includes(modeParam) ? modeParam : "special";
       setEncodeMode(mode);
       const enc = encodeHtmlEntities(value, mode);
       setEncoded(enc);
@@ -242,13 +242,9 @@ export default function HtmlEntityPage() {
 
   const handleEncodedChange = (value: string) => {
     setEncoded(value);
-    try {
-      const dec = decodeHtmlEntities(value);
-      setDecoded(dec);
-    } catch {
-      setDecoded("");
-    }
-    const newUrl = buildUrl(decoded, encodeMode);
+    const dec = decodeHtmlEntities(value);
+    setDecoded(dec);
+    const newUrl = buildUrl(dec, encodeMode);
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
@@ -358,16 +354,16 @@ export default function HtmlEntityPage() {
             Special (&lt; &gt; &amp; &quot; &apos;)
           </button>
           <button
-            className={`${styles.modeBtn} ${encodeMode === "ascii" ? styles.active : ""}`}
-            onClick={() => handleModeChange("ascii")}
+            className={`${styles.modeBtn} ${encodeMode === "non-ascii" ? styles.active : ""}`}
+            onClick={() => handleModeChange("non-ascii")}
           >
-            Non-ASCII Only
+            Non-ASCII Only (excludes special chars)
           </button>
           <button
             className={`${styles.modeBtn} ${encodeMode === "all" ? styles.active : ""}`}
             onClick={() => handleModeChange("all")}
           >
-            All Characters
+            Special + Non-ASCII
           </button>
         </div>
       </div>

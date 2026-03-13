@@ -5,6 +5,10 @@
   --text: #f0ede8;
   --muted: #5a5a6e;
   --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace;
+  --danger: #ef4444;
+  --danger-subtle: #ef444418;
+  --danger-border: #ef444433;
+  --danger-hover: #ef444430;
 }
 
 *, *::before, *::after {

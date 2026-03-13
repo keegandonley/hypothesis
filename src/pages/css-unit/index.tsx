@@ -13,13 +13,17 @@ interface ConversionContext {
   baseFontSize: number; // px
   viewportWidth: number; // px
   viewportHeight: number; // px
+  parentSize: number; // px — used for % conversions
 }
 
 const DEFAULT_CONTEXT: ConversionContext = {
   baseFontSize: 16,
   viewportWidth: 1920,
   viewportHeight: 1080,
+  parentSize: 16,
 };
+
+const UNITS: CSSUnit[] = ["px", "rem", "em", "%", "vh", "vw", "pt", "cm", "mm", "in"];
 
 function convertToPx(value: number, unit: CSSUnit, context: ConversionContext): number {
   switch (unit) {
@@ -30,7 +34,7 @@ function convertToPx(value: number, unit: CSSUnit, context: ConversionContext): 
     case "em":
       return value * context.baseFontSize;
     case "%":
-      return (value / 100) * context.baseFontSize;
+      return (value / 100) * context.parentSize;
     case "vh":
       return (value / 100) * context.viewportHeight;
     case "vw":
@@ -57,7 +61,7 @@ function convertFromPx(pxValue: number, unit: CSSUnit, context: ConversionContex
     case "em":
       return pxValue / context.baseFontSize;
     case "%":
-      return (pxValue / context.baseFontSize) * 100;
+      return (pxValue / context.parentSize) * 100;
     case "vh":
       return (pxValue / context.viewportHeight) * 100;
     case "vw":
@@ -76,8 +80,7 @@ function convertFromPx(pxValue: number, unit: CSSUnit, context: ConversionContex
 }
 
 function formatNumber(num: number): string {
-  // Format to max 4 decimal places, remove trailing zeros
-  return parseFloat(num.toFixed(4)).toString();
+  return num.toFixed(3);
 }
 
 export default function CssUnitPage() {
@@ -87,10 +90,10 @@ export default function CssUnitPage() {
   const [inputUnit, setInputUnit] = useState<CSSUnit>("px");
   const [context, setContext] = useState<ConversionContext>(DEFAULT_CONTEXT);
   const [copied, setCopied] = useState(false);
+  const [copiedUnit, setCopiedUnit] = useState<string | null>(null);
   const [url, setUrl] = useState("");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const units: CSSUnit[] = ["px", "rem", "em", "%", "vh", "vw", "pt", "cm", "mm", "in"];
+  const copyUnitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const buildUrl = (value: string, unit: CSSUnit, ctx: ConversionContext) => {
     const params = new URLSearchParams({
@@ -99,6 +102,7 @@ export default function CssUnitPage() {
       base: ctx.baseFontSize.toString(),
       vw: ctx.viewportWidth.toString(),
       vh: ctx.viewportHeight.toString(),
+      ps: ctx.parentSize.toString(),
     });
     return `${window.location.origin}${window.location.pathname}?${params}`;
   };
@@ -110,15 +114,17 @@ export default function CssUnitPage() {
     const base = params.get("base");
     const vw = params.get("vw");
     const vh = params.get("vh");
+    const ps = params.get("ps");
 
     const newContext = { ...DEFAULT_CONTEXT };
     if (base) newContext.baseFontSize = parseFloat(base) || DEFAULT_CONTEXT.baseFontSize;
     if (vw) newContext.viewportWidth = parseFloat(vw) || DEFAULT_CONTEXT.viewportWidth;
     if (vh) newContext.viewportHeight = parseFloat(vh) || DEFAULT_CONTEXT.viewportHeight;
+    if (ps) newContext.parentSize = parseFloat(ps) || DEFAULT_CONTEXT.parentSize;
     setContext(newContext);
 
     if (value) setInputValue(value);
-    if (unit && units.includes(unit)) setInputUnit(unit);
+    if (unit && UNITS.includes(unit)) setInputUnit(unit);
 
     setUrl(window.location.href);
   }, []);
@@ -139,6 +145,12 @@ export default function CssUnitPage() {
     updateUrl(inputValue, unit, context);
   };
 
+  const handleCardClick = (unit: CSSUnit, convertedValue: string) => {
+    setInputUnit(unit);
+    setInputValue(convertedValue);
+    updateUrl(convertedValue, unit, context);
+  };
+
   const handleContextChange = (key: keyof ConversionContext, value: number) => {
     const newContext = { ...context, [key]: value };
     setContext(newContext);
@@ -150,6 +162,14 @@ export default function CssUnitPage() {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
       copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+    });
+  };
+
+  const handleCardCopy = (unit: string, value: string) => {
+    copyToClipboard(value).then(() => {
+      setCopiedUnit(unit);
+      if (copyUnitTimeoutRef.current) clearTimeout(copyUnitTimeoutRef.current);
+      copyUnitTimeoutRef.current = setTimeout(() => setCopiedUnit(null), 1500);
     });
   };
 
@@ -165,7 +185,7 @@ export default function CssUnitPage() {
   // Calculate all conversions
   const numValue = parseFloat(inputValue) || 0;
   const pxValue = convertToPx(numValue, inputUnit, context);
-  const conversions = units.map((unit) => ({
+  const conversions = UNITS.map((unit) => ({
     unit,
     value: formatNumber(convertFromPx(pxValue, unit, context)),
   }));
@@ -219,7 +239,7 @@ export default function CssUnitPage() {
           step="any"
         />
         <div className={styles.unitPills}>
-          {units.map((unit) => (
+          {UNITS.map((unit) => (
             <button
               key={unit}
               className={`${styles.unitPill} ${inputUnit === unit ? styles.active : ""}`}
@@ -239,7 +259,7 @@ export default function CssUnitPage() {
               type="number"
               className={styles.contextInput}
               value={context.baseFontSize}
-              onChange={(e) => handleContextChange("baseFontSize", parseFloat(e.target.value) || 16)}
+              onChange={(e) => handleContextChange("baseFontSize", parseFloat(e.target.value) || DEFAULT_CONTEXT.baseFontSize)}
               min="1"
               step="1"
             />
@@ -253,7 +273,7 @@ export default function CssUnitPage() {
               type="number"
               className={styles.contextInput}
               value={context.viewportWidth}
-              onChange={(e) => handleContextChange("viewportWidth", parseFloat(e.target.value) || 1920)}
+              onChange={(e) => handleContextChange("viewportWidth", parseFloat(e.target.value) || DEFAULT_CONTEXT.viewportWidth)}
               min="1"
               step="1"
             />
@@ -267,7 +287,21 @@ export default function CssUnitPage() {
               type="number"
               className={styles.contextInput}
               value={context.viewportHeight}
-              onChange={(e) => handleContextChange("viewportHeight", parseFloat(e.target.value) || 1080)}
+              onChange={(e) => handleContextChange("viewportHeight", parseFloat(e.target.value) || DEFAULT_CONTEXT.viewportHeight)}
+              min="1"
+              step="1"
+            />
+            <span className={styles.contextUnit}>px</span>
+          </div>
+        </div>
+        <div className={styles.contextCard}>
+          <label className={styles.contextLabel}>Parent Size (for %)</label>
+          <div className={styles.contextInputRow}>
+            <input
+              type="number"
+              className={styles.contextInput}
+              value={context.parentSize}
+              onChange={(e) => handleContextChange("parentSize", parseFloat(e.target.value) || DEFAULT_CONTEXT.parentSize)}
               min="1"
               step="1"
             />
@@ -282,8 +316,20 @@ export default function CssUnitPage() {
         <h2 className={styles.sectionTitle}>Conversions</h2>
         <div className={styles.conversionsGrid}>
           {conversions.map(({ unit, value }) => (
-            <div key={unit} className={`${styles.conversionCard} ${unit === inputUnit ? styles.active : ""}`}>
-              <div className={styles.conversionUnit}>{unit}</div>
+            <div
+              key={unit}
+              className={`${styles.conversionCard} ${unit === inputUnit ? styles.active : ""}`}
+              onClick={() => handleCardClick(unit as CSSUnit, value)}
+            >
+              <div className={styles.conversionCardHeader}>
+                <div className={styles.conversionUnit}>{unit}</div>
+                <button
+                  className={styles.cardCopyBtn}
+                  onClick={(e) => { e.stopPropagation(); handleCardCopy(unit, value); }}
+                >
+                  {copiedUnit === unit ? "✓" : "copy"}
+                </button>
+              </div>
               <div className={styles.conversionValue}>{value}</div>
             </div>
           ))}
