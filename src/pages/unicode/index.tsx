@@ -27,7 +27,7 @@ const NAMED_ENTITIES: Record<number, string> = {
 };
 
 function toUtf8Hex(cp: number): string {
-  return [...new TextEncoder().encode(String.fromCodePoint(cp))]
+  return Array.from(new TextEncoder().encode(String.fromCodePoint(cp)))
     .map((b) => b.toString(16).padStart(2, "0").toUpperCase())
     .join(" ");
 }
