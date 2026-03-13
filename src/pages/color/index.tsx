@@ -317,14 +317,9 @@ export default function ColorPage() {
     setUrl(window.location.href);
   }, []);
 
-  // Sync color state to the native picker imperatively to avoid React's controlled
-  // input fighting the browser's internal hex8 normalization when alpha is present.
   useEffect(() => {
     if (!colorPickerRef.current) return;
-    colorPickerRef.current.setAttribute("alpha", "");
-    colorPickerRef.current.value = color
-      ? color.a < 1 ? toHex8(color) : toHex6(color)
-      : "#000000";
+    colorPickerRef.current.value = color ? toHex6(color) : "#000000";
   }, [color]);
 
   const handleInputChange = (value: string) => {
@@ -458,9 +453,7 @@ export default function ColorPage() {
             type="color"
             onChange={(e) => {
               const parsed = parseHex(e.target.value);
-              if (parsed) {
-                handleInputChange(parsed.a < 1 ? toRGBA(parsed) : toRGB(parsed));
-              }
+              if (parsed) handleInputChange(toRGB(parsed));
             }}
           />
         </div>
