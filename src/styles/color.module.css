@@ -81,6 +81,8 @@
   border: 1px solid var(--border);
   overflow: hidden;
   position: relative;
+  cursor: pointer;
+  transition: border-color 0.15s;
   background-image:
     linear-gradient(45deg, #aaa 25%, transparent 25%),
     linear-gradient(-45deg, #aaa 25%, transparent 25%),
@@ -93,6 +95,25 @@
     8px -8px,
     -8px 0px;
   background-color: #eee;
+}
+
+.checkerboard:hover {
+  border-color: var(--text);
+}
+
+.checkerboard:hover .swatch::after {
+  content: "Pick color";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .swatch {
@@ -118,6 +139,14 @@
 }
 
 /* Input */
+
+.colorPicker {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
 
 .inputRow {
   display: flex;
@@ -154,6 +183,7 @@
   border-color: #ef4444 !important;
   box-shadow: 0 0 0 2px #ef444418 !important;
 }
+
 
 /* Output grid */
 

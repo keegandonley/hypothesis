@@ -4,7 +4,7 @@ Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with a live preview 
 
 ## Overview
 
-Paste or type any color value into the input field. The tool auto-detects the format, shows a live preview swatch, and outputs the color in all six formats simultaneously.
+Paste or type any color value into the input field, or click the preview swatch to open a visual color picker. The tool auto-detects the format, shows a live preview swatch, and outputs the color in all six formats simultaneously.
 
 Supported input formats:
 
@@ -21,6 +21,8 @@ Supported input formats:
 ## Preview Swatch
 
 The large preview bar above the input shows the parsed color. A checkerboard pattern is rendered underneath to make transparency (alpha < 1) visible. If the input is empty or invalid, the swatch is blank.
+
+**Clicking the swatch opens a visual color picker.** The selected color is written into the text input as `rgb(...)` or `rgba(...)` (the latter when the picker returns an alpha value), and all output cards update immediately.
 
 A **format badge** next to the swatch shows which format was detected from the input string.
 

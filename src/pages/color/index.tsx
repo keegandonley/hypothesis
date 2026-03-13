@@ -300,6 +300,7 @@ export default function ColorPage() {
   const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
+  const colorPickerRef = useRef<HTMLInputElement>(null);
 
   const buildUrl = (val: string) => {
     if (!val) return `${window.location.origin}${window.location.pathname}`;
@@ -316,9 +317,20 @@ export default function ColorPage() {
     setUrl(window.location.href);
   }, []);
 
+  // Sync color state to the native picker imperatively to avoid React's controlled
+  // input fighting the browser's internal hex8 normalization when alpha is present.
+  useEffect(() => {
+    if (!colorPickerRef.current) return;
+    colorPickerRef.current.setAttribute("alpha", "");
+    colorPickerRef.current.value = color
+      ? color.a < 1 ? toHex8(color) : toHex6(color)
+      : "#000000";
+  }, [color]);
+
   const handleInputChange = (value: string) => {
     setInput(value);
-    setColor(parseColor(value));
+    const parsed = parseColor(value);
+    setColor(parsed);
     const newUrl = buildUrl(value.trim());
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
@@ -428,7 +440,11 @@ export default function ColorPage() {
       <hr className={styles.divider} />
 
       <div className={styles.previewRow}>
-        <div className={styles.checkerboard}>
+        <div
+          className={styles.checkerboard}
+          onClick={() => colorPickerRef.current?.click()}
+          title="Pick a color"
+        >
           <div
             className={styles.swatch}
             style={{ backgroundColor: swatchColor ?? "transparent" }}
@@ -436,6 +452,17 @@ export default function ColorPage() {
           {detectedFormat && (
             <span className={styles.formatBadge}>{detectedFormat}</span>
           )}
+          <input
+            ref={colorPickerRef}
+            className={styles.colorPicker}
+            type="color"
+            onChange={(e) => {
+              const parsed = parseHex(e.target.value);
+              if (parsed) {
+                handleInputChange(parsed.a < 1 ? toRGBA(parsed) : toRGB(parsed));
+              }
+            }}
+          />
         </div>
       </div>
 
