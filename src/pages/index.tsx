@@ -204,6 +204,14 @@ const tools: {
     tags: ["text"],
   },
   {
+    name: "unicode",
+    description:
+      "Inspect each character's code point, UTF-8/UTF-16 encoding, category, script, and HTML entity.",
+    href: "/unicode",
+    docsHref: "/docs/unicode",
+    tags: ["text", "encoding"],
+  },
+  {
     name: "url encode",
     description:
       "Encode and decode URL strings with live sync and shareable permalinks.",
