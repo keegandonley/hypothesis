@@ -461,6 +461,15 @@ export default function ColorPage() {
 
       <div className={styles.inputRow}>
         <input
+          className={styles.mobileColorSwatch}
+          type="color"
+          value={color ? toHex6(color) : "#000000"}
+          onChange={(e) => {
+            const parsed = parseHex(e.target.value);
+            if (parsed) handleInputChange(toRGB(parsed));
+          }}
+        />
+        <input
           className={`${styles.input}${hasError ? ` ${styles.inputError}` : ""}`}
           type="text"
           value={input}

@@ -101,6 +101,13 @@
   border-color: var(--text);
 }
 
+@media (pointer: coarse) {
+  .checkerboard {
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
 .checkerboard:hover .swatch::after {
   content: "Pick color";
   position: absolute;
@@ -152,6 +159,26 @@
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
+}
+
+.mobileColorSwatch {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .mobileColorSwatch {
+    display: block;
+    width: 36px;
+    height: 36px;
+    align-self: center;
+    flex-shrink: 0;
+    padding: 2px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    background: none;
+    overflow: hidden;
+  }
 }
 
 .input {
