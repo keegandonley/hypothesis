@@ -15,7 +15,7 @@ function fromDecimal(n: number): Values {
   return {
     bin: n.toString(2),
     oct: n.toString(8),
-    dec: n.toString(10),
+    dec: Number.isInteger(n) ? n.toFixed(0) : n.toString(10),
     hex: n.toString(16).toUpperCase(),
   };
 }
@@ -40,8 +40,8 @@ export default function NumbasePage() {
     const params = new URLSearchParams(window.location.search);
     const value = params.get("value");
     if (value) {
-      const n = parseInt(value, 10);
-      if (!isNaN(n)) setValues(fromDecimal(n));
+      const n = Number(value);
+      if (!isNaN(n) && Number.isInteger(n) && n >= 0 && n <= Number.MAX_SAFE_INTEGER) setValues(fromDecimal(n));
     }
     setUrl(window.location.href);
   }, []);
@@ -62,7 +62,7 @@ export default function NumbasePage() {
     }
 
     const n = parseInt(trimmed, base);
-    if (isNaN(n) || n < 0) {
+    if (isNaN(n) || n < 0 || n > Number.MAX_SAFE_INTEGER) {
       setErrorField(field);
       return;
     }
