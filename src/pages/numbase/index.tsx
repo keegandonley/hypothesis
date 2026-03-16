@@ -41,7 +41,7 @@ export default function NumbasePage() {
     const value = params.get("value");
     if (value) {
       const n = Number(value);
-      if (!isNaN(n) && Number.isInteger(n) && n >= 0) setValues(fromDecimal(n));
+      if (!isNaN(n) && Number.isInteger(n) && n >= 0 && n <= Number.MAX_SAFE_INTEGER) setValues(fromDecimal(n));
     }
     setUrl(window.location.href);
   }, []);
@@ -62,7 +62,7 @@ export default function NumbasePage() {
     }
 
     const n = parseInt(trimmed, base);
-    if (isNaN(n) || n < 0) {
+    if (isNaN(n) || n < 0 || n > Number.MAX_SAFE_INTEGER) {
       setErrorField(field);
       return;
     }
