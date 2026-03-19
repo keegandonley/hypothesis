@@ -196,6 +196,14 @@ const tools: {
     tags: ["web", "sysadmin", "text"],
   },
   {
+    name: "text diff",
+    description:
+      "Compare two blocks of text and highlight additions and deletions line by line.",
+    href: "/diff",
+    docsHref: "/docs/diff",
+    tags: ["text"] as Tag[],
+  },
+  {
     name: "text stats",
     description:
       "Analyze text statistics: character count, word count, reading time, and word frequency analysis.",

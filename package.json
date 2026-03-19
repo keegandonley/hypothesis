@@ -16,6 +16,7 @@
     "@vercel/og": "^0.11.1",
     "cron-parser": "^5.5.0",
     "cronstrue": "^3.13.0",
+    "diff": "^8.0.3",
     "next": "16.1.6",
     "pg": "^8.20.0",
     "qrcode": "^1.5.4",
@@ -24,8 +25,9 @@
     "typescript": "^5.9.3",
     "uuid": "^13.0.0"
   },
-  "packageManager": "pnpm@10.28.2+sha256.afa99b0b4b3d11c1dad2b472f9318ae2c78673829749ded527f89f09071479a7",
+  "packageManager": "pnpm@10.32.1+sha256.9b943b94bc8f55efb993aad8e44b538e6b091e60a9e4a944dcde869855f233e3",
   "devDependencies": {
+    "@types/diff": "^8.0.0",
     "@types/pg": "^8.18.0"
   }
 }

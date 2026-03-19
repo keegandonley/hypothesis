@@ -30,6 +30,7 @@ const staticRoutes = [
   "/css-unit",
   "/html-entity",
   "/unicode",
+  "/diff",
 ];
 
 function generateSitemap(baseUrl: string, docSlugs: string[]): string {
