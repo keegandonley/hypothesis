@@ -14,11 +14,11 @@ Paste any valid JSON into the left panel. TypeScript interfaces are generated im
 ## How it works
 
 - Nested objects each become their own named `interface`, named after the parent key in PascalCase.
-- Arrays of objects derive their element interface name by dropping a trailing `s` from the key.
+- Arrays of objects derive their element interface name by dropping a trailing `s` from the key (e.g. `Users` → `User`); if the name has no trailing `s`, `Item` is appended (e.g. `Root` → `RootItem`).
 - Mixed-type arrays produce a union type, e.g. `(string | number)[]`.
 - Empty arrays produce `unknown[]`.
 - Keys containing special characters are automatically quoted.
-- When the root value is a primitive or array (not an object), a `type` alias is emitted instead.
+- When the root value is an array of objects, element interfaces are emitted followed by a `type` alias for the root name (e.g. `type Users = User[];`). When the root is a primitive array, only the `type` alias is emitted.
 - Duplicate interface names get a numeric suffix (`Root2`, `Root3`, …).
 
 ## Permalink
