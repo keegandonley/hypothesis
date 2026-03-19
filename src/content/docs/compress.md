@@ -22,3 +22,10 @@ Compress PNG, JPEG, and WebP images with server-side processing using [sharp](ht
 - Accepts PNG, JPEG, WebP, GIF up to **50 MB** per file
 - Files are temporarily stored in Vercel Blob and deleted immediately after compression
 - Processing is done entirely server-side with no third-party image services
+
+## Rate Limits
+
+To prevent abuse, uploads are rate-limited per IP address:
+
+- **10 uploads per hour**
+- **25 uploads per day**

@@ -63,9 +63,6 @@ export default function CompressPage() {
         const blob = await upload(file.name, file, {
           access: "private",
           handleUploadUrl: "/api/compress/upload",
-          onUploadProgress: (progress) => {
-            console.log(`Upload progress for ${file.name}: ${progress}%`);
-          },
         });
 
         // Step 2: compress via API

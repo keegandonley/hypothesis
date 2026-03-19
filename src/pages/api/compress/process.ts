@@ -52,8 +52,6 @@ export default async function handler(
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
 
-    console.log(response);
-
     if (!response.ok) {
       return res.status(400).json({ error: "Failed to fetch blob" });
     }
