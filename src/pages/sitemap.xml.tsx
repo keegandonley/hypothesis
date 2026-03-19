@@ -32,6 +32,7 @@ const staticRoutes = [
   "/unicode",
   "/diff",
   "/json-ts",
+  "/compress",
 ];
 
 function generateSitemap(baseUrl: string, docSlugs: string[]): string {

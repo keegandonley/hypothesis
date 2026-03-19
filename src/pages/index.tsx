@@ -108,6 +108,14 @@ const tools: {
     tags: ["conversion", "web"],
   },
   {
+    name: "compress",
+    description:
+      "Compress PNG, JPEG, and WebP images server-side. Convert to WebP or AVIF for maximum file size reduction.",
+    href: "/compress",
+    docsHref: "/docs/compress",
+    tags: ["conversion", "web"],
+  },
+  {
     name: "css unit",
     description:
       "Convert between CSS units: px, rem, em, %, vh, vw, pt, cm, mm, in with adjustable context.",

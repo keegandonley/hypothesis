@@ -1,0 +1,265 @@
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+  font-family: var(--font-mono, monospace);
+  color: var(--text);
+}
+
+/* Header */
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.domainLink {
+  color: var(--accent);
+  text-decoration: none;
+}
+.domainLink:hover {
+  text-decoration: underline;
+}
+
+.docsLink {
+  color: var(--muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.docsLink:hover {
+  color: var(--text);
+}
+
+.icon {
+  width: 12px;
+  height: 12px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.5rem 0;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.controlLabel {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.toggleGroup {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.toggleBtn {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.toggleBtn:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+.toggleBtn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+/* Drop zone */
+.dropZone {
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  outline: none;
+}
+.dropZone:hover,
+.dropZone:focus {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+.dropZone.dragging {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.dropZoneIcon {
+  font-size: 1.5rem;
+  opacity: 0.5;
+}
+
+.dropZoneText {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.browseLink {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.dropZoneHint {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* File list */
+.fileList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fileRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.fileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.fileName {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fileSizes {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.savingsBadge {
+  margin-left: 0.4rem;
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.fileActions {
+  flex-shrink: 0;
+}
+
+.downloadBtn {
+  background: var(--accent);
+  border: none;
+  color: var(--bg);
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.1s;
+}
+.downloadBtn:hover {
+  opacity: 0.85;
+}
+
+.statusLabel {
+  font-size: 0.75rem;
+}
+
+.status_queued { color: var(--muted); }
+.status_uploading { color: var(--accent); }
+.status_compressing { color: var(--accent); }
+.status_error { color: #f87171; }
+
+.listFooter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+}
+
+.clearBtn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.clearBtn:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+/* Info row */
+.infoRow {
+  font-size: 0.75rem;
+}
+
+.infoText {
+  color: var(--muted);
+}
+
+.infoLink {
+  color: var(--muted);
+  text-decoration: underline;
+}
+.infoLink:hover {
+  color: var(--text);
+}
