@@ -196,6 +196,14 @@ const tools: {
     tags: ["web", "sysadmin", "text"],
   },
   {
+    name: "json → typescript",
+    description:
+      "Convert a JSON sample into TypeScript interface definitions instantly.",
+    href: "/json-ts",
+    docsHref: "/docs/json-ts",
+    tags: ["conversion", "web"] as Tag[],
+  },
+  {
     name: "text diff",
     description:
       "Compare two blocks of text and highlight additions and deletions line by line.",
