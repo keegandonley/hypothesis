@@ -25,9 +25,12 @@ function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 
-function savings(original: number, compressed: number): string {
+function savings(
+  original: number,
+  compressed: number,
+): { pct: number; label: string } {
   const pct = ((original - compressed) / original) * 100;
-  return `${pct.toFixed(1)}%`;
+  return { pct, label: `${Math.abs(pct).toFixed(1)}%` };
 }
 
 export default function CompressPage() {
@@ -83,7 +86,7 @@ export default function CompressPage() {
             .catch(() => ({ error: "Compression failed" }));
           updateEntry(id, {
             status: "error",
-            error: err.error ?? "Compression failed",
+            error: "Please try again later.",
           });
         } else {
           const compressedBlob = await res.blob();
@@ -107,9 +110,10 @@ export default function CompressPage() {
           });
         }
       } catch (err) {
+        const msg = err instanceof Error ? err.message : "Unknown error";
         updateEntry(id, {
           status: "error",
-          error: err instanceof Error ? err.message : "Unknown error",
+          error: "Please try again later.",
         });
       } finally {
         processingRef.current = false;
@@ -316,9 +320,21 @@ export default function CompressPage() {
                       <>
                         {" → "}
                         {formatBytes(entry.compressedSize)}
-                        <span className={styles.savingsBadge}>
-                          −{savings(entry.originalSize, entry.compressedSize)}
-                        </span>
+                        {(() => {
+                          const { pct, label } = savings(
+                            entry.originalSize,
+                            entry.compressedSize,
+                          );
+                          return (
+                            <span
+                              className={styles.savingsBadge}
+                              style={pct < 0 ? { color: "#f87171" } : undefined}
+                            >
+                              {pct < 0 ? "+" : "−"}
+                              {label}
+                            </span>
+                          );
+                        })()}
                       </>
                     )}
                   </span>

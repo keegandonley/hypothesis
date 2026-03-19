@@ -1,7 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { createSession, touchSession, countRecentSessionsByIp } from "@/lib/session";
+import {
+  createSession,
+  touchSession,
+  countRecentSessionsByIp,
+} from "@/lib/session";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "method not allowed" });
   }
@@ -51,7 +58,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (ip !== "::1") {
       const recentCount = await countRecentSessionsByIp(ip);
       if (recentCount >= 3) {
-        return res.status(429).json({ error: "rate limit exceeded: max 3 sessions per IP per 10 minutes" });
+        return res
+          .status(429)
+          .json({
+            error: "rate limit exceeded: max 3 sessions per IP per 10 minutes",
+          });
       }
     }
 

@@ -18,7 +18,7 @@ const CONTENT_TYPES: Record<OutputFormat, string> = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -38,12 +38,22 @@ export default async function handler(
     return res.status(400).json({ error: "Invalid format" });
   }
 
+  const BLOB_URL_RE =
+    /^https:\/\/[a-z0-9-]+\.private\.blob\.vercel-storage\.com\//;
+  if (!BLOB_URL_RE.test(url)) {
+    return res.status(400).json({ error: "Invalid source URL" });
+  }
+
   let inputBuffer: Buffer;
+
   try {
     const token = process.env.BLOB_READ_WRITE_TOKEN;
     const response = await fetch(url, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
+
+    console.log(response);
+
     if (!response.ok) {
       return res.status(400).json({ error: "Failed to fetch blob" });
     }
@@ -77,10 +87,7 @@ export default async function handler(
   const outFilename = `compressed-${baseName}${ext}`;
 
   res.setHeader("Content-Type", CONTENT_TYPES[format]);
-  res.setHeader(
-    "Content-Disposition",
-    `attachment; filename="${outFilename}"`
-  );
+  res.setHeader("Content-Disposition", `attachment; filename="${outFilename}"`);
   res.setHeader("X-Original-Size", String(inputBuffer.length));
   res.setHeader("X-Compressed-Size", String(outputBuffer.length));
   res.setHeader("Content-Length", String(outputBuffer.length));
