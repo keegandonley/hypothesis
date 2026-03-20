@@ -33,6 +33,7 @@ const staticRoutes = [
   "/diff",
   "/json-ts",
   "/compress",
+  "/rsa",
 ];
 
 function generateSitemap(baseUrl: string, docSlugs: string[]): string {
