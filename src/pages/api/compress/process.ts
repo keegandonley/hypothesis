@@ -24,11 +24,13 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { url, format, filename } = req.body as {
+  const { url, format, filename, quality: rawQuality } = req.body as {
     url: string;
     format: OutputFormat;
     filename: string;
+    quality?: number;
   };
+  const quality = Math.max(1, Math.min(100, Number(rawQuality) || 80));
 
   if (!url || !format || !filename) {
     return res.status(400).json({ error: "Missing url, format, or filename" });
@@ -65,15 +67,17 @@ export default async function handler(
     const pipeline = sharp(inputBuffer);
 
     if (format === "png") {
+      const compressionLevel = Math.max(1, Math.min(9, Math.round(quality / 100 * 9)));
       outputBuffer = await pipeline
-        .png({ compressionLevel: 9, adaptiveFiltering: true, palette: true })
+        .png({ compressionLevel, adaptiveFiltering: true })
         .toBuffer();
     } else if (format === "webp") {
-      outputBuffer = await pipeline.webp({ quality: 80 }).toBuffer();
+      outputBuffer = await pipeline.webp({ quality }).toBuffer();
     } else {
-      outputBuffer = await pipeline.avif({ quality: 50 }).toBuffer();
+      outputBuffer = await pipeline.avif({ quality }).toBuffer();
     }
-  } catch {
+  } catch (err) {
+    console.error("Compression failed:", err);
     return res.status(500).json({ error: "Compression failed" });
   }
 
@@ -85,7 +89,11 @@ export default async function handler(
   const outFilename = `compressed-${baseName}${ext}`;
 
   res.setHeader("Content-Type", CONTENT_TYPES[format]);
-  res.setHeader("Content-Disposition", `attachment; filename="${outFilename}"`);
+  const safeAsciiName = outFilename.replace(/[^a-zA-Z0-9._\-]/g, "_");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="${safeAsciiName}"; filename*=UTF-8''${encodeURIComponent(outFilename)}`,
+  );
   res.setHeader("X-Original-Size", String(inputBuffer.length));
   res.setHeader("X-Compressed-Size", String(outputBuffer.length));
   res.setHeader("Content-Length", String(outputBuffer.length));
