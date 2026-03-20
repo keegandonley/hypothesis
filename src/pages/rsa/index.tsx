@@ -97,7 +97,7 @@ export default function RsaPage() {
 
   const plaintextBytes = new TextEncoder().encode(plaintext).length;
 
-  // Restore from URL on mount
+  // Restore from URL and localStorage on mount
   useEffect(() => {
     if (!window.crypto?.subtle) setCryptoAvailable(false);
     const params = new URLSearchParams(window.location.search);
@@ -108,6 +108,11 @@ export default function RsaPage() {
       setCiphertextFromUrl(true);
     }
     setUrl(window.location.href);
+
+    const savedPub = localStorage.getItem("rsa_public_key");
+    const savedPriv = localStorage.getItem("rsa_private_key");
+    if (savedPub) setPublicKeyPem(savedPub);
+    if (savedPriv) setPrivateKeyPem(savedPriv);
   }, []);
 
   // Import public key whenever PEM changes
@@ -179,8 +184,12 @@ export default function RsaPage() {
       const pubSpki = await window.crypto.subtle.exportKey("spki", kp.publicKey);
       const privPkcs8 = await window.crypto.subtle.exportKey("pkcs8", kp.privateKey);
 
-      setPublicKeyPem(wrapPem(arrayBufferToBase64(pubSpki), "PUBLIC KEY"));
-      setPrivateKeyPem(wrapPem(arrayBufferToBase64(privPkcs8), "PRIVATE KEY"));
+      const pubPem = wrapPem(arrayBufferToBase64(pubSpki), "PUBLIC KEY");
+      const privPem = wrapPem(arrayBufferToBase64(privPkcs8), "PRIVATE KEY");
+      setPublicKeyPem(pubPem);
+      setPrivateKeyPem(privPem);
+      localStorage.setItem("rsa_public_key", pubPem);
+      localStorage.setItem("rsa_private_key", privPem);
     } finally {
       setGeneratingKey(false);
     }
