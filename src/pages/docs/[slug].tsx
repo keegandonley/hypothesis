@@ -13,6 +13,7 @@ const EXPERIMENT_SLUGS = new Set([
   "message-stream",
   "message-factory",
   "webhook",
+  "rsa",
 ]);
 
 export const getStaticPaths: GetStaticPaths = async () => {

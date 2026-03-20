@@ -58,6 +58,14 @@ const experiments = [
     href: "/webhook",
     docsHref: "/docs/webhook",
   },
+  {
+    id: "EXP-005",
+    name: "rsa encryption",
+    description:
+      "Generate RSA-OAEP key pairs, encrypt messages, and decrypt them in-browser using the Web Crypto API.",
+    href: "/rsa",
+    docsHref: "/docs/rsa",
+  },
 ];
 
 const tools: {
