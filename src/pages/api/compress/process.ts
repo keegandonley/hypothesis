@@ -89,9 +89,10 @@ export default async function handler(
   const outFilename = `compressed-${baseName}${ext}`;
 
   res.setHeader("Content-Type", CONTENT_TYPES[format]);
+  const safeAsciiName = outFilename.replace(/[^a-zA-Z0-9._\-]/g, "_");
   res.setHeader(
     "Content-Disposition",
-    `attachment; filename="${outFilename}"; filename*=UTF-8''${encodeURIComponent(outFilename)}`,
+    `attachment; filename="${safeAsciiName}"; filename*=UTF-8''${encodeURIComponent(outFilename)}`,
   );
   res.setHeader("X-Original-Size", String(inputBuffer.length));
   res.setHeader("X-Compressed-Size", String(outputBuffer.length));
