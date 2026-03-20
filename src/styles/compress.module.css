@@ -103,6 +103,41 @@
   font-weight: 600;
 }
 
+.qualitySlider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 140px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+.qualitySlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+.qualitySlider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  cursor: pointer;
+}
+
+.qualityValue {
+  font-size: 0.75rem;
+  color: var(--text);
+  min-width: 2ch;
+  text-align: right;
+}
+
 /* Drop zone */
 .dropZone {
   border: 2px dashed var(--border);

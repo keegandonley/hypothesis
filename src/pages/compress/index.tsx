@@ -8,6 +8,12 @@ import { useBranding } from "@/lib/branding";
 
 type OutputFormat = "png" | "webp" | "avif";
 
+const FORMAT_QUALITY_DEFAULTS: Record<OutputFormat, number> = {
+  png: 85,
+  webp: 80,
+  avif: 50,
+};
+
 type FileEntry = {
   id: string;
   file: File;
@@ -37,6 +43,7 @@ export default function CompressPage() {
   const branding = useBranding();
   const [entries, setEntries] = useState<FileEntry[]>([]);
   const [format, setFormat] = useState<OutputFormat>("png");
+  const [quality, setQuality] = useState(FORMAT_QUALITY_DEFAULTS["png"]);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const processingRef = useRef(false);
@@ -49,7 +56,11 @@ export default function CompressPage() {
   }, []);
 
   const processNext = useCallback(
-    async (currentEntries: FileEntry[], currentFormat: OutputFormat) => {
+    async (
+      currentEntries: FileEntry[],
+      currentFormat: OutputFormat,
+      currentQuality: number,
+    ) => {
       if (processingRef.current) return;
       const next = currentEntries.find((e) => e.status === "queued");
       if (!next) return;
@@ -74,6 +85,7 @@ export default function CompressPage() {
             url: blob.url,
             format: currentFormat,
             filename: file.name,
+            quality: currentQuality,
           }),
         });
 
@@ -118,7 +130,7 @@ export default function CompressPage() {
         setEntries((prev) => {
           const stillQueued = prev.find((e) => e.status === "queued");
           if (stillQueued) {
-            setTimeout(() => processNext(prev, currentFormat), 0);
+            setTimeout(() => processNext(prev, currentFormat, currentQuality), 0);
           }
           return prev;
         });
@@ -141,20 +153,15 @@ export default function CompressPage() {
 
       setEntries((prev) => {
         const next = [...prev, ...newEntries];
-        // Kick off processing after state update
-        setTimeout(() => processNext(next, format), 0);
+        setTimeout(() => processNext(next, format, quality), 0);
         return next;
       });
     },
-    [format, processNext],
+    [format, quality, processNext],
   );
 
-  // When format changes, re-process done files isn't needed — format applies on next run
-  // But if user changes format while items are queued, we just use current format at process time.
-  // Since processNext captures format via closure, we store latest format in a ref.
-  const formatRef = useRef(format);
   useEffect(() => {
-    formatRef.current = format;
+    setQuality(FORMAT_QUALITY_DEFAULTS[format]);
   }, [format]);
 
   const handleDrop = useCallback(
@@ -272,6 +279,21 @@ export default function CompressPage() {
             </button>
           ))}
         </div>
+      </div>
+
+      <div className={styles.controls}>
+        <span className={styles.controlLabel}>
+          {format === "png" ? "Compression" : "Quality"}
+        </span>
+        <input
+          type="range"
+          min={1}
+          max={100}
+          value={quality}
+          onChange={(e) => setQuality(Number(e.target.value))}
+          className={styles.qualitySlider}
+        />
+        <span className={styles.qualityValue}>{quality}</span>
       </div>
 
       <div
