@@ -1,6 +1,7 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { kv } from "@vercel/kv";
+import { get } from "@vercel/edge-config";
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,6 +24,24 @@ export default async function handler(
           (req.headers["x-forwarded-for"] as string)?.split(",")[0].trim() ??
           (req.headers["x-real-ip"] as string) ??
           "0.0.0.0";
+
+        try {
+          const whitelist = await get<string[]>("ip_whitelist");
+          if (Array.isArray(whitelist) && whitelist.includes(ip)) {
+            return {
+              allowedContentTypes: [
+                "image/png",
+                "image/jpeg",
+                "image/webp",
+                "image/gif",
+              ],
+              maximumSizeInBytes: 50 * 1024 * 1024,
+              addRandomSuffix: true,
+            };
+          }
+        } catch {
+          // Edge Config unavailable — fall through to normal rate limiting
+        }
 
         const hourKey = `compress:rate:hour:${ip}`;
         const dayKey = `compress:rate:day:${ip}`;
