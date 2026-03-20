@@ -28,7 +28,7 @@ importers:
         version: 2.3.1
       '@vercel/edge-config':
         specifier: ^1.4.3
-        version: 1.4.3(next@16.1.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
+        version: 1.4.3(next@16.1.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
       '@vercel/kv':
         specifier: ^3.0.0
         version: 3.0.0
@@ -953,11 +953,11 @@ snapshots:
 
   '@vercel/edge-config-fs@0.1.0': {}
 
-  '@vercel/edge-config@1.4.3(next@16.1.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))':
+  '@vercel/edge-config@1.4.3(next@16.1.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4))':
     dependencies:
       '@vercel/edge-config-fs': 0.1.0
     optionalDependencies:
-      next: 16.1.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next: 16.1.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
 
   '@vercel/kv@3.0.0':
     dependencies:
