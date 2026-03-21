@@ -26,6 +26,16 @@ const TAG_COLORS: Record<Tag, { color: string; subtle: string }> = {
   text: { color: "#34d399", subtle: "#34d39918" },
 };
 
+const references = [
+  {
+    id: "REF-001",
+    name: "HTTP status codes",
+    description:
+      "Complete reference for HTTP response status codes: 1xx through 5xx, with descriptions, use cases, and caching behavior.",
+    href: "/references/http-status-codes",
+  },
+];
+
 const experiments = [
   {
     id: "EXP-001",
@@ -381,6 +391,15 @@ export default function HomePage({
         </div>
 
         <div className={styles.section}>
+          <div className={styles.sectionLabel}>References</div>
+          <div className={styles.cards}>
+            {references.map((ref) => (
+              <ReferenceCard key={ref.id} {...ref} />
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.section}>
           <div className={styles.sectionLabel}>About this project</div>
           <a
             href="https://keegan.codes/blog/claude-code-developer-tools"
@@ -418,6 +437,34 @@ export default function HomePage({
           >
             keegan donley
           </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ReferenceCard({
+  id,
+  name,
+  description,
+  href,
+}: {
+  id: string;
+  name: string;
+  description: string;
+  href: string;
+}) {
+  return (
+    <div className={styles.card}>
+      <Link href={href} className={styles.cardLink} aria-label={name} />
+      <div className={styles.cardMain}>
+        <div className={styles.badge}>{id}</div>
+        <div className={styles.cardBodyRow}>
+          <div className={styles.cardBody}>
+            <div className={styles.cardName}>{name}</div>
+            <div className={styles.cardDesc}>{description}</div>
+          </div>
+          <div className={styles.arrow}>→</div>
         </div>
       </div>
     </div>
