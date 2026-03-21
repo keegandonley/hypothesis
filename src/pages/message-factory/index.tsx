@@ -29,7 +29,7 @@ export default function MessageFactoryPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — MESSAGE FACTORY</title>
+        <title>{`${branding.name.toUpperCase()} — MESSAGE FACTORY`}</title>
       </Head>
       <div className={styles.inner}>
         <header className={styles.header}>

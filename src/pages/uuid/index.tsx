@@ -57,7 +57,7 @@ export default function UuidPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — UUID</title>
+        <title>{`${branding.name.toUpperCase()} — UUID`}</title>
         <meta name="description" content="Generate UUIDs (v4) and inspect existing ones." />
         <meta property="og:title" content="UUID Generator" />
         <meta property="og:description" content="Generate UUIDs (v4) and inspect existing ones." />

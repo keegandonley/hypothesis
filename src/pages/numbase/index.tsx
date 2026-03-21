@@ -116,7 +116,7 @@ export default function NumbasePage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — NUMBER BASE</title>
+        <title>{`${branding.name.toUpperCase()} — NUMBER BASE`}</title>
         <meta name="description" content="Convert numbers between binary, octal, decimal, and hexadecimal." />
         <meta property="og:title" content="Number Base Converter" />
         <meta property="og:description" content="Convert numbers between binary, octal, decimal, and hexadecimal." />

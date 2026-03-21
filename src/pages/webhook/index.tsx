@@ -246,7 +246,7 @@ export default function WebhookPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — WEBHOOK</title>
+        <title>{`${branding.name.toUpperCase()} — WEBHOOK`}</title>
         <meta name="description" content="Inspect incoming webhooks with a temporary endpoint." />
         <meta property="og:title" content="Webhook Inspector" />
         <meta property="og:description" content="Inspect incoming webhooks with a temporary endpoint." />

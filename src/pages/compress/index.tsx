@@ -221,7 +221,7 @@ export default function CompressPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — IMAGE COMPRESSOR</title>
+        <title>{`${branding.name.toUpperCase()} — IMAGE COMPRESSOR`}</title>
         <meta
           name="description"
           content="Compress PNG, JPEG, and WebP images. Convert to WebP or AVIF. Client-side upload with server-side sharp compression."

@@ -114,7 +114,7 @@ export default function BitwisePage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — BITWISE</title>
+        <title>{`${branding.name.toUpperCase()} — BITWISE`}</title>
         <meta name="description" content="Visualize bitwise operations (AND, OR, XOR, NAND, NOR, shifts) with binary and decimal output." />
         <meta property="og:title" content="Bitwise Operations" />
         <meta property="og:description" content="Visualize bitwise operations (AND, OR, XOR, NAND, NOR, shifts) with binary and decimal output." />

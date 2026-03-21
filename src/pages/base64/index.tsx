@@ -166,7 +166,7 @@ export default function Base64Page() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — BASE64</title>
+        <title>{`${branding.name.toUpperCase()} — BASE64`}</title>
         <meta name="description" content="Encode and decode Base64 strings instantly in your browser." />
         <meta property="og:title" content="Base64 Encoder / Decoder" />
         <meta property="og:description" content="Encode and decode Base64 strings instantly in your browser." />

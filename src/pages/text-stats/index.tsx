@@ -191,7 +191,7 @@ export default function TextStatsPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — TEXT STATS</title>
+        <title>{`${branding.name.toUpperCase()} — TEXT STATS`}</title>
         <meta name="description" content="Analyze text statistics: character count, word count, reading time, word frequency." />
         <meta property="og:title" content="Text Statistics & Character Counter" />
         <meta property="og:description" content="Analyze text statistics: character count, word count, reading time, word frequency." />

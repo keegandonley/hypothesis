@@ -159,7 +159,7 @@ export default function CronPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — CRON</title>
+        <title>{`${branding.name.toUpperCase()} — CRON`}</title>
         <meta name="description" content="Parse cron expressions and preview the next scheduled run times." />
         <meta property="og:title" content="Cron Expression Parser" />
         <meta property="og:description" content="Parse cron expressions and preview the next scheduled run times." />

@@ -385,7 +385,7 @@ export default function ColorPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — COLOR CONVERTER</title>
+        <title>{`${branding.name.toUpperCase()} — COLOR CONVERTER`}</title>
         <meta
           name="description"
           content="Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with live preview."

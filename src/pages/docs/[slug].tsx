@@ -346,9 +346,7 @@ export default function DocsPage({
   return (
     <div className={styles.page}>
       <Head>
-        <title>
-          {branding.name.toUpperCase()} — {slug.toUpperCase()} DOCS
-        </title>
+        <title>{`${branding.name.toUpperCase()} — ${slug.toUpperCase()} DOCS`}</title>
         {description && <meta name="description" content={description} />}
         <meta property="og:title" content={ogTitle} />
         {description && (

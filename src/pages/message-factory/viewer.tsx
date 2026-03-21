@@ -87,7 +87,7 @@ export default function ViewerPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — MESSAGE VIEWER</title>
+        <title>{`${branding.name.toUpperCase()} — MESSAGE VIEWER`}</title>
       </Head>
 
       <div className={styles.header}>

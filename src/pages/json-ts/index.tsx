@@ -225,7 +225,7 @@ export default function JsonTsPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — JSON → TYPESCRIPT</title>
+        <title>{`${branding.name.toUpperCase()} — JSON → TYPESCRIPT`}</title>
         <meta
           name="description"
           content="Convert a JSON sample into TypeScript interface definitions instantly."

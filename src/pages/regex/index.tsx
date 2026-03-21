@@ -157,7 +157,7 @@ export default function RegexPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — REGEX</title>
+        <title>{`${branding.name.toUpperCase()} — REGEX`}</title>
         <meta name="description" content="Test regular expressions with live match highlighting." />
         <meta property="og:title" content="Regex Tester" />
         <meta property="og:description" content="Test regular expressions with live match highlighting." />

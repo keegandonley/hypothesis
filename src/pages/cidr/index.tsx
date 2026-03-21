@@ -217,7 +217,7 @@ export default function CidrPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — CIDR</title>
+        <title>{`${branding.name.toUpperCase()} — CIDR`}</title>
         <meta name="description" content="Calculate subnet details from CIDR notation." />
         <meta property="og:title" content="CIDR Calculator" />
         <meta property="og:description" content="Calculate subnet details from CIDR notation." />

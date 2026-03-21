@@ -140,7 +140,7 @@ export default function HashPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — HASH GENERATOR</title>
+        <title>{`${branding.name.toUpperCase()} — HASH GENERATOR`}</title>
         <meta name="description" content="Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text input, entirely in your browser." />
         <meta property="og:title" content="Hash Generator" />
         <meta property="og:description" content="Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text input, entirely in your browser." />

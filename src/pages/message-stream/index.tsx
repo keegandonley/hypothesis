@@ -95,7 +95,7 @@ export default function MessagesPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — MESSAGE STREAM</title>
+        <title>{`${branding.name.toUpperCase()} — MESSAGE STREAM`}</title>
       </Head>
       <div className={styles.header}>
         <div className={styles.eyebrow}>

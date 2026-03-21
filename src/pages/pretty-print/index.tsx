@@ -92,7 +92,7 @@ export default function PrettyPrintPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — PRETTY PRINT</title>
+        <title>{`${branding.name.toUpperCase()} — PRETTY PRINT`}</title>
         <meta name="description" content="Format and validate JSON with syntax highlighting." />
         <meta property="og:title" content="JSON Pretty Printer" />
         <meta property="og:description" content="Format and validate JSON with syntax highlighting." />

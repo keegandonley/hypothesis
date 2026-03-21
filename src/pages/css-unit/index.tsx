@@ -193,7 +193,7 @@ export default function CssUnitPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — CSS UNIT</title>
+        <title>{`${branding.name.toUpperCase()} — CSS UNIT`}</title>
         <meta name="description" content="Convert between CSS units: px, rem, em, %, vh, vw, pt, cm, mm, in." />
         <meta property="og:title" content="CSS Unit Converter" />
         <meta property="og:description" content="Convert between CSS units: px, rem, em, %, vh, vw, pt, cm, mm, in." />

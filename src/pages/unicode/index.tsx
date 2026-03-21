@@ -197,7 +197,7 @@ export default function UnicodePage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — UNICODE INSPECTOR</title>
+        <title>{`${branding.name.toUpperCase()} — UNICODE INSPECTOR`}</title>
         <meta name="description" content="Inspect each character's code point, UTF-8/UTF-16 encoding, Unicode category, script, and HTML entity." />
         <meta property="og:title" content="Unicode Inspector" />
         <meta property="og:description" content="Inspect each character's code point, UTF-8/UTF-16 encoding, Unicode category, script, and HTML entity." />

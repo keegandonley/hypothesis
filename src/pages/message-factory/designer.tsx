@@ -165,7 +165,7 @@ export default function DesignerPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — MESSAGE DESIGNER</title>
+        <title>{`${branding.name.toUpperCase()} — MESSAGE DESIGNER`}</title>
       </Head>
 
       <div className={styles.header}>

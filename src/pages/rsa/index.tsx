@@ -318,7 +318,7 @@ export default function RsaPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — RSA ENCRYPTION</title>
+        <title>{`${branding.name.toUpperCase()} — RSA ENCRYPTION`}</title>
         <meta
           name="description"
           content="Interactive RSA-OAEP encryption experiment. Generate a key pair, encrypt a message, and decrypt it — all in-browser using the Web Crypto API."

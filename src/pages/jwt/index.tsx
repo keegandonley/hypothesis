@@ -159,7 +159,7 @@ export default function JwtPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — JWT DECODER</title>
+        <title>{`${branding.name.toUpperCase()} — JWT DECODER`}</title>
         <meta name="description" content="Decode JWT tokens and inspect header, payload claims, and expiry status in your browser." />
         <meta property="og:title" content="JWT Decoder" />
         <meta property="og:description" content="Decode JWT tokens and inspect header, payload claims, and expiry status in your browser." />

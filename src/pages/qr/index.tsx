@@ -145,7 +145,7 @@ export default function QrPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — QR CODE</title>
+        <title>{`${branding.name.toUpperCase()} — QR CODE`}</title>
         <meta name="description" content="Generate QR codes from any text or URL. Download as SVG or PNG." />
         <meta property="og:title" content="QR Code Generator" />
         <meta property="og:description" content="Generate QR codes from any text or URL. Download as SVG or PNG." />

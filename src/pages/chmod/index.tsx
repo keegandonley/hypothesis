@@ -158,7 +158,7 @@ export default function ChmodPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — CHMOD</title>
+        <title>{`${branding.name.toUpperCase()} — CHMOD`}</title>
         <meta name="description" content="Calculate Unix file permissions from numeric or symbolic mode." />
         <meta property="og:title" content="Chmod Calculator" />
         <meta property="og:description" content="Calculate Unix file permissions from numeric or symbolic mode." />

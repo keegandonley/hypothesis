@@ -278,7 +278,7 @@ export default function HtmlEntityPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — HTML ENTITY</title>
+        <title>{`${branding.name.toUpperCase()} — HTML ENTITY`}</title>
         <meta name="description" content="Encode and decode HTML entities for safe display in web pages." />
         <meta property="og:title" content="HTML Entity Encoder / Decoder" />
         <meta property="og:description" content="Encode and decode HTML entities for safe display in web pages." />

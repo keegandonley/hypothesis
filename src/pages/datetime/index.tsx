@@ -212,7 +212,7 @@ export default function DateTimePage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — DATETIME</title>
+        <title>{`${branding.name.toUpperCase()} — DATETIME`}</title>
         <meta name="description" content="Parse, convert, and format dates and timestamps across timezones." />
         <meta property="og:title" content="Datetime Converter" />
         <meta property="og:description" content="Parse, convert, and format dates and timestamps across timezones." />

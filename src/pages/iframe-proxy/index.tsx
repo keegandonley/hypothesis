@@ -109,7 +109,7 @@ export default function IframeProxyPage() {
   return (
     <>
       <Head>
-        <title>{branding.name.toUpperCase()} — IFRAME PROXY</title>
+        <title>{`${branding.name.toUpperCase()} — IFRAME PROXY`}</title>
       </Head>
       {debug && (
         <div className={styles.topBar}>

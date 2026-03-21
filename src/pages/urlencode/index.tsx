@@ -90,7 +90,7 @@ export default function UrlEncodePage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — URL ENCODE</title>
+        <title>{`${branding.name.toUpperCase()} — URL ENCODE`}</title>
         <meta name="description" content="Encode and decode URL-encoded strings." />
         <meta property="og:title" content="URL Encoder / Decoder" />
         <meta property="og:description" content="Encode and decode URL-encoded strings." />

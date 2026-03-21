@@ -148,7 +148,7 @@ export default function LoremPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{branding.name.toUpperCase()} — LOREM IPSUM</title>
+        <title>{`${branding.name.toUpperCase()} — LOREM IPSUM`}</title>
         <meta name="description" content="Generate lorem ipsum placeholder text by words, sentences, or paragraphs." />
         <meta property="og:title" content="Lorem Ipsum Generator" />
         <meta property="og:description" content="Generate lorem ipsum placeholder text by words, sentences, or paragraphs." />
