@@ -3,84 +3,80 @@ import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
-import { STATUS_CODES, STATUS_CLASSES } from "@/data/http-status-codes";
+import { MIME_CATEGORIES } from "@/data/mime-types";
 
-export default function HttpStatusCodesPage() {
+export default function MimeTypesPage() {
   const branding = useBranding();
   const [search, setSearch] = useState("");
-  const [activeClass, setActiveClass] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("all");
 
-  // Restore state from URL on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const q = params.get("q");
-    const cls = params.get("class");
+    const cat = params.get("cat");
     if (q) setSearch(q);
-    if (cls) setActiveClass(cls);
+    if (cat) setActiveCategory(cat);
   }, []);
 
-  function updateUrl(q: string, cls: string) {
+  function updateUrl(q: string, cat: string) {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
-    if (cls !== "all") params.set("class", cls);
+    if (cat !== "all") params.set("cat", cat);
     const qs = params.toString();
-    history.replaceState(
-      null,
-      "",
-      qs ? `?${qs}` : window.location.pathname,
-    );
+    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }
 
   function handleSearch(value: string) {
     setSearch(value);
-    updateUrl(value, activeClass);
+    updateUrl(value, activeCategory);
   }
 
-  function handleClassToggle(cls: string) {
-    const next = activeClass === cls ? "all" : cls;
-    setActiveClass(next);
+  function handleCategoryToggle(cat: string) {
+    const next = activeCategory === cat ? "all" : cat;
+    setActiveCategory(next);
     updateUrl(search, next);
   }
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return STATUS_CLASSES.map((cls) => {
-      const codes = STATUS_CODES[cls.class].filter((code) => {
-        if (activeClass !== "all" && activeClass !== cls.class) return false;
+    return MIME_CATEGORIES.map((cat) => {
+      const types = cat.types.filter((t) => {
+        if (activeCategory !== "all" && activeCategory !== cat.category)
+          return false;
         if (!q) return true;
         return (
-          String(code.code).includes(q) ||
-          code.name.toLowerCase().includes(q) ||
-          code.description.toLowerCase().includes(q)
+          t.type.toLowerCase().includes(q) ||
+          t.description.toLowerCase().includes(q) ||
+          t.extensions.some((e) => e.toLowerCase().includes(q))
         );
       });
-      return { ...cls, codes };
-    }).filter((s) => s.codes.length > 0);
-  }, [search, activeClass]);
+      return { ...cat, types };
+    }).filter((s) => s.types.length > 0);
+  }, [search, activeCategory]);
 
   return (
     <div className={styles.page}>
       <Head>
-        <title>{`${branding.name.toUpperCase()} — HTTP STATUS CODES`}</title>
+        <title>{`${branding.name.toUpperCase()} — MIME TYPES`}</title>
         <meta
           name="description"
-          content="Complete reference for HTTP response status codes with color coding and instant search."
+          content="Complete reference for MIME content types with extensions and descriptions."
         />
-        <meta property="og:title" content="HTTP Status Codes" />
+        <meta property="og:title" content="MIME Types" />
         <meta
           property="og:description"
-          content="Complete reference for HTTP response status codes: 1xx through 5xx."
+          content="Complete reference for MIME content types: text, application, image, audio, video, font."
         />
         <meta
           property="og:url"
-          content="https://hypothesis.sh/references/http-status-codes"
+          content="https://hypothesis.sh/references/mime-types"
         />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="HTTP Status Codes" />
+        <meta name="twitter:title" content="MIME Types" />
         <link
           rel="canonical"
-          href="https://hypothesis.sh/references/http-status-codes"
+          href="https://hypothesis.sh/references/mime-types"
         />
       </Head>
 
@@ -95,9 +91,10 @@ export default function HttpStatusCodesPage() {
         <hr className={styles.divider} />
 
         <div className={styles.header}>
-          <h1 className={styles.title}>HTTP Status Codes</h1>
+          <h1 className={styles.title}>MIME Types</h1>
           <p className={styles.tagline}>
-            Complete reference for HTTP response status codes.
+            Content-Type values for text, images, audio, video, fonts, and
+            more.
           </p>
         </div>
 
@@ -107,7 +104,7 @@ export default function HttpStatusCodesPage() {
             <input
               className={styles.searchInput}
               type="text"
-              placeholder="Search by code, name, or description..."
+              placeholder="Search by type, extension, or description..."
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
               autoComplete="off"
@@ -126,25 +123,25 @@ export default function HttpStatusCodesPage() {
 
           <div className={styles.classFilters}>
             <button
-              className={`${styles.classBtn} ${activeClass === "all" ? styles.classBtnActive : ""}`}
-              onClick={() => handleClassToggle("all")}
+              className={`${styles.classBtn} ${activeCategory === "all" ? styles.classBtnActive : ""}`}
+              onClick={() => handleCategoryToggle("all")}
             >
               All
             </button>
-            {STATUS_CLASSES.map((cls) => (
+            {MIME_CATEGORIES.map((cat) => (
               <button
-                key={cls.class}
-                className={`${styles.classBtn} ${activeClass === cls.class ? styles.classBtnActive : ""}`}
+                key={cat.category}
+                className={`${styles.classBtn} ${activeCategory === cat.category ? styles.classBtnActive : ""}`}
                 style={
                   {
-                    "--cls-color": cls.color,
-                    "--cls-subtle": cls.subtle,
+                    "--cls-color": cat.color,
+                    "--cls-subtle": cat.subtle,
                   } as React.CSSProperties
                 }
-                onClick={() => handleClassToggle(cls.class)}
+                onClick={() => handleCategoryToggle(cat.category)}
               >
-                {cls.class}
-                <span className={styles.classBtnLabel}>{cls.label}</span>
+                {cat.badge}
+                <span className={styles.classBtnLabel}>{cat.label}</span>
               </button>
             ))}
           </div>
@@ -153,11 +150,11 @@ export default function HttpStatusCodesPage() {
         <div className={styles.content}>
           {filteredSections.length === 0 ? (
             <div className={styles.empty}>
-              No codes match &ldquo;{search}&rdquo;
+              No types match &ldquo;{search}&rdquo;
             </div>
           ) : (
             filteredSections.map((section) => (
-              <div key={section.class} className={styles.section}>
+              <div key={section.category} className={styles.section}>
                 <div
                   className={styles.sectionHeader}
                   style={
@@ -168,19 +165,19 @@ export default function HttpStatusCodesPage() {
                     } as React.CSSProperties
                   }
                 >
-                  <span className={styles.sectionClass}>{section.class}</span>
+                  <span className={styles.sectionClass}>{section.badge}</span>
                   <span className={styles.sectionLabel}>{section.label}</span>
                   <span className={styles.sectionCount}>
-                    {section.codes.length}{" "}
-                    {section.codes.length === 1 ? "code" : "codes"}
+                    {section.types.length}{" "}
+                    {section.types.length === 1 ? "type" : "types"}
                   </span>
                 </div>
 
                 <div className={styles.codeList}>
-                  {section.codes.map((code) => (
+                  {section.types.map((t) => (
                     <div
-                      key={code.code}
-                      className={styles.codeRow}
+                      key={t.type}
+                      className={styles.codeRowFull}
                       style={
                         {
                           "--cls-color": section.color,
@@ -189,12 +186,20 @@ export default function HttpStatusCodesPage() {
                         } as React.CSSProperties
                       }
                     >
-                      <span className={styles.codeBadge}>{code.code}</span>
                       <div className={styles.codeInfo}>
-                        <span className={styles.codeName}>{code.name}</span>
+                        <span className={styles.codeNameMono}>{t.type}</span>
                         <span className={styles.codeDesc}>
-                          {code.description}
+                          {t.description}
                         </span>
+                        {t.extensions.length > 0 && (
+                          <div className={styles.extList}>
+                            {t.extensions.map((ext) => (
+                              <span key={ext} className={styles.ext}>
+                                {ext}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

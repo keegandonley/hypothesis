@@ -270,6 +270,18 @@
   transition: background-color 0.1s;
 }
 
+.codeRowFull {
+  display: block;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: default;
+  transition: background-color 0.1s;
+}
+
+.codeRowFull:hover {
+  background-color: var(--card-bg);
+}
+
 .codeRow:hover {
   background-color: var(--card-bg);
 }
@@ -310,6 +322,65 @@
   color: var(--muted);
   line-height: 1.55;
   letter-spacing: 0.01em;
+}
+
+/* ── Extras (MIME extensions, signal flags) ──────────────────────────────── */
+
+.codeNum {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  margin-right: 8px;
+}
+
+.codeNameMono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.03em;
+  line-height: 1.3;
+}
+
+.extList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.ext {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 5px;
+  line-height: 1.6;
+}
+
+.flagRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 3px;
+}
+
+.flagBadge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f87171;
+  background-color: #f8717118;
+  border: 1px solid #f8717133;
+  border-radius: 3px;
+  padding: 1px 6px;
+  line-height: 1.6;
 }
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */

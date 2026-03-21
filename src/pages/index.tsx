@@ -34,6 +34,20 @@ const references = [
       "Complete reference for HTTP response status codes: 1xx through 5xx, with descriptions, use cases, and caching behavior.",
     href: "/references/http-status-codes",
   },
+  {
+    id: "REF-002",
+    name: "MIME types",
+    description:
+      "Content-Type values for text, application, image, audio, video, font, and multipart formats with file extensions.",
+    href: "/references/mime-types",
+  },
+  {
+    id: "REF-003",
+    name: "Unix signals",
+    description:
+      "Signal numbers, names, and default actions for POSIX signals — from SIGTERM and SIGKILL to SIGWINCH and SIGCHLD.",
+    href: "/references/unix-signals",
+  },
 ];
 
 const experiments = [
