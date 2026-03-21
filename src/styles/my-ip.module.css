@@ -1,0 +1,212 @@
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 28px 28px;
+  font-family: var(--font-mono);
+  color: var(--text);
+  padding: 20px;
+}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 0.4em;
+}
+
+.title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.tagline {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0 0 16px;
+}
+
+.icon {
+  margin-right: 4px;
+}
+
+.docsLink {
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+
+.docsLink:hover {
+  color: var(--accent);
+}
+
+.domainLink {
+  display: flex;
+  align-items: center;
+  color: var(--accent);
+  transition: color 0.15s ease;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ipPanel,
+.detailsPanel {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--card-bg);
+  overflow: hidden;
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panelLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+}
+
+.ipValue {
+  padding: 20px 14px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text);
+}
+
+.muted {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.error {
+  color: #f87171;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  padding: 7px 14px;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.rowLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-weight: 600;
+  flex-shrink: 0;
+  width: 110px;
+}
+
+.rowValue {
+  font-size: 12px;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.copyBtn {
+  padding: 4px 10px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.copyBtn:hover {
+  background-color: var(--border);
+}
+
+.copyBtn.copied {
+  background-color: var(--accent-subtle);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.refreshBtn {
+  padding: 6px 14px;
+  background-color: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  background-color: var(--accent-hover);
+}
+
+.refreshBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

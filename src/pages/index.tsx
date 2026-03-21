@@ -252,6 +252,14 @@ const tools: {
     tags: ["encoding", "web", "text"],
   },
   {
+    name: "my ip",
+    description:
+      "Look up your current public IP address with geolocation, ASN, and network details.",
+    href: "/my-ip",
+    docsHref: "/docs/my-ip",
+    tags: ["web", "sysadmin"],
+  },
+  {
     name: "uuid",
     description:
       "Generate UUIDs of any version with one click and shareable permalinks.",
