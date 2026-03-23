@@ -26,6 +26,56 @@ const TAG_COLORS: Record<Tag, { color: string; subtle: string }> = {
   text: { color: "#34d399", subtle: "#34d39918" },
 };
 
+const references: {
+  name: string;
+  description: string;
+  href: string;
+  tags: Tag[];
+}[] = [
+  {
+    name: "HTTP status codes",
+    description:
+      "Complete reference for HTTP response status codes: 1xx through 5xx, with descriptions, use cases, and caching behavior.",
+    href: "/references/http-status-codes",
+    tags: ["web"],
+  },
+  {
+    name: "MIME types",
+    description:
+      "Content-Type values for text, application, image, audio, video, font, and multipart formats with file extensions.",
+    href: "/references/mime-types",
+    tags: ["web"],
+  },
+  {
+    name: "Unix signals",
+    description:
+      "Signal numbers, names, and default actions for POSIX signals — from SIGTERM and SIGKILL to SIGWINCH and SIGCHLD.",
+    href: "/references/unix-signals",
+    tags: ["sysadmin"],
+  },
+  {
+    name: "HTTP headers",
+    description:
+      "Request and response header fields: caching, authentication, CORS, security, content negotiation, and more.",
+    href: "/references/http-headers",
+    tags: ["web"],
+  },
+  {
+    name: "ASCII table",
+    description:
+      "All 128 ASCII characters with decimal, hexadecimal, octal, and named descriptions.",
+    href: "/references/ascii",
+    tags: ["text", "encoding"],
+  },
+  {
+    name: "Unicode blocks",
+    description:
+      "Named code point ranges from Basic Latin to Supplementary planes, with assigned character counts and sample glyphs.",
+    href: "/references/unicode-blocks",
+    tags: ["text", "encoding"],
+  },
+];
+
 const experiments = [
   {
     id: "EXP-001",
@@ -381,6 +431,15 @@ export default function HomePage({
         </div>
 
         <div className={styles.section}>
+          <div className={styles.sectionLabel}>References</div>
+          <div className={styles.toolCards}>
+            {references.map((ref) => (
+              <ExperimentCard key={ref.name} {...ref} compact />
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.section}>
           <div className={styles.sectionLabel}>About this project</div>
           <a
             href="https://keegan.codes/blog/claude-code-developer-tools"
@@ -424,6 +483,7 @@ export default function HomePage({
   );
 }
 
+
 function ExperimentCard({
   id,
   name,
@@ -437,7 +497,7 @@ function ExperimentCard({
   name: string;
   description: string;
   href: string;
-  docsHref: string;
+  docsHref?: string;
   compact?: boolean;
   tags?: Tag[];
 }) {
@@ -467,10 +527,12 @@ function ExperimentCard({
         </div>
       )}
       <div className={compact ? styles.cardFooterCompact : styles.cardFooter}>
-        <Link href={docsHref} className={styles.docsLink}>
-          <DocIcon />
-          docs
-        </Link>
+        {docsHref && (
+          <Link href={docsHref} className={styles.docsLink}>
+            <DocIcon />
+            docs
+          </Link>
+        )}
         {tags && tags.length > 0 && (
           <div className={styles.cardTags}>
             {tags.map((tag) => (

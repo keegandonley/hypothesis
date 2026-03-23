@@ -18,6 +18,28 @@ Look up your current public IP address and geolocation details.
 | **Longitude** | `x-vercel-ip-longitude` | Approximate longitude |
 | **Timezone** | `x-vercel-ip-timezone` | IANA timezone identifier (e.g. `America/New_York`) |
 
+## API Usage
+
+The endpoint returns JSON and can be called directly:
+
+```bash
+curl https://hypothesis.sh/api/my-ip
+```
+
+Example response:
+
+```json
+{
+  "ip": "203.0.113.42",
+  "city": "San Francisco",
+  "region": "CA",
+  "country": "US",
+  "latitude": "37.7749",
+  "longitude": "-122.4194",
+  "timezone": "America/Los_Angeles"
+}
+```
+
 ## Accuracy
 
 Geolocation is approximate and provided by Vercel's edge infrastructure. VPNs and proxies will show the location of the exit node rather than your physical location. In local development the location fields will be absent.

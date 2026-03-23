@@ -1,0 +1,197 @@
+export interface UnicodeBlock {
+  name: string;
+  start: number;
+  end: number;
+  assigned: number;
+  sample: string[];
+}
+
+export interface UnicodeBlockGroup {
+  id: string;
+  label: string;
+  badge: string;
+  color: string;
+  subtle: string;
+  border: string;
+  blocks: UnicodeBlock[];
+}
+
+export const UNICODE_BLOCK_GROUPS: UnicodeBlockGroup[] = [
+  {
+    id: "latin",
+    label: "Latin & Extensions",
+    badge: "Latin",
+    color: "#60a5fa",
+    subtle: "#60a5fa18",
+    border: "#60a5fa33",
+    blocks: [
+      { name: "Basic Latin",                    start: 0x0000, end: 0x007F, assigned: 128,  sample: ["A", "z", "0", "!", "@"] },
+      { name: "Latin-1 Supplement",             start: 0x0080, end: 0x00FF, assigned: 128,  sample: ["é", "ñ", "ü", "ø", "Ç"] },
+      { name: "Latin Extended-A",               start: 0x0100, end: 0x017F, assigned: 128,  sample: ["ā", "ě", "ī", "ŋ", "ź"] },
+      { name: "Latin Extended-B",               start: 0x0180, end: 0x024F, assigned: 208,  sample: ["ƀ", "ƒ", "ǆ", "ǿ", "ȼ"] },
+      { name: "IPA Extensions",                 start: 0x0250, end: 0x02AF, assigned: 96,   sample: ["ə", "ɛ", "ɪ", "ʃ", "ʒ"] },
+      { name: "Spacing Modifier Letters",       start: 0x02B0, end: 0x02FF, assigned: 80,   sample: ["ʰ", "ʷ", "ˈ", "ˌ", "ː"] },
+      { name: "Latin Extended Additional",      start: 0x1E00, end: 0x1EFF, assigned: 256,  sample: ["Ḁ", "ẃ", "ẑ", "ọ", "ự"] },
+      { name: "Latin Extended-C",               start: 0x2C60, end: 0x2C7F, assigned: 32,   sample: ["Ⱡ", "ⱥ", "ⱦ", "ⱨ", "ⱳ"] },
+      { name: "Latin Extended-D",               start: 0xA720, end: 0xA7FF, assigned: 140,  sample: ["ꜣ", "ꜥ", "ꝑ", "ꝓ", "ꞃ"] },
+      { name: "Alphabetic Presentation Forms",  start: 0xFB00, end: 0xFB4F, assigned: 58,   sample: ["ﬀ", "ﬁ", "ﬂ", "ﬃ", "ﬄ"] },
+    ],
+  },
+  {
+    id: "greek-cyrillic",
+    label: "Greek & Cyrillic",
+    badge: "Gr/Cy",
+    color: "#f472b6",
+    subtle: "#f472b618",
+    border: "#f472b633",
+    blocks: [
+      { name: "Greek and Coptic",               start: 0x0370, end: 0x03FF, assigned: 135,  sample: ["α", "β", "γ", "Ω", "π"] },
+      { name: "Greek Extended",                 start: 0x1F00, end: 0x1FFF, assigned: 233,  sample: ["ἀ", "ἐ", "ἠ", "ὀ", "ώ"] },
+      { name: "Cyrillic",                       start: 0x0400, end: 0x04FF, assigned: 256,  sample: ["А", "Б", "Я", "ж", "щ"] },
+      { name: "Cyrillic Supplement",            start: 0x0500, end: 0x052F, assigned: 48,   sample: ["ԁ", "ԃ", "ԅ", "ԇ", "ԉ"] },
+      { name: "Cyrillic Extended-A",            start: 0x2DE0, end: 0x2DFF, assigned: 32,   sample: ["ⷠ", "ⷡ", "ⷢ", "ⷣ", "ⷤ"] },
+      { name: "Armenian",                       start: 0x0530, end: 0x058F, assigned: 91,   sample: ["Ա", "Բ", "Գ", "ա", "բ"] },
+      { name: "Georgian",                       start: 0x10A0, end: 0x10FF, assigned: 87,   sample: ["Ⴀ", "Ⴁ", "ბ", "გ", "დ"] },
+    ],
+  },
+  {
+    id: "middle-east",
+    label: "Middle East",
+    badge: "ME",
+    color: "#fbbf24",
+    subtle: "#fbbf2418",
+    border: "#fbbf2433",
+    blocks: [
+      { name: "Hebrew",                         start: 0x0590, end: 0x05FF, assigned: 88,   sample: ["א", "ב", "ג", "ד", "ה"] },
+      { name: "Arabic",                         start: 0x0600, end: 0x06FF, assigned: 255,  sample: ["ا", "ب", "ت", "ج", "م"] },
+      { name: "Arabic Supplement",              start: 0x0750, end: 0x077F, assigned: 48,   sample: ["ݐ", "ݑ", "ݒ", "ݓ", "ݔ"] },
+      { name: "Arabic Extended-A",              start: 0x08A0, end: 0x08FF, assigned: 73,   sample: ["ࢠ", "ࢡ", "ࢢ", "ࣤ", "ؠ"] },
+      { name: "Syriac",                         start: 0x0700, end: 0x074F, assigned: 77,   sample: ["ܐ", "ܒ", "ܓ", "ܕ", "ܗ"] },
+      { name: "Thaana",                         start: 0x0780, end: 0x07BF, assigned: 50,   sample: ["ހ", "ށ", "ނ", "ރ", "ބ"] },
+      { name: "Arabic Presentation Forms-A",    start: 0xFB50, end: 0xFDFF, assigned: 611,  sample: ["ﭐ", "ﭑ", "ﭒ", "ﭓ", "ﭔ"] },
+      { name: "Arabic Presentation Forms-B",    start: 0xFE70, end: 0xFEFF, assigned: 141,  sample: ["ﹰ", "ﹱ", "ﹲ", "ﹳ", "ﹴ"] },
+    ],
+  },
+  {
+    id: "south-asian",
+    label: "South Asian",
+    badge: "SA",
+    color: "#34d399",
+    subtle: "#34d39918",
+    border: "#34d39933",
+    blocks: [
+      { name: "Devanagari",                     start: 0x0900, end: 0x097F, assigned: 128,  sample: ["अ", "आ", "क", "ग", "म"] },
+      { name: "Bengali",                        start: 0x0980, end: 0x09FF, assigned: 96,   sample: ["অ", "আ", "ক", "গ", "ম"] },
+      { name: "Gurmukhi",                       start: 0x0A00, end: 0x0A7F, assigned: 80,   sample: ["ਅ", "ਆ", "ਕ", "ਗ", "ਮ"] },
+      { name: "Gujarati",                       start: 0x0A80, end: 0x0AFF, assigned: 91,   sample: ["અ", "આ", "ક", "ગ", "મ"] },
+      { name: "Oriya",                          start: 0x0B00, end: 0x0B7F, assigned: 90,   sample: ["ଅ", "ଆ", "କ", "ଗ", "ମ"] },
+      { name: "Tamil",                          start: 0x0B80, end: 0x0BFF, assigned: 72,   sample: ["அ", "ஆ", "க", "ங", "ம"] },
+      { name: "Telugu",                         start: 0x0C00, end: 0x0C7F, assigned: 98,   sample: ["అ", "ఆ", "క", "గ", "మ"] },
+      { name: "Kannada",                        start: 0x0C80, end: 0x0CFF, assigned: 89,   sample: ["ಅ", "ಆ", "ಕ", "ಗ", "ಮ"] },
+      { name: "Malayalam",                      start: 0x0D00, end: 0x0D7F, assigned: 118,  sample: ["അ", "ആ", "ക", "ഗ", "മ"] },
+      { name: "Sinhala",                        start: 0x0D80, end: 0x0DFF, assigned: 80,   sample: ["අ", "ආ", "ක", "ග", "ම"] },
+    ],
+  },
+  {
+    id: "east-asian",
+    label: "East Asian",
+    badge: "EA",
+    color: "#fb923c",
+    subtle: "#fb923c18",
+    border: "#fb923c33",
+    blocks: [
+      { name: "CJK Unified Ideographs",         start: 0x4E00, end: 0x9FFF, assigned: 20902, sample: ["中", "文", "日", "本", "語"] },
+      { name: "CJK Unified Ideographs Ext. A",  start: 0x3400, end: 0x4DBF, assigned: 6592,  sample: ["㐀", "㐁", "㐂", "㐃", "㐄"] },
+      { name: "CJK Compatibility Ideographs",   start: 0xF900, end: 0xFAFF, assigned: 512,   sample: ["豈", "更", "車", "賈", "滑"] },
+      { name: "Hiragana",                       start: 0x3040, end: 0x309F, assigned: 93,    sample: ["あ", "い", "う", "え", "お"] },
+      { name: "Katakana",                       start: 0x30A0, end: 0x30FF, assigned: 96,    sample: ["ア", "イ", "ウ", "エ", "オ"] },
+      { name: "Katakana Phonetic Extensions",   start: 0x31F0, end: 0x31FF, assigned: 16,    sample: ["ㇰ", "ㇱ", "ㇲ", "ㇳ", "ㇴ"] },
+      { name: "Hangul Syllables",               start: 0xAC00, end: 0xD7AF, assigned: 11172, sample: ["가", "나", "다", "라", "마"] },
+      { name: "Hangul Jamo",                    start: 0x1100, end: 0x11FF, assigned: 256,   sample: ["ᄀ", "ᄂ", "ᄃ", "ᄅ", "ᄆ"] },
+      { name: "Bopomofo",                       start: 0x02EA, end: 0x02EB, assigned: 42,    sample: ["ㄅ", "ㄆ", "ㄇ", "ㄈ", "ㄉ"] },
+      { name: "CJK Radicals Supplement",        start: 0x2E80, end: 0x2EFF, assigned: 115,   sample: ["⺀", "⺁", "⺂", "⺃", "⺄"] },
+      { name: "Kangxi Radicals",                start: 0x2F00, end: 0x2FDF, assigned: 214,   sample: ["⼀", "⼁", "⼂", "⼃", "⼄"] },
+      { name: "CJK Compatibility",              start: 0x3300, end: 0x33FF, assigned: 256,   sample: ["㌀", "㌁", "㌂", "㌃", "㎝"] },
+    ],
+  },
+  {
+    id: "southeast-asian",
+    label: "Southeast Asian",
+    badge: "SEA",
+    color: "#2dd4bf",
+    subtle: "#2dd4bf18",
+    border: "#2dd4bf33",
+    blocks: [
+      { name: "Thai",                           start: 0x0E00, end: 0x0E7F, assigned: 87,   sample: ["ก", "ข", "ค", "ง", "จ"] },
+      { name: "Lao",                            start: 0x0E80, end: 0x0EFF, assigned: 67,   sample: ["ກ", "ຂ", "ຄ", "ງ", "ຈ"] },
+      { name: "Myanmar",                        start: 0x1000, end: 0x109F, assigned: 160,  sample: ["က", "ခ", "ဂ", "ဃ", "င"] },
+      { name: "Khmer",                          start: 0x1780, end: 0x17FF, assigned: 114,  sample: ["ក", "ខ", "គ", "ឃ", "ង"] },
+      { name: "Tibetan",                        start: 0x0F00, end: 0x0FFF, assigned: 211,  sample: ["ཀ", "ཁ", "ག", "ང", "ཅ"] },
+      { name: "Mongolian",                      start: 0x1800, end: 0x18AF, assigned: 156,  sample: ["᠀", "ᠠ", "ᠡ", "ᠢ", "ᠣ"] },
+      { name: "Ethiopic",                       start: 0x1200, end: 0x137F, assigned: 358,  sample: ["ሀ", "ሁ", "ሂ", "ሃ", "ሄ"] },
+      { name: "Cherokee",                       start: 0x13A0, end: 0x13FF, assigned: 92,   sample: ["Ꭰ", "Ꭱ", "Ꭲ", "Ꭳ", "Ꭴ"] },
+    ],
+  },
+  {
+    id: "symbols",
+    label: "Symbols & Misc",
+    badge: "Sym",
+    color: "#c084fc",
+    subtle: "#c084fc18",
+    border: "#c084fc33",
+    blocks: [
+      { name: "General Punctuation",            start: 0x2000, end: 0x206F, assigned: 111,  sample: ["–", "—", "…", "\u2018", "\u2019"] },
+      { name: "Arrows",                         start: 0x2190, end: 0x21FF, assigned: 112,  sample: ["←", "→", "↑", "↓", "↔"] },
+      { name: "Mathematical Operators",         start: 0x2200, end: 0x22FF, assigned: 256,  sample: ["∀", "∃", "∈", "∑", "√"] },
+      { name: "Miscellaneous Technical",        start: 0x2300, end: 0x23FF, assigned: 255,  sample: ["⌀", "⌂", "⌘", "⌛", "⏎"] },
+      { name: "Dingbats",                       start: 0x2700, end: 0x27BF, assigned: 192,  sample: ["✂", "✈", "✓", "✗", "✦"] },
+      { name: "Miscellaneous Symbols",          start: 0x2600, end: 0x26FF, assigned: 256,  sample: ["☀", "☂", "☎", "♠", "♦"] },
+      { name: "Miscellaneous Symbols & Arrows", start: 0x2B00, end: 0x2BFF, assigned: 207,  sample: ["⬀", "⬁", "⬂", "⬆", "⬇"] },
+      { name: "Letterlike Symbols",             start: 0x2100, end: 0x214F, assigned: 80,   sample: ["℃", "™", "Ω", "ℕ", "ℤ"] },
+      { name: "Number Forms",                   start: 0x2150, end: 0x218F, assigned: 60,   sample: ["½", "⅓", "¼", "Ⅰ", "Ⅴ"] },
+      { name: "Currency Symbols",               start: 0x20A0, end: 0x20CF, assigned: 32,   sample: ["€", "£", "¥", "₹", "₿"] },
+      { name: "Emoticons",                      start: 0x1F600, end: 0x1F64F, assigned: 80, sample: ["😀", "😂", "😍", "🙏", "😭"] },
+      { name: "Miscellaneous Symbols & Pictographs", start: 0x1F300, end: 0x1F5FF, assigned: 768, sample: ["🌍", "🎉", "🔥", "🎵", "🏆"] },
+    ],
+  },
+  {
+    id: "technical",
+    label: "Technical",
+    badge: "Tech",
+    color: "#a78bfa",
+    subtle: "#a78bfa18",
+    border: "#a78bfa33",
+    blocks: [
+      { name: "Control Pictures",               start: 0x2400, end: 0x243F, assigned: 39,   sample: ["␀", "␁", "␉", "␊", "␣"] },
+      { name: "Enclosed Alphanumerics",         start: 0x2460, end: 0x24FF, assigned: 160,  sample: ["①", "②", "③", "Ⓐ", "Ⓩ"] },
+      { name: "Box Drawing",                    start: 0x2500, end: 0x257F, assigned: 128,  sample: ["─", "│", "┌", "┐", "┼"] },
+      { name: "Block Elements",                 start: 0x2580, end: 0x259F, assigned: 32,   sample: ["▀", "▄", "█", "░", "▓"] },
+      { name: "Geometric Shapes",               start: 0x25A0, end: 0x25FF, assigned: 96,   sample: ["■", "□", "▲", "△", "●"] },
+      { name: "Braille Patterns",               start: 0x2800, end: 0x28FF, assigned: 256,  sample: ["⠀", "⠁", "⠃", "⠇", "⣿"] },
+      { name: "Optical Character Recognition",  start: 0x2440, end: 0x245F, assigned: 11,   sample: ["⑀", "⑁", "⑂", "⑃", "⑄"] },
+      { name: "Enclosed CJK Letters & Months",  start: 0x3200, end: 0x32FF, assigned: 255,  sample: ["㈠", "㈡", "㊀", "㊁", "㋀"] },
+      { name: "Supplemental Arrows-A",          start: 0x27F0, end: 0x27FF, assigned: 16,   sample: ["⟰", "⟱", "⟲", "⟳", "⟴"] },
+      { name: "Supplemental Arrows-B",          start: 0x2900, end: 0x297F, assigned: 128,  sample: ["⤀", "⤁", "⤂", "⤃", "⤄"] },
+      { name: "Mathematical Alphanumeric Symbols", start: 0x1D400, end: 0x1D7FF, assigned: 996, sample: ["𝐀", "𝐁", "𝛼", "𝛽", "𝟎"] },
+    ],
+  },
+  {
+    id: "historical",
+    label: "Historical",
+    badge: "Hist",
+    color: "#f87171",
+    subtle: "#f8717118",
+    border: "#f8717133",
+    blocks: [
+      { name: "Runic",                          start: 0x16A0, end: 0x16FF, assigned: 89,   sample: ["ᚠ", "ᚡ", "ᚢ", "ᚣ", "ᚤ"] },
+      { name: "Ogham",                          start: 0x1680, end: 0x169F, assigned: 29,   sample: ["᚛", "ᚁ", "ᚂ", "ᚃ", "ᚄ"] },
+      { name: "Old Italic",                     start: 0x10300, end: 0x1032F, assigned: 35, sample: ["𐌀", "𐌁", "𐌂", "𐌃", "𐌄"] },
+      { name: "Gothic",                         start: 0x10330, end: 0x1034F, assigned: 27, sample: ["𐌰", "𐌱", "𐌲", "𐌳", "𐌴"] },
+      { name: "Old Norse / Younger Futhark",    start: 0x16A0, end: 0x16FF, assigned: 89,   sample: ["ᚠ", "ᚢ", "ᚦ", "ᚨ", "ᚱ"] },
+      { name: "Linear B Syllabary",             start: 0x10000, end: 0x1007F, assigned: 88, sample: ["𐀀", "𐀁", "𐀂", "𐀃", "𐀄"] },
+      { name: "Phoenician",                     start: 0x10900, end: 0x1091F, assigned: 29, sample: ["𐤀", "𐤁", "𐤂", "𐤃", "𐤄"] },
+      { name: "Cuneiform",                      start: 0x12000, end: 0x123FF, assigned: 922, sample: ["𒀀", "𒀁", "𒀂", "𒀃", "𒀄"] },
+      { name: "Egyptian Hieroglyphs",           start: 0x13000, end: 0x1342F, assigned: 1071, sample: ["𓀀", "𓀁", "𓀂", "𓀃", "𓀄"] },
+    ],
+  },
+];

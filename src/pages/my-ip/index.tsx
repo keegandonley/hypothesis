@@ -16,7 +16,9 @@ export default function MyIpPage() {
   const [data, setData] = useState<IpData | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [copied, setCopied] = useState(false);
+  const [copiedCurl, setCopiedCurl] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyCurlTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchIp = async () => {
     setStatus("loading");
@@ -41,6 +43,16 @@ export default function MyIpPage() {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
       copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+    });
+  };
+
+  const curlCommand = `curl https://${branding.domain}/api/my-ip`;
+
+  const handleCopyCurl = () => {
+    copyToClipboard(curlCommand).then(() => {
+      setCopiedCurl(true);
+      if (copyCurlTimeoutRef.current) clearTimeout(copyCurlTimeoutRef.current);
+      copyCurlTimeoutRef.current = setTimeout(() => setCopiedCurl(false), 1500);
     });
   };
 
@@ -122,6 +134,23 @@ export default function MyIpPage() {
                   <span className={styles.rowValue}>{value ?? "—"}</span>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {!isIframe && (
+          <div className={styles.detailsPanel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelLabel}>API</span>
+              <button
+                className={`${styles.copyBtn}${copiedCurl ? ` ${styles.copied}` : ""}`}
+                onClick={handleCopyCurl}
+              >
+                {copiedCurl ? "Copied!" : "Copy"}
+              </button>
+            </div>
+            <div className={styles.curlRow}>
+              <code className={styles.curlCode}>{curlCommand}</code>
             </div>
           </div>
         )}

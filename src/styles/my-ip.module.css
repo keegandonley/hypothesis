@@ -152,6 +152,18 @@
   word-break: break-word;
 }
 
+.curlRow {
+  padding: 14px;
+}
+
+.curlCode {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+  word-break: break-all;
+}
+
 .copyBtn {
   padding: 4px 10px;
   background-color: var(--card-bg);
