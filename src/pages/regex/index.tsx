@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 const FLAGS = ["g", "i", "m", "s", "u"] as const;
 type Flag = (typeof FLAGS)[number];
@@ -192,6 +193,7 @@ export default function RegexPage() {
         <p className={styles.tagline}>
           Test regular expressions against strings with live match results
         </p>
+        <ReferenceLinks refs={[{ name: "Regex Syntax", slug: "regex-syntax" }]} />
       </div>
 
       <hr className={styles.divider} />

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 // HTML5 named entity map (comprehensive set)
 const htmlEntities: Record<string, string> = {
@@ -306,6 +307,7 @@ export default function HtmlEntityPage() {
         </div>
         <h1 className={styles.title}>HTML Entity</h1>
         <p className={styles.tagline}>Encode and decode HTML entities</p>
+        <ReferenceLinks refs={[{ name: "ASCII Table", slug: "ascii" }]} />
       </div>
 
       <hr className={styles.divider} />

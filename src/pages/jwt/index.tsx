@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 interface JwtParts {
   header: Record<string, unknown> | null;
@@ -188,6 +189,7 @@ export default function JwtPage() {
         </div>
         <h1 className={styles.title}>JWT Decoder</h1>
         <p className={styles.tagline}>Decode JWT tokens and inspect header, payload, and expiry</p>
+        <ReferenceLinks refs={[{ name: "HTTP Headers", slug: "http-headers" }, { name: "HTTP Status Codes", slug: "http-status-codes" }]} />
       </div>
 
       <hr className={styles.divider} />

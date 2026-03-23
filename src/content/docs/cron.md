@@ -52,3 +52,8 @@ The expression is encoded in the URL as `?expr=<value>`. Copy the URL to share o
 ## Reset
 
 Clears the expression and removes the URL parameter.
+
+## See also
+
+- [Exit Codes](/references/exit-codes) — standard Unix/Linux process exit codes and their meanings
+- [Unix Signals](/references/unix-signals) — signal numbers, names, and default actions for POSIX signals

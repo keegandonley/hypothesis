@@ -29,3 +29,7 @@ To prevent abuse, uploads are rate-limited per IP address:
 
 - **10 uploads per hour**
 - **25 uploads per day**
+
+## See also
+
+- [MIME Types](/references/mime-types) — Content-Type values for image formats including PNG, JPEG, WebP, and AVIF

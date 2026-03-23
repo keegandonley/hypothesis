@@ -5,6 +5,7 @@ import { upload } from "@vercel/blob/client";
 import styles from "../../styles/compress.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
+import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 type OutputFormat = "png" | "webp" | "avif";
 
@@ -262,6 +263,7 @@ export default function CompressPage() {
           Compress PNG, JPEG, and WebP images — convert to WebP or AVIF for
           maximum savings
         </p>
+        <ReferenceLinks refs={[{ name: "MIME Types", slug: "mime-types" }]} />
       </div>
 
       <hr className={styles.divider} />

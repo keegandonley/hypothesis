@@ -51,3 +51,8 @@ Click **Refresh** to re-fetch without reloading the page — useful after switch
 ## Copy
 
 Click **Copy** in the IP panel header to copy your IP address to the clipboard.
+
+## See also
+
+- [DNS Record Types](/references/dns-record-types) — A, AAAA, CNAME, MX, TXT, NS, and more with descriptions and example syntax
+- [Port Numbers](/references/port-numbers) — well-known TCP and UDP port numbers grouped by service category

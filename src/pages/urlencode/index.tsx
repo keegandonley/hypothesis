@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 export default function UrlEncodePage() {
   const branding = useBranding();
@@ -118,6 +119,7 @@ export default function UrlEncodePage() {
         </div>
         <h1 className={styles.title}>URL Encode</h1>
         <p className={styles.tagline}>Encode and decode URL strings</p>
+        <ReferenceLinks refs={[{ name: "MIME Types", slug: "mime-types" }, { name: "HTTP Headers", slug: "http-headers" }]} />
       </div>
 
       <hr className={styles.divider} />

@@ -81,3 +81,8 @@ Use the **Reset** button to clear the input and return to the bare `/unicode` pa
 - **Security research** — detect homoglyphs, invisible formatting characters (U+200B, U+FEFF), or unusual Unicode control codes
 - **Internationalization** — verify script detection and category classification for locale-sensitive text handling
 - **Learning Unicode** — explore how the encoding system works across different writing systems
+
+## See also
+
+- [Unicode Blocks](/references/unicode-blocks) — named code point ranges from Basic Latin to Supplementary planes
+- [ASCII Table](/references/ascii) — all 128 ASCII characters with decimal, hex, octal, and descriptions

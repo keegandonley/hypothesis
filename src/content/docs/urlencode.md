@@ -79,3 +79,8 @@ Opens `https://example.com/path?foo=bar` with URI mode active.
 Use the **Copy** button in the Permalink row to copy the current URL to your clipboard.
 
 Use the **Reset** button to clear both panels, turn off URI mode, and return the URL to the bare `/urlencode` path.
+
+## See also
+
+- [MIME Types](/references/mime-types) — Content-Type values for text, images, audio, video, fonts, and more
+- [HTTP Headers](/references/http-headers) — request and response headers including `Content-Type`, `Accept`, and encoding fields

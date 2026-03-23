@@ -84,3 +84,7 @@ Use the **Reset** button to clear both panels, reset to special mode, and return
 - **Decoding entities** from legacy HTML or email sources
 - **Testing entity support** in different browsers or systems
 - **Learning** what characters map to which entities
+
+## See also
+
+- [ASCII Table](/references/ascii) — all 128 ASCII characters with decimal, hex, octal, and descriptions

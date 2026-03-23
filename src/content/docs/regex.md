@@ -65,3 +65,7 @@ Reloading or sharing the URL fully restores the pattern, active flags, and test 
 Use the **Copy** button in the Permalink row to copy the current URL to your clipboard.
 
 Use the **Reset** button to clear the pattern, test strings, and all flags (resetting `g` to on), and return the URL to the bare `/regex` path.
+
+## See also
+
+- [Regex Syntax](/references/regex-syntax) — anchors, character classes, quantifiers, groups, lookaheads, flags, and escape sequences

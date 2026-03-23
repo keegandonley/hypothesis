@@ -50,3 +50,8 @@ Every token you paste is reflected into the URL as `?v=<token>`. You can share o
 
 - **Copy** — copies the current permalink to your clipboard
 - **Reset** — clears the token and removes the URL parameter
+
+## See also
+
+- [HTTP Headers](/references/http-headers) — request and response headers including `Authorization`, caching, CORS, and security fields
+- [HTTP Status Codes](/references/http-status-codes) — complete reference for 1xx–5xx response codes

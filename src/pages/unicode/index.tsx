@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 const MAX_CODEPOINTS = 512;
 
@@ -225,6 +226,7 @@ export default function UnicodePage() {
         </div>
         <h1 className={styles.title}>Unicode Inspector</h1>
         <p className={styles.tagline}>Inspect code points, UTF-8/UTF-16 bytes, category, script, and HTML entity</p>
+        <ReferenceLinks refs={[{ name: "Unicode Blocks", slug: "unicode-blocks" }, { name: "ASCII Table", slug: "ascii" }]} />
       </div>
 
       <hr className={styles.divider} />

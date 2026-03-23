@@ -6,6 +6,7 @@ import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 interface CidrInfo {
   ip: string;
@@ -246,6 +247,7 @@ export default function CidrPage() {
         </div>
         <h1 className={styles.title}>CIDR</h1>
         <p className={styles.tagline}>Calculate subnet details from CIDR notation</p>
+        <ReferenceLinks refs={[{ name: "DNS Record Types", slug: "dns-record-types" }, { name: "Port Numbers", slug: "port-numbers" }]} />
       </div>
 
       <hr className={styles.divider} />

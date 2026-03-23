@@ -49,3 +49,8 @@ The current mode is encoded in the URL as `?mode=<value>`. Copy the URL to share
 ## Reset
 
 Clears the input and removes the URL parameter.
+
+## See also
+
+- [Unix Signals](/references/unix-signals) — signal numbers, names, and default actions for POSIX signals
+- [Exit Codes](/references/exit-codes) — standard Unix/Linux process exit codes and their meanings

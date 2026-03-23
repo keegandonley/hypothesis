@@ -8,6 +8,7 @@ import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { CronExpressionParser } from "cron-parser";
 import cronstrue from "cronstrue";
+import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 const EXAMPLES = [
   { label: "Every minute", expr: "* * * * *" },
@@ -188,6 +189,7 @@ export default function CronPage() {
         </div>
         <h1 className={styles.title}>Cron</h1>
         <p className={styles.tagline}>Parse cron expressions and preview the next scheduled run times</p>
+        <ReferenceLinks refs={[{ name: "Exit Codes", slug: "exit-codes" }, { name: "Unix Signals", slug: "unix-signals" }]} />
       </div>
 
       <hr className={styles.divider} />

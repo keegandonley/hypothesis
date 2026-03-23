@@ -56,3 +56,8 @@ The current CIDR expression is encoded in the URL as `?cidr=<value>`. Copy the U
 ## Reset
 
 Clears the input and removes the URL parameter.
+
+## See also
+
+- [DNS Record Types](/references/dns-record-types) — A, AAAA, CNAME, MX, TXT, NS, and more with descriptions and example syntax
+- [Port Numbers](/references/port-numbers) — well-known TCP and UDP port numbers grouped by service category

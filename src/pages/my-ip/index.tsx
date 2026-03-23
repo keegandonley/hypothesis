@@ -7,6 +7,7 @@ import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import type { IpData } from "../api/my-ip";
+import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -98,6 +99,7 @@ export default function MyIpPage() {
         </div>
         <h1 className={styles.title}>My IP</h1>
         <p className={styles.tagline}>Your current public IP address and location info</p>
+        <ReferenceLinks refs={[{ name: "DNS Record Types", slug: "dns-record-types" }, { name: "Port Numbers", slug: "port-numbers" }]} />
       </div>
 
       <hr className={styles.divider} />

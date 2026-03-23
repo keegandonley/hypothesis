@@ -98,3 +98,7 @@ Use the **Reset** button to clear the input, reset to default context values (16
 - For full-width/height layouts, use `vw`/`vh` units to fill the viewport
 - For print stylesheets, use `pt` or `cm`/`mm` units for precise physical dimensions
 - Keep in mind that `em` and `%` calculations assume parent font size equals root font size in this tool
+
+## See also
+
+- [CSS Selectors](/references/css-selectors) — all selector types with descriptions, examples, and specificity values

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 type CSSUnit = "px" | "rem" | "em" | "%" | "vh" | "vw" | "pt" | "cm" | "mm" | "in";
 
@@ -221,6 +222,7 @@ export default function CssUnitPage() {
         </div>
         <h1 className={styles.title}>CSS Unit</h1>
         <p className={styles.tagline}>Convert between CSS units</p>
+        <ReferenceLinks refs={[{ name: "CSS Selectors", slug: "css-selectors" }]} />
       </div>
 
       <hr className={styles.divider} />

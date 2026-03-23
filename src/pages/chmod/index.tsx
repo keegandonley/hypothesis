@@ -6,6 +6,7 @@ import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 type Perms = [number, number, number]; // [owner, group, other]
 
@@ -187,6 +188,7 @@ export default function ChmodPage() {
         </div>
         <h1 className={styles.title}>chmod</h1>
         <p className={styles.tagline}>Convert between numeric and symbolic Unix file permission modes</p>
+        <ReferenceLinks refs={[{ name: "Unix Signals", slug: "unix-signals" }, { name: "Exit Codes", slug: "exit-codes" }]} />
       </div>
 
       <hr className={styles.divider} />
