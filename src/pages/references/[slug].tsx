@@ -9,6 +9,9 @@ import { useBranding } from "@/lib/branding";
 const REFERENCES_DIR = path.join(process.cwd(), "src/content/references");
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  if (!fs.existsSync(REFERENCES_DIR)) {
+    return { paths: [], fallback: false };
+  }
   const files = fs.readdirSync(REFERENCES_DIR);
   const paths = files
     .filter((f) => f.endsWith(".md"))
