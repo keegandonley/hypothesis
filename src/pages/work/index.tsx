@@ -184,6 +184,17 @@ export default function DashboardPage() {
     inputRef.current?.focus();
   }, []);
 
+  // Handle clipboard-write messages from embedded tools
+  useEffect(() => {
+    function handleMessage(e: MessageEvent) {
+      if (e.data?.type === "clipboard-write" && typeof e.data.text === "string") {
+        navigator.clipboard.writeText(e.data.text).catch(() => {});
+      }
+    }
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   // Cmd+K / Ctrl+K focuses the search input
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -324,6 +335,7 @@ export default function DashboardPage() {
           className={styles.toolFrame}
           src={activeItem.href}
           title={activeItem.name}
+          name="work-embed"
         />
       </div>
     );
