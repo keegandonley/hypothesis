@@ -190,10 +190,14 @@ export default function DashboardPage() {
       if (e.data?.type === "clipboard-write" && typeof e.data.text === "string") {
         navigator.clipboard.writeText(e.data.text).catch(() => {});
       }
+      if (e.data?.type === "focus-search") {
+        inputRef.current?.focus();
+        if (activeItem) setResultsOpen(true);
+      }
     }
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, []);
+  }, [activeItem]);
 
   // Cmd+K / Ctrl+K focuses the search input
   useEffect(() => {
