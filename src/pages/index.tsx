@@ -33,6 +33,27 @@ const references: {
   tags: Tag[];
 }[] = [
   {
+    name: "CSS selectors",
+    description:
+      "All CSS selector types with descriptions, examples, and specificity values: basic, attribute, pseudo-class, pseudo-element, and combinators.",
+    href: "/references/css-selectors",
+    tags: ["web"],
+  },
+  {
+    name: "DNS record types",
+    description:
+      "A, AAAA, CNAME, MX, TXT, NS, SOA, SRV, CAA, and DNSSEC records — what each does, when to use it, and example syntax.",
+    href: "/references/dns-record-types",
+    tags: ["web", "sysadmin"],
+  },
+  {
+    name: "Exit codes",
+    description:
+      "Standard Unix/Linux process exit codes: 0 success, 1 general error, 126/127 shell errors, and 128+N signal offsets.",
+    href: "/references/exit-codes",
+    tags: ["sysadmin"],
+  },
+  {
     name: "HTTP status codes",
     description:
       "Complete reference for HTTP response status codes: 1xx through 5xx, with descriptions, use cases, and caching behavior.",
@@ -73,6 +94,20 @@ const references: {
       "Named code point ranges from Basic Latin to Supplementary planes, with assigned character counts and sample glyphs.",
     href: "/references/unicode-blocks",
     tags: ["text", "encoding"],
+  },
+  {
+    name: "Port numbers",
+    description:
+      "Well-known TCP and UDP port numbers grouped by category: web, remote access, database, mail, file transfer, network, and more.",
+    href: "/references/port-numbers",
+    tags: ["sysadmin", "web"],
+  },
+  {
+    name: "Regex syntax",
+    description:
+      "Regular expression quick reference: anchors, character classes, quantifiers, groups, lookaheads, flags, and escape sequences.",
+    href: "/references/regex-syntax",
+    tags: ["text", "web"],
   },
 ];
 
@@ -317,6 +352,38 @@ const tools: {
     docsHref: "/docs/uuid",
     tags: ["security", "sysadmin", "web"],
   },
+  {
+    name: "string case",
+    description:
+      "Convert text between camelCase, PascalCase, snake_case, kebab-case, SCREAMING_SNAKE, Title Case, and more.",
+    href: "/case",
+    docsHref: "/docs/case",
+    tags: ["text", "conversion"],
+  },
+  {
+    name: "password",
+    description:
+      "Generate cryptographically secure passwords with configurable length, character sets, and count.",
+    href: "/password",
+    docsHref: "/docs/password",
+    tags: ["security"],
+  },
+  {
+    name: "byte size",
+    description:
+      "Convert between byte units — B, KB, KiB, MB, MiB, GB, GiB, TB, TiB — with binary (1024) and decimal (1000) modes.",
+    href: "/bytes",
+    docsHref: "/docs/bytes",
+    tags: ["conversion", "sysadmin"],
+  },
+  {
+    name: "json ↔ yaml",
+    description:
+      "Convert between JSON and YAML formats with live bidirectional sync and shareable permalinks.",
+    href: "/json-yaml",
+    docsHref: "/docs/json-yaml",
+    tags: ["conversion", "web"],
+  },
 ];
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
@@ -433,9 +500,11 @@ export default function HomePage({
         <div className={styles.section}>
           <div className={styles.sectionLabel}>References</div>
           <div className={styles.toolCards}>
-            {references.map((ref) => (
-              <ExperimentCard key={ref.name} {...ref} compact />
-            ))}
+            {[...references]
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((ref) => (
+                <ExperimentCard key={ref.name} {...ref} compact />
+              ))}
           </div>
         </div>
 
