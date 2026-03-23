@@ -26,27 +26,53 @@ const TAG_COLORS: Record<Tag, { color: string; subtle: string }> = {
   text: { color: "#34d399", subtle: "#34d39918" },
 };
 
-const references = [
+const references: {
+  name: string;
+  description: string;
+  href: string;
+  tags: Tag[];
+}[] = [
   {
-    id: "REF-001",
     name: "HTTP status codes",
     description:
       "Complete reference for HTTP response status codes: 1xx through 5xx, with descriptions, use cases, and caching behavior.",
     href: "/references/http-status-codes",
+    tags: ["web"],
   },
   {
-    id: "REF-002",
     name: "MIME types",
     description:
       "Content-Type values for text, application, image, audio, video, font, and multipart formats with file extensions.",
     href: "/references/mime-types",
+    tags: ["web"],
   },
   {
-    id: "REF-003",
     name: "Unix signals",
     description:
       "Signal numbers, names, and default actions for POSIX signals — from SIGTERM and SIGKILL to SIGWINCH and SIGCHLD.",
     href: "/references/unix-signals",
+    tags: ["sysadmin"],
+  },
+  {
+    name: "HTTP headers",
+    description:
+      "Request and response header fields: caching, authentication, CORS, security, content negotiation, and more.",
+    href: "/references/http-headers",
+    tags: ["web"],
+  },
+  {
+    name: "ASCII table",
+    description:
+      "All 128 ASCII characters with decimal, hexadecimal, octal, and named descriptions.",
+    href: "/references/ascii",
+    tags: ["text", "encoding"],
+  },
+  {
+    name: "Unicode blocks",
+    description:
+      "Named code point ranges from Basic Latin to Supplementary planes, with assigned character counts and sample glyphs.",
+    href: "/references/unicode-blocks",
+    tags: ["text", "encoding"],
   },
 ];
 
@@ -406,9 +432,9 @@ export default function HomePage({
 
         <div className={styles.section}>
           <div className={styles.sectionLabel}>References</div>
-          <div className={styles.cards}>
+          <div className={styles.toolCards}>
             {references.map((ref) => (
-              <ReferenceCard key={ref.id} {...ref} />
+              <ExperimentCard key={ref.name} {...ref} compact />
             ))}
           </div>
         </div>
@@ -457,33 +483,6 @@ export default function HomePage({
   );
 }
 
-function ReferenceCard({
-  id,
-  name,
-  description,
-  href,
-}: {
-  id: string;
-  name: string;
-  description: string;
-  href: string;
-}) {
-  return (
-    <div className={styles.card}>
-      <Link href={href} className={styles.cardLink} aria-label={name} />
-      <div className={styles.cardMain}>
-        <div className={styles.badge}>{id}</div>
-        <div className={styles.cardBodyRow}>
-          <div className={styles.cardBody}>
-            <div className={styles.cardName}>{name}</div>
-            <div className={styles.cardDesc}>{description}</div>
-          </div>
-          <div className={styles.arrow}>→</div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function ExperimentCard({
   id,
@@ -498,7 +497,7 @@ function ExperimentCard({
   name: string;
   description: string;
   href: string;
-  docsHref: string;
+  docsHref?: string;
   compact?: boolean;
   tags?: Tag[];
 }) {
@@ -528,10 +527,12 @@ function ExperimentCard({
         </div>
       )}
       <div className={compact ? styles.cardFooterCompact : styles.cardFooter}>
-        <Link href={docsHref} className={styles.docsLink}>
-          <DocIcon />
-          docs
-        </Link>
+        {docsHref && (
+          <Link href={docsHref} className={styles.docsLink}>
+            <DocIcon />
+            docs
+          </Link>
+        )}
         {tags && tags.length > 0 && (
           <div className={styles.cardTags}>
             {tags.map((tag) => (

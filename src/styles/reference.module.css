@@ -383,6 +383,110 @@
   line-height: 1.6;
 }
 
+/* ── ASCII table rows ────────────────────────────────────────────────────── */
+
+.asciiRow {
+  display: grid;
+  grid-template-columns: 44px 36px 52px 52px 1fr;
+  gap: 0;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: default;
+  transition: background-color 0.1s;
+}
+
+.asciiRow:hover {
+  background-color: var(--card-bg);
+}
+
+.asciiGlyph {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cls-color);
+  background-color: var(--cls-subtle);
+  border: 1px solid var(--cls-border);
+  border-radius: 4px;
+  width: 30px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0;
+  font-family: var(--font-mono);
+}
+
+.asciiMeta {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  padding-left: 10px;
+}
+
+.asciiMeta sub {
+  font-size: 8px;
+  opacity: 0.6;
+}
+
+.asciiName {
+  font-size: 11px;
+  color: var(--text);
+  letter-spacing: 0.01em;
+  padding-left: 10px;
+}
+
+/* ── Unicode block rows ──────────────────────────────────────────────────── */
+
+.unicodeBlockRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.unicodeRange {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--cls-color);
+  background-color: var(--cls-subtle);
+  border: 1px solid var(--cls-border);
+  border-radius: 4px;
+  padding: 2px 7px;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.unicodeCount {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  margin-left: auto;
+}
+
+.unicodeSample {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.unicodeGlyph {
+  font-size: 18px;
+  line-height: 1;
+  color: var(--text);
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 
 @media (max-width: 520px) {

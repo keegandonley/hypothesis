@@ -34,6 +34,13 @@ const staticRoutes = [
   "/json-ts",
   "/compress",
   "/rsa",
+  "/my-ip",
+  "/references/http-status-codes",
+  "/references/mime-types",
+  "/references/unix-signals",
+  "/references/http-headers",
+  "/references/ascii",
+  "/references/unicode-blocks",
 ];
 
 function generateSitemap(baseUrl: string, docSlugs: string[]): string {
