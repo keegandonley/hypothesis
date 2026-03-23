@@ -6,6 +6,7 @@ const DOCS_DIR = path.join(process.cwd(), "src/content/docs");
 
 const staticRoutes = [
   "/",
+  "/dashboard",
   "/base64",
   "/datetime",
   "/numbase",
