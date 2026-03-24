@@ -353,6 +353,59 @@
   border-color: var(--accent-border);
 }
 
+.tabBar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px 0 12px;
+  height: 32px;
+  font-size: 11px;
+  color: var(--muted);
+  cursor: pointer;
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+  user-select: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.1s;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tabActive {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+  background-color: var(--card-bg);
+}
+
+.tabCloseBtn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 3px;
+  line-height: 1;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+}
+
+.tabCloseBtn:hover {
+  color: var(--text);
+  background-color: var(--accent-hover);
+}
+
 .toolFrame {
   flex: 1;
   width: 100%;

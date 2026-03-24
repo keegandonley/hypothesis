@@ -165,36 +165,70 @@ function ResultRows({
   );
 }
 
+type Tab = {
+  id: string;
+  item: AnyItem;
+  initialSrc: string;  // iframe src — set once at creation/restore, never updated
+  currentUrl: string;  // live URL from url-update messages, used only for persistence
+};
+
+type StoredTabs = {
+  tabs: { id: string; href: string; url: string }[];
+  activeTabId: string | null;
+};
+
+function saveToStorage(tabs: Tab[], activeTabId: string | null) {
+  if (tabs.length === 0) {
+    localStorage.removeItem("work_tabs");
+    return;
+  }
+  const data: StoredTabs = {
+    tabs: tabs.map((t) => ({ id: t.id, href: t.item.href, url: t.currentUrl })),
+    activeTabId,
+  };
+  localStorage.setItem("work_tabs", JSON.stringify(data));
+}
+
 export default function DashboardPage() {
   const branding = useBranding();
 
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [activeItem, setActiveItem] = useState<AnyItem | null>(null);
   const [resultsOpen, setResultsOpen] = useState(false);
-  const [initialIframeSrc, setInitialIframeSrc] = useState<string | null>(null);
+  const [tabs, setTabs] = useState<Tab[]>([]);
+  const [activeTabId, setActiveTabId] = useState<string | null>(null);
+
+  // Keep a ref to activeTabId for use inside closures (handleMessage)
+  const activeTabIdRef = useRef<string | null>(null);
+  activeTabIdRef.current = activeTabId;
 
   const inputRef = useRef<HTMLInputElement>(null);
   const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
 
-  // Restore query from URL on mount and focus input; restore last active tool from localStorage
+  // Restore from localStorage on mount; otherwise focus search
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const q = params.get("q") ?? "";
     setQuery(q);
 
-    const saved = localStorage.getItem("work_state");
+    const saved = localStorage.getItem("work_tabs");
     if (saved) {
       try {
-        const { href, url } = JSON.parse(saved) as { href: string; url: string };
+        const { tabs: savedTabs, activeTabId: savedActiveId } = JSON.parse(saved) as StoredTabs;
         const allItems = [...tools, ...experiments, ...references];
-        const item = allItems.find((i) => i.href === href);
-        if (item) {
+        const restoredTabs: Tab[] = savedTabs.flatMap(({ id, href, url }) => {
+          const item = allItems.find((i) => i.href === href);
+          if (!item) return [];
           const u = new URL(url, window.location.origin);
           u.searchParams.set("workMode", "1");
-          setActiveItem(item);
-          setInitialIframeSrc(u.pathname + u.search);
-          return; // skip focusing search input when restoring a tool
+          u.searchParams.set("tabId", id);
+          const src = u.pathname + u.search;
+          return [{ id, item, initialSrc: src, currentUrl: src }];
+        });
+        if (restoredTabs.length > 0) {
+          setTabs(restoredTabs);
+          setActiveTabId(savedActiveId ?? restoredTabs[0].id);
+          return;
         }
       } catch {}
     }
@@ -202,7 +236,7 @@ export default function DashboardPage() {
     inputRef.current?.focus();
   }, []);
 
-  // Handle clipboard-write messages from embedded tools
+  // Handle postMessages from embedded tools
   useEffect(() => {
     function handleMessage(e: MessageEvent) {
       if (e.data?.type === "clipboard-write" && typeof e.data.text === "string") {
@@ -210,15 +244,20 @@ export default function DashboardPage() {
       }
       if (e.data?.type === "focus-search") {
         inputRef.current?.focus();
-        if (activeItem) setResultsOpen(true);
+        if (activeTabIdRef.current) setResultsOpen(true);
       }
-      if (e.data?.type === "url-update" && typeof e.data.url === "string" && activeItem) {
-        localStorage.setItem("work_state", JSON.stringify({ href: activeItem.href, url: e.data.url }));
+      if (e.data?.type === "url-update" && typeof e.data.url === "string" && e.data.tabId) {
+        const { url, tabId } = e.data as { url: string; tabId: string };
+        setTabs((prev) => {
+          const next = prev.map((t) => (t.id === tabId ? { ...t, currentUrl: url } : t));
+          saveToStorage(next, activeTabIdRef.current);
+          return next;
+        });
       }
     }
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [activeItem]);
+  }, []);
 
   // Cmd+K / Ctrl+K focuses the search input
   useEffect(() => {
@@ -226,12 +265,12 @@ export default function DashboardPage() {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         inputRef.current?.focus();
-        if (activeItem) setResultsOpen(true);
+        if (activeTabIdRef.current) setResultsOpen(true);
       }
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeItem]);
+  }, []);
 
   // Sync query to URL
   useEffect(() => {
@@ -259,12 +298,28 @@ export default function DashboardPage() {
   ];
   const totalCount = flatItems.length;
 
-  function selectItem(item: AnyItem) {
-    setActiveItem(item);
-    setInitialIframeSrc(null);
-    localStorage.setItem("work_state", JSON.stringify({ href: item.href, url: item.href }));
+  function openTab(item: AnyItem) {
+    const id = crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const url = `${item.href}?workMode=1&tabId=${id}`;
+    const newTab: Tab = { id, item, initialSrc: url, currentUrl: url };
+    const newTabs = [...tabs, newTab];
+    setTabs(newTabs);
+    setActiveTabId(id);
+    saveToStorage(newTabs, id);
     setResultsOpen(false);
     setQuery("");
+  }
+
+  function closeTab(id: string) {
+    const idx = tabs.findIndex((t) => t.id === id);
+    const newTabs = tabs.filter((t) => t.id !== id);
+    let newActiveId: string | null = null;
+    if (newTabs.length > 0) {
+      newActiveId = newTabs[Math.min(idx, newTabs.length - 1)].id;
+    }
+    setTabs(newTabs);
+    setActiveTabId(newActiveId);
+    saveToStorage(newTabs, newActiveId);
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -277,15 +332,14 @@ export default function DashboardPage() {
     } else if (e.key === "Enter") {
       e.preventDefault();
       const item = flatItems[selectedIndex];
-      if (item) selectItem(item);
+      if (item) openTab(item);
     } else if (e.key === "Escape") {
       e.preventDefault();
-      if (activeItem && resultsOpen) {
+      if (activeTabId && resultsOpen) {
         setResultsOpen(false);
         setQuery("");
-      } else if (activeItem) {
-        setActiveItem(null);
-        localStorage.removeItem("work_state");
+      } else if (activeTabId) {
+        closeTab(activeTabId);
       } else {
         setQuery("");
       }
@@ -298,8 +352,8 @@ export default function DashboardPage() {
     </Head>
   );
 
-  // ── View mode ────────────────────────────────────────────
-  if (activeItem !== null) {
+  // ── View mode (tabs open) ─────────────────────────────────
+  if (tabs.length > 0) {
     return (
       <div className={styles.pageView}>
         {head}
@@ -344,7 +398,7 @@ export default function DashboardPage() {
                   selectedIndex={selectedIndex}
                   itemRefs={itemRefs}
                   onSelect={(item) => {
-                    selectItem(item);
+                    openTab(item);
                     inputRef.current?.focus();
                   }}
                   onHover={setSelectedIndex}
@@ -354,20 +408,50 @@ export default function DashboardPage() {
           </div>
           <button
             className={styles.closeBtn}
-            onClick={() => {
-              setActiveItem(null);
-              localStorage.removeItem("work_state");
-            }}
+            onClick={() => activeTabId && closeTab(activeTabId)}
           >
             esc
           </button>
         </div>
-        <iframe
-          className={styles.toolFrame}
-          src={initialIframeSrc ?? `${activeItem.href}?workMode=1`}
-          title={activeItem.name}
-          name="work-embed"
-        />
+        <div className={styles.tabBar}>
+          {tabs.map((tab) => (
+            <div
+              key={tab.id}
+              className={
+                tab.id === activeTabId
+                  ? `${styles.tab} ${styles.tabActive}`
+                  : styles.tab
+              }
+              onClick={() => {
+                setActiveTabId(tab.id);
+                saveToStorage(tabs, tab.id);
+              }}
+            >
+              <span>{tab.item.name}</span>
+              <button
+                className={styles.tabCloseBtn}
+                onPointerDown={(e) => e.preventDefault()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  closeTab(tab.id);
+                }}
+                aria-label={`Close ${tab.item.name}`}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+        {tabs.map((tab) => (
+          <iframe
+            key={tab.id}
+            className={styles.toolFrame}
+            src={tab.initialSrc}
+            title={tab.item.name}
+            name="work-embed"
+            style={{ display: tab.id === activeTabId ? "block" : "none" }}
+          />
+        ))}
       </div>
     );
   }
@@ -408,7 +492,7 @@ export default function DashboardPage() {
             query={query}
             selectedIndex={selectedIndex}
             itemRefs={itemRefs}
-            onSelect={selectItem}
+            onSelect={openTab}
             onHover={setSelectedIndex}
           />
         </div>
