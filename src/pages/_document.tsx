@@ -12,6 +12,7 @@ export default function Document() {
         <link rel="manifest" href="/site.webmanifest" />
       </Head>
       <body>
+        <script dangerouslySetInnerHTML={{ __html: `if(new URLSearchParams(location.search).has('workMode'))document.documentElement.classList.add('work-mode');` }} />
         <Main />
         <NextScript />
       </body>

@@ -33,7 +33,7 @@ export default function MessageFactoryPage() {
       </Head>
       <div className={styles.inner}>
         <header className={styles.header}>
-          <div className={styles.eyebrow}>EXP-003</div>
+          <div className={styles.eyebrow} data-eyebrow>EXP-003</div>
           <h1 className={styles.title}>Message Factory</h1>
           <p className={styles.tagline}>
             Design and trigger postMessage actions with an interactive viewer

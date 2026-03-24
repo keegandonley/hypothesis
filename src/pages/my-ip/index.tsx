@@ -83,7 +83,7 @@ export default function MyIpPage() {
         <link rel="canonical" href="https://hypothesis.sh/my-ip" />
       </Head>
       <div className={styles.header}>
-        <div className={styles.eyebrow}>
+        <div className={styles.eyebrow} data-eyebrow>
           <Link
             href="/"
             target={isIframe ? "_blank" : undefined}

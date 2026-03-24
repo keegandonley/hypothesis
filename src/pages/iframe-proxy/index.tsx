@@ -185,7 +185,7 @@ export default function IframeProxyPage() {
           style={{ top: DEBUG_BAR_HEIGHT + 12 }}
         >
           <div className={styles.panelHeader}>
-            <div className={styles.eyebrow}>
+            <div className={styles.eyebrow} data-eyebrow>
               <Link
                 href="/"
                 target={isIframe ? "_blank" : undefined}

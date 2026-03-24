@@ -98,7 +98,7 @@ export default function MessagesPage() {
         <title>{`${branding.name.toUpperCase()} — MESSAGE STREAM`}</title>
       </Head>
       <div className={styles.header}>
-        <div className={styles.eyebrow}>
+        <div className={styles.eyebrow} data-eyebrow>
           <Link
             href="/"
             target={isIframe ? "_blank" : undefined}

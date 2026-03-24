@@ -244,7 +244,7 @@ export default function CompressPage() {
       </Head>
 
       <div className={styles.header}>
-        <div className={styles.eyebrow}>
+        <div className={styles.eyebrow} data-eyebrow>
           <Link href="/" className={styles.domainLink}>
             {branding.domain}
           </Link>

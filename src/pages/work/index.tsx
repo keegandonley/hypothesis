@@ -337,7 +337,7 @@ export default function DashboardPage() {
         </div>
         <iframe
           className={styles.toolFrame}
-          src={activeItem.href}
+          src={`${activeItem.href}?workMode=1`}
           title={activeItem.name}
           name="work-embed"
         />

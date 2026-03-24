@@ -336,7 +336,7 @@ export default function RsaPage() {
       </Head>
 
       <div className={styles.header}>
-        <div className={styles.eyebrow}>
+        <div className={styles.eyebrow} data-eyebrow>
           <Link
             href="/"
             target={isIframe ? "_blank" : undefined}
@@ -630,7 +630,7 @@ export default function RsaPage() {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow}>
+      <div className={styles.permalinkRow} data-permalink-row>
         <span className={styles.fieldLabel}>Permalink</span>
         <span className={styles.permalinkUrl}>{url}</span>
         {!isIframe && (

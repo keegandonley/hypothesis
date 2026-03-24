@@ -210,7 +210,7 @@ export default function UnicodePage() {
         <link rel="canonical" href="https://hypothesis.sh/unicode" />
       </Head>
       <div className={styles.header}>
-        <div className={styles.eyebrow}>
+        <div className={styles.eyebrow} data-eyebrow>
           <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
             {branding.domain}
           </Link>
@@ -310,7 +310,7 @@ export default function UnicodePage() {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow}>
+      <div className={styles.permalinkRow} data-permalink-row>
         <span className={styles.permalinkLabel}>Permalink</span>
         <span className={styles.permalinkUrl}>{url}</span>
         {!isIframe && (

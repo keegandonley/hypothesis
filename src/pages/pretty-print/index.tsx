@@ -104,7 +104,7 @@ export default function PrettyPrintPage() {
         <link rel="canonical" href="https://hypothesis.sh/pretty-print" />
       </Head>
       <div className={styles.header}>
-        <div className={styles.eyebrow}>
+        <div className={styles.eyebrow} data-eyebrow>
           <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
             {branding.domain}
           </Link>
@@ -169,7 +169,7 @@ export default function PrettyPrintPage() {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow}>
+      <div className={styles.permalinkRow} data-permalink-row>
         <span className={styles.fieldLabel}>Permalink</span>
         <span className={`${styles.permalinkUrl}${urlTooLong ? ` ${styles.permalinkDisabled}` : ""}`}>
           {urlTooLong ? "url too long to share" : url}

@@ -31,3 +31,8 @@ a {
     font-size: 16px !important;
   }
 }
+
+html.work-mode [data-eyebrow],
+html.work-mode [data-permalink-row] {
+  display: none;
+}

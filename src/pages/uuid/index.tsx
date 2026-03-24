@@ -69,7 +69,7 @@ export default function UuidPage() {
         <link rel="canonical" href="https://hypothesis.sh/uuid" />
       </Head>
       <div className={styles.header}>
-        <div className={styles.eyebrow}>
+        <div className={styles.eyebrow} data-eyebrow>
           <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
             {branding.domain}
           </Link>
