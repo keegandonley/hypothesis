@@ -188,6 +188,15 @@ export const experiments: ExperimentItem[] = [
     href: "/rsa",
     docsHref: "/docs/rsa",
   },
+  {
+    kind: "experiment",
+    id: "EXP-006",
+    name: "gist",
+    description:
+      "Serve a public GitHub Gist's raw content via a proxy URL, with live iframe preview.",
+    href: "/gist",
+    docsHref: "/docs/gist",
+  },
 ];
 
 export const tools: ToolItem[] = [

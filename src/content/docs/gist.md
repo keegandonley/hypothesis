@@ -6,6 +6,8 @@ Serve a public GitHub Gist's raw file content via a stable URL.
 
 `/api/gist` fetches a public GitHub Gist by URL and returns the file content with the correct `Content-Type`. The primary use case is hosting ephemeral HTML snippets — paste a gist URL into the query param and share the proxy URL instead.
 
+The [gist tool at `/gist`](/gist) provides an interactive UI: enter a Gist URL and optional filename, preview the output in an iframe, and copy the proxy URL directly.
+
 ## Usage
 
 ```
