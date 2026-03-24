@@ -337,13 +337,9 @@ export default function DashboardPage() {
       const item = flatItems[selectedIndex];
       if (item) openTab(item);
     } else if (e.key === "Escape") {
-      e.preventDefault();
-      if (activeTabId && resultsOpen) {
+      if (resultsOpen) {
+        e.preventDefault();
         setResultsOpen(false);
-        setQuery("");
-      } else if (activeTabId) {
-        closeTab(activeTabId);
-      } else {
         setQuery("");
       }
     }
@@ -411,7 +407,10 @@ export default function DashboardPage() {
           </div>
           <button
             className={styles.closeBtn}
-            onClick={() => activeTabId && closeTab(activeTabId)}
+            onClick={() => {
+              setResultsOpen(false);
+              setQuery("");
+            }}
           >
             esc
           </button>
