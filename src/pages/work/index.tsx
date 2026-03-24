@@ -172,15 +172,33 @@ export default function DashboardPage() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [activeItem, setActiveItem] = useState<AnyItem | null>(null);
   const [resultsOpen, setResultsOpen] = useState(false);
+  const [initialIframeSrc, setInitialIframeSrc] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
 
-  // Restore query from URL on mount and focus input
+  // Restore query from URL on mount and focus input; restore last active tool from localStorage
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const q = params.get("q") ?? "";
     setQuery(q);
+
+    const saved = localStorage.getItem("work_state");
+    if (saved) {
+      try {
+        const { href, url } = JSON.parse(saved) as { href: string; url: string };
+        const allItems = [...tools, ...experiments, ...references];
+        const item = allItems.find((i) => i.href === href);
+        if (item) {
+          const u = new URL(url, window.location.origin);
+          u.searchParams.set("workMode", "1");
+          setActiveItem(item);
+          setInitialIframeSrc(u.pathname + u.search);
+          return; // skip focusing search input when restoring a tool
+        }
+      } catch {}
+    }
+
     inputRef.current?.focus();
   }, []);
 
@@ -193,6 +211,9 @@ export default function DashboardPage() {
       if (e.data?.type === "focus-search") {
         inputRef.current?.focus();
         if (activeItem) setResultsOpen(true);
+      }
+      if (e.data?.type === "url-update" && typeof e.data.url === "string" && activeItem) {
+        localStorage.setItem("work_state", JSON.stringify({ href: activeItem.href, url: e.data.url }));
       }
     }
     window.addEventListener("message", handleMessage);
@@ -240,6 +261,8 @@ export default function DashboardPage() {
 
   function selectItem(item: AnyItem) {
     setActiveItem(item);
+    setInitialIframeSrc(null);
+    localStorage.setItem("work_state", JSON.stringify({ href: item.href, url: item.href }));
     setResultsOpen(false);
     setQuery("");
   }
@@ -262,6 +285,7 @@ export default function DashboardPage() {
         setQuery("");
       } else if (activeItem) {
         setActiveItem(null);
+        localStorage.removeItem("work_state");
       } else {
         setQuery("");
       }
@@ -330,14 +354,17 @@ export default function DashboardPage() {
           </div>
           <button
             className={styles.closeBtn}
-            onClick={() => setActiveItem(null)}
+            onClick={() => {
+              setActiveItem(null);
+              localStorage.removeItem("work_state");
+            }}
           >
             esc
           </button>
         </div>
         <iframe
           className={styles.toolFrame}
-          src={`${activeItem.href}?workMode=1`}
+          src={initialIframeSrc ?? `${activeItem.href}?workMode=1`}
           title={activeItem.name}
           name="work-embed"
         />

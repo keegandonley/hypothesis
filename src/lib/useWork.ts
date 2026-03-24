@@ -12,6 +12,18 @@ export function useWork(): void {
     }
 
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+
+    const origReplaceState = history.replaceState.bind(history);
+    history.replaceState = function (state, title, url) {
+      origReplaceState(state, title, url);
+      try {
+        window.parent.postMessage({ type: "url-update", url: window.location.href }, "*");
+      } catch {}
+    };
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      history.replaceState = origReplaceState;
+    };
   }, []);
 }
