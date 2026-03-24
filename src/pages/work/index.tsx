@@ -347,7 +347,7 @@ export default function DashboardPage() {
 
   const head = (
     <Head>
-      <title>work — {branding.domain}</title>
+      <title>{`${branding.name.toUpperCase()} — WORK`}</title>
     </Head>
   );
 

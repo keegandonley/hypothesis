@@ -342,7 +342,7 @@ export default function ReferencePage({
         />
       </Head>
       <div className={styles.inner}>
-        <nav className={styles.nav}>
+        <nav className={styles.nav} data-eyebrow>
           <Link href="/" className={styles.backLink}>
             <span style={{ marginBottom: "3px" }}>←</span> {branding.name}
           </Link>

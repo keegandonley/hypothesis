@@ -33,6 +33,7 @@ a {
 }
 
 html.work-mode [data-eyebrow],
-html.work-mode [data-permalink-row] {
+html.work-mode [data-permalink-row],
+html.work-mode [data-eyebrow] + hr {
   display: none;
 }

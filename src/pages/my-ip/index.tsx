@@ -71,7 +71,7 @@ export default function MyIpPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{`${branding.name.toUpperCase()} — My IP`}</title>
+        <title>{`${branding.name.toUpperCase()} — MY IP`}</title>
         <meta name="description" content="Look up your current public IP address and geolocation details." />
         <meta property="og:title" content="My IP" />
         <meta property="og:description" content="Look up your current public IP address and geolocation details." />

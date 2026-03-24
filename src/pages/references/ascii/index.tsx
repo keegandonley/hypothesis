@@ -90,7 +90,7 @@ export default function AsciiPage() {
       </Head>
 
       <div className={styles.inner}>
-        <nav className={styles.nav}>
+        <nav className={styles.nav} data-eyebrow>
           <Link href="/" className={styles.backLink}>
             <span>←</span> {branding.name}
           </Link>
