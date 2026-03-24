@@ -41,9 +41,7 @@ export default function GistPage() {
     const f = params.get("file") ?? "";
     setUrl(u);
     setFile(f);
-    const initial = buildPageUrl(u, f);
-    history.replaceState(null, "", initial);
-    setPageUrl(initial);
+    setPageUrl(window.location.href);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
