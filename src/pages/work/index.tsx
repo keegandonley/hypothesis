@@ -198,6 +198,8 @@ export default function DashboardPage() {
   const [resultsOpen, setResultsOpen] = useState(false);
   const [tabs, setTabs] = useState<Tab[]>([]);
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
+  const [dragTabId, setDragTabId] = useState<string | null>(null);
+  const [dragOverTabId, setDragOverTabId] = useState<string | null>(null);
 
   // Keep a ref to activeTabId for use inside closures (handleMessage)
   const activeTabIdRef = useRef<string | null>(null);
@@ -351,6 +353,37 @@ export default function DashboardPage() {
     </Head>
   );
 
+  function handleDragStart(e: React.DragEvent, id: string) {
+    setDragTabId(id);
+    e.dataTransfer.effectAllowed = "move";
+  }
+
+  function handleDragOver(e: React.DragEvent, id: string) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (id !== dragOverTabId) setDragOverTabId(id);
+  }
+
+  function handleDrop(e: React.DragEvent, targetId: string) {
+    e.preventDefault();
+    if (!dragTabId || dragTabId === targetId) return;
+    const from = tabs.findIndex((t) => t.id === dragTabId);
+    const to = tabs.findIndex((t) => t.id === targetId);
+    if (from === -1 || to === -1) return;
+    const next = [...tabs];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    setTabs(next);
+    saveToStorage(next, activeTabId);
+    setDragTabId(null);
+    setDragOverTabId(null);
+  }
+
+  function handleDragEnd() {
+    setDragTabId(null);
+    setDragOverTabId(null);
+  }
+
   // ── View mode (tabs open) ─────────────────────────────────
   if (tabs.length > 0) {
     return (
@@ -419,11 +452,17 @@ export default function DashboardPage() {
           {tabs.map((tab) => (
             <div
               key={tab.id}
-              className={
-                tab.id === activeTabId
-                  ? `${styles.tab} ${styles.tabActive}`
-                  : styles.tab
-              }
+              className={[
+                styles.tab,
+                tab.id === activeTabId ? styles.tabActive : "",
+                tab.id === dragTabId ? styles.tabDragging : "",
+                tab.id === dragOverTabId && tab.id !== dragTabId ? styles.tabDragOver : "",
+              ].filter(Boolean).join(" ")}
+              draggable
+              onDragStart={(e) => handleDragStart(e, tab.id)}
+              onDragOver={(e) => handleDragOver(e, tab.id)}
+              onDrop={(e) => handleDrop(e, tab.id)}
+              onDragEnd={handleDragEnd}
               onClick={() => {
                 setActiveTabId(tab.id);
                 saveToStorage(tabs, tab.id);

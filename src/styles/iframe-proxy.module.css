@@ -331,6 +331,44 @@
   color: var(--border);
 }
 
+.frameNameRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.frameNameLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.frameNameInput {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text);
+  padding: 4px 8px;
+}
+
+.frameNameInput::placeholder {
+  color: var(--border);
+}
+
+.frameNameInput:focus {
+  border-color: var(--accent);
+}
+
 @media (max-width: 640px) {
   .iframeDebug {
     left: 0;

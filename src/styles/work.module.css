@@ -388,12 +388,12 @@
   height: 32px;
   font-size: 11px;
   color: var(--muted);
-  cursor: pointer;
+  cursor: grab;
   border-right: 1px solid var(--border);
   white-space: nowrap;
   user-select: none;
   border-bottom: 2px solid transparent;
-  transition: color 0.1s;
+  transition: color 0.1s, opacity 0.1s;
 }
 
 .tab:hover {
@@ -404,6 +404,14 @@
   color: var(--text);
   border-bottom-color: var(--accent);
   background-color: var(--card-bg);
+}
+
+.tabDragging {
+  opacity: 0.4;
+}
+
+.tabDragOver {
+  border-left: 2px solid var(--accent);
 }
 
 .tabCloseBtn {

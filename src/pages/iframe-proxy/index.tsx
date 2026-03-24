@@ -39,6 +39,7 @@ export default function IframeProxyPage() {
   const [panelOpen, setPanelOpen] = useState(false);
   const [inputUrl, setInputUrl] = useState("");
   const [urlFromParam, setUrlFromParam] = useState(false);
+  const [frameName, setFrameName] = useState("");
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
@@ -51,6 +52,7 @@ export default function IframeProxyPage() {
       setUrlFromParam(true);
       setInputUrl(safeUrl);
     }
+    setFrameName(params.get("name") ?? "");
     setDebug(isDebug);
     setMounted(true);
   }, []);
@@ -171,6 +173,7 @@ export default function IframeProxyPage() {
         <iframe
           ref={iframeRef}
           src={url}
+          name={frameName || undefined}
           className={`${styles.iframe} ${debug ? styles.iframeDebug : ""}`}
         />
       )}
@@ -206,6 +209,17 @@ export default function IframeProxyPage() {
             </div>
             <h1 className={styles.panelTitle}>iframe proxy</h1>
             <p className={styles.panelTagline}>Relaying iframe messages...</p>
+            <div className={styles.frameNameRow}>
+              <label className={styles.frameNameLabel}>frame name</label>
+              <input
+                className={styles.frameNameInput}
+                type="text"
+                placeholder="(none)"
+                value={frameName}
+                onChange={(e) => setFrameName(e.target.value)}
+                spellCheck={false}
+              />
+            </div>
             <span className={styles.messageCount}>
               {messages.length} {messages.length === 1 ? "message" : "messages"}
             </span>
