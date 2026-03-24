@@ -17,6 +17,23 @@
   max-width: 640px;
 }
 
+@keyframes pickerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.innerAnimated {
+  width: 100%;
+  max-width: 640px;
+  animation: pickerFadeIn 0.25s ease-out forwards;
+}
+
 .header {
   margin-bottom: 24px;
 }

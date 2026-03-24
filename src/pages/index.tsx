@@ -86,6 +86,14 @@ export default function HomePage({
               <DocIcon />
               docs
             </Link>
+            {" · "}
+            <Link
+              href="/work"
+              className={styles.docsLink}
+              style={{ display: "inline-flex", verticalAlign: "middle", gap: "4px" }}
+            >
+              enter work mode
+            </Link>
           </p>
         </header>
 

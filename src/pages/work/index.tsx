@@ -192,6 +192,7 @@ function saveToStorage(tabs: Tab[], activeTabId: string | null) {
 export default function DashboardPage() {
   const branding = useBranding();
 
+  const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [resultsOpen, setResultsOpen] = useState(false);
@@ -228,11 +229,13 @@ export default function DashboardPage() {
         if (restoredTabs.length > 0) {
           setTabs(restoredTabs);
           setActiveTabId(savedActiveId ?? restoredTabs[0].id);
+          setMounted(true);
           return;
         }
       } catch {}
     }
 
+    setMounted(true);
     inputRef.current?.focus();
   }, []);
 
@@ -457,10 +460,12 @@ export default function DashboardPage() {
   }
 
   // ── Search mode ──────────────────────────────────────────
+  if (!mounted) return null;
+
   return (
     <div className={styles.page}>
       {head}
-      <div className={styles.inner}>
+      <div className={styles.innerAnimated}>
         <div className={styles.searchWrap}>
           <input
             ref={inputRef}
