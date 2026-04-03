@@ -40,6 +40,7 @@ export default function IframeProxyPage() {
   const [inputUrl, setInputUrl] = useState("");
   const [urlFromParam, setUrlFromParam] = useState(false);
   const [frameName, setFrameName] = useState("");
+  const [inWorkMode, setInWorkMode] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
@@ -54,6 +55,7 @@ export default function IframeProxyPage() {
     }
     setFrameName(params.get("name") ?? "");
     setDebug(isDebug);
+    setInWorkMode(params.has("workMode"));
     setMounted(true);
   }, []);
 
@@ -99,7 +101,7 @@ export default function IframeProxyPage() {
     return null;
   }
 
-  if (!url && !debug) {
+  if (!url && !debug && !inWorkMode) {
     return (
       <div className={styles.errorState}>
         Missing required <code className={styles.errorCode}>url</code> query
@@ -108,11 +110,47 @@ export default function IframeProxyPage() {
     );
   }
 
+  const handleUrlSubmit = (raw: string) => {
+    const validated = validateIframeUrl(raw);
+    if (!validated) return;
+    setUrl(validated);
+    setUrlFromParam(true);
+    const params = new URLSearchParams(window.location.search);
+    params.set("url", validated);
+    history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+  };
+
   return (
     <>
       <Head>
         <title>{`${branding.name.toUpperCase()} — IFRAME PROXY`}</title>
       </Head>
+      {inWorkMode && (
+        <div className={styles.workBar}>
+          <span className={styles.badge}>proxied url</span>
+          <form
+            className={styles.urlInlineForm}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleUrlSubmit(inputUrl);
+            }}
+          >
+            <input
+              className={styles.urlInlineInput}
+              type="url"
+              placeholder="https://example.com"
+              value={inputUrl}
+              onChange={(e) => setInputUrl(e.target.value)}
+              autoFocus={!url}
+              spellCheck={false}
+            />
+          </form>
+        </div>
+      )}
+      {inWorkMode && !url && (
+        <div className={styles.workPlaceholder}>enter a url above to begin</div>
+      )}
+
       {debug && (
         <div className={styles.topBar}>
           <span className={styles.badge}>proxied url</span>
@@ -123,8 +161,7 @@ export default function IframeProxyPage() {
               className={styles.urlInlineForm}
               onSubmit={(e) => {
                 e.preventDefault();
-                const validated = validateIframeUrl(inputUrl);
-                if (validated) setUrl(validated);
+                handleUrlSubmit(inputUrl);
               }}
             >
               <input
@@ -174,7 +211,7 @@ export default function IframeProxyPage() {
           ref={iframeRef}
           src={url}
           name={frameName || undefined}
-          className={`${styles.iframe} ${debug ? styles.iframeDebug : ""}`}
+          className={`${styles.iframe} ${debug ? styles.iframeDebug : ""} ${inWorkMode && !debug ? styles.iframeWork : ""}`}
         />
       )}
 
