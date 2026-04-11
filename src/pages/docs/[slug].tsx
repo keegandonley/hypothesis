@@ -223,9 +223,11 @@ function Inline({ text }: { text: string }) {
 function MarkdownContent({
   content,
   actionType,
+  slug,
 }: {
   content: string;
   actionType: string;
+  slug: string;
 }) {
   const substituted = content.replace(/hypothesis-test/g, actionType);
   const nodes = parseMarkdown(substituted);
@@ -291,7 +293,7 @@ function MarkdownContent({
             );
           case "pre":
             return (
-              <pre key={i}>
+              <pre key={i} className={slug === "ascii-art" ? styles.asciiExample : undefined}>
                 <code>{node.code}</code>
               </pre>
             );
@@ -391,7 +393,7 @@ export default function DocsPage({
             <hr className={styles.divider} />
           </>
         )}
-        <MarkdownContent content={content} actionType={branding.actionType} />
+        <MarkdownContent content={content} actionType={branding.actionType} slug={slug} />
       </div>
     </div>
   );

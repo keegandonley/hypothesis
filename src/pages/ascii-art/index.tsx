@@ -62,13 +62,14 @@ function renderAscii(
   charSet: string,
   invert: boolean,
   adj: ImageAdjustments,
+  charAspect: number,
 ): string {
   const ctx = canvas.getContext("2d");
   if (!ctx) return "";
 
   const rows = Math.max(
     1,
-    Math.round((cols / img.naturalWidth) * img.naturalHeight * 0.5),
+    Math.round((cols / img.naturalWidth) * img.naturalHeight * charAspect),
   );
   canvas.width = cols;
   canvas.height = rows;
@@ -137,6 +138,9 @@ export default function AsciiArtPage() {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const measureRef = useRef<HTMLSpanElement>(null);
+  // charAspect = charWidth / lineHeight — measured from the actual rendered font
+  const charAspectRef = useRef<number>(0.5);
 
   const [cols, setCols] = useState(80);
   const [charSetKey, setCharSetKey] = useState<CharSetKey>("detailed");
@@ -161,13 +165,29 @@ export default function AsciiArtPage() {
       cs: CharSetKey,
       inv: boolean,
       adj: ImageAdjustments,
+      charAspect: number,
     ) => {
       if (!canvasRef.current) return;
-      const output = renderAscii(img, canvasRef.current, c, CHAR_SETS[cs], inv, adj);
+      const output = renderAscii(img, canvasRef.current, c, CHAR_SETS[cs], inv, adj, charAspect);
       setAsciiOutput(output);
     },
     [],
   );
+
+  // Measure actual rendered character width whenever the char set changes.
+  // Block elements (░▒▓█) can have a different advance width than ASCII chars in
+  // some fonts, which would skew the aspect ratio if we used a hardcoded factor.
+  // This effect must be declared before the re-render effect so it runs first.
+  useEffect(() => {
+    if (!measureRef.current) return;
+    const chars = CHAR_SETS[charSetKey];
+    measureRef.current.textContent = chars[Math.floor(chars.length / 2)];
+    const charW = measureRef.current.getBoundingClientRect().width;
+    const lineH = parseFloat(getComputedStyle(measureRef.current).lineHeight);
+    if (charW > 0 && lineH > 0) {
+      charAspectRef.current = charW / lineH;
+    }
+  }, [charSetKey]);
 
   // Re-render when any control changes
   useEffect(() => {
@@ -177,7 +197,7 @@ export default function AsciiArtPage() {
       contrast,
       sharpness,
       grayscale,
-    });
+    }, charAspectRef.current);
   }, [cols, charSetKey, invert, brightness, contrast, sharpness, grayscale, triggerRender]);
 
 
@@ -191,7 +211,7 @@ export default function AsciiArtPage() {
         imgRef.current = img;
         setImageSrc(dataUrl);
         setUrlError("");
-        triggerRender(img, cols, charSetKey, invert, { brightness, contrast, sharpness, grayscale });
+        triggerRender(img, cols, charSetKey, invert, { brightness, contrast, sharpness, grayscale }, charAspectRef.current);
       } catch {
         setUrlError("Could not decode image");
       }
@@ -226,7 +246,7 @@ export default function AsciiArtPage() {
       const img = await loadImage(urlInput.trim());
       imgRef.current = img;
       setImageSrc(urlInput.trim());
-      triggerRender(img, cols, charSetKey, invert, { brightness, contrast, sharpness, grayscale });
+      triggerRender(img, cols, charSetKey, invert, { brightness, contrast, sharpness, grayscale }, charAspectRef.current);
     } catch {
       setUrlError("Could not load image — check the URL or CORS policy");
     }
@@ -531,6 +551,19 @@ export default function AsciiArtPage() {
       </div>
 
       <canvas ref={canvasRef} style={{ display: "none" }} />
+      <span
+        ref={measureRef}
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          visibility: "hidden",
+          pointerEvents: "none",
+          fontFamily: '"Courier New", Courier, monospace',
+          fontSize: "7px",
+          lineHeight: "1.2",
+          whiteSpace: "pre",
+        }}
+      />
 
       <hr className={styles.divider} />
 

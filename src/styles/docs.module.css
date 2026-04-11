@@ -170,6 +170,12 @@
   line-height: 1.6;
 }
 
+.asciiExample code {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 7px;
+  line-height: 1.2;
+}
+
 .content a {
   color: var(--accent);
   text-decoration: underline;
