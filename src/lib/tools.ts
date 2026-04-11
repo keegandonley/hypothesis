@@ -452,6 +452,15 @@ export const tools: ToolItem[] = [
     docsHref: "/docs/json-yaml",
     tags: ["conversion", "web"],
   },
+  {
+    kind: "tool",
+    name: "ascii art",
+    description:
+      "Convert images to ASCII art in your browser — upload a file or paste a URL, with configurable width and character density.",
+    href: "/ascii-art",
+    docsHref: "/docs/ascii-art",
+    tags: ["conversion", "text"],
+  },
 ];
 
 export const allItems: AnyItem[] = [...tools, ...experiments, ...references];
