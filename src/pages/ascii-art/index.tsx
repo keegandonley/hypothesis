@@ -83,10 +83,11 @@ function renderAscii(
   ctx.filter = "none";
 
   // Sharpen via convolution on the sampled grid
-  let { data } = ctx.getImageData(0, 0, cols, rows);
-  if (adj.sharpness > 0) {
-    data = applySharpen(data, cols, rows, adj.sharpness / 100);
-  }
+  const imageData = ctx.getImageData(0, 0, cols, rows);
+  const data: Uint8ClampedArray =
+    adj.sharpness > 0
+      ? applySharpen(imageData.data, cols, rows, adj.sharpness / 100)
+      : imageData.data;
 
   const lines: string[] = [];
   for (let y = 0; y < rows; y++) {
