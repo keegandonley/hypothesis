@@ -47,6 +47,9 @@ importers:
       js-yaml:
         specifier: ^4.1.1
         version: 4.1.1
+      lz-string:
+        specifier: ^1.5.0
+        version: 1.5.0
       next:
         specifier: 16.1.7
         version: 16.1.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -534,6 +537,10 @@ packages:
   luxon@3.7.2:
     resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
     engines: {node: '>=12'}
+
+  lz-string@1.5.0:
+    resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
+    hasBin: true
 
   nanoid@3.3.11:
     resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
@@ -1091,6 +1098,8 @@ snapshots:
       p-locate: 4.1.0
 
   luxon@3.7.2: {}
+
+  lz-string@1.5.0: {}
 
   nanoid@3.3.11: {}
 

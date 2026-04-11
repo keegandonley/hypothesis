@@ -141,6 +141,14 @@ export const references: ReferenceItem[] = [
     href: "/references/regex-syntax",
     tags: ["text", "web"],
   },
+  {
+    kind: "reference",
+    name: "Timezones",
+    description:
+      "IANA timezone names with live current time, UTC offsets, abbreviations, and major cities.",
+    href: "/references/timezones",
+    tags: ["web", "sysadmin"],
+  },
 ];
 
 export const experiments: ExperimentItem[] = [
@@ -460,6 +468,15 @@ export const tools: ToolItem[] = [
     href: "/ascii-art",
     docsHref: "/docs/ascii-art",
     tags: ["conversion", "text"],
+  },
+  {
+    kind: "tool",
+    name: "scratch",
+    description:
+      "A scratchpad — type anything and bookmark it as a shareable permalink.",
+    href: "/scratch",
+    docsHref: "/docs/scratch",
+    tags: ["text"],
   },
 ];
 

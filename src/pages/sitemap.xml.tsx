@@ -43,6 +43,8 @@ const staticRoutes = [
   "/references/ascii",
   "/references/unicode-blocks",
   "/ascii-art",
+  "/scratch",
+  "/references/timezones",
 ];
 
 function generateSitemap(baseUrl: string, docSlugs: string[]): string {
