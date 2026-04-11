@@ -177,7 +177,39 @@
 .sliderValue {
   font-size: 10px;
   color: var(--text);
-  min-width: 3ch;
+  min-width: 4ch;
+  text-align: right;
+}
+
+.sliderReset {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.sliderReset:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+.sliderReset:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.controlsSeparator {
+  border-top: 1px solid var(--border);
+  margin: 2px 0;
 }
 
 .checkLabel {

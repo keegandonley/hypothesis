@@ -7,6 +7,20 @@ import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 
+type ImageAdjustments = {
+  brightness: number; // 50–200, where 100 = unchanged
+  contrast: number;   // 50–200, where 100 = unchanged
+  sharpness: number;  // 0–100
+  grayscale: boolean;
+};
+
+const DEFAULT_ADJ: ImageAdjustments = {
+  brightness: 100,
+  contrast: 100,
+  sharpness: 0,
+  grayscale: false,
+};
+
 const CHAR_SETS = {
   simple: " .:-=+*#%@",
   detailed:
@@ -15,12 +29,39 @@ const CHAR_SETS = {
 } as const;
 type CharSetKey = keyof typeof CHAR_SETS;
 
+function applySharpen(
+  data: Uint8ClampedArray,
+  width: number,
+  height: number,
+  amount: number,
+): Uint8ClampedArray {
+  const out = new Uint8ClampedArray(data.length);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const idx = (y * width + x) * 4;
+      for (let c = 0; c < 3; c++) {
+        const center = data[idx + c];
+        const top    = y > 0          ? data[((y - 1) * width + x) * 4 + c] : center;
+        const bottom = y < height - 1 ? data[((y + 1) * width + x) * 4 + c] : center;
+        const left   = x > 0          ? data[(y * width + (x - 1)) * 4 + c] : center;
+        const right  = x < width - 1  ? data[(y * width + (x + 1)) * 4 + c] : center;
+        // Sharpen kernel: 5×center − top − bottom − left − right
+        const sharpened = 5 * center - top - bottom - left - right;
+        out[idx + c] = Math.max(0, Math.min(255, Math.round(center * (1 - amount) + sharpened * amount)));
+      }
+      out[idx + 3] = data[idx + 3];
+    }
+  }
+  return out;
+}
+
 function renderAscii(
   img: HTMLImageElement,
   canvas: HTMLCanvasElement,
   cols: number,
   charSet: string,
   invert: boolean,
+  adj: ImageAdjustments,
 ): string {
   const ctx = canvas.getContext("2d");
   if (!ctx) return "";
@@ -32,8 +73,20 @@ function renderAscii(
   canvas.width = cols;
   canvas.height = rows;
 
+  // Apply CSS filters before drawing (brightness, contrast, grayscale are free)
+  const filters: string[] = [];
+  if (adj.brightness !== 100) filters.push(`brightness(${adj.brightness / 100})`);
+  if (adj.contrast !== 100) filters.push(`contrast(${adj.contrast / 100})`);
+  if (adj.grayscale) filters.push("grayscale(1)");
+  ctx.filter = filters.length > 0 ? filters.join(" ") : "none";
   ctx.drawImage(img, 0, 0, cols, rows);
-  const { data } = ctx.getImageData(0, 0, cols, rows);
+  ctx.filter = "none";
+
+  // Sharpen via convolution on the sampled grid
+  let { data } = ctx.getImageData(0, 0, cols, rows);
+  if (adj.sharpness > 0) {
+    data = applySharpen(data, cols, rows, adj.sharpness / 100);
+  }
 
   const lines: string[] = [];
   for (let y = 0; y < rows; y++) {
@@ -44,9 +97,9 @@ function renderAscii(
       const g = data[i + 1];
       const b = data[i + 2];
       // Rec. 709 perceptual luminance
-      const brightness = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+      const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
       // invert=true: bright→dense (good for dark bg); invert=false: bright→sparse (good for print)
-      const normalized = invert ? brightness : 1 - brightness;
+      const normalized = invert ? lum : 1 - lum;
       const charIndex = Math.min(
         charSet.length - 1,
         Math.floor(normalized * charSet.length),
@@ -88,6 +141,11 @@ export default function AsciiArtPage() {
   const [charSetKey, setCharSetKey] = useState<CharSetKey>("detailed");
   const [invert, setInvert] = useState(true);
 
+  const [brightness, setBrightness] = useState(DEFAULT_ADJ.brightness);
+  const [contrast, setContrast] = useState(DEFAULT_ADJ.contrast);
+  const [sharpness, setSharpness] = useState(DEFAULT_ADJ.sharpness);
+  const [grayscale, setGrayscale] = useState(DEFAULT_ADJ.grayscale);
+
   const [asciiOutput, setAsciiOutput] = useState("");
   const [asciiCopied, setAsciiCopied] = useState(false);
 
@@ -96,25 +154,30 @@ export default function AsciiArtPage() {
   );
 
   const triggerRender = useCallback(
-    (img: HTMLImageElement, c: number, cs: CharSetKey, inv: boolean) => {
+    (
+      img: HTMLImageElement,
+      c: number,
+      cs: CharSetKey,
+      inv: boolean,
+      adj: ImageAdjustments,
+    ) => {
       if (!canvasRef.current) return;
-      const output = renderAscii(
-        img,
-        canvasRef.current,
-        c,
-        CHAR_SETS[cs],
-        inv,
-      );
+      const output = renderAscii(img, canvasRef.current, c, CHAR_SETS[cs], inv, adj);
       setAsciiOutput(output);
     },
     [],
   );
 
-  // Re-render when controls change
+  // Re-render when any control changes
   useEffect(() => {
     if (!imgRef.current) return;
-    triggerRender(imgRef.current, cols, charSetKey, invert);
-  }, [cols, charSetKey, invert, triggerRender]);
+    triggerRender(imgRef.current, cols, charSetKey, invert, {
+      brightness,
+      contrast,
+      sharpness,
+      grayscale,
+    });
+  }, [cols, charSetKey, invert, brightness, contrast, sharpness, grayscale, triggerRender]);
 
 
   const handleFile = async (file: File) => {
@@ -127,7 +190,7 @@ export default function AsciiArtPage() {
         imgRef.current = img;
         setImageSrc(dataUrl);
         setUrlError("");
-        triggerRender(img, cols, charSetKey, invert);
+        triggerRender(img, cols, charSetKey, invert, { brightness, contrast, sharpness, grayscale });
       } catch {
         setUrlError("Could not decode image");
       }
@@ -162,7 +225,7 @@ export default function AsciiArtPage() {
       const img = await loadImage(urlInput.trim());
       imgRef.current = img;
       setImageSrc(urlInput.trim());
-      triggerRender(img, cols, charSetKey, invert);
+      triggerRender(img, cols, charSetKey, invert, { brightness, contrast, sharpness, grayscale });
     } catch {
       setUrlError("Could not load image — check the URL or CORS policy");
     }
@@ -196,6 +259,10 @@ export default function AsciiArtPage() {
     setCols(80);
     setCharSetKey("detailed");
     setInvert(true);
+    setBrightness(DEFAULT_ADJ.brightness);
+    setContrast(DEFAULT_ADJ.contrast);
+    setSharpness(DEFAULT_ADJ.sharpness);
+    setGrayscale(DEFAULT_ADJ.grayscale);
   };
 
   return (
@@ -302,6 +369,72 @@ export default function AsciiArtPage() {
             />
             Invert
           </label>
+          <label className={styles.checkLabel}>
+            <input
+              type="checkbox"
+              checked={grayscale}
+              onChange={(e) => setGrayscale(e.target.checked)}
+              className={styles.checkbox}
+            />
+            Grayscale
+          </label>
+        </div>
+
+        <div className={styles.controlsSeparator} />
+
+        <div className={styles.controlRow}>
+          <span className={styles.controlLabel}>Brightness</span>
+          <input
+            type="range"
+            min={10}
+            max={200}
+            value={brightness}
+            onChange={(e) => setBrightness(Number(e.target.value))}
+            className={styles.widthSlider}
+          />
+          <span className={styles.sliderValue}>{brightness}%</span>
+          <button
+            className={styles.sliderReset}
+            onClick={() => setBrightness(DEFAULT_ADJ.brightness)}
+            disabled={brightness === DEFAULT_ADJ.brightness}
+            title="Reset"
+          >reset</button>
+        </div>
+        <div className={styles.controlRow}>
+          <span className={styles.controlLabel}>Contrast</span>
+          <input
+            type="range"
+            min={10}
+            max={200}
+            value={contrast}
+            onChange={(e) => setContrast(Number(e.target.value))}
+            className={styles.widthSlider}
+          />
+          <span className={styles.sliderValue}>{contrast}%</span>
+          <button
+            className={styles.sliderReset}
+            onClick={() => setContrast(DEFAULT_ADJ.contrast)}
+            disabled={contrast === DEFAULT_ADJ.contrast}
+            title="Reset"
+          >reset</button>
+        </div>
+        <div className={styles.controlRow}>
+          <span className={styles.controlLabel}>Sharpness</span>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={sharpness}
+            onChange={(e) => setSharpness(Number(e.target.value))}
+            className={styles.widthSlider}
+          />
+          <span className={styles.sliderValue}>{sharpness}</span>
+          <button
+            className={styles.sliderReset}
+            onClick={() => setSharpness(DEFAULT_ADJ.sharpness)}
+            disabled={sharpness === DEFAULT_ADJ.sharpness}
+            title="Reset"
+          >reset</button>
         </div>
       </div>
 
@@ -309,7 +442,20 @@ export default function AsciiArtPage() {
         <div className={styles.leftCol}>
           {imageSrc && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={imageSrc} className={styles.preview} alt="Loaded image preview" />
+            <img
+              src={imageSrc}
+              className={styles.preview}
+              alt="Loaded image preview"
+              style={{
+                filter: [
+                  brightness !== 100 ? `brightness(${brightness / 100})` : null,
+                  contrast !== 100 ? `contrast(${contrast / 100})` : null,
+                  grayscale ? "grayscale(1)" : null,
+                ]
+                  .filter(Boolean)
+                  .join(" ") || undefined,
+              }}
+            />
           )}
           {inputMode === "file" ? (
             <div
