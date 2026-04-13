@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GetServerSideProps } from "next";
 import styles from "../styles/index.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -42,11 +42,49 @@ export default function HomePage({
 }) {
   const branding = useBranding();
   const [activeTags, setActiveTags] = useState<Tag[]>([]);
+  const [query, setQuery] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
 
-  const filteredTools =
-    activeTags.length === 0
-      ? tools
-      : tools.filter((t) => t.tags.some((tag) => activeTags.includes(tag)));
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("q") ?? "";
+    if (q) setQuery(q);
+  }, []);
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "/" && document.activeElement !== searchRef.current) {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (query) {
+      params.set("q", query);
+    } else {
+      params.delete("q");
+    }
+    const qs = params.toString();
+    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+  }, [query]);
+
+  function matchesQuery(name: string, desc: string) {
+    if (!query) return true;
+    const lower = query.toLowerCase();
+    return name.toLowerCase().includes(lower) || desc.toLowerCase().includes(lower);
+  }
+
+  const filteredTools = tools
+    .filter((t) => activeTags.length === 0 || t.tags.some((tag) => activeTags.includes(tag)))
+    .filter((t) => matchesQuery(t.name, t.description));
+
+  const filteredExperiments = experiments.filter((e) => matchesQuery(e.name, e.description));
+  const filteredRefs = references.filter((r) => matchesQuery(r.name, r.description));
 
   function toggleTag(tag: Tag) {
     setActiveTags((prev) =>
@@ -99,7 +137,21 @@ export default function HomePage({
 
         <hr className={styles.divider} />
 
-        <div className={styles.section}>
+        <div className={styles.searchWrap}>
+          <input
+            className={styles.searchInput}
+            type="search"
+            placeholder="Search tools, experiments, references…"
+            ref={searchRef}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            autoComplete="off"
+            spellCheck={false}
+          />
+          {!query && <kbd className={styles.searchKbd}>/</kbd>}
+        </div>
+
+        {filteredTools.length > 0 && <div className={styles.section}>
           <div className={styles.sectionLabel}>Tools</div>
           <div className={styles.tagFilters}>
             {ALL_TAGS.map((tag) => (
@@ -125,26 +177,31 @@ export default function HomePage({
                 <ExperimentCard key={tool.name} {...tool} compact />
               ))}
           </div>
-        </div>
-        <div className={styles.section}>
+        </div>}
+
+        {filteredExperiments.length > 0 && <div className={styles.section}>
           <div className={styles.sectionLabel}>Experiments</div>
           <div className={styles.cards}>
-            {experiments.map((exp) => (
+            {filteredExperiments.map((exp) => (
               <ExperimentCard key={exp.id} {...exp} />
             ))}
           </div>
-        </div>
+        </div>}
 
-        <div className={styles.section}>
+        {filteredRefs.length > 0 && <div className={styles.section}>
           <div className={styles.sectionLabel}>References</div>
           <div className={styles.toolCards}>
-            {[...references]
+            {[...filteredRefs]
               .sort((a, b) => a.name.localeCompare(b.name))
               .map((ref) => (
                 <ExperimentCard key={ref.name} {...ref} compact />
               ))}
           </div>
-        </div>
+        </div>}
+
+        {query && filteredTools.length === 0 && filteredExperiments.length === 0 && filteredRefs.length === 0 && (
+          <p className={styles.emptyState}>No results for &ldquo;{query}&rdquo;</p>
+        )}
 
         <div className={styles.section}>
           <div className={styles.sectionLabel}>About this project</div>
