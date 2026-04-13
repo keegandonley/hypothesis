@@ -177,6 +177,12 @@ type StoredTabs = {
   activeTabId: string | null;
 };
 
+type HypFile = {
+  version: number;
+  tabs: { id: string; href: string; url: string }[];
+  activeTabId: string | null;
+};
+
 function saveToStorage(tabs: Tab[], activeTabId: string | null) {
   if (tabs.length === 0) {
     localStorage.removeItem("work_tabs");
@@ -206,6 +212,7 @@ export default function DashboardPage() {
   activeTabIdRef.current = activeTabId;
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
 
   // Restore from localStorage on mount; otherwise focus search
@@ -303,6 +310,51 @@ export default function DashboardPage() {
   ];
   const totalCount = flatItems.length;
 
+  function saveWorkspace() {
+    const data: HypFile = {
+      version: 1,
+      tabs: tabs.map((t) => ({ id: t.id, href: t.item.href, url: t.currentUrl })),
+      activeTabId,
+    };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const dt = new Date().toISOString().slice(0, 19).replace(/:/g, "-");
+    a.href = blobUrl;
+    a.download = `${dt}.hyp`;
+    a.click();
+    URL.revokeObjectURL(blobUrl);
+  }
+
+  function restoreWorkspace(file: File) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const { tabs: savedTabs, activeTabId: savedActiveId } = JSON.parse(e.target?.result as string) as HypFile;
+        const allItems = [...tools, ...experiments, ...references];
+        const restoredTabs: Tab[] = savedTabs.flatMap(({ id, href, url }) => {
+          const item = allItems.find((i) => i.href === href);
+          if (!item) return [];
+          const u = new URL(url, window.location.origin);
+          u.searchParams.set("workMode", "1");
+          u.searchParams.set("tabId", id);
+          const src = u.pathname + u.search;
+          return [{ id, item, initialSrc: src, currentUrl: src }];
+        });
+        if (restoredTabs.length > 0) {
+          setTabs(restoredTabs);
+          const newActiveId = savedActiveId ?? restoredTabs[0].id;
+          setActiveTabId(newActiveId);
+          saveToStorage(restoredTabs, newActiveId);
+        }
+      } catch {}
+      // Reset file input so the same file can be loaded again
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+    reader.readAsText(file);
+  }
+
   function openTab(item: AnyItem) {
     const id = crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const url = `${item.href}?workMode=1&tabId=${id}`;
@@ -389,6 +441,16 @@ export default function DashboardPage() {
     return (
       <div className={styles.pageView}>
         {head}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".hyp"
+          style={{ display: "none" }}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) restoreWorkspace(file);
+          }}
+        />
         <div className={styles.topBar}>
           <div className={styles.searchContainer}>
             <input
@@ -447,6 +509,14 @@ export default function DashboardPage() {
           >
             esc
           </button>
+          <div className={styles.topBarActions}>
+            <button className={styles.closeBtn} onClick={saveWorkspace}>
+              save
+            </button>
+            <button className={styles.closeBtn} onClick={() => fileInputRef.current?.click()}>
+              load
+            </button>
+          </div>
         </div>
         <div className={styles.tabBar}>
           {tabs.map((tab) => (
@@ -503,6 +573,16 @@ export default function DashboardPage() {
   return (
     <div className={styles.page}>
       {head}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".hyp"
+        style={{ display: "none" }}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) restoreWorkspace(file);
+        }}
+      />
       <div className={styles.innerAnimated}>
         <div className={styles.searchWrap}>
           <input
@@ -538,6 +618,14 @@ export default function DashboardPage() {
             onSelect={openTab}
             onHover={setSelectedIndex}
           />
+        </div>
+        <div className={styles.loadWorkspaceRow}>
+          <button
+            className={styles.loadWorkspaceBtn}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            load workspace
+          </button>
         </div>
       </div>
     </div>

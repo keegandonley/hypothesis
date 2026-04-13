@@ -437,3 +437,34 @@
   border: none;
   display: block;
 }
+
+.topBarActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.loadWorkspaceRow {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.loadWorkspaceBtn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.loadWorkspaceBtn:hover {
+  color: var(--text);
+  border-color: var(--accent-border);
+}
