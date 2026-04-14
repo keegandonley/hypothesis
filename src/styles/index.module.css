@@ -229,6 +229,21 @@
   background-color: #16161f;
 }
 
+.cardActive {
+  border-color: var(--accent);
+  background-color: #16161f;
+}
+
+.cardActive .arrow {
+  color: var(--accent);
+}
+
+.cardLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: 8px;
+}
+
 .badge {
   flex-shrink: 0;
   font-size: 10px;
@@ -334,6 +349,13 @@
 
 .docsLink:hover {
   color: var(--accent);
+}
+
+.docsLink:focus-visible {
+  color: var(--accent);
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 .footer {

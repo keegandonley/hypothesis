@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import styles from "../styles/index.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -41,15 +42,13 @@ export default function HomePage({
   ogDescription: string;
 }) {
   const branding = useBranding();
+  const router = useRouter();
   const [activeTags, setActiveTags] = useState<Tag[]>([]);
   const [query, setQuery] = useState("");
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("q") ?? "";
-    if (q) setQuery(q);
-  }, []);
+  const focusedIndexRef = useRef<number | null>(null);
+  const navRef = useRef({ items: [] as Array<{ href: string }>, toolsCount: 0, expsCount: 0 });
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -63,15 +62,107 @@ export default function HomePage({
   }, []);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (query) {
-      params.set("q", query);
-    } else {
-      params.delete("q");
+    setFocusedIndex(null);
+    focusedIndexRef.current = null;
+  }, [query, activeTags]);
+
+  useEffect(() => {
+    if (focusedIndex === null) return;
+    document.querySelector(`[data-nav-index="${focusedIndex}"]`)?.scrollIntoView({ block: "nearest" });
+  }, [focusedIndex]);
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (document.activeElement === searchRef.current) {
+        if (e.key === "ArrowDown" && navRef.current.items.length > 0) {
+          e.preventDefault();
+          searchRef.current?.blur();
+          focusedIndexRef.current = 0;
+          setFocusedIndex(0);
+        } else if (e.key === "Escape") {
+          setQuery("");
+          searchRef.current?.blur();
+        }
+        return;
+      }
+      const { items, toolsCount, expsCount } = navRef.current;
+      const total = items.length;
+      if (total === 0) return;
+      const current = focusedIndexRef.current;
+
+      function colsAt(i: number) {
+        const twoCol = window.innerWidth > 480;
+        if (i < toolsCount) return twoCol ? 2 : 1;
+        if (i < toolsCount + expsCount) return 1;
+        return twoCol ? 2 : 1;
+      }
+
+      function sectionBounds(i: number): [number, number] {
+        if (i < toolsCount) return [0, toolsCount];
+        if (i < toolsCount + expsCount) return [toolsCount, toolsCount + expsCount];
+        return [toolsCount + expsCount, total];
+      }
+
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        e.preventDefault();
+        let next: number;
+        if (current === null) {
+          next = e.key === "ArrowUp" || e.key === "ArrowLeft" ? total - 1 : 0;
+        } else {
+          const cols = colsAt(current);
+          const [secStart, secEnd] = sectionBounds(current);
+          const posInSection = current - secStart;
+          const col = posInSection % cols;
+          if (e.key === "ArrowRight") {
+            next = Math.min(current + 1, total - 1);
+          } else if (e.key === "ArrowLeft") {
+            next = Math.max(current - 1, 0);
+          } else if (e.key === "ArrowDown") {
+            if (posInSection + cols < secEnd - secStart) {
+              next = current + cols;
+            } else if (secEnd < total) {
+              const nextCols = colsAt(secEnd);
+              next = secEnd + Math.min(col, nextCols - 1);
+            } else {
+              next = current;
+            }
+          } else {
+            // ArrowUp
+            if (posInSection - cols >= 0) {
+              next = current - cols;
+            } else if (secStart > 0) {
+              const [prevSecStart, prevSecEnd] = sectionBounds(secStart - 1);
+              const prevCols = colsAt(prevSecStart);
+              const prevCount = prevSecEnd - prevSecStart;
+              const lastRowStart = prevSecStart + Math.floor((prevCount - 1) / prevCols) * prevCols;
+              next = Math.min(lastRowStart + Math.min(col, prevCols - 1), prevSecEnd - 1);
+            } else {
+              next = current;
+            }
+          }
+        }
+        focusedIndexRef.current = next;
+        setFocusedIndex(next);
+      } else if (e.key === "Enter" && current !== null) {
+        e.preventDefault();
+        router.push(items[current].href);
+      } else if (e.key === "Escape") {
+        if (current !== null) {
+          focusedIndexRef.current = null;
+          setFocusedIndex(null);
+        } else {
+          setQuery("");
+          searchRef.current?.blur();
+        }
+      } else if (e.key === "Tab") {
+        focusedIndexRef.current = null;
+        setFocusedIndex(null);
+      }
     }
-    const qs = params.toString();
-    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
-  }, [query]);
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function matchesQuery(name: string, desc: string) {
     if (!query) return true;
@@ -85,6 +176,12 @@ export default function HomePage({
 
   const filteredExperiments = experiments.filter((e) => matchesQuery(e.name, e.description));
   const filteredRefs = references.filter((r) => matchesQuery(r.name, r.description));
+
+  const sortedTools = [...filteredTools].sort((a, b) => a.name.localeCompare(b.name));
+  const sortedRefs = [...filteredRefs].sort((a, b) => a.name.localeCompare(b.name));
+  const toolsCount = sortedTools.length;
+  const expsCount = filteredExperiments.length;
+  navRef.current = { items: [...sortedTools, ...filteredExperiments, ...sortedRefs], toolsCount, expsCount };
 
   function toggleTag(tag: Tag) {
     setActiveTags((prev) =>
@@ -171,19 +268,17 @@ export default function HomePage({
             ))}
           </div>
           <div className={styles.toolCards}>
-            {[...filteredTools]
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((tool) => (
-                <ExperimentCard key={tool.name} {...tool} compact />
-              ))}
+            {sortedTools.map((tool, i) => (
+              <ExperimentCard key={tool.name} {...tool} compact active={focusedIndex === i} navIndex={i} />
+            ))}
           </div>
         </div>}
 
         {filteredExperiments.length > 0 && <div className={styles.section}>
           <div className={styles.sectionLabel}>Experiments</div>
           <div className={styles.cards}>
-            {filteredExperiments.map((exp) => (
-              <ExperimentCard key={exp.id} {...exp} />
+            {filteredExperiments.map((exp, i) => (
+              <ExperimentCard key={exp.id} {...exp} active={focusedIndex === toolsCount + i} navIndex={toolsCount + i} />
             ))}
           </div>
         </div>}
@@ -191,11 +286,9 @@ export default function HomePage({
         {filteredRefs.length > 0 && <div className={styles.section}>
           <div className={styles.sectionLabel}>References</div>
           <div className={styles.toolCards}>
-            {[...filteredRefs]
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((ref) => (
-                <ExperimentCard key={ref.name} {...ref} compact />
-              ))}
+            {sortedRefs.map((ref, i) => (
+              <ExperimentCard key={ref.name} {...ref} compact active={focusedIndex === toolsCount + expsCount + i} navIndex={toolsCount + expsCount + i} />
+            ))}
           </div>
         </div>}
 
@@ -256,6 +349,8 @@ function ExperimentCard({
   docsHref,
   compact,
   tags,
+  active,
+  navIndex,
 }: {
   id?: string;
   name: string;
@@ -264,9 +359,11 @@ function ExperimentCard({
   docsHref?: string;
   compact?: boolean;
   tags?: Tag[];
+  active?: boolean;
+  navIndex?: number;
 }) {
   return (
-    <div className={styles.card}>
+    <div className={`${styles.card}${active ? ` ${styles.cardActive}` : ""}`} data-nav-index={navIndex}>
       <Link href={href} className={styles.cardLink} aria-label={name} />
       {compact ? (
         <div className={styles.cardMainCompact}>
