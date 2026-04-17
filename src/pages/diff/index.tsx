@@ -47,7 +47,7 @@ export default function DiffPage() {
     if (!a && !b) return `${window.location.origin}${window.location.pathname}`;
     const payload = JSON.stringify({ a, b, m });
     const encoded = btoa(unescape(encodeURIComponent(payload)));
-    return `${window.location.origin}${window.location.pathname}?v=${encoded}`;
+    return `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(encoded)}`;
   };
 
   const syncUrl = (a: string, b: string, m: Mode) => {

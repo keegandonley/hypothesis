@@ -156,7 +156,7 @@ export default function UnicodePage() {
   const buildUrl = (txt: string) => {
     if (!txt) return `${window.location.origin}${window.location.pathname}`;
     const encoded = btoa(encodeURIComponent(txt));
-    return `${window.location.origin}${window.location.pathname}?v=${encoded}`;
+    return `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(encoded)}`;
   };
 
   useEffect(() => {

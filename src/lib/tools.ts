@@ -478,6 +478,78 @@ export const tools: ToolItem[] = [
     docsHref: "/docs/scratch",
     tags: ["text"],
   },
+  {
+    kind: "tool",
+    name: "keycode",
+    description:
+      "Press any key to inspect its JavaScript event properties: key, code, keyCode, location, and modifier state.",
+    href: "/keycode",
+    docsHref: "/docs/keycode",
+    tags: ["web", "sysadmin"],
+  },
+  {
+    kind: "tool",
+    name: "basic auth",
+    description:
+      "Generate HTTP Basic Authentication headers from a username and password — encoded in your browser.",
+    href: "/basic-auth",
+    docsHref: "/docs/basic-auth",
+    tags: ["web", "encoding", "security"],
+  },
+  {
+    kind: "tool",
+    name: "markdown",
+    description:
+      "Convert Markdown to HTML with a live preview. Toggle between rendered output and raw HTML source.",
+    href: "/markdown",
+    docsHref: "/docs/markdown",
+    tags: ["conversion", "web", "text"],
+  },
+  {
+    kind: "tool",
+    name: "json diff",
+    description:
+      "Compare two JSON structures and highlight added, removed, and changed keys recursively.",
+    href: "/json-diff",
+    docsHref: "/docs/json-diff",
+    tags: ["web", "text"],
+  },
+  {
+    kind: "tool",
+    name: "sql",
+    description:
+      "Format and prettify SQL queries with uppercase keywords and proper indentation. Supports PostgreSQL, MySQL, SQLite, and BigQuery.",
+    href: "/sql",
+    docsHref: "/docs/sql",
+    tags: ["web", "text"],
+  },
+  {
+    kind: "tool",
+    name: "svg → jsx",
+    description:
+      "Convert SVG markup to React JSX — removes xmlns, converts hyphenated attributes to camelCase, and wraps inline styles as objects.",
+    href: "/svg-jsx",
+    docsHref: "/docs/svg-jsx",
+    tags: ["conversion", "web"],
+  },
+  {
+    kind: "tool",
+    name: "og tags",
+    description:
+      "Generate Open Graph and Twitter Card meta tags with a live social preview.",
+    href: "/og",
+    docsHref: "/docs/og",
+    tags: ["web"],
+  },
+  {
+    kind: "tool",
+    name: "color shades",
+    description:
+      "Generate a perceptually uniform 11-step color scale in OKLCH — ready for Tailwind CSS or any design system.",
+    href: "/color-shades",
+    docsHref: "/docs/color-shades",
+    tags: ["conversion", "web"],
+  },
 ];
 
 export const allItems: AnyItem[] = [...tools, ...experiments, ...references];

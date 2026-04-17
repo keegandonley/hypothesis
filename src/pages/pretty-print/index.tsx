@@ -22,7 +22,7 @@ export default function PrettyPrintPage() {
 
   const buildUrl = (encoded: string) => {
     if (!encoded) return `${window.location.origin}${window.location.pathname}`;
-    return `${window.location.origin}${window.location.pathname}?v=${encoded}`;
+    return `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(encoded)}`;
   };
 
   const formatJson = (value: string): { output: string; valid: boolean | null } => {
