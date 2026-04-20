@@ -28,6 +28,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       ogImageUrl: `${baseUrl}/api/og?domain=${hostname}`,
       ogTitle: branding.name,
       ogDescription: branding.tagline,
+      seoDescription:
+        "A free collection of online developer tools — Base64 encoder/decoder, JWT inspector, regex tester, UUID generator, color converter, and 30+ more. No signup required.",
     },
   };
 };
@@ -36,10 +38,12 @@ export default function HomePage({
   ogImageUrl,
   ogTitle,
   ogDescription,
+  seoDescription,
 }: {
   ogImageUrl: string;
   ogTitle: string;
   ogDescription: string;
+  seoDescription: string;
 }) {
   const branding = useBranding();
   const router = useRouter();
@@ -192,6 +196,7 @@ export default function HomePage({
     <div className={styles.page}>
       <Head>
         <title>{branding.name.toUpperCase()}</title>
+        <meta name="description" content={seoDescription} />
         <meta property="og:title" content={ogTitle} />
         <meta property="og:description" content={ogDescription} />
         <meta property="og:image" content={ogImageUrl} />

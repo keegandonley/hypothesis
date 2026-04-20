@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/message-stream.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -94,9 +94,12 @@ export default function MessagesPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — MESSAGE STREAM`}</title>
-      </Head>
+      <ToolHead
+        title="Message Stream"
+        description="Monitor and log postMessage events in real time across iframes for debugging cross-origin communication."
+        path="/message-stream"
+        brandName={branding.name}
+      />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
           <Link

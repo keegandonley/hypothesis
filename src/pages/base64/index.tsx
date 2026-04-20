@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/base64.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -165,18 +165,12 @@ export default function Base64Page() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — BASE64`}</title>
-        <meta name="description" content="Encode and decode Base64 strings instantly in your browser." />
-        <meta property="og:title" content="Base64 Encoder / Decoder" />
-        <meta property="og:description" content="Encode and decode Base64 strings instantly in your browser." />
-        <meta property="og:url" content="https://hypothesis.sh/base64" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Base64 Encoder / Decoder" />
-        <meta name="twitter:description" content="Encode and decode Base64 strings instantly in your browser." />
-        <link rel="canonical" href="https://hypothesis.sh/base64" />
-      </Head>
+      <ToolHead
+        title="Base64 Encoder / Decoder"
+        description="Encode and decode Base64 strings instantly. Free online Base64 encoder/decoder — no installation required. No data sent to servers."
+        path="/base64"
+        brandName={branding.name}
+      />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
           <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>

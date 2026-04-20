@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/urlencode.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -90,18 +90,12 @@ export default function UrlEncodePage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — URL ENCODE`}</title>
-        <meta name="description" content="Encode and decode URL-encoded strings." />
-        <meta property="og:title" content="URL Encoder / Decoder" />
-        <meta property="og:description" content="Encode and decode URL-encoded strings." />
-        <meta property="og:url" content="https://hypothesis.sh/urlencode" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="URL Encoder / Decoder" />
-        <meta name="twitter:description" content="Encode and decode URL-encoded strings." />
-        <link rel="canonical" href="https://hypothesis.sh/urlencode" />
-      </Head>
+      <ToolHead
+        title="URL Encoder / Decoder"
+        description="Encode and decode URL components and query strings online. Free online URL encoder/decoder — no installation required. No data sent to servers."
+        path="/urlencode"
+        brandName={branding.name}
+      />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
           <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/sql.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -96,18 +96,12 @@ export default function SqlPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — SQL Formatter`}</title>
-        <meta name="description" content="Format and prettify SQL queries with support for PostgreSQL, MySQL, SQLite, and BigQuery dialects." />
-        <meta property="og:title" content="SQL Formatter" />
-        <meta property="og:description" content="Format and prettify SQL queries with support for multiple dialects." />
-        <meta property="og:url" content="https://hypothesis.sh/sql" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="SQL Formatter" />
-        <meta name="twitter:description" content="Format and prettify SQL queries with support for multiple dialects." />
-        <link rel="canonical" href="https://hypothesis.sh/sql" />
-      </Head>
+      <ToolHead
+        title="SQL Formatter"
+        description="Format and prettify SQL queries with proper indentation. Supports PostgreSQL, MySQL, SQLite, BigQuery. Free online SQL formatter — no signup needed."
+        path="/sql"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

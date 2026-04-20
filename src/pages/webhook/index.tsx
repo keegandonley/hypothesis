@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "../../styles/webhook.module.css";
@@ -245,18 +245,12 @@ export default function WebhookPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — WEBHOOK`}</title>
-        <meta name="description" content="Inspect incoming webhooks with a temporary endpoint." />
-        <meta property="og:title" content="Webhook Inspector" />
-        <meta property="og:description" content="Inspect incoming webhooks with a temporary endpoint." />
-        <meta property="og:url" content="https://hypothesis.sh/webhook" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Webhook Inspector" />
-        <meta name="twitter:description" content="Inspect incoming webhooks with a temporary endpoint." />
-        <link rel="canonical" href="https://hypothesis.sh/webhook" />
-      </Head>
+      <ToolHead
+        title="Webhook Inspector"
+        description="Receive and inspect incoming HTTP webhook requests in real time. Free online webhook testing tool."
+        path="/webhook"
+        brandName={branding.name}
+      />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
           <Link

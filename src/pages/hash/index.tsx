@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/hash.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -139,18 +139,12 @@ export default function HashPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — HASH GENERATOR`}</title>
-        <meta name="description" content="Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text input, entirely in your browser." />
-        <meta property="og:title" content="Hash Generator" />
-        <meta property="og:description" content="Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text input, entirely in your browser." />
-        <meta property="og:url" content="https://hypothesis.sh/hash" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Hash Generator" />
-        <meta name="twitter:description" content="Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text input, entirely in your browser." />
-        <link rel="canonical" href="https://hypothesis.sh/hash" />
-      </Head>
+      <ToolHead
+        title="Hash Generator"
+        description="Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text. Free online hash generator — no installation required. No data sent to servers."
+        path="/hash"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

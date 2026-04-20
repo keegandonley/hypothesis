@@ -1,4 +1,4 @@
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import styles from "@/styles/json-yaml.module.css";
@@ -100,21 +100,12 @@ export default function JsonYamlPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — JSON ↔ YAML`}</title>
-        <meta
-          name="description"
-          content="Convert between JSON and YAML formats with live bidirectional sync."
-        />
-        <meta property="og:title" content="JSON ↔ YAML Converter" />
-        <meta
-          property="og:description"
-          content="Convert between JSON and YAML with live bidirectional sync and shareable permalinks."
-        />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <link rel="canonical" href="https://hypothesis.sh/json-yaml" />
-      </Head>
+      <ToolHead
+        title="JSON ↔ YAML Converter"
+        description="Convert between JSON and YAML with live bidirectional sync and shareable permalinks. Free online JSON to YAML converter — no installation required."
+        path="/json-yaml"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

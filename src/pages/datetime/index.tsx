@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/datetime.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -211,18 +211,12 @@ export default function DateTimePage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — DATETIME`}</title>
-        <meta name="description" content="Parse, convert, and format dates and timestamps across timezones." />
-        <meta property="og:title" content="Datetime Converter" />
-        <meta property="og:description" content="Parse, convert, and format dates and timestamps across timezones." />
-        <meta property="og:url" content="https://hypothesis.sh/datetime" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Datetime Converter" />
-        <meta name="twitter:description" content="Parse, convert, and format dates and timestamps across timezones." />
-        <link rel="canonical" href="https://hypothesis.sh/datetime" />
-      </Head>
+      <ToolHead
+        title="Datetime Converter"
+        description="Convert Unix timestamps, ISO dates, and relative times across timezones with live sync. Free online timestamp converter — no installation required."
+        path="/datetime"
+        brandName={branding.name}
+      />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
           <Link

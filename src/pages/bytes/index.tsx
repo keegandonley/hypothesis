@@ -1,4 +1,4 @@
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import styles from "@/styles/bytes.module.css";
@@ -108,21 +108,12 @@ export default function BytesPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — BYTE SIZE`}</title>
-        <meta
-          name="description"
-          content="Convert between bytes, KB, KiB, MB, MiB, GB, GiB, TB, TiB with binary (1024) and decimal (1000) modes."
-        />
-        <meta property="og:title" content="Byte Size Converter" />
-        <meta
-          property="og:description"
-          content="Convert between bytes, KB/KiB, MB/MiB, GB/GiB, TB/TiB with binary and decimal modes."
-        />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <link rel="canonical" href="https://hypothesis.sh/bytes" />
-      </Head>
+      <ToolHead
+        title="Byte Size Converter"
+        description="Convert between bytes, kilobytes, megabytes, gigabytes, and more instantly. Free online byte size converter — no installation required. No data sent to servers."
+        path="/bytes"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/css-unit.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -193,18 +193,12 @@ export default function CssUnitPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — CSS UNIT`}</title>
-        <meta name="description" content="Convert between CSS units: px, rem, em, %, vh, vw, pt, cm, mm, in." />
-        <meta property="og:title" content="CSS Unit Converter" />
-        <meta property="og:description" content="Convert between CSS units: px, rem, em, %, vh, vw, pt, cm, mm, in." />
-        <meta property="og:url" content="https://hypothesis.sh/css-unit" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="CSS Unit Converter" />
-        <meta name="twitter:description" content="Convert between CSS units: px, rem, em, %, vh, vw, pt, cm, mm, in." />
-        <link rel="canonical" href="https://hypothesis.sh/css-unit" />
-      </Head>
+      <ToolHead
+        title="CSS Unit Converter"
+        description="Convert between CSS units: px, rem, em, vw, vh, and more with a configurable root font size. Free online CSS unit converter — no installation required."
+        path="/css-unit"
+        brandName={branding.name}
+      />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
           <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>

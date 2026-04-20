@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import styles from "../../styles/chmod.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -158,18 +158,12 @@ export default function ChmodPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — CHMOD`}</title>
-        <meta name="description" content="Calculate Unix file permissions from numeric or symbolic mode." />
-        <meta property="og:title" content="Chmod Calculator" />
-        <meta property="og:description" content="Calculate Unix file permissions from numeric or symbolic mode." />
-        <meta property="og:url" content="https://hypothesis.sh/chmod" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Chmod Calculator" />
-        <meta name="twitter:description" content="Calculate Unix file permissions from numeric or symbolic mode." />
-        <link rel="canonical" href="https://hypothesis.sh/chmod" />
-      </Head>
+      <ToolHead
+        title="Chmod Calculator"
+        description="Convert Unix file permissions between numeric (755) and symbolic (rwxr-xr-x) modes. Free online chmod calculator — no installation required. No data sent to servers."
+        path="/chmod"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

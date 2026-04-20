@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/jwt.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -159,18 +159,12 @@ export default function JwtPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — JWT DECODER`}</title>
-        <meta name="description" content="Decode JWT tokens and inspect header, payload claims, and expiry status in your browser." />
-        <meta property="og:title" content="JWT Decoder" />
-        <meta property="og:description" content="Decode JWT tokens and inspect header, payload claims, and expiry status in your browser." />
-        <meta property="og:url" content="https://hypothesis.sh/jwt" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="JWT Decoder" />
-        <meta name="twitter:description" content="Decode JWT tokens and inspect header, payload claims, and expiry status in your browser." />
-        <link rel="canonical" href="https://hypothesis.sh/jwt" />
-      </Head>
+      <ToolHead
+        title="JWT Decoder"
+        description="Decode and inspect JWT tokens online — view header, payload claims, and expiry status. Free, no installation required. No data sent to servers."
+        path="/jwt"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

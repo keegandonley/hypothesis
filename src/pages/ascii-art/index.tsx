@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import styles from "../../styles/ascii-art.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -288,27 +288,12 @@ export default function AsciiArtPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — ASCII ART`}</title>
-        <meta
-          name="description"
-          content="Convert images to ASCII art in your browser — upload a file or paste a URL, with configurable width and character density."
-        />
-        <meta property="og:title" content="ASCII Art" />
-        <meta
-          property="og:description"
-          content="Convert images to ASCII art in your browser — upload a file or paste a URL."
-        />
-        <meta property="og:url" content="https://hypothesis.sh/ascii-art" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="ASCII Art" />
-        <meta
-          name="twitter:description"
-          content="Convert images to ASCII art in your browser — upload a file or paste a URL."
-        />
-        <link rel="canonical" href="https://hypothesis.sh/ascii-art" />
-      </Head>
+      <ToolHead
+        title="ASCII Art Generator"
+        description="Convert text to ASCII art using dozens of fonts and styles. Free online ASCII art generator — no installation required. No data sent to servers."
+        path="/ascii-art"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/json-diff.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -185,27 +185,12 @@ export default function JsonDiffPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — JSON Diff`}</title>
-        <meta
-          name="description"
-          content="Compare two JSON structures and highlight added, removed, and changed keys."
-        />
-        <meta property="og:title" content="JSON Diff" />
-        <meta
-          property="og:description"
-          content="Compare two JSON structures and highlight added, removed, and changed keys."
-        />
-        <meta property="og:url" content="https://hypothesis.sh/json-diff" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="JSON Diff" />
-        <meta
-          name="twitter:description"
-          content="Compare two JSON structures and highlight added, removed, and changed keys."
-        />
-        <link rel="canonical" href="https://hypothesis.sh/json-diff" />
-      </Head>
+      <ToolHead
+        title="JSON Diff"
+        description="Compare two JSON objects and see a structured diff of added, removed, and changed keys. Free online JSON diff tool — no installation required. No data sent to servers."
+        path="/json-diff"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

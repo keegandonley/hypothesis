@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/numbase.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -115,18 +115,12 @@ export default function NumbasePage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — NUMBER BASE`}</title>
-        <meta name="description" content="Convert numbers between binary, octal, decimal, and hexadecimal." />
-        <meta property="og:title" content="Number Base Converter" />
-        <meta property="og:description" content="Convert numbers between binary, octal, decimal, and hexadecimal." />
-        <meta property="og:url" content="https://hypothesis.sh/numbase" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Number Base Converter" />
-        <meta name="twitter:description" content="Convert numbers between binary, octal, decimal, and hexadecimal." />
-        <link rel="canonical" href="https://hypothesis.sh/numbase" />
-      </Head>
+      <ToolHead
+        title="Number Base Converter"
+        description="Convert numbers between binary, octal, decimal, and hexadecimal bases instantly. Free online number base converter — no installation required. No data sent to servers."
+        path="/numbase"
+        brandName={branding.name}
+      />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
           <Link

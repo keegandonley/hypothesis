@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/unicode.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -197,18 +197,12 @@ export default function UnicodePage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — UNICODE INSPECTOR`}</title>
-        <meta name="description" content="Inspect each character's code point, UTF-8/UTF-16 encoding, Unicode category, script, and HTML entity." />
-        <meta property="og:title" content="Unicode Inspector" />
-        <meta property="og:description" content="Inspect each character's code point, UTF-8/UTF-16 encoding, Unicode category, script, and HTML entity." />
-        <meta property="og:url" content="https://hypothesis.sh/unicode" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Unicode Inspector" />
-        <meta name="twitter:description" content="Inspect each character's code point, UTF-8/UTF-16 encoding, Unicode category, script, and HTML entity." />
-        <link rel="canonical" href="https://hypothesis.sh/unicode" />
-      </Head>
+      <ToolHead
+        title="Unicode Inspector"
+        description="Inspect Unicode code points, names, categories, and UTF-8 encodings for any character or string. Free online Unicode inspector — no installation required."
+        path="/unicode"
+        brandName={branding.name}
+      />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
           <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>

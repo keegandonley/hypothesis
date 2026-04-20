@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/color.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -384,27 +384,12 @@ export default function ColorPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — COLOR CONVERTER`}</title>
-        <meta
-          name="description"
-          content="Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with live preview."
-        />
-        <meta property="og:title" content="Color Converter" />
-        <meta
-          property="og:description"
-          content="Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with live preview."
-        />
-        <meta property="og:url" content="https://hypothesis.sh/color" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Color Converter" />
-        <meta
-          name="twitter:description"
-          content="Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with live preview."
-        />
-        <link rel="canonical" href="https://hypothesis.sh/color" />
-      </Head>
+      <ToolHead
+        title="Color Converter"
+        description="Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with live preview. Free online color converter — no installation required. No data sent to servers."
+        path="/color"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

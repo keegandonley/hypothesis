@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/lorem.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -147,18 +147,12 @@ export default function LoremPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — LOREM IPSUM`}</title>
-        <meta name="description" content="Generate lorem ipsum placeholder text by words, sentences, or paragraphs." />
-        <meta property="og:title" content="Lorem Ipsum Generator" />
-        <meta property="og:description" content="Generate lorem ipsum placeholder text by words, sentences, or paragraphs." />
-        <meta property="og:url" content="https://hypothesis.sh/lorem" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Lorem Ipsum Generator" />
-        <meta name="twitter:description" content="Generate lorem ipsum placeholder text by words, sentences, or paragraphs." />
-        <link rel="canonical" href="https://hypothesis.sh/lorem" />
-      </Head>
+      <ToolHead
+        title="Lorem Ipsum Generator"
+        description="Generate lorem ipsum placeholder text by words, sentences, or paragraphs. Free online lorem ipsum generator — no installation required. No data sent to servers."
+        path="/lorem"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

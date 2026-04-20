@@ -1,4 +1,4 @@
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "../../styles/message-factory.module.css";
@@ -28,9 +28,12 @@ export default function MessageFactoryPage() {
   const branding = useBranding();
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — MESSAGE FACTORY`}</title>
-      </Head>
+      <ToolHead
+        title="Message Factory"
+        description="Build and send custom postMessage payloads between iframes for testing cross-origin communication."
+        path="/message-factory"
+        brandName={branding.name}
+      />
       <div className={styles.inner}>
         <header className={styles.header}>
           <div className={styles.eyebrow} data-eyebrow>EXP-003</div>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/pretty-print.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -91,18 +91,12 @@ export default function PrettyPrintPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — PRETTY PRINT`}</title>
-        <meta name="description" content="Format and validate JSON with syntax highlighting." />
-        <meta property="og:title" content="JSON Pretty Printer" />
-        <meta property="og:description" content="Format and validate JSON with syntax highlighting." />
-        <meta property="og:url" content="https://hypothesis.sh/pretty-print" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="JSON Pretty Printer" />
-        <meta name="twitter:description" content="Format and validate JSON with syntax highlighting." />
-        <link rel="canonical" href="https://hypothesis.sh/pretty-print" />
-      </Head>
+      <ToolHead
+        title="JSON Pretty Printer"
+        description="Format and pretty-print JSON with proper indentation and syntax highlighting. Free online JSON formatter — no installation required. No data sent to servers."
+        path="/pretty-print"
+        brandName={branding.name}
+      />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
           <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/my-ip.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -70,18 +70,12 @@ export default function MyIpPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — MY IP`}</title>
-        <meta name="description" content="Look up your current public IP address and geolocation details." />
-        <meta property="og:title" content="My IP" />
-        <meta property="og:description" content="Look up your current public IP address and geolocation details." />
-        <meta property="og:url" content="https://hypothesis.sh/my-ip" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="My IP" />
-        <meta name="twitter:description" content="Look up your current public IP address and geolocation details." />
-        <link rel="canonical" href="https://hypothesis.sh/my-ip" />
-      </Head>
+      <ToolHead
+        title="My IP"
+        description="Look up your current public IP address, geolocation, and network details. Free online IP lookup tool."
+        path="/my-ip"
+        brandName={branding.name}
+      />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
           <Link

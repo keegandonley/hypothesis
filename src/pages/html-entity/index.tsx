@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/html-entity.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -278,18 +278,12 @@ export default function HtmlEntityPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — HTML ENTITY`}</title>
-        <meta name="description" content="Encode and decode HTML entities for safe display in web pages." />
-        <meta property="og:title" content="HTML Entity Encoder / Decoder" />
-        <meta property="og:description" content="Encode and decode HTML entities for safe display in web pages." />
-        <meta property="og:url" content="https://hypothesis.sh/html-entity" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="HTML Entity Encoder / Decoder" />
-        <meta name="twitter:description" content="Encode and decode HTML entities for safe display in web pages." />
-        <link rel="canonical" href="https://hypothesis.sh/html-entity" />
-      </Head>
+      <ToolHead
+        title="HTML Entity Encoder / Decoder"
+        description="Encode and decode HTML entities like &amp;, &lt;, &gt;, and named or numeric references. Free online HTML entity tool — no installation required."
+        path="/html-entity"
+        brandName={branding.name}
+      />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
           <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>

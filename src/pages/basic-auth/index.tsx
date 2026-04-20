@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/basic-auth.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -82,27 +82,12 @@ export default function BasicAuthPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — Basic Auth`}</title>
-        <meta
-          name="description"
-          content="Generate HTTP Basic Authentication headers from a username and password."
-        />
-        <meta property="og:title" content="Basic Auth Generator" />
-        <meta
-          property="og:description"
-          content="Generate HTTP Basic Authentication headers from a username and password."
-        />
-        <meta property="og:url" content="https://hypothesis.sh/basic-auth" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Basic Auth Generator" />
-        <meta
-          name="twitter:description"
-          content="Generate HTTP Basic Authentication headers from a username and password."
-        />
-        <link rel="canonical" href="https://hypothesis.sh/basic-auth" />
-      </Head>
+      <ToolHead
+        title="Basic Auth Generator"
+        description="Generate HTTP Basic Authentication headers from a username and password. Free online Basic Auth generator — no installation required. No data sent to servers."
+        path="/basic-auth"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

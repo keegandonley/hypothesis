@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/rsa.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -317,23 +317,12 @@ export default function RsaPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — RSA ENCRYPTION`}</title>
-        <meta
-          name="description"
-          content="Interactive RSA-OAEP encryption experiment. Generate a key pair, encrypt a message, and decrypt it — all in-browser using the Web Crypto API."
-        />
-        <meta property="og:title" content="RSA Encryption" />
-        <meta
-          property="og:description"
-          content="Interactive RSA-OAEP encryption experiment using the Web Crypto API."
-        />
-        <meta property="og:url" content="https://hypothesis.sh/rsa" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="RSA Encryption" />
-        <link rel="canonical" href="https://hypothesis.sh/rsa" />
-      </Head>
+      <ToolHead
+        title="RSA Encryption"
+        description="Generate RSA key pairs, encrypt, and decrypt messages online. Free online RSA encryption tool — no installation required. No data sent to servers."
+        path="/rsa"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

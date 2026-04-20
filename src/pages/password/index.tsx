@@ -1,4 +1,4 @@
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "@/styles/password.module.css";
@@ -144,21 +144,12 @@ export default function PasswordPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — PASSWORD`}</title>
-        <meta
-          name="description"
-          content="Generate cryptographically secure random passwords with configurable length and character sets."
-        />
-        <meta property="og:title" content="Password Generator" />
-        <meta
-          property="og:description"
-          content="Generate cryptographically secure passwords with configurable length, charset, and count."
-        />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <link rel="canonical" href="https://hypothesis.sh/password" />
-      </Head>
+      <ToolHead
+        title="Password Generator"
+        description="Generate cryptographically secure passwords online — configurable length, character sets, and batch generation. Free, no installation required. No data sent to servers."
+        path="/password"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

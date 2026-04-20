@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/gist.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -86,18 +86,12 @@ export default function GistPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — GIST`}</title>
-        <meta name="description" content="Serve a public GitHub Gist's raw content via a proxy URL, with live preview." />
-        <meta property="og:title" content="Gist Proxy" />
-        <meta property="og:description" content="Serve a public GitHub Gist's raw content via a proxy URL, with live preview." />
-        <meta property="og:url" content="https://hypothesis.sh/gist" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Gist Proxy" />
-        <meta name="twitter:description" content="Serve a public GitHub Gist's raw content via a proxy URL, with live preview." />
-        <link rel="canonical" href="https://hypothesis.sh/gist" />
-      </Head>
+      <ToolHead
+        title="Gist Proxy"
+        description="Load and render GitHub Gist files inline. Free online Gist viewer."
+        path="/gist"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

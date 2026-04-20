@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/color-shades.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -153,16 +153,12 @@ export default function ColorShadesPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — Color Shades`}</title>
-        <meta name="description" content="Generate a 11-step perceptually uniform color scale from any hex color — ready for Tailwind CSS or design systems." />
-        <meta property="og:title" content="Color Shades Generator" />
-        <meta property="og:description" content="Generate a perceptually uniform color scale from any hex color." />
-        <meta property="og:url" content="https://hypothesis.sh/color-shades" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <link rel="canonical" href="https://hypothesis.sh/color-shades" />
-      </Head>
+      <ToolHead
+        title="Color Shades Generator"
+        description="Generate tints and shades from any base color for design systems and palettes. Free online color shades generator — no installation required. No data sent to servers."
+        path="/color-shades"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

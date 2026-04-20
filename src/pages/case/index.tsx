@@ -1,4 +1,4 @@
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import styles from "@/styles/case.module.css";
@@ -123,21 +123,12 @@ export default function CasePage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — STRING CASE`}</title>
-        <meta
-          name="description"
-          content="Convert strings between camelCase, PascalCase, snake_case, kebab-case, SCREAMING_SNAKE, Title Case, and more."
-        />
-        <meta property="og:title" content="String Case Converter" />
-        <meta
-          property="og:description"
-          content="Convert strings between camelCase, PascalCase, snake_case, kebab-case, SCREAMING_SNAKE, and more."
-        />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <link rel="canonical" href="https://hypothesis.sh/case" />
-      </Head>
+      <ToolHead
+        title="String Case Converter"
+        description="Convert text between camelCase, snake_case, PascalCase, kebab-case, CONSTANT_CASE, and more. Free online string case converter — no installation required."
+        path="/case"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

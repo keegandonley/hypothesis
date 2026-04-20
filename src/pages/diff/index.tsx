@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/diff.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -109,18 +109,12 @@ export default function DiffPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — TEXT DIFF`}</title>
-        <meta name="description" content="Compare two blocks of text and highlight additions and deletions line by line." />
-        <meta property="og:title" content="Text Diff" />
-        <meta property="og:description" content="Compare two blocks of text and highlight additions and deletions line by line." />
-        <meta property="og:url" content="https://hypothesis.sh/diff" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Text Diff" />
-        <meta name="twitter:description" content="Compare two blocks of text and highlight additions and deletions line by line." />
-        <link rel="canonical" href="https://hypothesis.sh/diff" />
-      </Head>
+      <ToolHead
+        title="Text Diff"
+        description="Compare two text blocks and see a visual diff with added and removed lines highlighted. Free online text diff tool — no installation required. No data sent to servers."
+        path="/diff"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

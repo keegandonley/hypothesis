@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/og.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -116,16 +116,12 @@ export default function OgPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — OG Tags`}</title>
-        <meta name="description" content="Generate Open Graph and Twitter Card meta tags for your web pages." />
-        <meta property="og:title" content="OG Tag Generator" />
-        <meta property="og:description" content="Generate Open Graph and Twitter Card meta tags." />
-        <meta property="og:url" content="https://hypothesis.sh/og" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <link rel="canonical" href="https://hypothesis.sh/og" />
-      </Head>
+      <ToolHead
+        title="OG Tag Generator"
+        description="Generate Open Graph and Twitter Card meta tags for your web pages. Free online OG tag generator — no installation required. No data sent to servers."
+        path="/og"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

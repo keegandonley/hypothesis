@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/keycode.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -79,27 +79,12 @@ export default function KeycodePage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — Keycode`}</title>
-        <meta
-          name="description"
-          content="Press any key to inspect its JavaScript event properties: key, code, keyCode, location, and modifier state."
-        />
-        <meta property="og:title" content="Keycode Inspector" />
-        <meta
-          property="og:description"
-          content="Press any key to inspect its JavaScript event properties."
-        />
-        <meta property="og:url" content="https://hypothesis.sh/keycode" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Keycode Inspector" />
-        <meta
-          name="twitter:description"
-          content="Press any key to inspect its JavaScript event properties."
-        />
-        <link rel="canonical" href="https://hypothesis.sh/keycode" />
-      </Head>
+      <ToolHead
+        title="Keycode Inspector"
+        description="Inspect JavaScript keyboard event properties: keyCode, key, code, and modifiers for any key press. Free online keycode tool — no installation required."
+        path="/keycode"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

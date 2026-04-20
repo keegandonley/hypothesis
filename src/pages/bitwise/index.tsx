@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/bitwise.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -113,18 +113,12 @@ export default function BitwisePage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — BITWISE`}</title>
-        <meta name="description" content="Visualize bitwise operations (AND, OR, XOR, NAND, NOR, shifts) with binary and decimal output." />
-        <meta property="og:title" content="Bitwise Operations" />
-        <meta property="og:description" content="Visualize bitwise operations (AND, OR, XOR, NAND, NOR, shifts) with binary and decimal output." />
-        <meta property="og:url" content="https://hypothesis.sh/bitwise" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Bitwise Operations" />
-        <meta name="twitter:description" content="Visualize bitwise operations (AND, OR, XOR, NAND, NOR, shifts) with binary and decimal output." />
-        <link rel="canonical" href="https://hypothesis.sh/bitwise" />
-      </Head>
+      <ToolHead
+        title="Bitwise Operations"
+        description="Perform bitwise AND, OR, XOR, NOT, and shift operations with binary, hex, and decimal visualization. Free online bitwise calculator — no installation required."
+        path="/bitwise"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import styles from "../../styles/cron.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -159,18 +159,12 @@ export default function CronPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — CRON`}</title>
-        <meta name="description" content="Parse cron expressions and preview the next scheduled run times." />
-        <meta property="og:title" content="Cron Expression Parser" />
-        <meta property="og:description" content="Parse cron expressions and preview the next scheduled run times." />
-        <meta property="og:url" content="https://hypothesis.sh/cron" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Cron Expression Parser" />
-        <meta name="twitter:description" content="Parse cron expressions and preview the next scheduled run times." />
-        <link rel="canonical" href="https://hypothesis.sh/cron" />
-      </Head>
+      <ToolHead
+        title="Cron Expression Parser"
+        description="Parse and explain cron expressions with a human-readable schedule preview. Free online cron parser — no installation required. No data sent to servers."
+        path="/cron"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/json-ts.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -224,27 +224,12 @@ export default function JsonTsPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — JSON → TYPESCRIPT`}</title>
-        <meta
-          name="description"
-          content="Convert a JSON sample into TypeScript interface definitions instantly."
-        />
-        <meta property="og:title" content="JSON → TypeScript" />
-        <meta
-          property="og:description"
-          content="Convert a JSON sample into TypeScript interface definitions instantly."
-        />
-        <meta property="og:url" content="https://hypothesis.sh/json-ts" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="JSON → TypeScript" />
-        <meta
-          name="twitter:description"
-          content="Convert a JSON sample into TypeScript interface definitions instantly."
-        />
-        <link rel="canonical" href="https://hypothesis.sh/json-ts" />
-      </Head>
+      <ToolHead
+        title="JSON to TypeScript"
+        description="Convert JSON objects to TypeScript interfaces and types instantly. Free online JSON to TypeScript converter — no installation required. No data sent to servers."
+        path="/json-ts"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

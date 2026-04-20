@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/regex.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -157,18 +157,12 @@ export default function RegexPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — REGEX`}</title>
-        <meta name="description" content="Test regular expressions with live match highlighting." />
-        <meta property="og:title" content="Regex Tester" />
-        <meta property="og:description" content="Test regular expressions with live match highlighting." />
-        <meta property="og:url" content="https://hypothesis.sh/regex" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Regex Tester" />
-        <meta name="twitter:description" content="Test regular expressions with live match highlighting." />
-        <link rel="canonical" href="https://hypothesis.sh/regex" />
-      </Head>
+      <ToolHead
+        title="Regex Tester"
+        description="Test regular expressions with live match highlighting and shareable permalinks. Free online regex tester — no installation required. No data sent to servers."
+        path="/regex"
+        brandName={branding.name}
+      />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
           <Link

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/svg-jsx.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -150,18 +150,12 @@ export default function SvgJsxPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — SVG to JSX`}</title>
-        <meta name="description" content="Convert SVG markup to React JSX — removes xmlns, converts hyphenated attributes to camelCase, and wraps inline styles as objects." />
-        <meta property="og:title" content="SVG to JSX" />
-        <meta property="og:description" content="Convert SVG markup to React-ready JSX." />
-        <meta property="og:url" content="https://hypothesis.sh/svg-jsx" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="SVG to JSX" />
-        <meta name="twitter:description" content="Convert SVG markup to React-ready JSX." />
-        <link rel="canonical" href="https://hypothesis.sh/svg-jsx" />
-      </Head>
+      <ToolHead
+        title="SVG to JSX"
+        description="Convert SVG markup to React JSX syntax with automatic camelCase attribute conversion. Free online SVG to JSX converter — no installation required."
+        path="/svg-jsx"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

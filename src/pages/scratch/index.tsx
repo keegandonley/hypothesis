@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import LZString from "lz-string";
 import styles from "../../styles/scratch.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -49,18 +49,12 @@ export default function ScratchPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — SCRATCH`}</title>
-        <meta name="description" content="A scratchpad — bookmark text snippets via permalink." />
-        <meta property="og:title" content="Scratch" />
-        <meta property="og:description" content="A scratchpad — bookmark text snippets via permalink." />
-        <meta property="og:url" content="https://hypothesis.sh/scratch" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Scratch" />
-        <meta name="twitter:description" content="A scratchpad — bookmark text snippets via permalink." />
-        <link rel="canonical" href="https://hypothesis.sh/scratch" />
-      </Head>
+      <ToolHead
+        title="Scratch Pad"
+        description="A lightweight online scratchpad — type notes and save them instantly via shareable permalink. Free, no installation required. No data sent to servers."
+        path="/scratch"
+        brandName={branding.name}
+      />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
           <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>

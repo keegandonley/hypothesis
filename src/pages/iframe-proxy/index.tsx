@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import styles from "../../styles/iframe-proxy.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -122,9 +122,12 @@ export default function IframeProxyPage() {
 
   return (
     <>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — IFRAME PROXY`}</title>
-      </Head>
+      <ToolHead
+        title="Iframe Proxy"
+        description="Embed any URL in a sandboxed iframe with configurable postMessage communication. Free online iframe proxy tool."
+        path="/iframe-proxy"
+        brandName={branding.name}
+      />
       {inWorkMode && (
         <div className={styles.workBar}>
           <span className={styles.badge}>proxied url</span>

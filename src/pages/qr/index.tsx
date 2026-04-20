@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/qr.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -144,18 +144,12 @@ export default function QrPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — QR CODE`}</title>
-        <meta name="description" content="Generate QR codes from any text or URL. Download as SVG or PNG." />
-        <meta property="og:title" content="QR Code Generator" />
-        <meta property="og:description" content="Generate QR codes from any text or URL. Download as SVG or PNG." />
-        <meta property="og:url" content="https://hypothesis.sh/qr" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="QR Code Generator" />
-        <meta name="twitter:description" content="Generate QR codes from any text or URL. Download as SVG or PNG." />
-        <link rel="canonical" href="https://hypothesis.sh/qr" />
-      </Head>
+      <ToolHead
+        title="QR Code Generator"
+        description="Generate QR codes from any text or URL. Download as SVG or PNG. Free online QR code generator — no installation required. No data sent to servers."
+        path="/qr"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import styles from "../../styles/cidr.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -217,18 +217,12 @@ export default function CidrPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — CIDR`}</title>
-        <meta name="description" content="Calculate subnet details from CIDR notation." />
-        <meta property="og:title" content="CIDR Calculator" />
-        <meta property="og:description" content="Calculate subnet details from CIDR notation." />
-        <meta property="og:url" content="https://hypothesis.sh/cidr" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="CIDR Calculator" />
-        <meta name="twitter:description" content="Calculate subnet details from CIDR notation." />
-        <link rel="canonical" href="https://hypothesis.sh/cidr" />
-      </Head>
+      <ToolHead
+        title="CIDR Calculator"
+        description="Calculate subnet details from CIDR notation: network address, broadcast, mask, host range, and usable IPs. Free online CIDR calculator — no installation required."
+        path="/cidr"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

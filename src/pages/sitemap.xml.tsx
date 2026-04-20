@@ -1,55 +1,24 @@
 import { GetServerSideProps } from "next";
 import fs from "fs";
 import path from "path";
+import { tools, references, experiments } from "@/lib/tools";
 
 const DOCS_DIR = path.join(process.cwd(), "src/content/docs");
 
-const staticRoutes = [
-  "/",
-  "/work",
-  "/base64",
-  "/datetime",
-  "/numbase",
-  "/pretty-print",
-  "/regex",
-  "/urlencode",
-  "/uuid",
-  "/webhook",
-  "/iframe-proxy",
-  "/message-stream",
-  "/message-factory",
-  "/jwt",
-  "/color",
-  "/hash",
-  "/chmod",
-  "/cidr",
-  "/cron",
-  "/bitwise",
-  "/lorem",
-  "/qr",
-  "/text-stats",
-  "/css-unit",
-  "/html-entity",
-  "/unicode",
-  "/diff",
-  "/json-ts",
-  "/compress",
-  "/rsa",
-  "/my-ip",
-  "/references/http-status-codes",
-  "/references/mime-types",
-  "/references/unix-signals",
-  "/references/http-headers",
-  "/references/ascii",
-  "/references/unicode-blocks",
-  "/ascii-art",
-  "/scratch",
-  "/references/timezones",
-];
+const nonToolRoutes = ["/", "/work", "/scratch"];
+
+function getStaticRoutes(): string[] {
+  return [
+    ...nonToolRoutes,
+    ...tools.map((t) => t.href),
+    ...references.map((r) => r.href),
+    ...experiments.map((e) => e.href.split("?")[0]),
+  ];
+}
 
 function generateSitemap(baseUrl: string, docSlugs: string[]): string {
   const urls = [
-    ...staticRoutes.map((route) => `${baseUrl}${route}`),
+    ...getStaticRoutes().map((route) => `${baseUrl}${route}`),
     ...docSlugs.map((slug) => `${baseUrl}/docs/${slug}`),
   ];
 

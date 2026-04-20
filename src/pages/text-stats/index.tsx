@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/text-stats.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -190,18 +190,12 @@ export default function TextStatsPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — TEXT STATS`}</title>
-        <meta name="description" content="Analyze text statistics: character count, word count, reading time, word frequency." />
-        <meta property="og:title" content="Text Statistics & Character Counter" />
-        <meta property="og:description" content="Analyze text statistics: character count, word count, reading time, word frequency." />
-        <meta property="og:url" content="https://hypothesis.sh/text-stats" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Text Statistics & Character Counter" />
-        <meta name="twitter:description" content="Analyze text statistics: character count, word count, reading time, word frequency." />
-        <link rel="canonical" href="https://hypothesis.sh/text-stats" />
-      </Head>
+      <ToolHead
+        title="Text Statistics"
+        description="Analyze text for word count, character count, readability score, and more statistics. Free online text analysis tool — no installation required. No data sent to servers."
+        path="/text-stats"
+        brandName={branding.name}
+      />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
           <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>

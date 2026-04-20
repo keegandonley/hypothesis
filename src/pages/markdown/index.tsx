@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/markdown.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
@@ -93,27 +93,12 @@ export default function MarkdownPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — Markdown`}</title>
-        <meta
-          name="description"
-          content="Convert Markdown to HTML with a live preview. See the rendered output or the raw HTML source."
-        />
-        <meta property="og:title" content="Markdown to HTML" />
-        <meta
-          property="og:description"
-          content="Convert Markdown to HTML with a live preview."
-        />
-        <meta property="og:url" content="https://hypothesis.sh/markdown" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Markdown to HTML" />
-        <meta
-          name="twitter:description"
-          content="Convert Markdown to HTML with a live preview."
-        />
-        <link rel="canonical" href="https://hypothesis.sh/markdown" />
-      </Head>
+      <ToolHead
+        title="Markdown to HTML"
+        description="Preview Markdown as rendered HTML with live sync. Toggle between output and raw HTML source. Free online Markdown previewer — no installation required."
+        path="/markdown"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

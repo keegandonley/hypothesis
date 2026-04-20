@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import Head from "next/head";
+import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import { upload } from "@vercel/blob/client";
 import styles from "../../styles/compress.module.css";
@@ -221,27 +221,12 @@ export default function CompressPage() {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — IMAGE COMPRESSOR`}</title>
-        <meta
-          name="description"
-          content="Compress PNG, JPEG, and WebP images. Convert to WebP or AVIF. Client-side upload with server-side sharp compression."
-        />
-        <meta property="og:title" content="Image Compressor" />
-        <meta
-          property="og:description"
-          content="Compress PNG, JPEG, and WebP images. Convert to WebP or AVIF."
-        />
-        <meta property="og:url" content="https://hypothesis.sh/compress" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Image Compressor" />
-        <meta
-          name="twitter:description"
-          content="Compress PNG, JPEG, and WebP images. Convert to WebP or AVIF."
-        />
-        <link rel="canonical" href="https://hypothesis.sh/compress" />
-      </Head>
+      <ToolHead
+        title="Image Compressor"
+        description="Compress PNG, JPEG, and WebP images with side-by-side comparison. Convert to WebP or AVIF. Free online image compressor — no installation required."
+        path="/compress"
+        brandName={branding.name}
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
