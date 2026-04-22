@@ -205,6 +205,15 @@ export const experiments: ExperimentItem[] = [
     href: "/gist",
     docsHref: "/docs/gist",
   },
+  {
+    kind: "experiment",
+    id: "EXP-007",
+    name: "screen capture",
+    description:
+      "Capture the current browser tab as a PNG and open it in a new tab.",
+    href: "/screen-capture",
+    docsHref: "/docs/screen-capture",
+  },
 ];
 
 export const tools: ToolItem[] = [

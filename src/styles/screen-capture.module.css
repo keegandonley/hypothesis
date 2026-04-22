@@ -1,0 +1,136 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 28px 28px;
+  font-family: var(--font-mono);
+  color: var(--text);
+  padding: 16px;
+  gap: 12px;
+}
+
+.header {
+  flex-shrink: 0;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 0.4em;
+  align-items: center;
+}
+
+.title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.tagline {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.captureRow {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+}
+
+.captureBtn {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.captureBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.captureBtn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.statusMsg {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.error {
+  color: #f87171;
+}
+
+.lorem {
+  flex-shrink: 0;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.frames {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.frame {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.frameEl {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--card-bg);
+}
+
+.rainbow {
+  flex-shrink: 0;
+  height: 24px;
+  border-radius: 4px;
+  background: linear-gradient(
+    to right,
+    #f87171,
+    #fb923c,
+    #fbbf24,
+    #a3e635,
+    #34d399,
+    #22d3ee,
+    #60a5fa,
+    #818cf8,
+    #c084fc,
+    #f472b6
+  );
+}

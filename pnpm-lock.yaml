@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@keegancodes/capture-screen':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@types/node':
         specifier: ^25.2.0
         version: 25.3.5
@@ -251,6 +254,9 @@ packages:
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [x64]
     os: [win32]
+
+  '@keegancodes/capture-screen@0.1.0':
+    resolution: {integrity: sha512-4KRIYCiQ7hpx+OFfE8FB13rwKHwY0614JeYbJc/R0c82jt35470OkfBUBDDNz9eCILtZTApaA1cmJEFYVq2uFw==}
 
   '@next/env@16.1.7':
     resolution: {integrity: sha512-rJJbIdJB/RQr2F1nylZr/PJzamvNNhfr3brdKP6s/GW850jbtR70QlSfFselvIBbcPUOlQwBakexjFzqLzF6pg==}
@@ -928,6 +934,8 @@ snapshots:
 
   '@img/sharp-win32-x64@0.34.5':
     optional: true
+
+  '@keegancodes/capture-screen@0.1.0': {}
 
   '@next/env@16.1.7': {}
 
