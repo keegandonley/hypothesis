@@ -1,11 +1,16 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
+import { GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { PORT_GROUPS } from "@/data/port-numbers";
 
-export default function PortNumbersPage() {
+export const getStaticProps: GetStaticProps = () => ({
+  props: { groups: PORT_GROUPS },
+});
+
+export default function PortNumbersPage({ groups }: { groups: typeof PORT_GROUPS }) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeGroup, setActiveGroup] = useState("all");
@@ -39,7 +44,7 @@ export default function PortNumbersPage() {
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return PORT_GROUPS.map((group) => {
+    return groups.map((group) => {
       const ports = group.ports.filter((p) => {
         if (activeGroup !== "all" && activeGroup !== group.id) return false;
         if (!q) return true;
@@ -127,7 +132,7 @@ export default function PortNumbersPage() {
             >
               All
             </button>
-            {PORT_GROUPS.map((group) => (
+            {groups.map((group) => (
               <button
                 key={group.id}
                 className={`${styles.classBtn} ${activeGroup === group.id ? styles.classBtnActive : ""}`}

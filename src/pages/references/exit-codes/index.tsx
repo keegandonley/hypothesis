@@ -1,11 +1,16 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
+import { GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { EXIT_CODE_GROUPS } from "@/data/exit-codes";
 
-export default function ExitCodesPage() {
+export const getStaticProps: GetStaticProps = () => ({
+  props: { groups: EXIT_CODE_GROUPS },
+});
+
+export default function ExitCodesPage({ groups }: { groups: typeof EXIT_CODE_GROUPS }) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeGroup, setActiveGroup] = useState("all");
@@ -39,7 +44,7 @@ export default function ExitCodesPage() {
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return EXIT_CODE_GROUPS.map((group) => {
+    return groups.map((group) => {
       const codes = group.codes.filter((c) => {
         if (activeGroup !== "all" && activeGroup !== group.id) return false;
         if (!q) return true;
@@ -127,7 +132,7 @@ export default function ExitCodesPage() {
             >
               All
             </button>
-            {EXIT_CODE_GROUPS.map((group) => (
+            {groups.map((group) => (
               <button
                 key={group.id}
                 className={`${styles.classBtn} ${activeGroup === group.id ? styles.classBtnActive : ""}`}

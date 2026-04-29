@@ -1,9 +1,14 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
+import { GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { TIMEZONES, TZ_GROUPS, type TzGroup } from "@/data/timezones";
+
+export const getStaticProps: GetStaticProps = () => ({
+  props: { timezones: TIMEZONES, tzGroups: TZ_GROUPS },
+});
 
 function getOffsetStr(iana: string, date: Date): string {
   const parts = new Intl.DateTimeFormat("en", {
@@ -36,7 +41,13 @@ function getTimeStr(iana: string, date: Date): string {
 
 type ActiveGroup = TzGroup | "all";
 
-export default function TimezonesPage() {
+export default function TimezonesPage({
+  timezones,
+  tzGroups,
+}: {
+  timezones: typeof TIMEZONES;
+  tzGroups: typeof TZ_GROUPS;
+}) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeGroup, setActiveGroup] = useState<ActiveGroup>("all");
@@ -77,7 +88,7 @@ export default function TimezonesPage() {
 
   const enriched = useMemo(() => {
     const date = now ?? new Date();
-    return TIMEZONES.map((tz) => {
+    return timezones.map((tz) => {
       const offsetStr = getOffsetStr(tz.iana, date);
       const offsetMins = parseOffsetMinutes(offsetStr);
       const timeStr = getTimeStr(tz.iana, date);
@@ -87,7 +98,7 @@ export default function TimezonesPage() {
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return TZ_GROUPS.map((group) => {
+    return tzGroups.map((group) => {
       const entries = enriched
         .filter((tz) => {
           if (activeGroup !== "all" && activeGroup !== tz.group) return false;
@@ -108,7 +119,7 @@ export default function TimezonesPage() {
   return (
     <div className={styles.page}>
       <Head>
-        <title>{`${branding.name.toUpperCase()} — TIMEZONES`}</title>
+        <title>{`${branding.name.toUpperCase()} — timezones`}</title>
         <meta
           name="description"
           content="World timezone reference with live current time, UTC offsets, IANA identifiers, and major cities."
@@ -179,7 +190,7 @@ export default function TimezonesPage() {
             >
               All
             </button>
-            {TZ_GROUPS.map((grp) => (
+            {tzGroups.map((grp) => (
               <button
                 key={grp.id}
                 className={`${styles.classBtn} ${activeGroup === grp.id ? styles.classBtnActive : ""}`}

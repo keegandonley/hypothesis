@@ -1,11 +1,22 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
+import { GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { STATUS_CODES, STATUS_CLASSES } from "@/data/http-status-codes";
 
-export default function HttpStatusCodesPage() {
+export const getStaticProps: GetStaticProps = () => ({
+  props: { statusCodes: STATUS_CODES, statusClasses: STATUS_CLASSES },
+});
+
+export default function HttpStatusCodesPage({
+  statusCodes,
+  statusClasses,
+}: {
+  statusCodes: typeof STATUS_CODES;
+  statusClasses: typeof STATUS_CLASSES;
+}) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeClass, setActiveClass] = useState("all");
@@ -44,8 +55,8 @@ export default function HttpStatusCodesPage() {
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return STATUS_CLASSES.map((cls) => {
-      const codes = STATUS_CODES[cls.class].filter((code) => {
+    return statusClasses.map((cls) => {
+      const codes = statusCodes[cls.class].filter((code) => {
         if (activeClass !== "all" && activeClass !== cls.class) return false;
         if (!q) return true;
         return (
@@ -131,7 +142,7 @@ export default function HttpStatusCodesPage() {
             >
               All
             </button>
-            {STATUS_CLASSES.map((cls) => (
+            {statusClasses.map((cls) => (
               <button
                 key={cls.class}
                 className={`${styles.classBtn} ${activeClass === cls.class ? styles.classBtnActive : ""}`}

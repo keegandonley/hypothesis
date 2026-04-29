@@ -1,11 +1,16 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
+import { GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { MIME_CATEGORIES } from "@/data/mime-types";
 
-export default function MimeTypesPage() {
+export const getStaticProps: GetStaticProps = () => ({
+  props: { groups: MIME_CATEGORIES },
+});
+
+export default function MimeTypesPage({ groups }: { groups: typeof MIME_CATEGORIES }) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
@@ -39,7 +44,7 @@ export default function MimeTypesPage() {
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return MIME_CATEGORIES.map((cat) => {
+    return groups.map((cat) => {
       const types = cat.types.filter((t) => {
         if (activeCategory !== "all" && activeCategory !== cat.category)
           return false;
@@ -128,7 +133,7 @@ export default function MimeTypesPage() {
             >
               All
             </button>
-            {MIME_CATEGORIES.map((cat) => (
+            {groups.map((cat) => (
               <button
                 key={cat.category}
                 className={`${styles.classBtn} ${activeCategory === cat.category ? styles.classBtnActive : ""}`}

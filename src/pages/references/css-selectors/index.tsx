@@ -1,11 +1,16 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
+import { GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { CSS_SELECTOR_GROUPS } from "@/data/css-selectors";
 
-export default function CssSelectorsPage() {
+export const getStaticProps: GetStaticProps = () => ({
+  props: { groups: CSS_SELECTOR_GROUPS },
+});
+
+export default function CssSelectorsPage({ groups }: { groups: typeof CSS_SELECTOR_GROUPS }) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeGroup, setActiveGroup] = useState("all");
@@ -39,7 +44,7 @@ export default function CssSelectorsPage() {
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return CSS_SELECTOR_GROUPS.map((group) => {
+    return groups.map((group) => {
       const selectors = group.selectors.filter((s) => {
         if (activeGroup !== "all" && activeGroup !== group.id) return false;
         if (!q) return true;
@@ -127,7 +132,7 @@ export default function CssSelectorsPage() {
             >
               All
             </button>
-            {CSS_SELECTOR_GROUPS.map((group) => (
+            {groups.map((group) => (
               <button
                 key={group.id}
                 className={`${styles.classBtn} ${activeGroup === group.id ? styles.classBtnActive : ""}`}

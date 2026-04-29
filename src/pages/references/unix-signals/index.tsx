@@ -1,11 +1,16 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
+import { GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { SIGNAL_GROUPS } from "@/data/unix-signals";
 
-export default function UnixSignalsPage() {
+export const getStaticProps: GetStaticProps = () => ({
+  props: { groups: SIGNAL_GROUPS },
+});
+
+export default function UnixSignalsPage({ groups }: { groups: typeof SIGNAL_GROUPS }) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeAction, setActiveAction] = useState("all");
@@ -39,7 +44,7 @@ export default function UnixSignalsPage() {
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return SIGNAL_GROUPS.map((group) => {
+    return groups.map((group) => {
       const signals = group.signals.filter((s) => {
         if (activeAction !== "all" && activeAction !== group.action)
           return false;
@@ -128,7 +133,7 @@ export default function UnixSignalsPage() {
             >
               All
             </button>
-            {SIGNAL_GROUPS.map((group) => (
+            {groups.map((group) => (
               <button
                 key={group.action}
                 className={`${styles.classBtn} ${activeAction === group.action ? styles.classBtnActive : ""}`}

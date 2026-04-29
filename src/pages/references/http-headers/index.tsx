@@ -1,9 +1,14 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
+import { GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { HEADER_CATEGORIES, HeaderDirection } from "@/data/http-headers";
+
+export const getStaticProps: GetStaticProps = () => ({
+  props: { groups: HEADER_CATEGORIES },
+});
 
 const DIR_LABEL: Record<HeaderDirection, string> = {
   request: "req",
@@ -29,7 +34,7 @@ const DIR_BORDER: Record<HeaderDirection, string> = {
   both: "#a1a1aa33",
 };
 
-export default function HttpHeadersPage() {
+export default function HttpHeadersPage({ groups }: { groups: typeof HEADER_CATEGORIES }) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
@@ -63,7 +68,7 @@ export default function HttpHeadersPage() {
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return HEADER_CATEGORIES.map((cat) => {
+    return groups.map((cat) => {
       const headers = cat.headers.filter((h) => {
         if (activeCategory !== "all" && activeCategory !== cat.id) return false;
         if (!q) return true;
@@ -151,7 +156,7 @@ export default function HttpHeadersPage() {
             >
               All
             </button>
-            {HEADER_CATEGORIES.map((cat) => (
+            {groups.map((cat) => (
               <button
                 key={cat.id}
                 className={`${styles.classBtn} ${activeCategory === cat.id ? styles.classBtnActive : ""}`}

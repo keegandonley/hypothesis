@@ -1,15 +1,20 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
+import { GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { UNICODE_BLOCK_GROUPS } from "@/data/unicode-blocks";
+
+export const getStaticProps: GetStaticProps = () => ({
+  props: { groups: UNICODE_BLOCK_GROUPS },
+});
 
 function formatRange(start: number, end: number): string {
   return `U+${start.toString(16).toUpperCase().padStart(4, "0")}–U+${end.toString(16).toUpperCase().padStart(4, "0")}`;
 }
 
-export default function UnicodeBlocksPage() {
+export default function UnicodeBlocksPage({ groups }: { groups: typeof UNICODE_BLOCK_GROUPS }) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeGroup, setActiveGroup] = useState("all");
@@ -43,7 +48,7 @@ export default function UnicodeBlocksPage() {
 
   const filteredGroups = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return UNICODE_BLOCK_GROUPS.map((grp) => {
+    return groups.map((grp) => {
       const blocks = grp.blocks.filter((b) => {
         if (activeGroup !== "all" && activeGroup !== grp.id) return false;
         if (!q) return true;
@@ -131,7 +136,7 @@ export default function UnicodeBlocksPage() {
             >
               All
             </button>
-            {UNICODE_BLOCK_GROUPS.map((grp) => (
+            {groups.map((grp) => (
               <button
                 key={grp.id}
                 className={`${styles.classBtn} ${activeGroup === grp.id ? styles.classBtnActive : ""}`}

@@ -30,6 +30,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       ogDescription: branding.tagline,
       seoDescription:
         "A free collection of online developer tools — Base64 encoder/decoder, JWT inspector, regex tester, UUID generator, color converter, and 30+ more. No signup required.",
+      toolsList: tools,
+      experimentsList: experiments,
+      referencesList: references,
     },
   };
 };
@@ -39,11 +42,17 @@ export default function HomePage({
   ogTitle,
   ogDescription,
   seoDescription,
+  toolsList,
+  experimentsList,
+  referencesList,
 }: {
   ogImageUrl: string;
   ogTitle: string;
   ogDescription: string;
   seoDescription: string;
+  toolsList: typeof tools;
+  experimentsList: typeof experiments;
+  referencesList: typeof references;
 }) {
   const branding = useBranding();
   const router = useRouter();
@@ -174,12 +183,12 @@ export default function HomePage({
     return name.toLowerCase().includes(lower) || desc.toLowerCase().includes(lower);
   }
 
-  const filteredTools = tools
+  const filteredTools = toolsList
     .filter((t) => activeTags.length === 0 || t.tags.some((tag) => activeTags.includes(tag)))
     .filter((t) => matchesQuery(t.name, t.description));
 
-  const filteredExperiments = experiments.filter((e) => matchesQuery(e.name, e.description));
-  const filteredRefs = references.filter((r) => matchesQuery(r.name, r.description));
+  const filteredExperiments = experimentsList.filter((e) => matchesQuery(e.name, e.description));
+  const filteredRefs = referencesList.filter((r) => matchesQuery(r.name, r.description));
 
   const sortedTools = [...filteredTools].sort((a, b) => a.name.localeCompare(b.name));
   const sortedRefs = [...filteredRefs].sort((a, b) => a.name.localeCompare(b.name));

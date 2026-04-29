@@ -1,11 +1,16 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
+import { GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { REGEX_GROUPS } from "@/data/regex-syntax";
 
-export default function RegexSyntaxPage() {
+export const getStaticProps: GetStaticProps = () => ({
+  props: { groups: REGEX_GROUPS },
+});
+
+export default function RegexSyntaxPage({ groups }: { groups: typeof REGEX_GROUPS }) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeGroup, setActiveGroup] = useState("all");
@@ -39,7 +44,7 @@ export default function RegexSyntaxPage() {
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return REGEX_GROUPS.map((group) => {
+    return groups.map((group) => {
       const tokens = group.tokens.filter((t) => {
         if (activeGroup !== "all" && activeGroup !== group.id) return false;
         if (!q) return true;
@@ -127,7 +132,7 @@ export default function RegexSyntaxPage() {
             >
               All
             </button>
-            {REGEX_GROUPS.map((group) => (
+            {groups.map((group) => (
               <button
                 key={group.id}
                 className={`${styles.classBtn} ${activeGroup === group.id ? styles.classBtnActive : ""}`}

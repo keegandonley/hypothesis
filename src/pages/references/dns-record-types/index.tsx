@@ -1,11 +1,16 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
+import { GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { DNS_GROUPS } from "@/data/dns-record-types";
 
-export default function DnsRecordTypesPage() {
+export const getStaticProps: GetStaticProps = () => ({
+  props: { groups: DNS_GROUPS },
+});
+
+export default function DnsRecordTypesPage({ groups }: { groups: typeof DNS_GROUPS }) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeGroup, setActiveGroup] = useState("all");
@@ -39,7 +44,7 @@ export default function DnsRecordTypesPage() {
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return DNS_GROUPS.map((group) => {
+    return groups.map((group) => {
       const records = group.records.filter((r) => {
         if (activeGroup !== "all" && activeGroup !== group.id) return false;
         if (!q) return true;
@@ -127,7 +132,7 @@ export default function DnsRecordTypesPage() {
             >
               All
             </button>
-            {DNS_GROUPS.map((group) => (
+            {groups.map((group) => (
               <button
                 key={group.id}
                 className={`${styles.classBtn} ${activeGroup === group.id ? styles.classBtnActive : ""}`}

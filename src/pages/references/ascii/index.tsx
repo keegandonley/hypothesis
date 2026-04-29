@@ -1,9 +1,14 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
+import { GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { ASCII_GROUPS, AsciiCategory } from "@/data/ascii";
+
+export const getStaticProps: GetStaticProps = () => ({
+  props: { groups: ASCII_GROUPS },
+});
 
 function renderGlyph(abbr: string, category: AsciiCategory, ctrl?: string): string {
   if (category === "control") {
@@ -12,7 +17,7 @@ function renderGlyph(abbr: string, category: AsciiCategory, ctrl?: string): stri
   return abbr;
 }
 
-export default function AsciiPage() {
+export default function AsciiPage({ groups }: { groups: typeof ASCII_GROUPS }) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeGroup, setActiveGroup] = useState("all");
@@ -46,7 +51,7 @@ export default function AsciiPage() {
 
   const filteredGroups = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return ASCII_GROUPS.map((grp) => {
+    return groups.map((grp) => {
       const chars = grp.chars.filter((c) => {
         if (activeGroup !== "all" && activeGroup !== grp.id) return false;
         if (!q) return true;
@@ -137,7 +142,7 @@ export default function AsciiPage() {
             >
               All
             </button>
-            {ASCII_GROUPS.map((grp) => (
+            {groups.map((grp) => (
               <button
                 key={grp.id}
                 className={`${styles.classBtn} ${activeGroup === grp.id ? styles.classBtnActive : ""}`}
