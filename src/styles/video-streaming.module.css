@@ -1,0 +1,456 @@
+.page {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 28px 28px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text);
+  padding: 16px;
+  gap: 0;
+}
+
+.header {
+  flex-shrink: 0;
+  margin-bottom: 12px;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 0.4em;
+  align-items: center;
+}
+
+.title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.tagline {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0 0 12px;
+  flex-shrink: 0;
+}
+
+/* ── Three-column grid ──────────────────────────────────────────────────── */
+
+.grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 300px 1fr 360px;
+  gap: 10px;
+}
+
+@media (max-width: 1100px) {
+  .page {
+    height: auto;
+    min-height: 100dvh;
+    overflow: auto;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    flex: none;
+  }
+}
+
+/* ── Panel ──────────────────────────────────────────────────────────────── */
+
+.panel {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.telemetryPanel {
+  gap: 0;
+}
+
+.panelTitle {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+
+/* ── Groups ─────────────────────────────────────────────────────────────── */
+
+.group {
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.groupTitle {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tag {
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  text-transform: uppercase;
+}
+
+.tagRebuild {
+  color: #f0b86b;
+  border-color: #f0b86b44;
+}
+
+/* ── Form elements ──────────────────────────────────────────────────────── */
+
+.input,
+.select {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  width: 100%;
+  min-width: 0;
+}
+
+.select {
+  cursor: pointer;
+}
+
+.rangeInput {
+  width: 100%;
+  accent-color: var(--accent);
+  margin-top: 4px;
+}
+
+.blockLabel {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.checkLabel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.checkLabel input[type="checkbox"] {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.fullSpan {
+  grid-column: 1 / -1;
+}
+
+.helpText {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 6px 0 0;
+}
+
+.helpText code {
+  color: var(--text);
+  font-family: var(--font-mono);
+}
+
+.mutedInline {
+  color: var(--muted);
+}
+
+.warnText {
+  color: #f0b86b;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+
+.btnRow {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.btn {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn:hover {
+  background: var(--border);
+}
+
+.btnPrimary {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.btnPrimary:hover {
+  opacity: 0.85;
+  background: var(--accent);
+}
+
+.btnGhost {
+  background: transparent;
+  color: var(--muted);
+  border-color: var(--border);
+}
+
+.btnGhost:hover {
+  color: var(--text);
+  background: var(--border);
+}
+
+/* ── Video player ───────────────────────────────────────────────────────── */
+
+.videoWrap {
+  background: #000;
+  border-radius: 6px;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.videoWrap :global(video) {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.errorBox {
+  color: #ef6f6c;
+  font-size: 11px;
+  padding: 6px 8px;
+  border: 1px solid #ef6f6c55;
+  border-radius: 4px;
+  background: rgba(239, 111, 108, 0.06);
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Range bars ─────────────────────────────────────────────────────────── */
+
+.ranges {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.rangeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.barLabel {
+  width: 58px;
+  flex-shrink: 0;
+}
+
+.bar {
+  position: relative;
+  flex: 1;
+  height: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.seg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.segBuffered {
+  background: var(--accent);
+  opacity: 0.5;
+}
+
+.segSeekable {
+  background: #57d28a;
+  opacity: 0.35;
+}
+
+.segPlayed {
+  background: #57d28a;
+  opacity: 0.7;
+}
+
+.playhead {
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  width: 2px;
+  background: var(--accent);
+  z-index: 1;
+  overflow: visible;
+}
+
+.seekLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* ── State / telemetry ──────────────────────────────────────────────────── */
+
+.kv {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.kvKey {
+  color: var(--muted);
+}
+
+.kvVal {
+  color: var(--text);
+  word-break: break-all;
+}
+
+.colorGood { color: #57d28a; }
+.colorWarn { color: #f0b86b; }
+.colorBad  { color: #ef6f6c; }
+
+/* ── Event log ──────────────────────────────────────────────────────────── */
+
+.logHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.logControls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.log {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 6px;
+  flex: 1;
+  min-height: 120px;
+  overflow-y: auto;
+}
+
+.logEntry {
+  display: grid;
+  grid-template-columns: 88px 140px 1fr;
+  gap: 6px;
+  padding: 2px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logEntry:last-child {
+  border-bottom: none;
+}
+
+.logTs {
+  color: var(--muted);
+}
+
+.logEvent {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.logDetail {
+  color: var(--muted);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.logError .logEvent  { color: #ef6f6c; }
+.logWarn  .logEvent  { color: #f0b86b; }
+.logGood  .logEvent  { color: #57d28a; }
+.logAccent .logEvent { color: var(--accent); }

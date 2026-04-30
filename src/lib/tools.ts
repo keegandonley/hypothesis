@@ -214,6 +214,15 @@ export const experiments: ExperimentItem[] = [
     href: "/screen-capture",
     docsHref: "/docs/screen-capture",
   },
+  {
+    kind: "experiment",
+    id: "EXP-008",
+    name: "video streaming",
+    description:
+      "Test and inspect HTML video element behavior — buffering, events, and playback state — with full telemetry.",
+    href: "/video-streaming",
+    docsHref: "/docs/video-streaming",
+  },
 ];
 
 export const tools: ToolItem[] = [
