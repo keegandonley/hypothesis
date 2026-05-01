@@ -114,7 +114,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     if (native && session.deviceId) {
-      sendWebhookPushNotification(session.deviceId, req.method!, eventId).catch(() => {});
+      await sendWebhookPushNotification(session.deviceId, req.method!, eventId).catch(() => {});
     }
 
     return res.status(200).json({ ok: true, eventId });
