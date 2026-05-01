@@ -32,6 +32,7 @@ export default async function handler(
     "conclusion.sh",
     "falsify.sh",
     "localhost:3000",
+    "localhost:3001",
   ]);
 
   try {

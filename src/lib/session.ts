@@ -5,11 +5,12 @@ export type Session = {
   ipAddress: string;
   createdAt: string;
   updatedAt: string;
+  deviceId?: string | null;
 };
 
 export async function getSession(id: string): Promise<Session | null> {
   const result = await pool.query(
-    "SELECT id, ip_address, created_at, updated_at FROM sessions WHERE id = $1",
+    "SELECT id, ip_address, created_at, updated_at, device_id FROM sessions WHERE id = $1",
     [id]
   );
   const row = result.rows[0];
@@ -19,6 +20,7 @@ export async function getSession(id: string): Promise<Session | null> {
     ipAddress: row.ip_address,
     createdAt: new Date(row.created_at).toISOString(),
     updatedAt: new Date(row.updated_at).toISOString(),
+    deviceId: row.device_id ?? null,
   };
 }
 
@@ -49,4 +51,29 @@ export async function touchSession(
     [id]
   );
   return getSession(id);
+}
+
+export async function getOrCreateNativeSession(deviceId: string): Promise<Session> {
+  const existing = await pool.query(
+    "SELECT id FROM sessions WHERE device_id = $1",
+    [deviceId]
+  );
+  if (existing.rows[0]) {
+    await touchSession(existing.rows[0].id);
+    return (await getSession(existing.rows[0].id))!;
+  }
+  const id = crypto.randomUUID();
+  await pool.query(
+    "INSERT INTO sessions (id, ip_address, device_id) VALUES ($1, $2, $3)",
+    [id, "::native", deviceId]
+  );
+  return (await getSession(id))!;
+}
+
+export async function isNativeSession(sessionId: string): Promise<boolean> {
+  const result = await pool.query(
+    "SELECT device_id FROM sessions WHERE id = $1",
+    [sessionId]
+  );
+  return result.rows[0]?.device_id != null;
 }

@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "@/lib/session";
 import { insertEvent, countRecentEvents } from "@/lib/events";
+import { sendWebhookPushNotification } from "@/lib/webhook-push";
 
 export const config = { api: { bodyParser: false } };
 
@@ -52,12 +53,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(404).json({ error: "session not found" });
     }
 
-    const age = Date.now() - new Date(session.updatedAt).getTime();
-    if (age > SESSION_TIMEOUT_MS) {
-      return res.status(410).json({ error: "session expired" });
+    const native = session.deviceId != null;
+    if (!native) {
+      const age = Date.now() - new Date(session.updatedAt).getTime();
+      if (age > SESSION_TIMEOUT_MS) {
+        return res.status(410).json({ error: "session expired" });
+      }
     }
 
-    if (session.ipAddress !== "::1") {
+    if (session.ipAddress !== "::1" && session.ipAddress !== "::native") {
       const recentCount = await countRecentEvents(sessionId);
       if (recentCount >= 500) {
         return res.status(429).json({ error: "rate limit exceeded: max 500 events per hour" });
@@ -108,6 +112,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       payload,
       rawBody,
     });
+
+    if (native && session.deviceId) {
+      sendWebhookPushNotification(session.deviceId, req.method!, eventId).catch(() => {});
+    }
 
     return res.status(200).json({ ok: true, eventId });
   } catch (err) {

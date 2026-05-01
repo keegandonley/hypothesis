@@ -12,23 +12,23 @@ export type PushToken = {
 export async function upsertPushToken(
   deviceId: string,
   token: string,
-  platform: string
+  platform: string,
 ): Promise<void> {
   await pool.query(
     `INSERT INTO push_tokens (device_id, token, platform)
      VALUES ($1, $2, $3)
      ON CONFLICT (device_id)
      DO UPDATE SET token = EXCLUDED.token, platform = EXCLUDED.platform, updated_at = NOW()`,
-    [deviceId, token, platform]
+    [deviceId, token, platform],
   );
 }
 
 export async function getPushTokenByDeviceId(
-  deviceId: string
+  deviceId: string,
 ): Promise<PushToken | null> {
   const result = await pool.query(
     "SELECT id, device_id, token, platform, created_at, updated_at FROM push_tokens WHERE device_id = $1",
-    [deviceId]
+    [deviceId],
   );
   if (result.rows.length === 0) return null;
   const row = result.rows[0];

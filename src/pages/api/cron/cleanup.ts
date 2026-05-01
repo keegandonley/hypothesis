@@ -16,10 +16,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await client.query("BEGIN");
 
     const eventsResult = await client.query(
-      "DELETE FROM webhook_events WHERE session_id IN (SELECT id FROM sessions WHERE updated_at < NOW() - INTERVAL '1 hour')"
+      "DELETE FROM webhook_events WHERE session_id IN (SELECT id FROM sessions WHERE updated_at < NOW() - INTERVAL '1 hour' AND device_id IS NULL)"
     );
     const sessionsResult = await client.query(
-      "DELETE FROM sessions WHERE updated_at < NOW() - INTERVAL '1 hour'"
+      "DELETE FROM sessions WHERE updated_at < NOW() - INTERVAL '1 hour' AND device_id IS NULL"
     );
 
     await client.query("COMMIT");
