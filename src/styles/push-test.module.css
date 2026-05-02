@@ -115,6 +115,7 @@
 .panelHeader {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 8px 14px;
   border-bottom: 1px solid var(--border);
 }
@@ -208,6 +209,50 @@
 .submitBtn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.curlBtn {
+  padding: 7px 16px;
+  background-color: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.curlBtn:hover:not(:disabled) {
+  border-color: var(--text);
+  color: var(--text);
+}
+
+.curlBtn.copied {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.curlBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.curlCode {
+  margin: 0;
+  padding: 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 .result {

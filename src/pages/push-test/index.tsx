@@ -4,6 +4,7 @@ import styles from "../../styles/push-test.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
+import { copyToClipboard } from "@/lib/copyToClipboard";
 
 const DEVICE_ID_LS_KEY = "pushTestDeviceId";
 
@@ -20,7 +21,9 @@ export default function PushTestPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [curlCopied, setCurlCopied] = useState(false);
   const didMount = useRef(false);
+  const curlTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem(DEVICE_ID_LS_KEY);
@@ -88,6 +91,31 @@ export default function PushTestPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function buildCurl(): string {
+    const payload: Record<string, unknown> = {
+      deviceId: deviceId.trim(),
+      title: title.trim(),
+      body: body.trim(),
+    };
+    if (data.trim()) {
+      try {
+        payload.data = JSON.parse(data.trim());
+      } catch {
+        // omit invalid data
+      }
+    }
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://hypothesis.sh";
+    return `curl -X POST ${origin}/api/push/send \\\n  -H "Content-Type: application/json" \\\n  -d '${JSON.stringify(payload)}'`;
+  }
+
+  function handleCopyCurl() {
+    copyToClipboard(buildCurl()).then(() => {
+      setCurlCopied(true);
+      if (curlTimeoutRef.current) clearTimeout(curlTimeoutRef.current);
+      curlTimeoutRef.current = setTimeout(() => setCurlCopied(false), 1500);
+    });
   }
 
   return (
@@ -212,6 +240,21 @@ export default function PushTestPage() {
             : `Error: ${result.message}`}
         </div>
       )}
+
+      <div className={styles.panel} style={{ marginTop: 12 }}>
+        <div className={styles.panelHeader}>
+          <span className={styles.panelLabel}>cURL</span>
+          <button
+            type="button"
+            className={`${styles.curlBtn}${curlCopied ? ` ${styles.copied}` : ""}`}
+            disabled={!deviceId.trim() || !title.trim() || !body.trim()}
+            onClick={handleCopyCurl}
+          >
+            {curlCopied ? "Copied!" : "Copy"}
+          </button>
+        </div>
+        <pre className={styles.curlCode}>{buildCurl()}</pre>
+      </div>
         </div>
 
         <div className={styles.rightCol}>
