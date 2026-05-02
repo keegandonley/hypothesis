@@ -26,3 +26,28 @@ Higher error correction increases QR code density (more modules, larger image).
 ## URL parameters
 
 `?value=<encoded-text>&ecl=<L|M|Q|H>` — pre-fills the input and error correction level. Useful for sharing or bookmarking specific QR codes.
+
+## API
+
+`GET /api/qr` returns the QR code as an `image/svg+xml` response — suitable for use in `<img>` tags or anywhere an image URL is accepted.
+
+| Parameter | Required | Default | Description |
+|-----------|----------|---------|-------------|
+| `value` | yes | — | Text or URL to encode |
+| `ecl` | no | `M` | Error correction level: `L`, `M`, `Q`, or `H` |
+| `dark` | no | `#000000` | Hex color for dark modules (include `#`) |
+| `light` | no | `#ffffff` | Hex color for light modules (include `#`) |
+
+**Examples:**
+
+```
+/api/qr?value=https%3A%2F%2Fhypothesis.sh
+/api/qr?value=https%3A%2F%2Fhypothesis.sh%2Fqr&ecl=H
+/api/qr?value=https%3A%2F%2Fhypothesis.sh&dark=%23ff0000&light=%23f5f5f5
+```
+
+```html
+<img src="https://hypothesis.sh/api/qr?value=https%3A%2F%2Fhypothesis.sh" alt="QR code" />
+```
+
+Responses are cached for 24 hours (`Cache-Control: public, s-maxage=86400`). Color values must be 6-digit hex codes — shorthand (`#fff`) is not accepted.
