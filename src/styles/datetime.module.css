@@ -360,3 +360,13 @@
 .resetBtn:hover {
   background-color: #ef444430;
 }
+
+@media (max-width: 600px) {
+  .inputRow {
+    flex-wrap: wrap;
+  }
+
+  .inputField {
+    flex-basis: 100%;
+  }
+}
