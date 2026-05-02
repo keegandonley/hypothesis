@@ -40,6 +40,7 @@ export interface ExperimentItem {
   description: string;
   href: string;
   docsHref: string;
+  suppressMobile?: boolean;
 }
 
 export interface ReferenceItem {
@@ -222,6 +223,16 @@ export const experiments: ExperimentItem[] = [
       "Test and inspect HTML video element behavior — buffering, events, and playback state — with full telemetry.",
     href: "/video-streaming",
     docsHref: "/docs/video-streaming",
+  },
+  {
+    kind: "experiment",
+    id: "EXP-009",
+    name: "push test",
+    description:
+      "Send a test push notification to a registered mobile device.",
+    href: "/push-test",
+    docsHref: "/docs/push-test",
+    suppressMobile: true,
   },
 ];
 
