@@ -169,7 +169,6 @@ export const experiments: ExperimentItem[] = [
     description: "Capture and inspect frame messages in real time.",
     href: "/message-stream",
     docsHref: "/docs/message-stream",
-    suppressMobile: true,
   },
   {
     kind: "experiment",
@@ -179,6 +178,7 @@ export const experiments: ExperimentItem[] = [
       "Design and trigger postMessage actions with an interactive viewer and designer.",
     href: "/message-factory",
     docsHref: "/docs/message-factory",
+    suppressMobile: true,
   },
   {
     kind: "experiment",
@@ -230,8 +230,7 @@ export const experiments: ExperimentItem[] = [
     kind: "experiment",
     id: "EXP-009",
     name: "push test",
-    description:
-      "Send a test push notification to a registered mobile device.",
+    description: "Send a test push notification to a registered mobile device.",
     href: "/push-test",
     docsHref: "/docs/push-test",
     suppressMobile: true,
