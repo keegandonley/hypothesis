@@ -169,6 +169,7 @@ export const experiments: ExperimentItem[] = [
     description: "Capture and inspect frame messages in real time.",
     href: "/message-stream",
     docsHref: "/docs/message-stream",
+    suppressMobile: true,
   },
   {
     kind: "experiment",
@@ -214,6 +215,7 @@ export const experiments: ExperimentItem[] = [
       "Capture the current browser tab as a PNG and open it in a new tab.",
     href: "/screen-capture",
     docsHref: "/docs/screen-capture",
+    suppressMobile: true,
   },
   {
     kind: "experiment",
