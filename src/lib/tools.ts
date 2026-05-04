@@ -235,6 +235,15 @@ export const experiments: ExperimentItem[] = [
     docsHref: "/docs/push-test",
     suppressMobile: true,
   },
+  {
+    kind: "experiment",
+    id: "EXP-010",
+    name: "audio streaming",
+    description:
+      "Test and inspect HTML audio element behavior — buffering, events, and playback state — with full telemetry.",
+    href: "/audio-streaming",
+    docsHref: "/docs/audio-streaming",
+  },
 ];
 
 export const tools: ToolItem[] = [
