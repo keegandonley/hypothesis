@@ -1,4 +1,5 @@
 import { getPushTokenByDeviceId } from "./push-tokens";
+import { sendApnsNotification } from "./apns";
 
 export async function sendWebhookPushNotification(
   deviceId: string,
@@ -8,14 +9,9 @@ export async function sendWebhookPushNotification(
   const device = await getPushTokenByDeviceId(deviceId);
   if (!device) return;
 
-  await fetch("https://exp.host/--/api/v2/push/send", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      to: device.token,
-      title: "Webhook",
-      body: `${method} request received`,
-      data: { type: "webhook_event", method, eventId },
-    }),
+  await sendApnsNotification(device.token, "Webhook", `${method} request received`, {
+    type: "webhook_event",
+    method,
+    eventId,
   });
 }

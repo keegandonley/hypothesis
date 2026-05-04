@@ -9,7 +9,7 @@ import { copyToClipboard } from "@/lib/copyToClipboard";
 const DEVICE_ID_LS_KEY = "pushTestDeviceId";
 
 type Result =
-  | { status: "ok"; id?: string }
+  | { status: "ok"; apnsId?: string }
   | { status: "error"; message: string };
 
 export default function PushTestPage() {
@@ -77,13 +77,12 @@ export default function PushTestPage() {
         return;
       }
 
-      const ticket = json.ticket;
-      if (ticket?.status === "ok") {
-        setResult({ status: "ok", id: ticket.id });
+      if (json.ok) {
+        setResult({ status: "ok", apnsId: json.apnsId });
       } else {
         setResult({
           status: "error",
-          message: ticket?.message ?? "Push service returned an error",
+          message: json.error ?? `APNs error ${json.statusCode}`,
         });
       }
     } catch {
@@ -236,7 +235,7 @@ export default function PushTestPage() {
           className={`${styles.result} ${result.status === "ok" ? styles.success : styles.error}`}
         >
           {result.status === "ok"
-            ? `Sent — ticket id: ${result.id ?? "n/a"}`
+            ? `Sent — apns-id: ${result.apnsId ?? "n/a"}`
             : `Error: ${result.message}`}
         </div>
       )}
