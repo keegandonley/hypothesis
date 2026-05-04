@@ -49,6 +49,11 @@ export function sendApnsNotification(
 
   const jwt = generateJwt();
 
+  console.log("[apns] sending notification", {
+    deviceToken: `${deviceToken.slice(0, 8)}…`,
+    payload: JSON.parse(payloadStr),
+  });
+
   return new Promise((resolve, reject) => {
     const client = connect(host());
 
