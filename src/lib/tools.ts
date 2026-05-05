@@ -600,6 +600,15 @@ export const tools: ToolItem[] = [
     docsHref: "/docs/color-shades",
     tags: ["conversion", "web"],
   },
+  {
+    kind: "tool",
+    name: "app store screenshot",
+    description:
+      "Compose device screenshots at exact Apple App Store dimensions (1242×2688, 1284×2778, and landscape variants) and download ready-to-submit PNGs.",
+    href: "/app-store-screenshot",
+    docsHref: "/docs/app-store-screenshot",
+    tags: ["media", "conversion"],
+  },
 ];
 
 export const allItems: AnyItem[] = [...tools, ...experiments, ...references];
