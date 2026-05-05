@@ -11,6 +11,7 @@ import { UNICODE_BLOCK_GROUPS } from "@/data/unicode-blocks";
 import { PORT_GROUPS } from "@/data/port-numbers";
 import { REGEX_GROUPS } from "@/data/regex-syntax";
 import { TIMEZONES, TZ_GROUPS } from "@/data/timezones";
+import { MEDIA_FILE_GROUPS } from "@/data/media-files";
 
 const REFERENCE_DATA: Record<string, unknown> = {
   "css-selectors": CSS_SELECTOR_GROUPS,
@@ -25,6 +26,7 @@ const REFERENCE_DATA: Record<string, unknown> = {
   "port-numbers": PORT_GROUPS,
   "regex-syntax": REGEX_GROUPS,
   "timezones": { TIMEZONES, TZ_GROUPS },
+  "media-files": MEDIA_FILE_GROUPS,
 };
 
 export default function handler(
