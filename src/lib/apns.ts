@@ -34,16 +34,30 @@ export type ApnsResult = {
   error?: string;
 };
 
+export type ApnsOptions = {
+  subtitle?: string;
+  sound?: string | null;
+  badge?: number;
+};
+
 export function sendApnsNotification(
   deviceToken: string,
   title: string,
   body: string,
   data?: object,
+  options?: ApnsOptions,
 ): Promise<ApnsResult> {
   const bundleId = process.env.APNS_BUNDLE_ID!;
 
+  const alert: Record<string, string> = { title, body };
+  if (options?.subtitle) alert.subtitle = options.subtitle;
+
+  const aps: Record<string, unknown> = { alert };
+  if (options?.sound !== null) aps.sound = options?.sound ?? "default";
+  if (options?.badge !== undefined) aps.badge = options.badge;
+
   const payloadStr = JSON.stringify({
-    aps: { alert: { title, body }, sound: "default" },
+    aps,
     ...(data ?? {}),
   });
 

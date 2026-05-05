@@ -144,6 +144,20 @@
   border-bottom: none;
 }
 
+.fieldRow {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+
+.fieldRow .field {
+  flex: 1;
+  border-bottom: none;
+}
+
+.fieldRow .field:first-child {
+  border-right: 1px solid var(--border);
+}
+
 .label {
   font-size: 9px;
   text-transform: uppercase;

@@ -17,13 +17,18 @@ export default function PushTestPage() {
   const [deviceId, setDeviceId] = useState("");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [sound, setSound] = useState("");
+  const [badge, setBadge] = useState("");
   const [data, setData] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [curlCopied, setCurlCopied] = useState(false);
+  const [curlGetCopied, setCurlGetCopied] = useState(false);
   const didMount = useRef(false);
   const curlTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const curlGetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem(DEVICE_ID_LS_KEY);
@@ -57,17 +62,25 @@ export default function PushTestPage() {
       }
     }
 
+    const payload: Record<string, unknown> = {
+      deviceId: deviceId.trim(),
+      title: title.trim(),
+      body: body.trim(),
+    };
+    if (subtitle.trim()) payload.subtitle = subtitle.trim();
+    if (sound.trim()) payload.sound = sound.trim();
+    if (badge.trim()) {
+      const b = parseInt(badge, 10);
+      if (!isNaN(b) && b >= 0) payload.badge = b;
+    }
+    if (parsedData) payload.data = parsedData;
+
     setLoading(true);
     try {
       const res = await fetch("/api/push/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          deviceId: deviceId.trim(),
-          title: title.trim(),
-          body: body.trim(),
-          ...(parsedData ? { data: parsedData } : {}),
-        }),
+        body: JSON.stringify(payload),
       });
 
       const json = await res.json();
@@ -92,12 +105,18 @@ export default function PushTestPage() {
     }
   }
 
-  function buildCurl(): string {
+  function buildCurlPayload(): Record<string, unknown> {
     const payload: Record<string, unknown> = {
       deviceId: deviceId.trim(),
       title: title.trim(),
       body: body.trim(),
     };
+    if (subtitle.trim()) payload.subtitle = subtitle.trim();
+    if (sound.trim()) payload.sound = sound.trim();
+    if (badge.trim()) {
+      const b = parseInt(badge, 10);
+      if (!isNaN(b) && b >= 0) payload.badge = b;
+    }
     if (data.trim()) {
       try {
         payload.data = JSON.parse(data.trim());
@@ -105,15 +124,53 @@ export default function PushTestPage() {
         // omit invalid data
       }
     }
+    return payload;
+  }
+
+  function buildCurl(): string {
+    const payload = buildCurlPayload();
     const origin = typeof window !== "undefined" ? window.location.origin : "https://hypothesis.sh";
     return `curl -X POST ${origin}/api/push/send \\\n  -H "Content-Type: application/json" \\\n  -d '${JSON.stringify(payload)}'`;
   }
+
+  function buildCurlGet(): string {
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://hypothesis.sh";
+    const params = new URLSearchParams();
+    params.set("deviceId", deviceId.trim());
+    params.set("title", title.trim());
+    params.set("body", body.trim());
+    if (subtitle.trim()) params.set("subtitle", subtitle.trim());
+    if (sound.trim()) params.set("sound", sound.trim());
+    if (badge.trim()) {
+      const b = parseInt(badge, 10);
+      if (!isNaN(b) && b >= 0) params.set("badge", String(b));
+    }
+    if (data.trim()) {
+      try {
+        JSON.parse(data.trim());
+        params.set("data", data.trim());
+      } catch {
+        // omit invalid data
+      }
+    }
+    return `curl "${origin}/api/push/send?${params.toString()}"`;
+  }
+
+  const canCopy = !!deviceId.trim() && !!title.trim() && !!body.trim();
 
   function handleCopyCurl() {
     copyToClipboard(buildCurl()).then(() => {
       setCurlCopied(true);
       if (curlTimeoutRef.current) clearTimeout(curlTimeoutRef.current);
       curlTimeoutRef.current = setTimeout(() => setCurlCopied(false), 1500);
+    });
+  }
+
+  function handleCopyCurlGet() {
+    copyToClipboard(buildCurlGet()).then(() => {
+      setCurlGetCopied(true);
+      if (curlGetTimeoutRef.current) clearTimeout(curlGetTimeoutRef.current);
+      curlGetTimeoutRef.current = setTimeout(() => setCurlGetCopied(false), 1500);
     });
   }
 
@@ -151,109 +208,166 @@ export default function PushTestPage() {
 
       <div className={styles.layout}>
         <div className={styles.leftCol}>
-      <div className={styles.panel}>
-        <div className={styles.panelHeader}>
-          <span className={styles.panelLabel}>Notification</span>
-        </div>
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="deviceId">
-              Device ID
-            </label>
-            <input
-              id="deviceId"
-              className={styles.input}
-              type="text"
-              value={deviceId}
-              onChange={(e) => setDeviceId(e.target.value)}
-              placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-              spellCheck={false}
-              required
-            />
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelLabel}>Notification</span>
+            </div>
+            <form className={styles.form} onSubmit={handleSubmit}>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="deviceId">
+                  Device ID
+                </label>
+                <input
+                  id="deviceId"
+                  className={styles.input}
+                  type="text"
+                  value={deviceId}
+                  onChange={(e) => setDeviceId(e.target.value)}
+                  placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  spellCheck={false}
+                  required
+                />
+              </div>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="title">
+                  Title
+                </label>
+                <input
+                  id="title"
+                  className={styles.input}
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Notification title"
+                  required
+                />
+              </div>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="body">
+                  Body
+                </label>
+                <input
+                  id="body"
+                  className={styles.input}
+                  type="text"
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  placeholder="Notification body"
+                  required
+                />
+              </div>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="subtitle">
+                  Subtitle (optional)
+                </label>
+                <input
+                  id="subtitle"
+                  className={styles.input}
+                  type="text"
+                  value={subtitle}
+                  onChange={(e) => setSubtitle(e.target.value)}
+                  placeholder="Second line under title"
+                />
+              </div>
+              <div className={styles.fieldRow}>
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="sound">
+                    Sound (optional)
+                  </label>
+                  <input
+                    id="sound"
+                    className={styles.input}
+                    type="text"
+                    value={sound}
+                    onChange={(e) => setSound(e.target.value)}
+                    placeholder="default"
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="badge">
+                    Badge (optional)
+                  </label>
+                  <input
+                    id="badge"
+                    className={styles.input}
+                    type="number"
+                    min={0}
+                    value={badge}
+                    onChange={(e) => setBadge(e.target.value)}
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="data">
+                  Data (JSON, optional)
+                </label>
+                <textarea
+                  id="data"
+                  className={styles.textarea}
+                  value={data}
+                  onChange={(e) => setData(e.target.value)}
+                  placeholder='{ "key": "value" }'
+                  spellCheck={false}
+                />
+              </div>
+              <div className={styles.actions}>
+                <button
+                  type="submit"
+                  className={styles.submitBtn}
+                  disabled={loading}
+                >
+                  {loading ? "Sending..." : "Send"}
+                </button>
+              </div>
+            </form>
           </div>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="title">
-              Title
-            </label>
-            <input
-              id="title"
-              className={styles.input}
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Notification title"
-              required
-            />
-          </div>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="body">
-              Body
-            </label>
-            <input
-              id="body"
-              className={styles.input}
-              type="text"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              placeholder="Notification body"
-              required
-            />
-          </div>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="data">
-              Data (JSON, optional)
-            </label>
-            <textarea
-              id="data"
-              className={styles.textarea}
-              value={data}
-              onChange={(e) => setData(e.target.value)}
-              placeholder='{ "key": "value" }'
-              spellCheck={false}
-            />
-          </div>
-          <div className={styles.actions}>
-            <button
-              type="submit"
-              className={styles.submitBtn}
-              disabled={loading}
+
+          {validationError && (
+            <div className={`${styles.result} ${styles.error}`}>
+              {validationError}
+            </div>
+          )}
+
+          {result && (
+            <div
+              className={`${styles.result} ${result.status === "ok" ? styles.success : styles.error}`}
             >
-              {loading ? "Sending..." : "Send"}
-            </button>
+              {result.status === "ok"
+                ? `Sent — apns-id: ${result.apnsId ?? "n/a"}`
+                : `Error: ${result.message}`}
+            </div>
+          )}
+
+          <div className={styles.panel} style={{ marginTop: 12 }}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelLabel}>cURL (POST)</span>
+              <button
+                type="button"
+                className={`${styles.curlBtn}${curlCopied ? ` ${styles.copied}` : ""}`}
+                disabled={!canCopy}
+                onClick={handleCopyCurl}
+              >
+                {curlCopied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+            <pre className={styles.curlCode}>{buildCurl()}</pre>
           </div>
-        </form>
-      </div>
 
-      {validationError && (
-        <div className={`${styles.result} ${styles.error}`}>
-          {validationError}
-        </div>
-      )}
-
-      {result && (
-        <div
-          className={`${styles.result} ${result.status === "ok" ? styles.success : styles.error}`}
-        >
-          {result.status === "ok"
-            ? `Sent — apns-id: ${result.apnsId ?? "n/a"}`
-            : `Error: ${result.message}`}
-        </div>
-      )}
-
-      <div className={styles.panel} style={{ marginTop: 12 }}>
-        <div className={styles.panelHeader}>
-          <span className={styles.panelLabel}>cURL</span>
-          <button
-            type="button"
-            className={`${styles.curlBtn}${curlCopied ? ` ${styles.copied}` : ""}`}
-            disabled={!deviceId.trim() || !title.trim() || !body.trim()}
-            onClick={handleCopyCurl}
-          >
-            {curlCopied ? "Copied!" : "Copy"}
-          </button>
-        </div>
-        <pre className={styles.curlCode}>{buildCurl()}</pre>
-      </div>
+          <div className={styles.panel} style={{ marginTop: 12 }}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelLabel}>cURL (GET)</span>
+              <button
+                type="button"
+                className={`${styles.curlBtn}${curlGetCopied ? ` ${styles.copied}` : ""}`}
+                disabled={!canCopy}
+                onClick={handleCopyCurlGet}
+              >
+                {curlGetCopied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+            <pre className={styles.curlCode}>{buildCurlGet()}</pre>
+          </div>
         </div>
 
         <div className={styles.rightCol}>

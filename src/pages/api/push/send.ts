@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getPushTokenByDeviceId } from "@/lib/push-tokens";
-import { sendApnsNotification } from "@/lib/apns";
+import { sendApnsNotification, type ApnsOptions } from "@/lib/apns";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -19,6 +19,12 @@ export default async function handler(
     typeof req.query.title === "string" ? req.query.title : undefined;
   const queryBody =
     typeof req.query.body === "string" ? req.query.body : undefined;
+  const querySubtitle =
+    typeof req.query.subtitle === "string" ? req.query.subtitle : undefined;
+  const querySound =
+    typeof req.query.sound === "string" ? req.query.sound : undefined;
+  const queryBadgeRaw =
+    typeof req.query.badge === "string" ? req.query.badge : undefined;
   const queryDataRaw =
     typeof req.query.data === "string" ? req.query.data : undefined;
 
@@ -33,10 +39,21 @@ export default async function handler(
     }
   }
 
+  let queryBadge: number | undefined;
+  if (queryBadgeRaw !== undefined) {
+    queryBadge = parseInt(queryBadgeRaw, 10);
+    if (isNaN(queryBadge) || queryBadge < 0) {
+      return res.status(400).json({ error: "badge must be a non-negative integer" });
+    }
+  }
+
   const bodyParams = (req.body ?? {}) as {
     deviceId?: string;
     title?: string;
     body?: string;
+    subtitle?: string;
+    sound?: string | null;
+    badge?: number;
     data?: object;
   };
 
@@ -44,6 +61,14 @@ export default async function handler(
   const title = bodyParams.title ?? queryTitle;
   const body = bodyParams.body ?? queryBody;
   const data = bodyParams.data ?? queryData;
+
+  const options: ApnsOptions = {};
+  const subtitle = bodyParams.subtitle ?? querySubtitle;
+  if (subtitle) options.subtitle = subtitle;
+  const sound = "sound" in bodyParams ? bodyParams.sound : querySound;
+  if (sound !== undefined) options.sound = sound;
+  const badge = bodyParams.badge ?? queryBadge;
+  if (badge !== undefined) options.badge = badge;
 
   if (!deviceId || !UUID_RE.test(deviceId)) {
     return res.status(400).json({ error: "invalid or missing deviceId" });
@@ -66,6 +91,7 @@ export default async function handler(
       title.trim(),
       body.trim(),
       data,
+      options,
     );
 
     return res.status(200).json(result);
