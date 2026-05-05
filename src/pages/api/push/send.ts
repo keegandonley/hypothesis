@@ -9,16 +9,41 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "POST") {
+  if (req.method !== "POST" && req.method !== "GET") {
     return res.status(405).json({ error: "method not allowed" });
   }
 
-  const { deviceId, title, body, data } = (req.body ?? {}) as {
+  const queryDeviceId =
+    typeof req.query.deviceId === "string" ? req.query.deviceId : undefined;
+  const queryTitle =
+    typeof req.query.title === "string" ? req.query.title : undefined;
+  const queryBody =
+    typeof req.query.body === "string" ? req.query.body : undefined;
+  const queryDataRaw =
+    typeof req.query.data === "string" ? req.query.data : undefined;
+
+  let queryData: object | undefined;
+  if (queryDataRaw) {
+    try {
+      queryData = JSON.parse(queryDataRaw);
+    } catch {
+      return res
+        .status(400)
+        .json({ error: "invalid data query param: must be valid JSON" });
+    }
+  }
+
+  const bodyParams = (req.body ?? {}) as {
     deviceId?: string;
     title?: string;
     body?: string;
     data?: object;
   };
+
+  const deviceId = bodyParams.deviceId ?? queryDeviceId;
+  const title = bodyParams.title ?? queryTitle;
+  const body = bodyParams.body ?? queryBody;
+  const data = bodyParams.data ?? queryData;
 
   if (!deviceId || !UUID_RE.test(deviceId)) {
     return res.status(400).json({ error: "invalid or missing deviceId" });
