@@ -46,6 +46,26 @@ export const MEDIA_FILE_GROUPS: MediaFileGroup[] = [
       { filename: "livery-stable-blues.ogg", url: "https://example.hypothesis.donley.xyz/livery-stable-blues.ogg", description: "Ogg Vorbis audio file. For testing HTML audio element behavior and streaming." },
     ],
   },
+  {
+    id: "mp3",
+    label: "MP3",
+    color: "#fb923c",
+    subtle: "#fb923c18",
+    border: "#fb923c33",
+    files: [
+      { filename: "bull-frog-blues.mp3", url: "https://example.hypothesis.donley.xyz/bull-frog-blues.mp3", description: "MP3 audio file. For testing HTML audio element behavior with the MP3 format." },
+    ],
+  },
+  {
+    id: "wav",
+    label: "WAV",
+    color: "#f472b6",
+    subtle: "#f472b618",
+    border: "#f472b633",
+    files: [
+      { filename: "bull-frog-blues.wav", url: "https://example.hypothesis.donley.xyz/bull-frog-blues.wav", description: "Uncompressed WAV audio file. Larger than compressed formats; useful for testing raw PCM playback and audio element behavior." },
+    ],
+  },
 ];
 
 export const MEDIA_FILES = [
@@ -82,6 +102,20 @@ export const MEDIA_FILES = [
     url: "https://example.hypothesis.donley.xyz/livery-stable-blues.ogg",
     type: "audio" as const,
     label: "ogg vorbis",
+    short: false,
+  },
+  {
+    filename: "bull-frog-blues.mp3",
+    url: "https://example.hypothesis.donley.xyz/bull-frog-blues.mp3",
+    type: "audio" as const,
+    label: "mp3",
+    short: false,
+  },
+  {
+    filename: "bull-frog-blues.wav",
+    url: "https://example.hypothesis.donley.xyz/bull-frog-blues.wav",
+    type: "audio" as const,
+    label: "wav",
     short: false,
   },
 ] as const;

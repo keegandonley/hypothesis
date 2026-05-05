@@ -11,6 +11,8 @@ const BADGE_STYLES: Record<string, { color: string; subtle: string; border: stri
   standard: { color: "#60a5fa", subtle: "#60a5fa18", border: "#60a5fa33" },
   "fast-start": { color: "#34d399", subtle: "#34d39918", border: "#34d39933" },
   "ogg vorbis": { color: "#c084fc", subtle: "#c084fc18", border: "#c084fc33" },
+  mp3: { color: "#fb923c", subtle: "#fb923c18", border: "#fb923c33" },
+  wav: { color: "#f472b6", subtle: "#f472b618", border: "#f472b633" },
 };
 
 const DESCRIPTIONS: Record<string, string> = {
@@ -19,6 +21,8 @@ const DESCRIPTIONS: Record<string, string> = {
   "bbb.mp4": "Standard H.264/AAC MP4 with the moov atom at the end of the file. The browser must download to the end of the file before it can read metadata and begin playback.",
   "bbb-fast.mp4": "Fast-start MP4 with the moov atom relocated to the front of the file. The browser can begin buffering and playing immediately without waiting for the full file to download.",
   "livery-stable-blues.ogg": "Ogg Vorbis audio file. For testing HTML audio element behavior and streaming.",
+  "bull-frog-blues.mp3": "MP3 audio file. For testing HTML audio element behavior with the MP3 format.",
+  "bull-frog-blues.wav": "Uncompressed WAV audio file. Larger than compressed formats; useful for testing raw PCM playback and audio element behavior.",
 };
 
 export default function MediaFilesPage() {
