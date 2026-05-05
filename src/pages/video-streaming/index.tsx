@@ -6,6 +6,7 @@ import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { MEDIA_FILES } from "@/data/media-files";
 
 type VideoWithExtras = HTMLVideoElement & {
   disableRemotePlayback?: boolean;
@@ -559,7 +560,21 @@ export default function VideoStreamingPage() {
               <span>Source</span>
               <span className={`${styles.tag} ${styles.tagRebuild}`}>rebuild</span>
             </div>
-            <label className={styles.blockLabel} htmlFor="vs-src">Video URL</label>
+            <label className={styles.blockLabel} htmlFor="vs-preset">Example file</label>
+            <select
+              id="vs-preset"
+              className={styles.select}
+              value={MEDIA_FILES.find((f) => f.url === settings.src)?.url ?? ""}
+              onChange={(e) => { if (e.target.value) upd("src", e.target.value); }}
+            >
+              <option value="">— paste a custom URL below —</option>
+              {MEDIA_FILES.filter((f) => f.type === "video").map((f) => (
+                <option key={f.filename} value={f.url}>
+                  {f.filename} ({f.label}{f.short ? " · short" : ""})
+                </option>
+              ))}
+            </select>
+            <label className={styles.blockLabel} style={{ marginTop: 8 }} htmlFor="vs-src">Custom URL</label>
             <input
               id="vs-src"
               type="url"

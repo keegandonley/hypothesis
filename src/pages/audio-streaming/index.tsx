@@ -6,6 +6,7 @@ import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { MEDIA_FILES } from "@/data/media-files";
 
 interface Settings {
   src: string;
@@ -508,7 +509,21 @@ export default function AudioStreamingPage() {
               <span>Source</span>
               <span className={`${styles.tag} ${styles.tagRebuild}`}>rebuild</span>
             </div>
-            <label className={styles.blockLabel} htmlFor="as-src">Audio URL</label>
+            <label className={styles.blockLabel} htmlFor="as-preset">Example file</label>
+            <select
+              id="as-preset"
+              className={styles.select}
+              value={MEDIA_FILES.find((f) => f.url === settings.src)?.url ?? ""}
+              onChange={(e) => { if (e.target.value) upd("src", e.target.value); }}
+            >
+              <option value="">— paste a custom URL below —</option>
+              {MEDIA_FILES.filter((f) => f.type === "audio").map((f) => (
+                <option key={f.filename} value={f.url}>
+                  {f.filename} ({f.label})
+                </option>
+              ))}
+            </select>
+            <label className={styles.blockLabel} style={{ marginTop: 8 }} htmlFor="as-src">Custom URL</label>
             <input
               id="as-src"
               type="url"

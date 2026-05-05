@@ -4,7 +4,8 @@ export type Tag =
   | "conversion"
   | "web"
   | "sysadmin"
-  | "text";
+  | "text"
+  | "media";
 
 export const ALL_TAGS: Tag[] = [
   "encoding",
@@ -13,6 +14,7 @@ export const ALL_TAGS: Tag[] = [
   "web",
   "sysadmin",
   "text",
+  "media",
 ];
 
 export const TAG_COLORS: Record<Tag, { color: string; subtle: string }> = {
@@ -22,6 +24,7 @@ export const TAG_COLORS: Record<Tag, { color: string; subtle: string }> = {
   web: { color: "#2dd4bf", subtle: "#2dd4bf18" },
   sysadmin: { color: "#fbbf24", subtle: "#fbbf2418" },
   text: { color: "#34d399", subtle: "#34d39918" },
+  media: { color: "#fb923c", subtle: "#fb923c18" },
 };
 
 export interface ToolItem {
@@ -149,6 +152,14 @@ export const references: ReferenceItem[] = [
       "IANA timezone names with live current time, UTC offsets, abbreviations, and major cities.",
     href: "/references/timezones",
     tags: ["web", "sysadmin"],
+  },
+  {
+    kind: "reference",
+    name: "Media files",
+    description:
+      "Example MP4 video files for testing HTML video behavior: a standard file and a fast-start variant with the moov atom at the front for immediate buffering.",
+    href: "/references/media-files",
+    tags: ["media", "web"],
   },
 ];
 
