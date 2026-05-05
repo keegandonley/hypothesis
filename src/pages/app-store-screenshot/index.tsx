@@ -239,7 +239,7 @@ export default function AppStoreScreenshot() {
           <Link href="/" className={styles.domainLink}>
             {branding.domain}
           </Link>
-          <span>/</span>
+          {"·"}
           <Link href="/docs/app-store-screenshot" className={styles.docsLink}>
             <DocIcon className={styles.icon} />
             docs
