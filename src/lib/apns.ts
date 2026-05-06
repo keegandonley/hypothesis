@@ -4,8 +4,8 @@ import { connect } from "node:http2";
 const HOST_PROD = "https://api.push.apple.com";
 const HOST_SANDBOX = "https://api.sandbox.push.apple.com";
 
-function host(): string {
-  return process.env.APNS_PRODUCTION === "true" ? HOST_PROD : HOST_SANDBOX;
+function host(sandbox: boolean): string {
+  return sandbox ? HOST_SANDBOX : HOST_PROD;
 }
 
 function generateJwt(): string {
@@ -46,6 +46,7 @@ export function sendApnsNotification(
   body: string,
   data?: object,
   options?: ApnsOptions,
+  sandbox: boolean = process.env.APNS_PRODUCTION !== "true",
 ): Promise<ApnsResult> {
   const bundleId = process.env.APNS_BUNDLE_ID!;
 
@@ -69,7 +70,7 @@ export function sendApnsNotification(
   });
 
   return new Promise((resolve, reject) => {
-    const client = connect(host());
+    const client = connect(host(sandbox));
 
     client.on("error", (err) => {
       client.destroy();

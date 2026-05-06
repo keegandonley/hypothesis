@@ -21,6 +21,7 @@ export default function PushTestPage() {
   const [sound, setSound] = useState("");
   const [badge, setBadge] = useState("");
   const [data, setData] = useState("");
+  const [sandbox, setSandbox] = useState(true);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -66,6 +67,7 @@ export default function PushTestPage() {
       deviceId: deviceId.trim(),
       title: title.trim(),
       body: body.trim(),
+      sandbox,
     };
     if (subtitle.trim()) payload.subtitle = subtitle.trim();
     if (sound.trim()) payload.sound = sound.trim();
@@ -110,6 +112,7 @@ export default function PushTestPage() {
       deviceId: deviceId.trim(),
       title: title.trim(),
       body: body.trim(),
+      sandbox,
     };
     if (subtitle.trim()) payload.subtitle = subtitle.trim();
     if (sound.trim()) payload.sound = sound.trim();
@@ -139,6 +142,7 @@ export default function PushTestPage() {
     params.set("deviceId", deviceId.trim());
     params.set("title", title.trim());
     params.set("body", body.trim());
+    params.set("sandbox", String(sandbox));
     if (subtitle.trim()) params.set("subtitle", subtitle.trim());
     if (sound.trim()) params.set("sound", sound.trim());
     if (badge.trim()) {
@@ -312,6 +316,15 @@ export default function PushTestPage() {
                 />
               </div>
               <div className={styles.actions}>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={sandbox}
+                    onChange={(e) => setSandbox(e.target.checked)}
+                    className={styles.checkbox}
+                  />
+                  Sandbox
+                </label>
                 <button
                   type="submit"
                   className={styles.submitBtn}

@@ -27,6 +27,8 @@ export default async function handler(
     typeof req.query.badge === "string" ? req.query.badge : undefined;
   const queryDataRaw =
     typeof req.query.data === "string" ? req.query.data : undefined;
+  const querySandbox =
+    typeof req.query.sandbox === "string" ? req.query.sandbox === "true" : undefined;
 
   let queryData: object | undefined;
   if (queryDataRaw) {
@@ -55,12 +57,14 @@ export default async function handler(
     sound?: string | null;
     badge?: number;
     data?: object;
+    sandbox?: boolean;
   };
 
   const deviceId = bodyParams.deviceId ?? queryDeviceId;
   const title = bodyParams.title ?? queryTitle;
   const body = bodyParams.body ?? queryBody;
   const data = bodyParams.data ?? queryData;
+  const sandbox = bodyParams.sandbox ?? querySandbox ?? (process.env.APNS_PRODUCTION !== "true");
 
   const options: ApnsOptions = {};
   const subtitle = bodyParams.subtitle ?? querySubtitle;
@@ -92,6 +96,7 @@ export default async function handler(
       body.trim(),
       data,
       options,
+      sandbox,
     );
 
     return res.status(200).json(result);
