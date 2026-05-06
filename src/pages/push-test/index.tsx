@@ -27,11 +27,13 @@ export default function PushTestPage() {
   const [validationError, setValidationError] = useState<string | null>(null);
   const [curlCopied, setCurlCopied] = useState(false);
   const [curlGetCopied, setCurlGetCopied] = useState(false);
+  const [origin, setOrigin] = useState("");
   const didMount = useRef(false);
   const curlTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const curlGetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    setOrigin(window.location.origin);
     const stored = localStorage.getItem(DEVICE_ID_LS_KEY);
     if (stored) setDeviceId(stored);
   }, []);
@@ -132,12 +134,10 @@ export default function PushTestPage() {
 
   function buildCurl(): string {
     const payload = buildCurlPayload();
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://hypothesis.sh";
     return `curl -X POST ${origin}/api/push/send \\\n  -H "Content-Type: application/json" \\\n  -d '${JSON.stringify(payload)}'`;
   }
 
   function buildCurlGet(): string {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://hypothesis.sh";
     const params = new URLSearchParams();
     params.set("deviceId", deviceId.trim());
     params.set("title", title.trim());
