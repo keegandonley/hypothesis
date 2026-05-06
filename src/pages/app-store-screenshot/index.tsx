@@ -404,7 +404,6 @@ export default function AppStoreScreenshot() {
             <button
               className={styles.downloadBtn}
               onClick={handleDownload}
-              disabled={!imageSrc}
             >
               Download PNG — {dim.replace("x", "×")}
             </button>
@@ -432,7 +431,7 @@ export default function AppStoreScreenshot() {
               </div>
               {!imageSrc && (
                 <p className={styles.emptyState}>
-                  Upload a screenshot to preview the composition
+                  Upload a screenshot to preview the composition, or download a template
                 </p>
               )}
             </div>
