@@ -69,7 +69,7 @@ export default async function handler(
   const options: ApnsOptions = {};
   const subtitle = bodyParams.subtitle ?? querySubtitle;
   if (subtitle) options.subtitle = subtitle;
-  const sound = "sound" in bodyParams ? bodyParams.sound : querySound;
+  const sound = bodyParams.sound !== undefined ? bodyParams.sound : querySound;
   if (sound !== undefined) options.sound = sound;
   const badge = bodyParams.badge ?? queryBadge;
   if (badge !== undefined) options.badge = badge;

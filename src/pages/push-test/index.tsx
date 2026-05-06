@@ -21,13 +21,14 @@ export default function PushTestPage() {
   const [sound, setSound] = useState("");
   const [badge, setBadge] = useState("");
   const [data, setData] = useState("");
-  const [sandbox, setSandbox] = useState(true);
+  const [sandbox, setSandbox] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [curlCopied, setCurlCopied] = useState(false);
   const [curlGetCopied, setCurlGetCopied] = useState(false);
   const [origin, setOrigin] = useState("");
+  const [showSandbox, setShowSandbox] = useState(false);
   const didMount = useRef(false);
   const curlTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const curlGetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -36,6 +37,11 @@ export default function PushTestPage() {
     setOrigin(window.location.origin);
     const stored = localStorage.getItem(DEVICE_ID_LS_KEY);
     if (stored) setDeviceId(stored);
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("dev")) {
+      setShowSandbox(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -316,15 +322,17 @@ export default function PushTestPage() {
                 />
               </div>
               <div className={styles.actions}>
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={sandbox}
-                    onChange={(e) => setSandbox(e.target.checked)}
-                    className={styles.checkbox}
-                  />
-                  Sandbox
-                </label>
+                {showSandbox && (
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      checked={sandbox}
+                      onChange={(e) => setSandbox(e.target.checked)}
+                      className={styles.checkbox}
+                    />
+                    Sandbox
+                  </label>
+                )}
                 <button
                   type="submit"
                   className={styles.submitBtn}
