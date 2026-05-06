@@ -13,5 +13,5 @@ export async function sendWebhookPushNotification(
     type: "webhook_event",
     method,
     eventId,
-  });
+  }, undefined, device.sandbox);
 }

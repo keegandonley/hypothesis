@@ -122,7 +122,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     projectName: event.payload?.project?.name ?? event.payload?.deployment?.name,
   };
 
-  const result = await sendApnsNotification(device.token, title, body, data);
+  const result = await sendApnsNotification(device.token, title, body, data, undefined, device.sandbox);
   if (!result.ok) {
     console.error(`[vercel-webhook] APNS error for device ${deviceId}:`, result.error);
   }

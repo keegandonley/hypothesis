@@ -12,10 +12,11 @@ export default async function handler(
     return res.status(405).json({ error: "method not allowed" });
   }
 
-  const { deviceId, token, platform } = (req.body ?? {}) as {
+  const { deviceId, token, platform, sandbox } = (req.body ?? {}) as {
     deviceId?: string;
     token?: string;
     platform?: string;
+    sandbox?: boolean;
   };
 
   if (!deviceId || !UUID_RE.test(deviceId)) {
@@ -29,7 +30,7 @@ export default async function handler(
   }
 
   try {
-    await upsertPushToken(deviceId, token.trim(), platform.trim());
+    await upsertPushToken(deviceId, token.trim(), platform.trim(), sandbox ?? false);
     return res.status(200).json({ ok: true });
   } catch (err) {
     console.error("push register error", err);
