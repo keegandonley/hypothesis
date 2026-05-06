@@ -200,7 +200,7 @@ export default function AppStoreScreenshot() {
 
   const handleDownload = () => {
     const canvas = canvasRef.current;
-    if (!canvas || !imageSrc) return;
+    if (!canvas) return;
     const url = canvas.toDataURL("image/png");
     const a = document.createElement("a");
     a.href = url;
