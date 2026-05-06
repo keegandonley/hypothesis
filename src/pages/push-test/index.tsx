@@ -75,8 +75,8 @@ export default function PushTestPage() {
       deviceId: deviceId.trim(),
       title: title.trim(),
       body: body.trim(),
-      sandbox,
     };
+    if (showSandbox || sandbox) payload.sandbox = sandbox;
     if (subtitle.trim()) payload.subtitle = subtitle.trim();
     if (sound.trim()) payload.sound = sound.trim();
     if (badge.trim()) {
@@ -120,8 +120,8 @@ export default function PushTestPage() {
       deviceId: deviceId.trim(),
       title: title.trim(),
       body: body.trim(),
-      sandbox,
     };
+    if (showSandbox || sandbox) payload.sandbox = sandbox;
     if (subtitle.trim()) payload.subtitle = subtitle.trim();
     if (sound.trim()) payload.sound = sound.trim();
     if (badge.trim()) {
@@ -148,7 +148,7 @@ export default function PushTestPage() {
     params.set("deviceId", deviceId.trim());
     params.set("title", title.trim());
     params.set("body", body.trim());
-    params.set("sandbox", String(sandbox));
+    if (showSandbox || sandbox) params.set("sandbox", String(sandbox));
     if (subtitle.trim()) params.set("subtitle", subtitle.trim());
     if (sound.trim()) params.set("sound", sound.trim());
     if (badge.trim()) {
