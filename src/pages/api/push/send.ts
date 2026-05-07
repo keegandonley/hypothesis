@@ -89,6 +89,9 @@ export default async function handler(
     if (!record) {
       return res.status(404).json({ error: "device not found" });
     }
+    if (!record.token) {
+      return res.status(422).json({ error: "device has no push token" });
+    }
 
     const result = await sendApnsNotification(
       record.token,

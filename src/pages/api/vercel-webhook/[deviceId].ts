@@ -107,6 +107,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const device = await getPushTokenByDeviceId(deviceId);
   if (!device) return res.status(404).json({ error: "device not found" });
+  if (!device.token) return res.status(200).end();
 
   let event: VercelEvent;
   try {
