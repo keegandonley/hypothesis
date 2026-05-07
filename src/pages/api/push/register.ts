@@ -12,8 +12,9 @@ export default async function handler(
     return res.status(405).json({ error: "method not allowed" });
   }
 
-  const { deviceId, token, platform, sandbox } = (req.body ?? {}) as {
+  const { deviceId, deviceSecret, token, platform, sandbox } = (req.body ?? {}) as {
     deviceId?: string;
+    deviceSecret?: string;
     token?: string;
     platform?: string;
     sandbox?: boolean;
@@ -30,10 +31,22 @@ export default async function handler(
   }
 
   try {
-    await upsertPushToken(deviceId, token.trim(), platform.trim(), sandbox ?? false);
+    await upsertPushToken(
+      deviceId,
+      token.trim(),
+      platform.trim(),
+      sandbox ?? false,
+      deviceSecret,
+    );
+
     return res.status(200).json({ ok: true });
   } catch (err) {
+    if (err instanceof Error && err.message === "secret_mismatch") {
+      return res.status(403).json({ error: "forbidden" });
+    }
+
     console.error("push register error", err);
+
     return res.status(500).json({ error: "internal server error" });
   }
 }

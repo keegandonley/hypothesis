@@ -1,4 +1,9 @@
+import { pbkdf2, randomBytes } from "crypto";
+import { promisify } from "util";
+
 import { pool } from "./db";
+
+const pbkdf2Async = promisify(pbkdf2);
 
 export type PushToken = {
   id: string;
@@ -10,19 +15,90 @@ export type PushToken = {
   updatedAt: string;
 };
 
+async function hashSecret(secret: string): Promise<string> {
+  const salt = randomBytes(16).toString("hex");
+  const derived = await pbkdf2Async(secret, salt, 310_000, 32, "sha256");
+
+  return `${salt}:${derived.toString("hex")}`;
+}
+
+async function verifySecret(secret: string, stored: string): Promise<boolean> {
+  const [salt, hex] = stored.split(":");
+
+  if (!salt || !hex) {
+    return false;
+  }
+
+  const derived = await pbkdf2Async(secret, salt, 310_000, 32, "sha256");
+
+  return derived.toString("hex") === hex;
+}
+
 export async function upsertPushToken(
   deviceId: string,
   token: string,
   platform: string,
   sandbox: boolean,
+  deviceSecret?: string,
 ): Promise<void> {
-  await pool.query(
-    `INSERT INTO push_tokens (device_id, token, platform, sandbox)
-     VALUES ($1, $2, $3, $4)
-     ON CONFLICT (device_id)
-     DO UPDATE SET token = EXCLUDED.token, platform = EXCLUDED.platform, sandbox = EXCLUDED.sandbox, updated_at = NOW()`,
-    [deviceId, token, platform, sandbox],
+  if (!deviceSecret) {
+    // No secret provided — legacy client. Allow the upsert unconditionally
+    // but only if no secret is set yet (preserves security once a device is secured).
+    await pool.query(
+      `INSERT INTO push_tokens (device_id, token, platform, sandbox)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (device_id)
+       DO UPDATE SET
+         token = EXCLUDED.token,
+         platform = EXCLUDED.platform,
+         sandbox = EXCLUDED.sandbox,
+         updated_at = NOW()
+       WHERE push_tokens.secret IS NULL`,
+      [deviceId, token, platform, sandbox],
+    );
+
+    return;
+  }
+
+  // Check if there is an existing row with a secret already set.
+  const existing = await pool.query<{ secret: string | null }>(
+    "SELECT secret FROM push_tokens WHERE device_id = $1",
+    [deviceId],
   );
+
+  const row = existing.rows[0];
+
+  if (row?.secret) {
+    // Row exists and is secured — verify the incoming secret before allowing update.
+    const ok = await verifySecret(deviceSecret, row.secret);
+
+    if (!ok) {
+      throw new Error("secret_mismatch");
+    }
+
+    await pool.query(
+      `UPDATE push_tokens
+       SET token = $2, platform = $3, sandbox = $4, updated_at = NOW()
+       WHERE device_id = $1`,
+      [deviceId, token, platform, sandbox],
+    );
+  } else {
+    // New device or legacy row without a secret — insert or migrate by hashing the secret now.
+    const hashed = await hashSecret(deviceSecret);
+
+    await pool.query(
+      `INSERT INTO push_tokens (device_id, token, platform, sandbox, secret)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (device_id)
+       DO UPDATE SET
+         token = EXCLUDED.token,
+         platform = EXCLUDED.platform,
+         sandbox = EXCLUDED.sandbox,
+         secret = EXCLUDED.secret,
+         updated_at = NOW()`,
+      [deviceId, token, platform, sandbox, hashed],
+    );
+  }
 }
 
 export async function getPushTokenByDeviceId(
