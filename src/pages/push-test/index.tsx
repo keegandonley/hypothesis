@@ -5,6 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
+import { useIsIframe } from "@/lib/useIsIframe";
 
 const DEVICE_ID_LS_KEY = "pushTestDeviceId";
 
@@ -14,6 +15,7 @@ type Result =
 
 export default function PushTestPage() {
   const branding = useBranding();
+  const isIframe = useIsIframe();
   const [deviceId, setDeviceId] = useState("");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -198,7 +200,7 @@ export default function PushTestPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" className={styles.domainLink}>
+          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
             {branding.domain}
           </Link>
           {"·"}

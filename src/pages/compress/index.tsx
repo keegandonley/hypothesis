@@ -5,6 +5,7 @@ import { upload } from "@vercel/blob/client";
 import styles from "../../styles/compress.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
+import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 type OutputFormat = "png" | "webp" | "avif";
@@ -42,6 +43,7 @@ function savings(
 
 export default function CompressPage() {
   const branding = useBranding();
+  const isIframe = useIsIframe();
   const [entries, setEntries] = useState<FileEntry[]>([]);
   const [format, setFormat] = useState<OutputFormat>("png");
   const [quality, setQuality] = useState(FORMAT_QUALITY_DEFAULTS["png"]);
@@ -230,7 +232,7 @@ export default function CompressPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" className={styles.domainLink}>
+          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
             {branding.domain}
           </Link>
           {"·"}

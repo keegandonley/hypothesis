@@ -530,7 +530,7 @@ export default function VideoStreamingPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" style={{ color: "inherit", textDecoration: "none" }}>
+          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} style={{ color: "inherit", textDecoration: "none" }}>
             {branding.domain}
           </Link>
           {"·"}

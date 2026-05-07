@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import styles from "../../styles/message-factory.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
+import { useIsIframe } from "@/lib/useIsIframe";
 
 const subExperiments = [
   {
@@ -26,6 +27,7 @@ const subExperiments = [
 
 export default function MessageFactoryPage() {
   const branding = useBranding();
+  const isIframe = useIsIframe();
   return (
     <div className={styles.page}>
       <ToolHead
@@ -43,7 +45,7 @@ export default function MessageFactoryPage() {
             and designer.
           </p>
           <div className={styles.backRow}>
-            <Link href="/" className={styles.backLink}>
+            <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.backLink}>
               ← back
             </Link>
           </div>

@@ -2,9 +2,11 @@ import Head from "next/head";
 import Link from "next/link";
 import styles from "../../styles/docs.module.css";
 import { useBranding } from "@/lib/branding";
+import { useIsIframe } from "@/lib/useIsIframe";
 
 export default function SupportPage() {
   const branding = useBranding();
+  const isIframe = useIsIframe();
 
   return (
     <div className={styles.page}>
@@ -24,7 +26,7 @@ export default function SupportPage() {
       </Head>
       <div className={styles.inner}>
         <nav className={styles.nav}>
-          <Link href="/" className={styles.backLink}>
+          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.backLink}>
             <span style={{ marginBottom: "3px" }}>←</span> {branding.name}
           </Link>
         </nav>

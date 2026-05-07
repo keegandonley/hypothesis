@@ -4,6 +4,7 @@ import styles from "../../styles/screen-capture.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
+import { useIsIframe } from "@/lib/useIsIframe";
 import { captureTab } from "@keegancodes/capture-screen";
 
 type Status = "idle" | "capturing" | "cancelled" | "error";
@@ -14,6 +15,7 @@ const LOREM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do e
 
 export default function ScreenCapturePage() {
   const branding = useBranding();
+  const isIframe = useIsIframe();
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -48,7 +50,7 @@ export default function ScreenCapturePage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow}>
-          <Link href="/" style={{ color: "inherit", textDecoration: "none" }}>
+          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} style={{ color: "inherit", textDecoration: "none" }}>
             {branding.domain}
           </Link>
           {"·"}

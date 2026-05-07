@@ -236,7 +236,7 @@ export default function AppStoreScreenshot() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow}>
-          <Link href="/" className={styles.domainLink}>
+          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
             {branding.domain}
           </Link>
           {"·"}
