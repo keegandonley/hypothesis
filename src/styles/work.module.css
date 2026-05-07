@@ -86,7 +86,8 @@
 /* Search */
 
 .searchWrap {
-  position: relative;
+  position: sticky;
+  top: 24px;
   margin-bottom: 4px;
 }
 
@@ -262,6 +263,8 @@
   gap: 16px;
   border-top: 1px solid var(--border);
   background-color: var(--bg);
+  position: sticky;
+  bottom: 0;
 }
 
 .hint kbd {
