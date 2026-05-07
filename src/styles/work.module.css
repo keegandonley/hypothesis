@@ -153,6 +153,10 @@
   color: var(--muted);
   padding: 10px 16px 6px;
   border-top: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background-color: var(--card-bg);
+  z-index: 1;
 }
 
 .groupLabel:first-child {
