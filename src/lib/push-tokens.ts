@@ -34,6 +34,30 @@ async function verifySecret(secret: string, stored: string): Promise<boolean> {
   return derived.toString("hex") === hex;
 }
 
+export async function verifyDeviceSecret(
+  deviceId: string,
+  incomingSecret?: string | null,
+): Promise<boolean> {
+  const result = await pool.query<{ secret: string | null }>(
+    "SELECT secret FROM push_tokens WHERE device_id = $1",
+    [deviceId],
+  );
+
+  const row = result.rows[0];
+
+  if (!row?.secret) {
+    // Legacy device — no secret set yet, allow through
+    return true;
+  }
+
+  if (!incomingSecret) {
+    // Device is secured but caller provided no secret
+    return false;
+  }
+
+  return verifySecret(incomingSecret, row.secret);
+}
+
 export async function upsertPushToken(
   deviceId: string,
   token: string,

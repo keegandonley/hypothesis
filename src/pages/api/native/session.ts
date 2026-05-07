@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getPushTokenByDeviceId } from "@/lib/push-tokens";
+import { getPushTokenByDeviceId, verifyDeviceSecret } from "@/lib/push-tokens";
 import { getOrCreateNativeSession } from "@/lib/session";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).end();
   }
 
-  const { deviceId } = req.body as { deviceId?: string };
+  const { deviceId, deviceSecret } = req.body as { deviceId?: string; deviceSecret?: string };
 
   if (!deviceId || !UUID_RE.test(deviceId)) {
     return res.status(400).json({ error: "deviceId must be a valid UUID" });
@@ -18,6 +18,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const device = await getPushTokenByDeviceId(deviceId);
   if (!device) {
     return res.status(404).json({ error: "device not registered" });
+  }
+
+  const authorized = await verifyDeviceSecret(deviceId, deviceSecret);
+  if (!authorized) {
+    return res.status(403).json({ error: "forbidden" });
   }
 
   try {

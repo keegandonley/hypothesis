@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { pool } from "@/lib/db";
 import { getEvents } from "@/lib/events";
+import { verifyDeviceSecret } from "@/lib/push-tokens";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -27,6 +28,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const limit = Math.min(parseInt(limitParam ?? "50", 10) || 50, 200);
+  const deviceSecret = req.headers["x-device-secret"];
+  const authorized = await verifyDeviceSecret(
+    deviceId,
+    typeof deviceSecret === "string" ? deviceSecret : undefined,
+  );
+
+  if (!authorized) {
+    return res.status(403).json({ error: "forbidden" });
+  }
 
   try {
     const sessionResult = await pool.query(
