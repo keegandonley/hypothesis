@@ -78,8 +78,20 @@
   flex-direction: column;
 }
 
+.curlRow {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.curlRow .panel {
+  flex: 1;
+  min-width: 0;
+}
+
 .rightCol {
   flex-shrink: 0;
+  width: 260px;
 }
 
 .panel {
@@ -98,10 +110,16 @@
   gap: 10px;
 }
 
+.appStoreBadge {
+  height: 40px;
+  display: block;
+}
+
 .qrImage {
   width: 180px;
   height: 180px;
   display: block;
+  border-radius: 12px;
 }
 
 .qrCaption {
@@ -110,6 +128,20 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin: 0;
+}
+
+.settingsPane {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  gap: 10px;
+}
+
+.settingsImage {
+  width: 180px;
+  border-radius: 12px;
+  display: block;
 }
 
 .panelHeader {
@@ -315,4 +347,18 @@
   border-color: rgba(239, 68, 68, 0.3);
   background: rgba(239, 68, 68, 0.05);
   color: #ef4444;
+}
+
+@media (max-width: 640px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .rightCol {
+    width: 100%;
+  }
+
+  .curlRow {
+    flex-direction: column;
+  }
 }

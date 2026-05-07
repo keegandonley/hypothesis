@@ -180,7 +180,10 @@ export default function PushTestPage() {
     copyToClipboard(buildCurlGet()).then(() => {
       setCurlGetCopied(true);
       if (curlGetTimeoutRef.current) clearTimeout(curlGetTimeoutRef.current);
-      curlGetTimeoutRef.current = setTimeout(() => setCurlGetCopied(false), 1500);
+      curlGetTimeoutRef.current = setTimeout(
+        () => setCurlGetCopied(false),
+        1500,
+      );
     });
   }
 
@@ -360,50 +363,78 @@ export default function PushTestPage() {
             </div>
           )}
 
-          <div className={styles.panel} style={{ marginTop: 12 }}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>cURL (POST)</span>
-              <button
-                type="button"
-                className={`${styles.curlBtn}${curlCopied ? ` ${styles.copied}` : ""}`}
-                disabled={!canCopy}
-                onClick={handleCopyCurl}
-              >
-                {curlCopied ? "Copied!" : "Copy"}
-              </button>
+          <div className={styles.curlRow}>
+            <div className={styles.panel}>
+              <div className={styles.panelHeader}>
+                <span className={styles.panelLabel}>cURL (POST)</span>
+                <button
+                  type="button"
+                  className={`${styles.curlBtn}${curlCopied ? ` ${styles.copied}` : ""}`}
+                  disabled={!canCopy}
+                  onClick={handleCopyCurl}
+                >
+                  {curlCopied ? "Copied!" : "Copy"}
+                </button>
+              </div>
+              <pre className={styles.curlCode}>{buildCurl()}</pre>
             </div>
-            <pre className={styles.curlCode}>{buildCurl()}</pre>
-          </div>
 
-          <div className={styles.panel} style={{ marginTop: 12 }}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>cURL (GET)</span>
-              <button
-                type="button"
-                className={`${styles.curlBtn}${curlGetCopied ? ` ${styles.copied}` : ""}`}
-                disabled={!canCopy}
-                onClick={handleCopyCurlGet}
-              >
-                {curlGetCopied ? "Copied!" : "Copy"}
-              </button>
+            <div className={styles.panel}>
+              <div className={styles.panelHeader}>
+                <span className={styles.panelLabel}>cURL (GET)</span>
+                <button
+                  type="button"
+                  className={`${styles.curlBtn}${curlGetCopied ? ` ${styles.copied}` : ""}`}
+                  disabled={!canCopy}
+                  onClick={handleCopyCurlGet}
+                >
+                  {curlGetCopied ? "Copied!" : "Copy"}
+                </button>
+              </div>
+              <pre className={styles.curlCode}>{buildCurlGet()}</pre>
             </div>
-            <pre className={styles.curlCode}>{buildCurlGet()}</pre>
           </div>
         </div>
 
         <div className={styles.rightCol}>
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Join TestFlight</span>
+              <span className={styles.panelLabel}>Mobile App</span>
             </div>
             <div className={styles.qrPane}>
+              <a
+                href="https://apps.apple.com/us/app/hypothesis-sh/id6764898246"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://static.donley.xyz/appstore-white.svg"
+                  alt="Download on the App Store"
+                  className={styles.appStoreBadge}
+                />
+              </a>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/api/qr?value=https%3A%2F%2Ftestflight.apple.com%2Fjoin%2FEkb1w7yK&dark=%23f0ede8&light=%2313131a"
-                alt="TestFlight QR code"
+                src="/api/qr?value=https%3A%2F%2Fapps.apple.com%2Fus%2Fapp%2Fhypothesis-sh%2Fid6764898246&ecl=M"
+                alt="App Store QR code"
                 className={styles.qrImage}
               />
               <p className={styles.qrCaption}>Scan to install the app</p>
+            </div>
+          </div>
+          <div className={styles.panel} style={{ marginTop: 12 }}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelLabel}>Find your Device ID</span>
+            </div>
+            <div className={styles.settingsPane}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/hypothesis-settings.png"
+                alt="Hypothesis app settings screen showing Device ID"
+                className={styles.settingsImage}
+              />
+              <p className={styles.qrCaption}>Settings → Device ID</p>
             </div>
           </div>
         </div>
