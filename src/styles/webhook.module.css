@@ -162,6 +162,34 @@
   color: var(--accent);
 }
 
+.appNotice {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 10px 0;
+}
+
+.appNoticeText {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.appStoreBadge {
+  height: 32px;
+  display: block;
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+
+.appStoreBadge:hover {
+  opacity: 1;
+}
+
 .statusCard {
   margin: 14px;
   padding: 14px 18px;

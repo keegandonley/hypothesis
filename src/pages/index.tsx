@@ -339,15 +339,29 @@ export default function HomePage({
         </div>
 
         <div className={styles.footer}>
-          A project by{" "}
           <a
-            href="https://keegan.codes"
-            className={styles.footerLink}
+            href="https://apps.apple.com/us/app/hypothesis-sh/id6764898246"
             target="_blank"
             rel="noopener noreferrer"
           >
-            keegan donley
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://static.donley.xyz/appstore-white.svg"
+              alt="Download on the App Store"
+              className={styles.appStoreBadge}
+            />
           </a>
+          <div className={styles.footerText}>
+            A project by{" "}
+            <a
+              href="https://keegan.codes"
+              className={styles.footerLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              keegan donley
+            </a>
+          </div>
         </div>
       </div>
     </div>

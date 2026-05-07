@@ -360,10 +360,28 @@
 
 .footer {
   margin-top: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.footerText {
   font-size: 11px;
   color: var(--muted);
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.appStoreBadge {
+  height: 36px;
+  display: block;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+
+.appStoreBadge:hover {
+  opacity: 1;
 }
 
 .footerLink {

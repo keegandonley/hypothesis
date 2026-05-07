@@ -447,6 +447,24 @@ export default function WebhookPage() {
           </div>
         </>
       )}
+      <div className={styles.appNotice}>
+        <span className={styles.appNoticeText}>
+          For long-lived webhook sessions with push notifications, try the new
+          free mobile app!
+        </span>
+        <a
+          href="https://apps.apple.com/us/app/hypothesis-sh/id6764898246"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://static.donley.xyz/appstore-white.svg"
+            alt="Download on the App Store"
+            className={styles.appStoreBadge}
+          />
+        </a>
+      </div>
     </div>
   );
 }
