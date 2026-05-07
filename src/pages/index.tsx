@@ -16,7 +16,6 @@ import {
   type Tag,
 } from "@/lib/tools";
 
-
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const host = req.headers.host ?? "hypothesis.sh";
   const hostname = host.split(":")[0];
@@ -61,7 +60,11 @@ export default function HomePage({
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const focusedIndexRef = useRef<number | null>(null);
-  const navRef = useRef({ items: [] as Array<{ href: string }>, toolsCount: 0, expsCount: 0 });
+  const navRef = useRef({
+    items: [] as Array<{ href: string }>,
+    toolsCount: 0,
+    expsCount: 0,
+  });
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -81,7 +84,9 @@ export default function HomePage({
 
   useEffect(() => {
     if (focusedIndex === null) return;
-    document.querySelector(`[data-nav-index="${focusedIndex}"]`)?.scrollIntoView({ block: "nearest" });
+    document
+      .querySelector(`[data-nav-index="${focusedIndex}"]`)
+      ?.scrollIntoView({ block: "nearest" });
   }, [focusedIndex]);
 
   useEffect(() => {
@@ -112,7 +117,8 @@ export default function HomePage({
 
       function sectionBounds(i: number): [number, number] {
         if (i < toolsCount) return [0, toolsCount];
-        if (i < toolsCount + expsCount) return [toolsCount, toolsCount + expsCount];
+        if (i < toolsCount + expsCount)
+          return [toolsCount, toolsCount + expsCount];
         return [toolsCount + expsCount, total];
       }
 
@@ -147,8 +153,13 @@ export default function HomePage({
               const [prevSecStart, prevSecEnd] = sectionBounds(secStart - 1);
               const prevCols = colsAt(prevSecStart);
               const prevCount = prevSecEnd - prevSecStart;
-              const lastRowStart = prevSecStart + Math.floor((prevCount - 1) / prevCols) * prevCols;
-              next = Math.min(lastRowStart + Math.min(col, prevCols - 1), prevSecEnd - 1);
+              const lastRowStart =
+                prevSecStart +
+                Math.floor((prevCount - 1) / prevCols) * prevCols;
+              next = Math.min(
+                lastRowStart + Math.min(col, prevCols - 1),
+                prevSecEnd - 1,
+              );
             } else {
               next = current;
             }
@@ -174,27 +185,45 @@ export default function HomePage({
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function matchesQuery(name: string, desc: string) {
     if (!query) return true;
     const lower = query.toLowerCase();
-    return name.toLowerCase().includes(lower) || desc.toLowerCase().includes(lower);
+    return (
+      name.toLowerCase().includes(lower) || desc.toLowerCase().includes(lower)
+    );
   }
 
   const filteredTools = toolsList
-    .filter((t) => activeTags.length === 0 || t.tags.some((tag) => activeTags.includes(tag)))
+    .filter(
+      (t) =>
+        activeTags.length === 0 ||
+        t.tags.some((tag) => activeTags.includes(tag)),
+    )
     .filter((t) => matchesQuery(t.name, t.description));
 
-  const filteredExperiments = experimentsList.filter((e) => matchesQuery(e.name, e.description));
-  const filteredRefs = referencesList.filter((r) => matchesQuery(r.name, r.description));
+  const filteredExperiments = experimentsList.filter((e) =>
+    matchesQuery(e.name, e.description),
+  );
+  const filteredRefs = referencesList.filter((r) =>
+    matchesQuery(r.name, r.description),
+  );
 
-  const sortedTools = [...filteredTools].sort((a, b) => a.name.localeCompare(b.name));
-  const sortedRefs = [...filteredRefs].sort((a, b) => a.name.localeCompare(b.name));
+  const sortedTools = [...filteredTools].sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
+  const sortedRefs = [...filteredRefs].sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
   const toolsCount = sortedTools.length;
   const expsCount = filteredExperiments.length;
-  navRef.current = { items: [...sortedTools, ...filteredExperiments, ...sortedRefs], toolsCount, expsCount };
+  navRef.current = {
+    items: [...sortedTools, ...filteredExperiments, ...sortedRefs],
+    toolsCount,
+    expsCount,
+  };
 
   function toggleTag(tag: Tag) {
     setActiveTags((prev) =>
@@ -239,7 +268,11 @@ export default function HomePage({
             <Link
               href="/work"
               className={styles.docsLink}
-              style={{ display: "inline-flex", verticalAlign: "middle", gap: "4px" }}
+              style={{
+                display: "inline-flex",
+                verticalAlign: "middle",
+                gap: "4px",
+              }}
             >
               enter work mode
             </Link>
@@ -262,56 +295,108 @@ export default function HomePage({
           {!query && <kbd className={styles.searchKbd}>/</kbd>}
         </div>
 
-        {filteredTools.length > 0 && <div className={styles.section}>
-          <div className={styles.sectionLabel}>Tools</div>
-          <div className={styles.tagFilters}>
-            {ALL_TAGS.map((tag) => (
-              <button
-                key={tag}
-                className={`${styles.tagButton} ${activeTags.includes(tag) ? styles.tagButtonActive : ""}`}
-                style={
-                  {
-                    "--tag-color": TAG_COLORS[tag].color,
-                    "--tag-color-subtle": TAG_COLORS[tag].subtle,
-                  } as React.CSSProperties
-                }
-                onClick={() => toggleTag(tag)}
-              >
-                {tag}
-              </button>
-            ))}
+        {filteredTools.length > 0 && (
+          <div className={styles.section}>
+            <div className={styles.sectionLabel}>Tools</div>
+            <div className={styles.tagFilters}>
+              {ALL_TAGS.map((tag) => (
+                <button
+                  key={tag}
+                  className={`${styles.tagButton} ${activeTags.includes(tag) ? styles.tagButtonActive : ""}`}
+                  style={
+                    {
+                      "--tag-color": TAG_COLORS[tag].color,
+                      "--tag-color-subtle": TAG_COLORS[tag].subtle,
+                    } as React.CSSProperties
+                  }
+                  onClick={() => toggleTag(tag)}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+            <div className={styles.toolCards}>
+              {sortedTools.map((tool, i) => (
+                <ExperimentCard
+                  key={tool.name}
+                  {...tool}
+                  compact
+                  active={focusedIndex === i}
+                  navIndex={i}
+                />
+              ))}
+            </div>
           </div>
-          <div className={styles.toolCards}>
-            {sortedTools.map((tool, i) => (
-              <ExperimentCard key={tool.name} {...tool} compact active={focusedIndex === i} navIndex={i} />
-            ))}
-          </div>
-        </div>}
-
-        {filteredExperiments.length > 0 && <div className={styles.section}>
-          <div className={styles.sectionLabel}>Experiments</div>
-          <div className={styles.cards}>
-            {filteredExperiments.map((exp, i) => (
-              <ExperimentCard key={exp.id} {...exp} active={focusedIndex === toolsCount + i} navIndex={toolsCount + i} />
-            ))}
-          </div>
-        </div>}
-
-        {filteredRefs.length > 0 && <div className={styles.section}>
-          <div className={styles.sectionLabel}>References</div>
-          <div className={styles.toolCards}>
-            {sortedRefs.map((ref, i) => (
-              <ExperimentCard key={ref.name} {...ref} compact active={focusedIndex === toolsCount + expsCount + i} navIndex={toolsCount + expsCount + i} />
-            ))}
-          </div>
-        </div>}
-
-        {query && filteredTools.length === 0 && filteredExperiments.length === 0 && filteredRefs.length === 0 && (
-          <p className={styles.emptyState}>No results for &ldquo;{query}&rdquo;</p>
         )}
+
+        {filteredExperiments.length > 0 && (
+          <div className={styles.section}>
+            <div className={styles.sectionLabel}>Experiments</div>
+            <div className={styles.cards}>
+              {filteredExperiments.map((exp, i) => (
+                <ExperimentCard
+                  key={exp.id}
+                  {...exp}
+                  active={focusedIndex === toolsCount + i}
+                  navIndex={toolsCount + i}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {filteredRefs.length > 0 && (
+          <div className={styles.section}>
+            <div className={styles.sectionLabel}>References</div>
+            <div className={styles.toolCards}>
+              {sortedRefs.map((ref, i) => (
+                <ExperimentCard
+                  key={ref.name}
+                  {...ref}
+                  compact
+                  active={focusedIndex === toolsCount + expsCount + i}
+                  navIndex={toolsCount + expsCount + i}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {query &&
+          filteredTools.length === 0 &&
+          filteredExperiments.length === 0 &&
+          filteredRefs.length === 0 && (
+            <p className={styles.emptyState}>
+              No results for &ldquo;{query}&rdquo;
+            </p>
+          )}
 
         <div className={styles.section}>
           <div className={styles.sectionLabel}>About this project</div>
+          <a
+            href="https://keegan.codes/blog/introducing-the-hypothesis-mobile-app"
+            className={styles.blogCard}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              src="https://static.donley.xyz/hypothesis-cover.png"
+              alt="Blog post cover"
+              width={1920}
+              height={1080}
+              sizes="88px"
+              className={styles.blogCover}
+            />
+            <div className={styles.blogContent}>
+              <div className={styles.blogTitle}>
+                Introducing the Companion Mobile App for Hypothesis.sh
+              </div>
+              <div className={styles.blogTagline}>
+                A free iOS app with push notifications, persistent webhook
+                sessions, and pocket-sized access to developer tools.
+              </div>
+            </div>
+          </a>
           <a
             href="https://keegan.codes/blog/claude-code-developer-tools"
             className={styles.blogCard}
@@ -368,7 +453,6 @@ export default function HomePage({
   );
 }
 
-
 function ExperimentCard({
   id,
   name,
@@ -391,7 +475,10 @@ function ExperimentCard({
   navIndex?: number;
 }) {
   return (
-    <div className={`${styles.card}${active ? ` ${styles.cardActive}` : ""}`} data-nav-index={navIndex}>
+    <div
+      className={`${styles.card}${active ? ` ${styles.cardActive}` : ""}`}
+      data-nav-index={navIndex}
+    >
       <Link href={href} className={styles.cardLink} aria-label={name} />
       {compact ? (
         <div className={styles.cardMainCompact}>

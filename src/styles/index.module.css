@@ -407,6 +407,10 @@
   gap: 16px;
 }
 
+.blogCard + .blogCard {
+  margin-top: 12px;
+}
+
 .blogCard:hover {
   border-color: var(--accent-hover-strong);
   background-color: #16161f;
