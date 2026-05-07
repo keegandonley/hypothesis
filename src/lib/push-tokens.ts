@@ -8,7 +8,7 @@ const pbkdf2Async = promisify(pbkdf2);
 export type PushToken = {
   id: string;
   deviceId: string;
-  token: string;
+  token: string | null;
   platform: string;
   sandbox: boolean;
   createdAt: string;
@@ -137,10 +137,32 @@ export async function getPushTokenByDeviceId(
   return {
     id: row.id,
     deviceId: row.device_id,
-    token: row.token,
+    token: row.token ?? null,
     platform: row.platform,
     sandbox: row.sandbox,
     createdAt: new Date(row.created_at).toISOString(),
     updatedAt: new Date(row.updated_at).toISOString(),
   };
+}
+
+// Register a device that denied push notification permissions — no token yet.
+// If the device is already registered this is a no-op. When the user later
+// grants permissions the normal register endpoint will upsert the real token.
+export async function registerDeviceWithoutToken(
+  deviceId: string,
+  deviceSecret?: string | null,
+): Promise<void> {
+  const existing = await pool.query(
+    "SELECT device_id FROM push_tokens WHERE device_id = $1",
+    [deviceId],
+  );
+  if (existing.rows.length > 0) return;
+
+  const hashed = deviceSecret ? await hashSecret(deviceSecret) : null;
+  await pool.query(
+    `INSERT INTO push_tokens (device_id, token, platform, sandbox, secret)
+     VALUES ($1, NULL, '', false, $2)
+     ON CONFLICT (device_id) DO NOTHING`,
+    [deviceId, hashed],
+  );
 }

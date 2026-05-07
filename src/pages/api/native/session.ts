@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getPushTokenByDeviceId, verifyDeviceSecret } from "@/lib/push-tokens";
+import { getPushTokenByDeviceId, registerDeviceWithoutToken, verifyDeviceSecret } from "@/lib/push-tokens";
 import { getOrCreateNativeSession } from "@/lib/session";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const device = await getPushTokenByDeviceId(deviceId);
   if (!device) {
-    return res.status(404).json({ error: "device not registered" });
+    await registerDeviceWithoutToken(deviceId, deviceSecret);
   }
 
   const authorized = await verifyDeviceSecret(deviceId, deviceSecret);

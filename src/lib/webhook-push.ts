@@ -7,7 +7,7 @@ export async function sendWebhookPushNotification(
   eventId: string,
 ): Promise<void> {
   const device = await getPushTokenByDeviceId(deviceId);
-  if (!device) return;
+  if (!device?.token) return;
 
   await sendApnsNotification(device.token, "Webhook", `${method} request received`, {
     type: "webhook_event",
