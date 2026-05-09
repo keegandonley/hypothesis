@@ -6,6 +6,7 @@ export interface MimeType {
 }
 
 export interface MimeCategory {
+  id: string;
   category: string;
   label: string;
   badge: string;
@@ -17,6 +18,7 @@ export interface MimeCategory {
 
 export const MIME_CATEGORIES: MimeCategory[] = [
   {
+    id: "text",
     category: "text",
     label: "Text",
     badge: "text",
@@ -75,6 +77,7 @@ export const MIME_CATEGORIES: MimeCategory[] = [
     ],
   },
   {
+    id: "application",
     category: "application",
     label: "Application",
     badge: "app",
@@ -165,6 +168,7 @@ export const MIME_CATEGORIES: MimeCategory[] = [
     ],
   },
   {
+    id: "image",
     category: "image",
     label: "Image",
     badge: "img",
@@ -223,6 +227,7 @@ export const MIME_CATEGORIES: MimeCategory[] = [
     ],
   },
   {
+    id: "audio",
     category: "audio",
     label: "Audio",
     badge: "audio",
@@ -269,6 +274,7 @@ export const MIME_CATEGORIES: MimeCategory[] = [
     ],
   },
   {
+    id: "video",
     category: "video",
     label: "Video",
     badge: "video",
@@ -304,6 +310,7 @@ export const MIME_CATEGORIES: MimeCategory[] = [
     ],
   },
   {
+    id: "font",
     category: "font",
     label: "Font",
     badge: "font",
@@ -335,6 +342,7 @@ export const MIME_CATEGORIES: MimeCategory[] = [
     ],
   },
   {
+    id: "multipart",
     category: "multipart",
     label: "Multipart",
     badge: "multi",
@@ -362,6 +370,7 @@ export const MIME_CATEGORIES: MimeCategory[] = [
     ],
   },
   {
+    id: "deprecated",
     category: "deprecated",
     label: "Deprecated",
     badge: "depr",
