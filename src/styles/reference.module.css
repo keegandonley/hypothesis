@@ -383,6 +383,19 @@
   line-height: 1.6;
 }
 
+.supersededBy {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #34d399;
+  background-color: #34d39918;
+  border: 1px solid #34d39933;
+  border-radius: 3px;
+  padding: 1px 6px;
+  line-height: 1.6;
+  font-family: var(--font-mono);
+}
+
 /* ── ASCII table rows ────────────────────────────────────────────────────── */
 
 .asciiRow {

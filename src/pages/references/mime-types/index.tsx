@@ -205,6 +205,14 @@ export default function MimeTypesPage({ groups }: { groups: typeof MIME_CATEGORI
                             ))}
                           </div>
                         )}
+                        {t.supersededBy && (
+                          <div className={styles.flagRow}>
+                            <span className={styles.flagBadge}>deprecated</span>
+                            <span className={styles.supersededBy}>
+                              use: {t.supersededBy}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

@@ -2,6 +2,7 @@ export interface MimeType {
   type: string;
   extensions: string[];
   description: string;
+  supersededBy?: string;
 }
 
 export interface MimeCategory {
@@ -357,6 +358,156 @@ export const MIME_CATEGORIES: MimeCategory[] = [
         type: "multipart/mixed",
         extensions: [],
         description: "Multiple independent body parts of different types. Common in email (MIME).",
+      },
+    ],
+  },
+  {
+    category: "deprecated",
+    label: "Deprecated",
+    badge: "depr",
+    color: "#f87171",
+    subtle: "#f8717118",
+    border: "#f8717133",
+    types: [
+      {
+        type: "application/javascript",
+        extensions: [".js"],
+        description: "JavaScript. Obsoleted by RFC 9239 (2022) which standardized text/javascript as the sole registered type.",
+        supersededBy: "text/javascript",
+      },
+      {
+        type: "application/x-javascript",
+        extensions: [".js"],
+        description: "x- variant of the JavaScript MIME type that predates IANA registration.",
+        supersededBy: "text/javascript",
+      },
+      {
+        type: "text/x-javascript",
+        extensions: [".js"],
+        description: "Early x- variant used before text/javascript was formally registered.",
+        supersededBy: "text/javascript",
+      },
+      {
+        type: "application/ecmascript",
+        extensions: [".es", ".ecma"],
+        description: "ECMAScript MIME type registered alongside application/javascript. Both obsoleted by RFC 9239.",
+        supersededBy: "text/javascript",
+      },
+      {
+        type: "text/ecmascript",
+        extensions: [".es", ".ecma"],
+        description: "Text-tree ECMAScript variant. Registered by RFC 4329, then obsoleted by RFC 9239.",
+        supersededBy: "text/javascript",
+      },
+      {
+        type: "application/x-gzip",
+        extensions: [".gz", ".gzip"],
+        description: "x- form of gzip that predates the IANA registration of application/gzip (RFC 6713).",
+        supersededBy: "application/gzip",
+      },
+      {
+        type: "application/x-zip-compressed",
+        extensions: [".zip"],
+        description: "Legacy ZIP type common in older browsers and servers. IANA registration uses application/zip.",
+        supersededBy: "application/zip",
+      },
+      {
+        type: "audio/x-wav",
+        extensions: [".wav"],
+        description: "x- prefix form of WAV audio used before audio/wav and audio/vnd.wav were registered.",
+        supersededBy: "audio/wav",
+      },
+      {
+        type: "audio/x-aiff",
+        extensions: [".aif", ".aiff", ".aifc"],
+        description: "x- variant for AIFF audio that predates the registered audio/aiff type.",
+        supersededBy: "audio/aiff",
+      },
+      {
+        type: "audio/x-mpeg",
+        extensions: [".mp3"],
+        description: "x- form for MPEG audio that predates the registration of audio/mpeg.",
+        supersededBy: "audio/mpeg",
+      },
+      {
+        type: "audio/m4a",
+        extensions: [".m4a"],
+        description: "Deprecated MIME type for MPEG-4 audio files. Superseded by the IANA-registered audio/mp4.",
+        supersededBy: "audio/mp4",
+      },
+      {
+        type: "audio/x-m4a",
+        extensions: [".m4a"],
+        description: "Deprecated x- variant for MPEG-4 audio. Both audio/m4a and audio/x-m4a should be replaced with audio/mp4.",
+        supersededBy: "audio/mp4",
+      },
+      {
+        type: "audio/x-ms-wma",
+        extensions: [".wma"],
+        description: "Windows Media Audio. Microsoft proprietary format; largely supplanted by open codecs.",
+      },
+      {
+        type: "audio/x-pn-realaudio",
+        extensions: [".ra", ".ram"],
+        description: "RealAudio streaming format from RealNetworks. Practically obsolete since the early 2000s.",
+      },
+      {
+        type: "image/x-icon",
+        extensions: [".ico"],
+        description: "Legacy ICO MIME type. The IANA-registered form is image/vnd.microsoft.icon, though x-icon remains widely used.",
+        supersededBy: "image/vnd.microsoft.icon",
+      },
+      {
+        type: "image/pjpeg",
+        extensions: [".jpg", ".jpeg"],
+        description: "Progressive JPEG variant reported by older Internet Explorer versions. Standard clients use image/jpeg.",
+        supersededBy: "image/jpeg",
+      },
+      {
+        type: "video/x-msvideo",
+        extensions: [".avi"],
+        description: "AVI video container with x- prefix. No formal IANA standard exists; video/avi is sometimes used instead.",
+        supersededBy: "video/avi",
+      },
+      {
+        type: "video/x-flv",
+        extensions: [".flv"],
+        description: "Adobe Flash Video. Obsolete since Adobe ended Flash support on December 31, 2020.",
+      },
+      {
+        type: "application/x-shockwave-flash",
+        extensions: [".swf"],
+        description: "Adobe Flash (SWF). Completely obsolete; all major browsers removed Flash support in 2020–2021.",
+      },
+      {
+        type: "text/x-vcard",
+        extensions: [".vcf", ".vcard"],
+        description: "Early vCard contact format that predates the IANA registration of text/vcard (RFC 6350).",
+        supersededBy: "text/vcard",
+      },
+      {
+        type: "text/x-vcalendar",
+        extensions: [".vcs"],
+        description: "Legacy vCalendar type superseded when iCalendar (RFC 5545) standardized text/calendar.",
+        supersededBy: "text/calendar",
+      },
+      {
+        type: "application/x-font-ttf",
+        extensions: [".ttf"],
+        description: "x- form of TrueType fonts used before the font/* top-level type was registered.",
+        supersededBy: "font/ttf",
+      },
+      {
+        type: "application/x-font-otf",
+        extensions: [".otf"],
+        description: "x- form of OpenType fonts that predates the font/* top-level type.",
+        supersededBy: "font/otf",
+      },
+      {
+        type: "application/x-font-woff",
+        extensions: [".woff"],
+        description: "x- form of WOFF used before font/woff was registered in RFC 8081.",
+        supersededBy: "font/woff",
       },
     ],
   },
