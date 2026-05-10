@@ -176,7 +176,6 @@ const RAW: Record<string, string[]> = {
     "glasses", "shirt", "bed",
     "school", "ribbon", "ticket",
     "compass", "telescope",
-    "ionicons",
   ],
 };
 
@@ -257,7 +256,7 @@ export const IONICON_GROUPS = IONICON_CATEGORIES.map((cat) => ({
   subtle: cat.subtle,
   border: cat.border,
   items: cat.icons.map((name) => {
-      const isLogo = cat.label === "Logos & Brands" || name === "ionicons";
+      const isLogo = cat.label === "Logos & Brands";
       return {
         name,
         outline: isLogo ? undefined : `${name}-outline`,
