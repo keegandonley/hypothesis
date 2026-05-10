@@ -1,4 +1,4 @@
-import { pbkdf2, randomBytes } from "crypto";
+import { pbkdf2, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 
 import { pool } from "./db";
@@ -30,8 +30,10 @@ async function verifySecret(secret: string, stored: string): Promise<boolean> {
   }
 
   const derived = await pbkdf2Async(secret, salt, 310_000, 32, "sha256");
+  const storedBuf = Buffer.from(hex, "hex");
 
-  return derived.toString("hex") === hex;
+  if (derived.length !== storedBuf.length) return false;
+  return timingSafeEqual(derived, storedBuf);
 }
 
 export async function verifyDeviceSecret(
