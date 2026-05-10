@@ -41,7 +41,7 @@ const RAW: Record<string, string[]> = {
     "settings", "cog", "toggle",
     "refresh", "refresh-circle", "reload", "reload-circle", "sync", "sync-circle",
     "copy", "clipboard", "duplicate", "save",
-    "share", "share-social", "download", "cloud-download", "upload", "cloud-upload",
+    "share", "share-social", "download", "cloud-download", "cloud-upload",
     "scan", "scan-circle", "qr-code",
     "eye", "eye-off",
     "lock-closed", "lock-open", "key", "keypad", "finger-print",
@@ -143,7 +143,7 @@ const RAW: Record<string, string[]> = {
   ],
 
   "Health & Medical": [
-    "medical", "medkit", "bandage", "pulse", "heartrate",
+    "medical", "medkit", "bandage", "pulse",
     "heart", "heart-circle", "heart-dislike", "heart-dislike-circle", "heart-half",
     "skull", "ear", "beaker", "flask", "scale", "eyedrop",
   ],
