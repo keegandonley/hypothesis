@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getPushTokenByDeviceId } from "@/lib/push-tokens";
 import { sendApnsNotification, type ApnsOptions } from "@/lib/apns";
+import { insertPushNotification } from "@/lib/push-notifications";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -101,6 +102,16 @@ export default async function handler(
       options,
       sandbox,
     );
+
+    await insertPushNotification({
+      deviceId: deviceId!,
+      title: title.trim(),
+      body: body.trim(),
+      subtitle: options.subtitle ?? null,
+      data: data ?? null,
+      apnsId: result.apnsId ?? null,
+      success: result.ok,
+    }).catch((err) => console.error("[push/send] failed to record notification", err));
 
     return res.status(200).json(result);
   } catch (err) {

@@ -2,6 +2,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { sendApnsNotification } from "@/lib/apns";
 import { getPushTokenByDeviceId } from "@/lib/push-tokens";
+import { insertPushNotification } from "@/lib/push-notifications";
 
 export const config = { api: { bodyParser: false } };
 
@@ -124,6 +125,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   };
 
   const result = await sendApnsNotification(device.token, title, body, data, undefined, device.sandbox);
+
+  await insertPushNotification({
+    deviceId,
+    title,
+    body,
+    data,
+    apnsId: result.apnsId ?? null,
+    success: result.ok,
+  }).catch((err) => console.error("[vercel-webhook] failed to record notification", err));
+
   if (!result.ok) {
     console.error(`[vercel-webhook] APNS error for device ${deviceId}:`, result.error);
   }

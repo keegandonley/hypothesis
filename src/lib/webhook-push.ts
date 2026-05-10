@@ -1,5 +1,6 @@
 import { getPushTokenByDeviceId } from "./push-tokens";
 import { sendApnsNotification } from "./apns";
+import { insertPushNotification } from "./push-notifications";
 
 export async function sendWebhookPushNotification(
   deviceId: string,
@@ -9,9 +10,18 @@ export async function sendWebhookPushNotification(
   const device = await getPushTokenByDeviceId(deviceId);
   if (!device?.token) return;
 
-  await sendApnsNotification(device.token, "Webhook", `${method} request received`, {
-    type: "webhook_event",
-    method,
-    eventId,
-  }, undefined, device.sandbox);
+  const title = "Webhook";
+  const body = `${method} request received`;
+  const data = { type: "webhook_event", method, eventId };
+
+  const result = await sendApnsNotification(device.token, title, body, data, undefined, device.sandbox);
+
+  await insertPushNotification({
+    deviceId,
+    title,
+    body,
+    data,
+    apnsId: result.apnsId ?? null,
+    success: result.ok,
+  }).catch((err) => console.error("[webhook-push] failed to record notification", err));
 }

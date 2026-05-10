@@ -155,6 +155,22 @@ export const references: ReferenceItem[] = [
   },
   {
     kind: "reference",
+    name: "iOS URL schemes",
+    description:
+      "System URL schemes for Phone, FaceTime, Messages, Mail, Maps, App Store, and Settings — with examples and notes.",
+    href: "/references/ios-url-schemes",
+    tags: ["web"],
+  },
+  {
+    kind: "reference",
+    name: "iOS permissions",
+    description:
+      "Info.plist usage description keys for location, camera, microphone, contacts, health, Bluetooth, identity, and more.",
+    href: "/references/ios-permissions",
+    tags: ["sysadmin"],
+  },
+  {
+    kind: "reference",
     name: "Media files",
     description:
       "Example MP4 video files for testing HTML video behavior: a standard file and a fast-start variant with the moov atom at the front for immediate buffering.",
