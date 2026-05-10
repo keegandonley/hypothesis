@@ -72,7 +72,12 @@ export const references: ReferenceItem[] = [
       "All CSS selector types with descriptions, examples, and specificity values: basic, attribute, pseudo-class, pseudo-element, and combinators.",
     href: "/references/css-selectors",
     tags: ["web"],
-    fieldConfig: { primary: "selector", secondary: "description", detail: "example", badge: "specificity" },
+    fieldConfig: {
+      primary: "selector",
+      secondary: "description",
+      detail: "example",
+      badge: "specificity",
+    },
   },
   {
     kind: "reference",
@@ -81,7 +86,11 @@ export const references: ReferenceItem[] = [
       "A, AAAA, CNAME, MX, TXT, NS, SOA, SRV, CAA, and DNSSEC records — what each does, when to use it, and example syntax.",
     href: "/references/dns-record-types",
     tags: ["web", "sysadmin"],
-    fieldConfig: { primary: "type", secondary: "description", detail: "example" },
+    fieldConfig: {
+      primary: "type",
+      secondary: "description",
+      detail: "example",
+    },
   },
   {
     kind: "reference",
@@ -108,7 +117,11 @@ export const references: ReferenceItem[] = [
       "Content-Type values for text, application, image, audio, video, font, and multipart formats with file extensions.",
     href: "/references/mime-types",
     tags: ["web"],
-    fieldConfig: { primary: "type", secondary: "extensions", detail: "description" },
+    fieldConfig: {
+      primary: "type",
+      secondary: "extensions",
+      detail: "description",
+    },
   },
   {
     kind: "reference",
@@ -125,7 +138,11 @@ export const references: ReferenceItem[] = [
       "Request and response header fields: caching, authentication, CORS, security, content negotiation, and more.",
     href: "/references/http-headers",
     tags: ["web"],
-    fieldConfig: { primary: "name", secondary: "description", detail: "direction" },
+    fieldConfig: {
+      primary: "name",
+      secondary: "description",
+      detail: "direction",
+    },
   },
   {
     kind: "reference",
@@ -150,7 +167,11 @@ export const references: ReferenceItem[] = [
       "Well-known TCP and UDP port numbers grouped by category: web, remote access, database, mail, file transfer, network, and more.",
     href: "/references/port-numbers",
     tags: ["sysadmin", "web"],
-    fieldConfig: { primary: "port", secondary: "service", detail: "description" },
+    fieldConfig: {
+      primary: "port",
+      secondary: "service",
+      detail: "description",
+    },
   },
   {
     kind: "reference",
@@ -175,7 +196,12 @@ export const references: ReferenceItem[] = [
       "System URL schemes for Phone, FaceTime, Messages, Mail, Maps, App Store, and Settings — with examples and notes.",
     href: "/references/ios-url-schemes",
     tags: ["web"],
-    fieldConfig: { primary: "scheme", secondary: "description", detail: "example", badge: "note" },
+    fieldConfig: {
+      primary: "scheme",
+      secondary: "description",
+      detail: "example",
+      badge: "note",
+    },
   },
   {
     kind: "reference",
@@ -184,7 +210,11 @@ export const references: ReferenceItem[] = [
       "Info.plist usage description keys for location, camera, microphone, contacts, health, Bluetooth, identity, and more.",
     href: "/references/ios-permissions",
     tags: ["sysadmin"],
-    fieldConfig: { primary: "key", secondary: "description", badge: "introduced" },
+    fieldConfig: {
+      primary: "key",
+      secondary: "description",
+      badge: "introduced",
+    },
   },
   {
     kind: "reference",
@@ -193,7 +223,20 @@ export const references: ReferenceItem[] = [
       "Example MP4 video files for testing HTML video behavior: a standard file and a fast-start variant with the moov atom at the front for immediate buffering.",
     href: "/references/media-files",
     tags: ["media", "web"],
-    fieldConfig: { primary: "filename", secondary: "url", detail: "description" },
+    fieldConfig: {
+      primary: "filename",
+      secondary: "url",
+      detail: "description",
+    },
+  },
+  {
+    kind: "reference",
+    name: "Ionicons",
+    description:
+      "All icons available via @expo/vector-icons Ionicons — 422 base icons each with filled, outline, and sharp variants, plus 94 logo icons. Searchable by name, filterable by category.",
+    href: "/references/ionicons",
+    tags: ["web"],
+    fieldConfig: { primary: "name", secondary: "outline", detail: "sharp" },
   },
 ];
 
