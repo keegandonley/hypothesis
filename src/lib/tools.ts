@@ -5,7 +5,8 @@ export type Tag =
   | "web"
   | "sysadmin"
   | "text"
-  | "media";
+  | "media"
+  | "mobile";
 
 export const ALL_TAGS: Tag[] = [
   "encoding",
@@ -15,6 +16,7 @@ export const ALL_TAGS: Tag[] = [
   "sysadmin",
   "text",
   "media",
+  "mobile",
 ];
 
 export const TAG_COLORS: Record<Tag, { color: string; subtle: string }> = {
@@ -25,6 +27,7 @@ export const TAG_COLORS: Record<Tag, { color: string; subtle: string }> = {
   sysadmin: { color: "#fbbf24", subtle: "#fbbf2418" },
   text: { color: "#34d399", subtle: "#34d39918" },
   media: { color: "#fb923c", subtle: "#fb923c18" },
+  mobile: { color: "#a78bfa", subtle: "#a78bfa18" },
 };
 
 export interface ToolItem {
@@ -196,7 +199,7 @@ export const references: ReferenceItem[] = [
     description:
       "System URL schemes for Phone, FaceTime, Messages, Mail, Maps, App Store, and Settings — with examples and notes.",
     href: "/references/ios-url-schemes",
-    tags: ["web"],
+    tags: ["web", "mobile"],
     fieldConfig: {
       primary: "scheme",
       secondary: "description",
@@ -210,7 +213,7 @@ export const references: ReferenceItem[] = [
     description:
       "Info.plist usage description keys for location, camera, microphone, contacts, health, Bluetooth, identity, and more.",
     href: "/references/ios-permissions",
-    tags: ["sysadmin"],
+    tags: ["sysadmin", "mobile"],
     fieldConfig: {
       primary: "key",
       secondary: "description",
@@ -236,7 +239,7 @@ export const references: ReferenceItem[] = [
     description:
       "All icons available via @expo/vector-icons Ionicons — 422 base icons each with filled, outline, and sharp variants, plus 94 logo icons. Searchable by name, filterable by category.",
     href: "/references/ionicons",
-    tags: ["web"],
+    tags: ["web", "mobile"],
     fieldConfig: {
       primary: "name",
       secondary: "outline",
@@ -483,7 +486,7 @@ export const tools: ToolItem[] = [
       "Generate QR codes from any text or URL and download as SVG or PNG.",
     href: "/qr",
     docsHref: "/docs/qr",
-    tags: ["web"],
+    tags: ["web", "mobile"],
   },
   {
     kind: "tool",
@@ -690,7 +693,7 @@ export const tools: ToolItem[] = [
       "Compose device screenshots at exact Apple App Store dimensions (1242×2688, 1284×2778, and landscape variants) and download ready-to-submit PNGs.",
     href: "/app-store-screenshot",
     docsHref: "/docs/app-store-screenshot",
-    tags: ["media", "conversion"],
+    tags: ["media", "conversion", "mobile"],
   },
 ];
 
