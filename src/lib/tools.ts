@@ -51,6 +51,7 @@ export interface ReferenceFieldConfig {
   secondary?: string;
   detail?: string;
   badge?: string;
+  iconField?: string;
 }
 
 export interface ReferenceItem {
@@ -236,7 +237,12 @@ export const references: ReferenceItem[] = [
       "All icons available via @expo/vector-icons Ionicons — 422 base icons each with filled, outline, and sharp variants, plus 94 logo icons. Searchable by name, filterable by category.",
     href: "/references/ionicons",
     tags: ["web"],
-    fieldConfig: { primary: "name", secondary: "outline", detail: "sharp" },
+    fieldConfig: {
+      primary: "name",
+      secondary: "outline",
+      detail: "sharp",
+      iconField: "name",
+    },
   },
 ];
 
