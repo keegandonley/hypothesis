@@ -46,6 +46,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths, fallback: false };
 };
 
+type BlogPost = { title: string; description: string; cover: string; url: string } | null;
+
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const version = params!.version as string;
   const raw = fs.readFileSync(path.join(RELEASES_DIR, `${version}.md`), "utf-8");
@@ -55,7 +57,19 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const formattedDate = formatDate(version);
   const ogImageUrl = `https://hypothesis.sh/api/og?type=release&title=${encodeURIComponent(title)}&date=${version}&domain=hypothesis.sh`;
   const tags = parseTags(meta.tags);
-  return { props: { version, content: body, title, description, formattedDate, ogImageUrl, tags } };
+
+  let blogPost: BlogPost = null;
+  if (meta.blog) {
+    try {
+      const res = await fetch(`https://keegan.codes/api/posts/single?slug=${meta.blog}`);
+      if (res.ok) {
+        const data = await res.json();
+        blogPost = { title: data.title, description: data.description, cover: data.cover, url: data.url };
+      }
+    } catch {}
+  }
+
+  return { props: { version, content: body, title, description, formattedDate, ogImageUrl, tags, blogPost } };
 };
 
 // ── Markdown renderer ──────────────────────────────────────────────────────────
@@ -225,6 +239,7 @@ export default function ReleaseNotePage({
   formattedDate,
   ogImageUrl,
   tags,
+  blogPost,
 }: {
   version: string;
   content: string;
@@ -233,6 +248,7 @@ export default function ReleaseNotePage({
   formattedDate: string;
   ogImageUrl: string;
   tags: string[];
+  blogPost: BlogPost;
 }) {
   const branding = useBranding();
   return (
@@ -276,6 +292,26 @@ export default function ReleaseNotePage({
         )}
         <hr className={styles.divider} />
         <MarkdownContent content={content} />
+        {blogPost && (
+          <a
+            href={blogPost.url}
+            className={styles.blogCard}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`https://static.donley.xyz/${blogPost.cover}`}
+              alt={blogPost.title}
+              className={styles.blogCover}
+            />
+            <div className={styles.blogCardContent}>
+              <div className={styles.blogCardLabel}>Blog Post</div>
+              <div className={styles.blogCardTitle}>{blogPost.title}</div>
+              <div className={styles.blogCardDesc}>{blogPost.description}</div>
+            </div>
+          </a>
+        )}
       </div>
     </div>
   );
