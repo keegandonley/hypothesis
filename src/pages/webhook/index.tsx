@@ -181,12 +181,12 @@ export default function WebhookPage() {
           });
         }, 60_000);
         idleCheckRef.current = setInterval(() => {
-          if (Date.now() - lastEventReceivedAtRef.current > 30 * 60 * 1000) {
+          if (Date.now() - lastEventReceivedAtRef.current > 5 * 1000) {
             clearInterval(intervalRef.current!);
             clearInterval(idleCheckRef.current!);
             setStatus("idle");
           }
-        }, 60_000);
+        }, 5_000);
       })
       .catch(() => setStatus("error"));
   }
