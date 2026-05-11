@@ -31,6 +31,32 @@ On success, the APNs ID is shown. On failure, the error message from the push se
 
 The device ID is persisted in `localStorage` so you don't have to re-enter it between sessions. Clear the field and send once to remove it.
 
+## Native integrations
+
+Two webhook endpoints deliver push notifications directly from external services to your device. Both use the same device ID from the app's Settings screen.
+
+### Vercel
+
+Receive push notifications for Vercel deployment events.
+
+**Webhook URL:**
+```
+https://hypothesis.sh/api/vercel-webhook/<device-id>
+```
+
+Add this URL in the Vercel dashboard under **Team Settings → Webhooks**. All event types are supported — deployments, promotions, project changes, and domain events.
+
+### Xcode Cloud
+
+Receive push notifications for Xcode Cloud build events.
+
+**Webhook URL:**
+```
+https://hypothesis.sh/api/xcode-webhook/<device-id>
+```
+
+Add this URL in App Store Connect under your app's **Xcode Cloud → Settings → Webhooks**. Notifications are sent for build started, succeeded, failed, errored, and canceled events, and include the product name, branch, and build number.
+
 ## Security
 
 Treat your device ID like a secret. Anyone who has it can send push notifications to your device. Don't share it publicly or include it in screenshots.
