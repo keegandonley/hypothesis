@@ -75,11 +75,13 @@ function formatNotification(event: XcodeCloudEvent): { title: string; subtitle: 
 
   let title: string;
   switch (eventType) {
+    case "BUILD_CREATED":   title = "Build created";   break;
     case "BUILD_STARTED":   title = "Build started";   break;
     case "BUILD_SUCCEEDED": title = "Build succeeded"; break;
     case "BUILD_FAILED":    title = "Build failed";    break;
     case "BUILD_ERRORED":   title = "Build errored";   break;
     case "BUILD_CANCELED":  title = "Build canceled";  break;
+    case "BUILD_COMPLETED": title = "Build completed"; break;
     default:                title = eventType ?? "Unknown event"; break;
   }
 
