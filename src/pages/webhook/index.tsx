@@ -69,7 +69,7 @@ export default function WebhookPage() {
   const isIframe = useIsIframe();
   const [session, setSession] = useState<Session | null>(null);
   const [status, setStatus] = useState<
-    "loading" | "ready" | "error" | "deleted"
+    "loading" | "ready" | "error" | "deleted" | "idle"
   >("loading");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -85,6 +85,8 @@ export default function WebhookPage() {
   const latestReceivedAtRef = useRef<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const idleCheckRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastEventReceivedAtRef = useRef<number>(Date.now());
   const currentSessionIdRef = useRef<string | null>(null);
 
   async function fetchEvents(sessionId: string) {
@@ -96,6 +98,7 @@ export default function WebhookPage() {
     if (sessionId !== currentSessionIdRef.current) return;
     if (data.events.length > 0) {
       latestReceivedAtRef.current = data.events[0].receivedAt;
+      lastEventReceivedAtRef.current = Date.now();
       setEvents((prev) => {
         const existingIds = new Set(prev.map((e) => e.id));
         const newEvents = data.events.filter(
@@ -115,10 +118,12 @@ export default function WebhookPage() {
   ) {
     if (intervalRef.current) clearInterval(intervalRef.current);
     if (heartbeatRef.current) clearInterval(heartbeatRef.current);
+    if (idleCheckRef.current) clearInterval(idleCheckRef.current);
     if (!sessionId && !skipLocalStorage)
       localStorage.removeItem("webhookSessionId");
     currentSessionIdRef.current = null;
     latestReceivedAtRef.current = null;
+    lastEventReceivedAtRef.current = Date.now();
     setStatus("loading");
     setErrorMessage(null);
     setEvents([]);
@@ -175,6 +180,13 @@ export default function WebhookPage() {
             body: JSON.stringify({ sessionId: data.sessionId }),
           });
         }, 60_000);
+        idleCheckRef.current = setInterval(() => {
+          if (Date.now() - lastEventReceivedAtRef.current > 30 * 60 * 1000) {
+            clearInterval(intervalRef.current!);
+            clearInterval(idleCheckRef.current!);
+            setStatus("idle");
+          }
+        }, 60_000);
       })
       .catch(() => setStatus("error"));
   }
@@ -195,6 +207,7 @@ export default function WebhookPage() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
       if (heartbeatRef.current) clearInterval(heartbeatRef.current);
+      if (idleCheckRef.current) clearInterval(idleCheckRef.current);
     };
   }, []);
 
@@ -304,7 +317,7 @@ export default function WebhookPage() {
         <StatusCard variant="error" message={errorMessage} />
       )}
 
-      {status === "ready" && session && (
+      {(status === "ready" || status === "idle") && session && (
         <>
           <div className={styles.panels}>
             <div className={styles.panel}>
@@ -445,6 +458,22 @@ export default function WebhookPage() {
               </div>
             )}
           </div>
+          {status === "idle" && (
+            <div className={styles.idleOverlay}>
+              <div className={styles.idleDialog}>
+                <span className={styles.idleTitle}>session idle</span>
+                <p className={styles.idleBody}>
+                  No requests received in 30 minutes. Your session is paused.
+                </p>
+                <button
+                  className={styles.idleAction}
+                  onClick={() => startSession(session.sessionId)}
+                >
+                  Re-activate session
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )}
       <div className={styles.appNotice}>
