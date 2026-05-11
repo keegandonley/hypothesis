@@ -38,7 +38,7 @@ export default async function handler(
 
   try {
     const host = req.headers.host ?? "";
-    if (!ALLOWED_HOSTS.has(host)) {
+    if (!ALLOWED_HOSTS.has(host) && !host.endsWith("k10y-team.vercel.app")) {
       return res.status(400).json({ error: "invalid host" });
     }
     const protocol = (req.headers["x-forwarded-proto"] as string) ?? "http";
