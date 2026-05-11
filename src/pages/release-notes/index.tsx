@@ -91,6 +91,9 @@ export default function ReleaseNotesIndex({ releases }: { releases: ReleaseEntry
           <Link href="/" className={styles.backLink}>
             <span style={{ marginBottom: "3px" }}>←</span> {branding.name}
           </Link>
+          <a href="/api/rss" className={styles.rssLink} target="_blank" rel="noopener noreferrer">
+            RSS
+          </a>
         </nav>
         <hr className={styles.divider} />
         <div className={styles.content}>

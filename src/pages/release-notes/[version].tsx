@@ -270,14 +270,14 @@ export default function ReleaseNotePage({
         <link rel="canonical" href={`https://hypothesis.sh/release-notes/${version}`} />
       </Head>
       <div className={styles.inner}>
-        <nav className={styles.nav} style={{ marginBottom: tags.length > 0 ? "12px" : undefined }}>
+        <nav className={styles.nav}>
           <Link href="/release-notes" className={styles.backLink}>
             <span style={{ marginBottom: "3px" }}>←</span> Release Notes
           </Link>
           <div className={styles.metaDate}>{formattedDate}</div>
         </nav>
         {tags.length > 0 && (
-          <div className={styles.tags} style={{ marginBottom: "36px" }}>
+          <div className={styles.tags}>
             {tags.map((tag) => (
               <span
                 key={tag}
@@ -292,6 +292,21 @@ export default function ReleaseNotePage({
         )}
         <hr className={styles.divider} />
         <MarkdownContent content={content} />
+        {tags.includes("mobile") && (
+          <a
+            href="https://apps.apple.com/us/app/hypothesis-sh/id6764898246"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.appStoreLink}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://static.donley.xyz/appstore-white.svg"
+              alt="Download on the App Store"
+              className={styles.appStoreBadge}
+            />
+          </a>
+        )}
         {blogPost && (
           <a
             href={blogPost.url}
