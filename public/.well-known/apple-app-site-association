@@ -1,0 +1,12 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["3D997JL57S.com.keegancodes.hypothesis"],
+        "components": [
+          { "/": "/open-mobile" }
+        ]
+      }
+    ]
+  }
+}

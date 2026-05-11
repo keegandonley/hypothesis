@@ -4,5 +4,13 @@
       "path": "/api/cron/cleanup",
       "schedule": "0 2 * * *"
     }
+  ],
+  "headers": [
+    {
+      "source": "/.well-known/apple-app-site-association",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" }
+      ]
+    }
   ]
 }
