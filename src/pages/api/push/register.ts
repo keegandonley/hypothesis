@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { upsertPushToken } from "@/lib/push-tokens";
+import { track } from "@vercel/analytics/server";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -38,6 +39,12 @@ export default async function handler(
       sandbox ?? false,
       deviceSecret,
     );
+
+    try {
+      await track("Device Registered", { platform: platform.trim() });
+    } catch (err) {
+      console.warn("[analytics] failed to track Device Registered", err);
+    }
 
     return res.status(200).json({ ok: true });
   } catch (err) {

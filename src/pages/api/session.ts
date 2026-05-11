@@ -4,6 +4,7 @@ import {
   touchSession,
   countRecentSessionsByIp,
 } from "@/lib/session";
+import { track } from "@vercel/analytics/server";
 
 export default async function handler(
   req: NextApiRequest,
@@ -48,6 +49,11 @@ export default async function handler(
       if (!session) {
         return res.status(404).json({ error: "session not found" });
       }
+      try {
+        await track("Session Renewed");
+      } catch (err) {
+        console.warn("[analytics] failed to track Session Renewed", err);
+      }
       return res.json({
         sessionId: session.id,
         webhookUrl: `${webhookBase}/api/webhook/${session.id}`,
@@ -69,6 +75,11 @@ export default async function handler(
 
     const sessionId = crypto.randomUUID();
     const session = await createSession(sessionId, ip);
+    try {
+      await track("Session Created");
+    } catch (err) {
+      console.warn("[analytics] failed to track Session Created", err);
+    }
     return res.json({
       sessionId: session.id,
       webhookUrl: `${webhookBase}/api/webhook/${session.id}`,

@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { del } from "@vercel/blob";
 import sharp from "sharp";
+import { track } from "@vercel/analytics/server";
 
 export type OutputFormat = "png" | "webp" | "avif";
 
@@ -83,6 +84,16 @@ export default async function handler(
 
   // Clean up source blob (best-effort, don't block response)
   del(url).catch(() => {});
+
+  try {
+    await track("Image Compressed", {
+      format,
+      inputSize: inputBuffer.length,
+      outputSize: outputBuffer.length,
+    });
+  } catch (err) {
+    console.warn("[analytics] failed to track Image Compressed", err);
+  }
 
   const ext = format === "png" ? ".png" : format === "webp" ? ".webp" : ".avif";
   const baseName = filename.replace(/\.[^.]+$/, "");

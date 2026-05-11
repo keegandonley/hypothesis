@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getPushTokenByDeviceId, registerDeviceWithoutToken, verifyDeviceSecret } from "@/lib/push-tokens";
 import { getOrCreateNativeSession } from "@/lib/session";
+import { track } from "@vercel/analytics/server";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -30,6 +31,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const host = req.headers.host ?? "hypothesis.sh";
     const protocol = host.startsWith("localhost") ? "http" : "https";
     const webhookUrl = `${protocol}://${host}/api/webhook/${session.id}`;
+    try {
+      await track("Native Session Created");
+    } catch (err) {
+      console.warn("[analytics] failed to track Native Session Created", err);
+    }
     return res.json({ sessionId: session.id, webhookUrl, createdAt: session.createdAt, updatedAt: session.updatedAt });
   } catch (err) {
     console.error("native session error", err);

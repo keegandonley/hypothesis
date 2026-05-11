@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getPushTokenByDeviceId } from "@/lib/push-tokens";
 import { sendApnsNotification, type ApnsOptions } from "@/lib/apns";
 import { insertPushNotification } from "@/lib/push-notifications";
+import { track } from "@vercel/analytics/server";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -112,6 +113,12 @@ export default async function handler(
       apnsId: result.apnsId ?? null,
       success: result.ok,
     }).catch((err) => console.error("[push/send] failed to record notification", err));
+
+    try {
+      await track("Push Notification Sent", { platform: record.platform, success: result.ok });
+    } catch (err) {
+      console.warn("[analytics] failed to track Push Notification Sent", err);
+    }
 
     return res.status(200).json(result);
   } catch (err) {

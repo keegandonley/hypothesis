@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { sendApnsNotification } from "@/lib/apns";
 import { getPushTokenByDeviceId } from "@/lib/push-tokens";
 import { insertPushNotification } from "@/lib/push-notifications";
+import { track } from "@vercel/analytics/server";
 
 export const config = { api: { bodyParser: false } };
 
@@ -134,6 +135,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     apnsId: result.apnsId ?? null,
     success: result.ok,
   }).catch((err) => console.error("[vercel-webhook] failed to record notification", err));
+
+  try {
+    await track("Vercel Webhook Received", { eventType: event.type, success: result.ok });
+  } catch (err) {
+    console.warn("[analytics] failed to track Vercel Webhook Received", err);
+  }
 
   if (!result.ok) {
     console.error(`[vercel-webhook] APNS error for device ${deviceId}:`, result.error);

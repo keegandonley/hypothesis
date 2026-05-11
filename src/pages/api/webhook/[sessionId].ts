@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "@/lib/session";
 import { insertEvent, countRecentEvents } from "@/lib/events";
 import { sendWebhookPushNotification } from "@/lib/webhook-push";
+import { track } from "@vercel/analytics/server";
 
 export const config = { api: { bodyParser: false } };
 
@@ -115,6 +116,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (native && session.deviceId) {
       await sendWebhookPushNotification(session.deviceId, req.method!, eventId).catch(() => {});
+    }
+
+    try {
+      await track("Webhook Received", { method: req.method!, native });
+    } catch (err) {
+      console.warn("[analytics] failed to track Webhook Received", err);
     }
 
     return res.status(200).json({ ok: true, eventId });
