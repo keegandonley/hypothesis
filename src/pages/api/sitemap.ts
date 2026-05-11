@@ -1,4 +1,4 @@
-import { GetServerSideProps } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
 import { tools, references, experiments } from "@/lib/tools";
@@ -34,7 +34,7 @@ ${urls
 </urlset>`;
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const host = req.headers.host ?? "hypothesis.sh";
   const protocol = req.headers["x-forwarded-proto"] ?? "https";
   const baseUrl = `${protocol}://${host}`;
@@ -47,12 +47,5 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const sitemap = generateSitemap(baseUrl, docSlugs);
 
   res.setHeader("Content-Type", "application/xml");
-  res.write(sitemap);
-  res.end();
-
-  return { props: {} };
-};
-
-export default function SitemapPage() {
-  return null;
+  res.send(sitemap);
 }

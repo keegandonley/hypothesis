@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  rewrites: async () => [
+    { source: "/sitemap.xml", destination: "/api/sitemap" },
+  ],
   images: {
     remotePatterns: [{ hostname: "static.donley.xyz" }],
   },
