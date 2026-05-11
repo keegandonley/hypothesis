@@ -123,6 +123,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     type: "vercel_event",
     eventType: event.type,
     projectName: event.payload?.project?.name ?? event.payload?.deployment?.name,
+    icon: "logo-vercel",
   };
 
   const result = await sendApnsNotification(device.token, title, body, data, undefined, device.sandbox);
