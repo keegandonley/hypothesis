@@ -10,6 +10,7 @@ export default function Document() {
         <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png" />
         <link rel="apple-touch-icon" href="/favicon-192.png" />
         <link rel="manifest" href="/site.webmanifest" />
+        <link rel="alternate" type="application/rss+xml" title="Hypothesis Release Notes" href="/api/rss" />
       </Head>
       <body>
         <script dangerouslySetInnerHTML={{ __html: `if(new URLSearchParams(location.search).has('workMode'))document.documentElement.classList.add('work-mode');` }} />

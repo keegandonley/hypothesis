@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,12 +18,71 @@ import {
   type Tag,
 } from "@/lib/tools";
 
+const RELEASES_DIR = path.join(process.cwd(), "src/content/releases");
+
+type ReleaseEntry = {
+  slug: string;
+  date: string;
+  formattedDate: string;
+  title: string;
+  description: string;
+  tags: string[];
+};
+
+function parseReleaseFrontmatter(raw: string): Record<string, string> {
+  if (!raw.startsWith("---")) return {};
+  const end = raw.indexOf("---", 3);
+  if (end === -1) return {};
+  const block = raw.slice(3, end).trim();
+  const meta: Record<string, string> = {};
+  for (const line of block.split("\n")) {
+    const colon = line.indexOf(":");
+    if (colon > -1) meta[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
+  }
+  return meta;
+}
+
+function parseReleaseTags(value?: string): string[] {
+  if (!value) return [];
+  return value.split(",").map((t) => t.trim()).filter(Boolean);
+}
+
+function formatReleaseDate(slug: string): string {
+  const parts = slug.split("-");
+  if (parts.length !== 3) return slug;
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const month = parseInt(parts[1], 10);
+  return `${months[month - 1]} ${parseInt(parts[2], 10)}, ${parts[0]}`;
+}
+
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const host = req.headers.host ?? "hypothesis.sh";
   const hostname = host.split(":")[0];
   const branding = getBranding(hostname);
   const protocol = req.headers["x-forwarded-proto"] ?? "https";
   const baseUrl = `${protocol}://${host}`;
+
+  let releasesList: ReleaseEntry[] = [];
+  try {
+    const files = fs.readdirSync(RELEASES_DIR).filter((f) => f.endsWith(".md"));
+    releasesList = files
+      .map((file) => {
+        const slug = file.replace(/\.md$/, "");
+        const raw = fs.readFileSync(path.join(RELEASES_DIR, file), "utf-8");
+        const meta = parseReleaseFrontmatter(raw);
+        return {
+          slug,
+          date: slug,
+          formattedDate: formatReleaseDate(slug),
+          title: meta.title ?? slug,
+          description: meta.description ?? "",
+          tags: parseReleaseTags(meta.tags),
+        };
+      })
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .slice(0, 1);
+  } catch {}
+
   return {
     props: {
       ogImageUrl: `${baseUrl}/api/og?domain=${hostname}`,
@@ -32,6 +93,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       toolsList: tools,
       experimentsList: experiments,
       referencesList: references,
+      releasesList,
     },
   };
 };
@@ -44,6 +106,7 @@ export default function HomePage({
   toolsList,
   experimentsList,
   referencesList,
+  releasesList,
 }: {
   ogImageUrl: string;
   ogTitle: string;
@@ -52,6 +115,7 @@ export default function HomePage({
   toolsList: typeof tools;
   experimentsList: typeof experiments;
   referencesList: typeof references;
+  releasesList: ReleaseEntry[];
 }) {
   const branding = useBranding();
   const router = useRouter();
@@ -371,6 +435,30 @@ export default function HomePage({
             </p>
           )}
 
+        {releasesList.length > 0 && (
+          <div className={styles.section}>
+            <div className={styles.sectionLabel}>Latest Release</div>
+            <div className={styles.cards}>
+              {releasesList.map((release) => (
+                <ExperimentCard
+                  key={release.slug}
+                  id={release.formattedDate}
+                  name={release.title}
+                  description={release.description}
+                  href={`/release-notes/${release.slug}`}
+                  active={false}
+                  releaseTags={release.tags}
+                />
+              ))}
+            </div>
+            <div style={{ marginTop: "8px" }}>
+              <Link href="/release-notes" className={styles.docsLink}>
+                View all release notes →
+              </Link>
+            </div>
+          </div>
+        )}
+
         <div className={styles.section}>
           <div className={styles.sectionLabel}>About this project</div>
           <a
@@ -463,6 +551,7 @@ function ExperimentCard({
   tags,
   active,
   navIndex,
+  releaseTags,
 }: {
   id?: string;
   name: string;
@@ -473,6 +562,7 @@ function ExperimentCard({
   tags?: Tag[];
   active?: boolean;
   navIndex?: number;
+  releaseTags?: string[];
 }) {
   return (
     <div
@@ -508,6 +598,20 @@ function ExperimentCard({
             <DocIcon />
             docs
           </Link>
+        )}
+        {releaseTags && releaseTags.length > 0 && (
+          <div className={styles.cardTags}>
+            {releaseTags.map((tag) => (
+              <span
+                key={tag}
+                className={styles.cardTagPill}
+                title={tag}
+                style={{ "--tag-color": TAG_COLORS[tag as Tag]?.color ?? "#888" } as React.CSSProperties}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
         )}
         {tags && tags.length > 0 && (
           <div className={styles.cardTags}>

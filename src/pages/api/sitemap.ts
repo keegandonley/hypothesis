@@ -4,8 +4,9 @@ import path from "path";
 import { tools, references, experiments } from "@/lib/tools";
 
 const DOCS_DIR = path.join(process.cwd(), "src/content/docs");
+const RELEASES_DIR = path.join(process.cwd(), "src/content/releases");
 
-const nonToolRoutes = ["/", "/work", "/scratch"];
+const nonToolRoutes = ["/", "/work", "/scratch", "/release-notes"];
 
 function getStaticRoutes(): string[] {
   return [
@@ -16,10 +17,11 @@ function getStaticRoutes(): string[] {
   ];
 }
 
-function generateSitemap(baseUrl: string, docSlugs: string[]): string {
+function generateSitemap(baseUrl: string, docSlugs: string[], releaseSlugs: string[]): string {
   const urls = [
     ...getStaticRoutes().map((route) => `${baseUrl}${route}`),
     ...docSlugs.map((slug) => `${baseUrl}/docs/${slug}`),
+    ...releaseSlugs.map((slug) => `${baseUrl}/release-notes/${slug}`),
   ];
 
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -44,7 +46,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     .filter((f) => f.endsWith(".md"))
     .map((f) => f.replace(/\.md$/, ""));
 
-  const sitemap = generateSitemap(baseUrl, docSlugs);
+  const releaseSlugs = fs
+    .readdirSync(RELEASES_DIR)
+    .filter((f) => f.endsWith(".md"))
+    .map((f) => f.replace(/\.md$/, ""));
+
+  const sitemap = generateSitemap(baseUrl, docSlugs, releaseSlugs);
 
   res.setHeader("Content-Type", "application/xml");
   res.send(sitemap);
