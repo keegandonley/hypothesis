@@ -4,6 +4,11 @@ import path from "path";
 
 const RELEASES_DIR = path.join(process.cwd(), "src/content/releases");
 
+function parseTags(value?: string): string[] {
+  if (!value) return [];
+  return value.split(",").map((t) => t.trim()).filter(Boolean);
+}
+
 function parseFrontmatter(raw: string): { meta: Record<string, string>; body: string } {
   if (!raw.startsWith("---")) return { meta: {}, body: raw };
   const end = raw.indexOf("---", 3);
@@ -37,6 +42,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     date: version,
     title: meta.title ?? version,
     description: meta.description ?? "",
+    tags: parseTags(meta.tags),
     content: body,
   });
 }

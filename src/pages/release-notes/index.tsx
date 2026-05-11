@@ -5,8 +5,14 @@ import Link from "next/link";
 import { GetStaticProps } from "next";
 import styles from "../../styles/release-notes.module.css";
 import { useBranding } from "@/lib/branding";
+import { TAG_COLORS, type Tag } from "@/lib/tools";
 
 const RELEASES_DIR = path.join(process.cwd(), "src/content/releases");
+
+function parseTags(value?: string): string[] {
+  if (!value) return [];
+  return value.split(",").map((t) => t.trim()).filter(Boolean);
+}
 
 function parseFrontmatter(raw: string): Record<string, string> {
   if (!raw.startsWith("---")) return {};
@@ -38,6 +44,7 @@ export type ReleaseEntry = {
   formattedDate: string;
   title: string;
   description: string;
+  tags: string[];
 };
 
 export const getStaticProps: GetStaticProps = async () => {
@@ -53,6 +60,7 @@ export const getStaticProps: GetStaticProps = async () => {
         formattedDate: formatDate(slug),
         title: meta.title ?? slug,
         description: meta.description ?? "",
+        tags: parseTags(meta.tags),
       };
     })
     .sort((a, b) => b.date.localeCompare(a.date));
@@ -97,12 +105,28 @@ export default function ReleaseNotesIndex({ releases }: { releases: ReleaseEntry
                 className={styles.releaseCardLink}
                 aria-label={entry.title}
               />
-              <div className={styles.releaseDate}>{entry.formattedDate}</div>
-              <div className={styles.releaseTitle}>{entry.title}</div>
-              {entry.description && (
-                <div className={styles.releaseDesc}>{entry.description}</div>
+              <div className={styles.releaseCardBody}>
+                <div className={styles.releaseDate}>{entry.formattedDate}</div>
+                <div className={styles.releaseTitle}>{entry.title}</div>
+                {entry.description && (
+                  <div className={styles.releaseDesc}>{entry.description}</div>
+                )}
+                <div className={styles.releaseArrow}>→</div>
+              </div>
+              {entry.tags.length > 0 && (
+                <div className={styles.releaseCardFooter}>
+                  {entry.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className={styles.cardTagDot}
+                      title={tag}
+                      style={{ "--tag-color": TAG_COLORS[tag as Tag]?.color ?? "#888" } as React.CSSProperties}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               )}
-              <div className={styles.releaseArrow}>→</div>
             </div>
           ))}
         </div>

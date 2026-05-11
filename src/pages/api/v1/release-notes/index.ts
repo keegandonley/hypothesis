@@ -4,6 +4,11 @@ import path from "path";
 
 const RELEASES_DIR = path.join(process.cwd(), "src/content/releases");
 
+function parseTags(value?: string): string[] {
+  if (!value) return [];
+  return value.split(",").map((t) => t.trim()).filter(Boolean);
+}
+
 function parseFrontmatter(raw: string): Record<string, string> {
   if (!raw.startsWith("---")) return {};
   const end = raw.indexOf("---", 3);
@@ -31,6 +36,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         date: slug,
         title: meta.title ?? slug,
         description: meta.description ?? "",
+        tags: parseTags(meta.tags),
       };
     })
     .sort((a, b) => b.date.localeCompare(a.date));

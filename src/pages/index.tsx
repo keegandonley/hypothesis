@@ -26,6 +26,7 @@ type ReleaseEntry = {
   formattedDate: string;
   title: string;
   description: string;
+  tags: string[];
 };
 
 function parseReleaseFrontmatter(raw: string): Record<string, string> {
@@ -39,6 +40,11 @@ function parseReleaseFrontmatter(raw: string): Record<string, string> {
     if (colon > -1) meta[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
   }
   return meta;
+}
+
+function parseReleaseTags(value?: string): string[] {
+  if (!value) return [];
+  return value.split(",").map((t) => t.trim()).filter(Boolean);
 }
 
 function formatReleaseDate(slug: string): string {
@@ -70,10 +76,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
           formattedDate: formatReleaseDate(slug),
           title: meta.title ?? slug,
           description: meta.description ?? "",
+          tags: parseReleaseTags(meta.tags),
         };
       })
       .sort((a, b) => b.date.localeCompare(a.date))
-      .slice(0, 3);
+      .slice(0, 1);
   } catch {}
 
   return {
@@ -430,7 +437,7 @@ export default function HomePage({
 
         {releasesList.length > 0 && (
           <div className={styles.section}>
-            <div className={styles.sectionLabel}>Release Notes</div>
+            <div className={styles.sectionLabel}>Latest Release</div>
             <div className={styles.cards}>
               {releasesList.map((release) => (
                 <ExperimentCard
@@ -440,6 +447,7 @@ export default function HomePage({
                   description={release.description}
                   href={`/release-notes/${release.slug}`}
                   active={false}
+                  releaseTags={release.tags}
                 />
               ))}
             </div>
@@ -543,6 +551,7 @@ function ExperimentCard({
   tags,
   active,
   navIndex,
+  releaseTags,
 }: {
   id?: string;
   name: string;
@@ -553,6 +562,7 @@ function ExperimentCard({
   tags?: Tag[];
   active?: boolean;
   navIndex?: number;
+  releaseTags?: string[];
 }) {
   return (
     <div
@@ -588,6 +598,20 @@ function ExperimentCard({
             <DocIcon />
             docs
           </Link>
+        )}
+        {releaseTags && releaseTags.length > 0 && (
+          <div className={styles.cardTags}>
+            {releaseTags.map((tag) => (
+              <span
+                key={tag}
+                className={styles.cardTagPill}
+                title={tag}
+                style={{ "--tag-color": TAG_COLORS[tag as Tag]?.color ?? "#888" } as React.CSSProperties}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
         )}
         {tags && tags.length > 0 && (
           <div className={styles.cardTags}>

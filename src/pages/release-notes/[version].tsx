@@ -5,8 +5,14 @@ import Link from "next/link";
 import { GetStaticPaths, GetStaticProps } from "next";
 import styles from "../../styles/release-notes.module.css";
 import { useBranding } from "@/lib/branding";
+import { TAG_COLORS, type Tag } from "@/lib/tools";
 
 const RELEASES_DIR = path.join(process.cwd(), "src/content/releases");
+
+function parseTags(value?: string): string[] {
+  if (!value) return [];
+  return value.split(",").map((t) => t.trim()).filter(Boolean);
+}
 
 function parseFrontmatter(raw: string): { meta: Record<string, string>; body: string } {
   if (!raw.startsWith("---")) return { meta: {}, body: raw };
@@ -48,7 +54,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const description = meta.description ?? "";
   const formattedDate = formatDate(version);
   const ogImageUrl = `https://hypothesis.sh/api/og?type=release&title=${encodeURIComponent(title)}&date=${version}&domain=hypothesis.sh`;
-  return { props: { version, content: body, title, description, formattedDate, ogImageUrl } };
+  const tags = parseTags(meta.tags);
+  return { props: { version, content: body, title, description, formattedDate, ogImageUrl, tags } };
 };
 
 // ── Markdown renderer ──────────────────────────────────────────────────────────
@@ -217,6 +224,7 @@ export default function ReleaseNotePage({
   description,
   formattedDate,
   ogImageUrl,
+  tags,
 }: {
   version: string;
   content: string;
@@ -224,6 +232,7 @@ export default function ReleaseNotePage({
   description: string;
   formattedDate: string;
   ogImageUrl: string;
+  tags: string[];
 }) {
   const branding = useBranding();
   return (
@@ -245,12 +254,26 @@ export default function ReleaseNotePage({
         <link rel="canonical" href={`https://hypothesis.sh/release-notes/${version}`} />
       </Head>
       <div className={styles.inner}>
-        <nav className={styles.nav}>
+        <nav className={styles.nav} style={{ marginBottom: tags.length > 0 ? "12px" : undefined }}>
           <Link href="/release-notes" className={styles.backLink}>
             <span style={{ marginBottom: "3px" }}>←</span> Release Notes
           </Link>
           <div className={styles.metaDate}>{formattedDate}</div>
         </nav>
+        {tags.length > 0 && (
+          <div className={styles.tags} style={{ marginBottom: "36px" }}>
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className={styles.cardTagDot}
+                title={tag}
+                style={{ "--tag-color": TAG_COLORS[tag as Tag]?.color ?? "#888" } as React.CSSProperties}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
         <hr className={styles.divider} />
         <MarkdownContent content={content} />
       </div>

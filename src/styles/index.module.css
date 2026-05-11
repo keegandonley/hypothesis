@@ -336,6 +336,19 @@
   justify-content: center;
 }
 
+.cardTagPill {
+  border-radius: 3px;
+  background-color: transparent;
+  border: 1px solid var(--tag-color);
+  color: var(--tag-color);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  line-height: 1.4;
+}
+
 .docsLink {
   display: flex;
   align-items: center;

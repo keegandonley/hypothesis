@@ -217,12 +217,28 @@
   position: relative;
   border: 1px solid var(--border);
   border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.15s, border-color 0.15s;
+  cursor: pointer;
+}
+
+.releaseCardBody {
   padding: 20px 52px 20px 24px;
   display: flex;
   flex-direction: column;
   gap: 5px;
-  transition: background-color 0.15s, border-color 0.15s;
-  cursor: pointer;
+}
+
+.releaseCardFooter {
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .releaseCard:hover {
@@ -270,4 +286,24 @@
 
 .releaseCard:hover .releaseArrow {
   color: var(--accent);
+}
+
+/* Tags */
+
+.tags {
+  display: flex;
+  gap: 6px;
+}
+
+.cardTagDot {
+  border-radius: 3px;
+  background-color: transparent;
+  border: 1px solid var(--tag-color);
+  color: var(--tag-color);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  line-height: 1.4;
 }
