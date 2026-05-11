@@ -49,11 +49,6 @@ export default async function handler(
       if (!session) {
         return res.status(404).json({ error: "session not found" });
       }
-      try {
-        await track("Session Renewed");
-      } catch (err) {
-        console.warn("[analytics] failed to track Session Renewed", err);
-      }
       return res.json({
         sessionId: session.id,
         webhookUrl: `${webhookBase}/api/webhook/${session.id}`,
