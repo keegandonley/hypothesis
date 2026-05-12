@@ -134,6 +134,7 @@ export const references: ReferenceItem[] = [
       "Signal numbers, names, and default actions for POSIX signals — from SIGTERM and SIGKILL to SIGWINCH and SIGCHLD.",
     href: "/references/unix-signals",
     tags: ["sysadmin"],
+    fieldConfig: { primary: "name", secondary: "number", detail: "description" },
   },
   {
     kind: "reference",
@@ -155,6 +156,7 @@ export const references: ReferenceItem[] = [
       "All 128 ASCII characters with decimal, hexadecimal, octal, and named descriptions.",
     href: "/references/ascii",
     tags: ["text", "encoding"],
+    fieldConfig: { primary: "abbr", secondary: "name", detail: "hex" },
   },
   {
     kind: "reference",
@@ -163,6 +165,7 @@ export const references: ReferenceItem[] = [
       "Named code point ranges from Basic Latin to Supplementary planes, with assigned character counts and sample glyphs.",
     href: "/references/unicode-blocks",
     tags: ["text", "encoding"],
+    fieldConfig: { primary: "name", secondary: "assigned" },
   },
   {
     kind: "reference",
@@ -184,6 +187,7 @@ export const references: ReferenceItem[] = [
       "Regular expression quick reference: anchors, character classes, quantifiers, groups, lookaheads, flags, and escape sequences.",
     href: "/references/regex-syntax",
     tags: ["text", "web"],
+    fieldConfig: { primary: "token", secondary: "description", detail: "example" },
   },
   {
     kind: "reference",
