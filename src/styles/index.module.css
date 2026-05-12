@@ -14,7 +14,7 @@
 
 .inner {
   width: 100%;
-  max-width: 560px;
+  max-width: var(--content-width);
 }
 
 .header {
@@ -205,8 +205,8 @@
 .cardMain {
   flex: 1;
   display: flex;
-  align-items: center;
-  gap: 20px;
+  flex-direction: column;
+  gap: 12px;
   padding: 20px 24px;
 }
 

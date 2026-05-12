@@ -396,11 +396,12 @@ export default function HomePage({
         {filteredExperiments.length > 0 && (
           <div className={styles.section}>
             <div className={styles.sectionLabel}>Experiments</div>
-            <div className={styles.cards}>
+            <div className={styles.toolCards}>
               {filteredExperiments.map((exp, i) => (
                 <ExperimentCard
                   key={exp.id}
                   {...exp}
+                  compact
                   active={focusedIndex === toolsCount + i}
                   navIndex={toolsCount + i}
                 />
@@ -451,7 +452,7 @@ export default function HomePage({
                 />
               ))}
             </div>
-            <div style={{ marginTop: "8px" }}>
+            <div style={{ marginTop: "8px", display: "flex", justifyContent: "flex-end" }}>
               <Link href="/release-notes" className={styles.docsLink}>
                 View all release notes →
               </Link>
@@ -582,13 +583,13 @@ function ExperimentCard({
         </div>
       ) : (
         <div className={styles.cardMain}>
-          <div className={styles.badge}>{id}</div>
           <div className={styles.cardBodyRow}>
-            <div className={styles.cardBody}>
-              <div className={styles.cardName}>{name}</div>
-              <div className={styles.cardDesc}>{description}</div>
-            </div>
-            <div className={styles.arrow}>→</div>
+            {id && <div className={styles.badge}>{id}</div>}
+            <div className={styles.arrow} style={{ marginLeft: "auto" }}>→</div>
+          </div>
+          <div className={styles.cardBody}>
+            <div className={styles.cardName}>{name}</div>
+            <div className={styles.cardDesc}>{description}</div>
           </div>
         </div>
       )}
@@ -631,6 +632,7 @@ function ExperimentCard({
             ))}
           </div>
         )}
+        {id && compact && <div className={styles.badge} style={{ marginLeft: "auto" }}>{id}</div>}
       </div>
     </div>
   );

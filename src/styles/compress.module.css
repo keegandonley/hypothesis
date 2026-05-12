@@ -1,5 +1,5 @@
 .page {
-  max-width: 720px;
+  max-width: var(--content-width);
   margin: 0 auto;
   padding: 2rem 1.5rem 3rem;
   font-family: var(--font-mono, monospace);

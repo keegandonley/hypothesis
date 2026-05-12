@@ -157,7 +157,7 @@
   background-color: var(--card-bg);
   overflow: hidden;
   margin-bottom: 12px;
-  max-width: 720px;
+  max-width: var(--content-width);
 }
 
 .descHeader {
@@ -208,7 +208,7 @@
   background-color: var(--card-bg);
   overflow: hidden;
   margin-bottom: 16px;
-  max-width: 720px;
+  max-width: var(--content-width);
 }
 
 .runsHeader {

@@ -1,4 +1,5 @@
 :root {
+  --content-width: 720px;
   --bg: #0c0c10;
   --card-bg: #13131a;
   --border: #1e1e2e;
