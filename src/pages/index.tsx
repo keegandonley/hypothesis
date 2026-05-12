@@ -120,6 +120,7 @@ export default function HomePage({
   const branding = useBranding();
   const router = useRouter();
   const [activeTags, setActiveTags] = useState<Tag[]>([]);
+  const [activeRefTags, setActiveRefTags] = useState<Tag[]>([]);
   const [query, setQuery] = useState("");
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -263,6 +264,7 @@ export default function HomePage({
   const filteredTools = toolsList
     .filter(
       (t) =>
+        query ||
         activeTags.length === 0 ||
         t.tags.some((tag) => activeTags.includes(tag)),
     )
@@ -271,9 +273,14 @@ export default function HomePage({
   const filteredExperiments = experimentsList.filter((e) =>
     matchesQuery(e.name, e.description),
   );
-  const filteredRefs = referencesList.filter((r) =>
-    matchesQuery(r.name, r.description),
-  );
+  const filteredRefs = referencesList
+    .filter(
+      (r) =>
+        query ||
+        activeRefTags.length === 0 ||
+        r.tags.some((tag) => activeRefTags.includes(tag)),
+    )
+    .filter((r) => matchesQuery(r.name, r.description));
 
   const sortedTools = [...filteredTools].sort((a, b) =>
     a.name.localeCompare(b.name),
@@ -291,6 +298,12 @@ export default function HomePage({
 
   function toggleTag(tag: Tag) {
     setActiveTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
+    );
+  }
+
+  function toggleRefTag(tag: Tag) {
+    setActiveRefTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   }
@@ -413,6 +426,25 @@ export default function HomePage({
         {filteredRefs.length > 0 && (
           <div className={styles.section}>
             <div className={styles.sectionLabel}>References</div>
+            <div className={styles.tagFilters}>
+              {ALL_TAGS.filter((tag) =>
+                referencesList.some((r) => r.tags.includes(tag)),
+              ).map((tag) => (
+                <button
+                  key={tag}
+                  className={`${styles.tagButton} ${activeRefTags.includes(tag) ? styles.tagButtonActive : ""}`}
+                  style={
+                    {
+                      "--tag-color": TAG_COLORS[tag].color,
+                      "--tag-color-subtle": TAG_COLORS[tag].subtle,
+                    } as React.CSSProperties
+                  }
+                  onClick={() => toggleRefTag(tag)}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
             <div className={styles.toolCards}>
               {sortedRefs.map((ref, i) => (
                 <ExperimentCard
