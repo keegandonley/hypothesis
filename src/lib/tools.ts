@@ -156,7 +156,7 @@ export const references: ReferenceItem[] = [
       "All 128 ASCII characters with decimal, hexadecimal, octal, and named descriptions.",
     href: "/references/ascii",
     tags: ["text", "encoding"],
-    fieldConfig: { primary: "abbr", secondary: "name", detail: "hex" },
+    fieldConfig: { primary: "abbr", secondary: "name", detail: "ctrl" },
   },
   {
     kind: "reference",
@@ -165,7 +165,7 @@ export const references: ReferenceItem[] = [
       "Named code point ranges from Basic Latin to Supplementary planes, with assigned character counts and sample glyphs.",
     href: "/references/unicode-blocks",
     tags: ["text", "encoding"],
-    fieldConfig: { primary: "name", secondary: "assigned" },
+    fieldConfig: { primary: "name", secondary: "assigned", detail: "sample" },
   },
   {
     kind: "reference",
