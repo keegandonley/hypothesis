@@ -38,6 +38,7 @@ export interface ToolItem {
   docsHref: string;
   tags: Tag[];
   mobileOnly?: boolean;
+  allowMultipleInstances?: boolean;
 }
 
 export interface ExperimentItem {
@@ -49,6 +50,7 @@ export interface ExperimentItem {
   docsHref: string;
   suppressMobile?: boolean;
   mobileOnly?: boolean;
+  allowMultipleInstances?: boolean;
 }
 
 export interface ReferenceFieldConfig {
@@ -264,6 +266,7 @@ export const experiments: ExperimentItem[] = [
       "Proxy iframes securely with full event handling and introspection for debugging.",
     href: "/iframe-proxy?debug=true",
     docsHref: "/docs/iframe-proxy",
+    allowMultipleInstances: true,
   },
   {
     kind: "experiment",
@@ -309,6 +312,7 @@ export const experiments: ExperimentItem[] = [
       "Serve a public GitHub Gist's raw content via a proxy URL, with live iframe preview.",
     href: "/gist",
     docsHref: "/docs/gist",
+    allowMultipleInstances: true,
   },
   {
     kind: "experiment",
@@ -358,6 +362,7 @@ export const tools: ToolItem[] = [
     href: "/base64",
     docsHref: "/docs/base64",
     tags: ["encoding", "web", "text", "conversion"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -367,6 +372,7 @@ export const tools: ToolItem[] = [
     href: "/bitwise",
     docsHref: "/docs/bitwise",
     tags: ["sysadmin"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -376,6 +382,7 @@ export const tools: ToolItem[] = [
     href: "/chmod",
     docsHref: "/docs/chmod",
     tags: ["conversion", "sysadmin"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -385,6 +392,7 @@ export const tools: ToolItem[] = [
     href: "/cidr",
     docsHref: "/docs/cidr",
     tags: ["sysadmin"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -394,6 +402,7 @@ export const tools: ToolItem[] = [
     href: "/color",
     docsHref: "/docs/color",
     tags: ["conversion", "web"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -403,6 +412,7 @@ export const tools: ToolItem[] = [
     href: "/compress",
     docsHref: "/docs/compress",
     tags: ["conversion", "web"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -412,6 +422,7 @@ export const tools: ToolItem[] = [
     href: "/css-unit",
     docsHref: "/docs/css-unit",
     tags: ["conversion", "web"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -421,6 +432,7 @@ export const tools: ToolItem[] = [
     href: "/cron",
     docsHref: "/docs/cron",
     tags: ["sysadmin"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -430,6 +442,7 @@ export const tools: ToolItem[] = [
     href: "/datetime",
     docsHref: "/docs/datetime",
     tags: ["conversion", "web"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -439,6 +452,7 @@ export const tools: ToolItem[] = [
     href: "/hash",
     docsHref: "/docs/hash",
     tags: ["encoding", "security", "sysadmin", "web", "text"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -448,6 +462,7 @@ export const tools: ToolItem[] = [
     href: "/html-entity",
     docsHref: "/docs/html-entity",
     tags: ["encoding", "web", "text"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -457,6 +472,7 @@ export const tools: ToolItem[] = [
     href: "/jwt",
     docsHref: "/docs/jwt",
     tags: ["security", "web"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -466,6 +482,7 @@ export const tools: ToolItem[] = [
     href: "/lorem",
     docsHref: "/docs/lorem",
     tags: ["web", "text"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -475,6 +492,7 @@ export const tools: ToolItem[] = [
     href: "/numbase",
     docsHref: "/docs/numbase",
     tags: ["conversion"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -484,6 +502,7 @@ export const tools: ToolItem[] = [
     href: "/pretty-print",
     docsHref: "/docs/pretty-print",
     tags: ["web"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -493,6 +512,7 @@ export const tools: ToolItem[] = [
     href: "/qr",
     docsHref: "/docs/qr",
     tags: ["web", "mobile"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -503,6 +523,7 @@ export const tools: ToolItem[] = [
     docsHref: "/docs/qr-decoder",
     tags: ["mobile"],
     mobileOnly: true,
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -512,6 +533,7 @@ export const tools: ToolItem[] = [
     href: "/regex",
     docsHref: "/docs/regex",
     tags: ["web", "sysadmin", "text"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -521,6 +543,7 @@ export const tools: ToolItem[] = [
     href: "/json-ts",
     docsHref: "/docs/json-ts",
     tags: ["conversion", "web"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -530,6 +553,7 @@ export const tools: ToolItem[] = [
     href: "/diff",
     docsHref: "/docs/diff",
     tags: ["text"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -539,6 +563,7 @@ export const tools: ToolItem[] = [
     href: "/text-stats",
     docsHref: "/docs/text-stats",
     tags: ["text"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -548,6 +573,7 @@ export const tools: ToolItem[] = [
     href: "/unicode",
     docsHref: "/docs/unicode",
     tags: ["text", "encoding"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -557,6 +583,7 @@ export const tools: ToolItem[] = [
     href: "/urlencode",
     docsHref: "/docs/urlencode",
     tags: ["encoding", "web", "text"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -566,6 +593,7 @@ export const tools: ToolItem[] = [
     href: "/my-ip",
     docsHref: "/docs/my-ip",
     tags: ["web", "sysadmin"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -575,6 +603,7 @@ export const tools: ToolItem[] = [
     href: "/uuid",
     docsHref: "/docs/uuid",
     tags: ["security", "sysadmin", "web"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -584,6 +613,7 @@ export const tools: ToolItem[] = [
     href: "/case",
     docsHref: "/docs/case",
     tags: ["text", "conversion"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -593,6 +623,7 @@ export const tools: ToolItem[] = [
     href: "/password",
     docsHref: "/docs/password",
     tags: ["security"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -602,6 +633,7 @@ export const tools: ToolItem[] = [
     href: "/bytes",
     docsHref: "/docs/bytes",
     tags: ["conversion", "sysadmin"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -611,6 +643,7 @@ export const tools: ToolItem[] = [
     href: "/json-yaml",
     docsHref: "/docs/json-yaml",
     tags: ["conversion", "web"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -620,6 +653,7 @@ export const tools: ToolItem[] = [
     href: "/ascii-art",
     docsHref: "/docs/ascii-art",
     tags: ["conversion", "text"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -629,6 +663,7 @@ export const tools: ToolItem[] = [
     href: "/scratch",
     docsHref: "/docs/scratch",
     tags: ["text"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -638,6 +673,7 @@ export const tools: ToolItem[] = [
     href: "/keycode",
     docsHref: "/docs/keycode",
     tags: ["web", "sysadmin"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -647,6 +683,7 @@ export const tools: ToolItem[] = [
     href: "/basic-auth",
     docsHref: "/docs/basic-auth",
     tags: ["web", "encoding", "security"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -656,6 +693,7 @@ export const tools: ToolItem[] = [
     href: "/markdown",
     docsHref: "/docs/markdown",
     tags: ["conversion", "web", "text"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -665,6 +703,7 @@ export const tools: ToolItem[] = [
     href: "/json-diff",
     docsHref: "/docs/json-diff",
     tags: ["web", "text"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -674,6 +713,7 @@ export const tools: ToolItem[] = [
     href: "/sql",
     docsHref: "/docs/sql",
     tags: ["web", "text"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -683,6 +723,7 @@ export const tools: ToolItem[] = [
     href: "/svg-jsx",
     docsHref: "/docs/svg-jsx",
     tags: ["conversion", "web"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -692,6 +733,7 @@ export const tools: ToolItem[] = [
     href: "/og",
     docsHref: "/docs/og",
     tags: ["web"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -701,6 +743,7 @@ export const tools: ToolItem[] = [
     href: "/color-shades",
     docsHref: "/docs/color-shades",
     tags: ["conversion", "web"],
+    allowMultipleInstances: true,
   },
   {
     kind: "tool",
@@ -710,6 +753,7 @@ export const tools: ToolItem[] = [
     href: "/app-store-screenshot",
     docsHref: "/docs/app-store-screenshot",
     tags: ["media", "conversion", "mobile"],
+    allowMultipleInstances: true,
   },
 ];
 
