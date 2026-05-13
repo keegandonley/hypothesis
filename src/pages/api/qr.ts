@@ -18,8 +18,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ? (ecl as ECLevel)
       : "M";
 
-  const darkColor = typeof dark === "string" && /^#[0-9a-fA-F]{6}$/.test(dark) ? dark : "#000000";
-  const lightColor = typeof light === "string" && /^#[0-9a-fA-F]{6}$/.test(light) ? light : "#ffffff";
+  const hexColor = /^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/;
+  const darkColor = typeof dark === "string" && hexColor.test(dark) ? dark : "#000000";
+  const lightColor = typeof light === "string" && hexColor.test(light) ? light : "#ffffff";
 
   try {
     const svg = await QRCode.toString(value, {
