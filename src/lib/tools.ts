@@ -38,6 +38,7 @@ export interface ToolItem {
   docsHref: string;
   tags: Tag[];
   mobileOnly?: boolean;
+  suppressMobile?: boolean;
   allowMultipleInstances?: boolean;
 }
 
@@ -753,6 +754,7 @@ export const tools: ToolItem[] = [
     href: "/app-store-screenshot",
     docsHref: "/docs/app-store-screenshot",
     tags: ["media", "conversion", "mobile"],
+    suppressMobile: true,
     allowMultipleInstances: true,
   },
 ];
