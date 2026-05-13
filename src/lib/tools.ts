@@ -496,6 +496,16 @@ export const tools: ToolItem[] = [
   },
   {
     kind: "tool",
+    name: "qr decoder",
+    description:
+      "Decode QR codes using your device camera.",
+    href: "/qr-decoder",
+    docsHref: "/docs/qr-decoder",
+    tags: ["mobile"],
+    mobileOnly: true,
+  },
+  {
+    kind: "tool",
     name: "regex",
     description:
       "Test regular expressions against strings with live match results and shareable permalinks.",
