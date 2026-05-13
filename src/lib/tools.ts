@@ -37,6 +37,7 @@ export interface ToolItem {
   href: string;
   docsHref: string;
   tags: Tag[];
+  mobileOnly?: boolean;
 }
 
 export interface ExperimentItem {
@@ -47,6 +48,7 @@ export interface ExperimentItem {
   href: string;
   docsHref: string;
   suppressMobile?: boolean;
+  mobileOnly?: boolean;
 }
 
 export interface ReferenceFieldConfig {

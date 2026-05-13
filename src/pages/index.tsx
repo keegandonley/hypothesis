@@ -262,6 +262,7 @@ export default function HomePage({
   }
 
   const filteredTools = toolsList
+    .filter((t) => !t.mobileOnly)
     .filter(
       (t) =>
         query ||
@@ -270,9 +271,9 @@ export default function HomePage({
     )
     .filter((t) => matchesQuery(t.name, t.description));
 
-  const filteredExperiments = experimentsList.filter((e) =>
-    matchesQuery(e.name, e.description),
-  );
+  const filteredExperiments = experimentsList
+    .filter((e) => !e.mobileOnly)
+    .filter((e) => matchesQuery(e.name, e.description));
   const filteredRefs = referencesList
     .filter(
       (r) =>
