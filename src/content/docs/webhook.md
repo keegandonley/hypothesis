@@ -71,7 +71,7 @@ There are two distinct inactivity thresholds:
 
 1. **Webhook receiver timeout — 5 minutes.** If no heartbeat has been seen for 5 minutes, the server returns `410 Gone` for any new requests to that webhook URL. The session still exists; it just stops accepting requests until the page is open again.
 
-2. **Database cleanup — 1 hour.** Sessions that have been inactive for more than 1 hour are permanently deleted. This runs daily at **02:00 UTC**.
+2. **Database cleanup — 1 hour.** Webhook sessions (those without an associated device ID) that have been inactive for more than 1 hour are permanently deleted. Native app sessions are excluded from cleanup. This runs daily at **02:00 UTC**.
 
 While the webhook page is open, the 60-second heartbeat resets both clocks, so neither threshold is reached during normal use.
 

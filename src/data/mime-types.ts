@@ -210,9 +210,9 @@ export const MIME_CATEGORIES: MimeCategory[] = [
           "Scalable Vector Graphics. XML-based; resolution-independent. Can be embedded inline in HTML.",
       },
       {
-        type: "image/x-icon",
+        type: "image/vnd.microsoft.icon",
         extensions: [".ico"],
-        description: "Windows ICO format. Used for browser favicons.",
+        description: "Windows ICO format. The IANA-registered MIME type for browser favicons.",
       },
       {
         type: "image/tiff",

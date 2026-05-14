@@ -108,7 +108,7 @@ export const UNICODE_BLOCK_GROUPS: UnicodeBlockGroup[] = [
       { name: "Katakana Phonetic Extensions",   start: 0x31F0, end: 0x31FF, assigned: 16,    sample: ["ㇰ", "ㇱ", "ㇲ", "ㇳ", "ㇴ"] },
       { name: "Hangul Syllables",               start: 0xAC00, end: 0xD7AF, assigned: 11172, sample: ["가", "나", "다", "라", "마"] },
       { name: "Hangul Jamo",                    start: 0x1100, end: 0x11FF, assigned: 256,   sample: ["ᄀ", "ᄂ", "ᄃ", "ᄅ", "ᄆ"] },
-      { name: "Bopomofo",                       start: 0x02EA, end: 0x02EB, assigned: 42,    sample: ["ㄅ", "ㄆ", "ㄇ", "ㄈ", "ㄉ"] },
+      { name: "Bopomofo",                       start: 0x3100, end: 0x312F, assigned: 43,    sample: ["ㄅ", "ㄆ", "ㄇ", "ㄈ", "ㄉ"] },
       { name: "CJK Radicals Supplement",        start: 0x2E80, end: 0x2EFF, assigned: 115,   sample: ["⺀", "⺁", "⺂", "⺃", "⺄"] },
       { name: "Kangxi Radicals",                start: 0x2F00, end: 0x2FDF, assigned: 214,   sample: ["⼀", "⼁", "⼂", "⼃", "⼄"] },
       { name: "CJK Compatibility",              start: 0x3300, end: 0x33FF, assigned: 256,   sample: ["㌀", "㌁", "㌂", "㌃", "㎝"] },

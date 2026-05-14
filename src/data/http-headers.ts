@@ -242,7 +242,7 @@ export const HEADER_CATEGORIES: HeaderCategory[] = [
         name: "Referrer-Policy",
         description:
           "Controls how much referrer information is included with requests: no-referrer, same-origin, strict-origin, etc.",
-        direction: "both",
+        direction: "response",
       },
       {
         name: "Permissions-Policy",

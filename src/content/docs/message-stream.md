@@ -36,8 +36,10 @@ const url = `/message-stream?context=${context}`;
 The page includes a text field for sending test messages to the parent frame. Enter any string and press **Send Message** (or hit Enter). The message is posted as:
 
 ```js
-{ action: "hypothesis-test", content: "<your input>" }
+{ action: "<domain>-test", content: "<your input>" }
 ```
+
+The `action` value matches the current domain — e.g. `hypothesis-test` on hypothesis.sh, `conclusion-test` on conclusion.sh, `falsify-test` on falsify.sh, or `observation-test` on observation.sh.
 
 Sent messages appear in the feed alongside received messages, clearly labeled so you can follow the full conversation.
 
