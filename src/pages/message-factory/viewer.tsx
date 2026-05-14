@@ -91,7 +91,7 @@ export default function ViewerPage() {
       </Head>
 
       <div className={styles.header}>
-        <div className={styles.eyebrow}>
+        <div className={styles.eyebrow} data-eyebrow>
           <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
             {branding.domain}
           </Link>
@@ -143,7 +143,7 @@ export default function ViewerPage() {
           <hr className={styles.divider} />
 
           {/* Permalink row */}
-          <div className={styles.permalinkRow}>
+          <div className={styles.permalinkRow} data-permalink-row>
             <span className={styles.permalinkLabel}>Permalink</span>
             <span className={styles.permalinkUrl}>{url}</span>
             {!isIframe && (
