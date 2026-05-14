@@ -3,6 +3,7 @@ import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import styles from "../../styles/iframe-proxy.module.css";
 import { DocIcon } from "@/components/icons/doc";
+import { LogIcon } from "@/components/icons/log";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 
@@ -128,7 +129,7 @@ export default function IframeProxyPage() {
         path="/iframe-proxy"
         brandName={branding.name}
       />
-      {inWorkMode && (
+      {inWorkMode && !debug && (
         <div className={styles.workBar}>
           <span className={styles.badge}>proxied url</span>
           <form
@@ -150,7 +151,7 @@ export default function IframeProxyPage() {
           </form>
         </div>
       )}
-      {inWorkMode && !url && (
+      {inWorkMode && !debug && !url && (
         <div className={styles.workPlaceholder}>enter a url above to begin</div>
       )}
 
@@ -201,7 +202,11 @@ export default function IframeProxyPage() {
             onClick={() => setPanelOpen((o) => !o)}
             aria-label={panelOpen ? "Close debug panel" : "Open debug panel"}
           >
-            {panelOpen ? "✕" : "⚙"}
+            {panelOpen ? (
+              <span className={styles.toggleClose}>✕</span>
+            ) : (
+              <LogIcon className={styles.toggleIcon} />
+            )}
             {!panelOpen && messages.length > 0 && (
               <span className={styles.toggleBadge}>{messages.length}</span>
             )}
