@@ -152,7 +152,9 @@ export default function PostgresOperatorsPage({
                 onClick={() => handleGroupToggle(group.id)}
               >
                 {group.badge}
-                <span className={styles.classBtnLabel}>{group.label}</span>
+                {group.badge !== group.label && (
+                  <span className={styles.classBtnLabel}>{group.label}</span>
+                )}
               </button>
             ))}
           </div>
@@ -177,7 +179,9 @@ export default function PostgresOperatorsPage({
                   }
                 >
                   <span className={styles.sectionClass}>{group.badge}</span>
-                  <span className={styles.sectionLabel}>{group.label}</span>
+                  {group.badge !== group.label && (
+                    <span className={styles.sectionLabel}>{group.label}</span>
+                  )}
                   <span className={styles.sectionCount}>
                     {group.operators.length}{" "}
                     {group.operators.length === 1 ? "operator" : "operators"}

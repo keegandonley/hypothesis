@@ -18,7 +18,7 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
   {
     id: "general",
     label: "General",
-    badge: "gen",
+    badge: "General",
     color: "#60a5fa",
     subtle: "#60a5fa18",
     border: "#60a5fa33",
@@ -92,7 +92,7 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
   {
     id: "help",
     label: "Help",
-    badge: "?",
+    badge: "Help",
     color: "#a1a1aa",
     subtle: "#a1a1aa18",
     border: "#a1a1aa33",
@@ -114,7 +114,7 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
   {
     id: "buffer",
     label: "Query Buffer",
-    badge: "buf",
+    badge: "Query Buffer",
     color: "#34d399",
     subtle: "#34d39918",
     border: "#34d39933",
@@ -163,7 +163,7 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
   {
     id: "io",
     label: "Input / Output",
-    badge: "i/o",
+    badge: "I/O",
     color: "#fbbf24",
     subtle: "#fbbf2418",
     border: "#fbbf2433",
@@ -214,7 +214,7 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
   {
     id: "conditional",
     label: "Conditional",
-    badge: "if",
+    badge: "Conditional",
     color: "#c084fc",
     subtle: "#c084fc18",
     border: "#c084fc33",
@@ -247,7 +247,7 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
   {
     id: "info",
     label: "Informational",
-    badge: "info",
+    badge: "Informational",
     color: "#2dd4bf",
     subtle: "#2dd4bf18",
     border: "#2dd4bf33",
@@ -518,7 +518,7 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
   {
     id: "format",
     label: "Formatting",
-    badge: "fmt",
+    badge: "Formatting",
     color: "#fb923c",
     subtle: "#fb923c18",
     border: "#fb923c33",
@@ -571,7 +571,7 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
   {
     id: "connection",
     label: "Connection",
-    badge: "conn",
+    badge: "Connection",
     color: "#f87171",
     subtle: "#f8717118",
     border: "#f8717133",
@@ -604,7 +604,7 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
   {
     id: "largeobjects",
     label: "Large Objects",
-    badge: "lob",
+    badge: "Large Objects",
     color: "#a78bfa",
     subtle: "#a78bfa18",
     border: "#a78bfa33",
@@ -635,7 +635,7 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
   {
     id: "variables",
     label: "Variables",
-    badge: "var",
+    badge: "Variables",
     color: "#22d3ee",
     subtle: "#22d3ee18",
     border: "#22d3ee33",
@@ -673,7 +673,7 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
   {
     id: "os",
     label: "OS / Misc",
-    badge: "os",
+    badge: "OS / Misc",
     color: "#94a3b8",
     subtle: "#94a3b818",
     border: "#94a3b833",

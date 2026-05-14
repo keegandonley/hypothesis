@@ -19,7 +19,7 @@ export const PG_OPERATOR_GROUPS: PgOperatorGroup[] = [
   {
     id: "jsonb-access",
     label: "JSONB Access",
-    badge: "acc",
+    badge: "JSONB Access",
     color: "#60a5fa",
     subtle: "#60a5fa18",
     border: "#60a5fa33",
@@ -59,7 +59,7 @@ export const PG_OPERATOR_GROUPS: PgOperatorGroup[] = [
   {
     id: "jsonb-existence",
     label: "JSONB Existence",
-    badge: "exist",
+    badge: "JSONB Existence",
     color: "#34d399",
     subtle: "#34d39918",
     border: "#34d39933",
@@ -87,7 +87,7 @@ export const PG_OPERATOR_GROUPS: PgOperatorGroup[] = [
   {
     id: "jsonb-containment",
     label: "JSONB Containment",
-    badge: "contain",
+    badge: "JSONB Containment",
     color: "#fbbf24",
     subtle: "#fbbf2418",
     border: "#fbbf2433",
@@ -109,7 +109,7 @@ export const PG_OPERATOR_GROUPS: PgOperatorGroup[] = [
   {
     id: "jsonb-mod",
     label: "JSONB Modification",
-    badge: "mod",
+    badge: "JSONB Modification",
     color: "#fb923c",
     subtle: "#fb923c18",
     border: "#fb923c33",
@@ -142,7 +142,7 @@ export const PG_OPERATOR_GROUPS: PgOperatorGroup[] = [
   {
     id: "jsonb-path",
     label: "JSONB Path",
-    badge: "path",
+    badge: "JSONB Path",
     color: "#c084fc",
     subtle: "#c084fc18",
     border: "#c084fc33",
@@ -166,7 +166,7 @@ export const PG_OPERATOR_GROUPS: PgOperatorGroup[] = [
   {
     id: "array-containment",
     label: "Array Containment",
-    badge: "arr-c",
+    badge: "Array Containment",
     color: "#2dd4bf",
     subtle: "#2dd4bf18",
     border: "#2dd4bf33",
@@ -194,7 +194,7 @@ export const PG_OPERATOR_GROUPS: PgOperatorGroup[] = [
   {
     id: "array-mod",
     label: "Array Concatenation & Comparison",
-    badge: "arr",
+    badge: "Array Concatenation & Comparison",
     color: "#a78bfa",
     subtle: "#a78bfa18",
     border: "#a78bfa33",

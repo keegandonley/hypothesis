@@ -169,7 +169,9 @@ export default function HttpHeadersPage({ groups }: { groups: typeof HEADER_CATE
                 onClick={() => handleCategoryToggle(cat.id)}
               >
                 {cat.badge}
-                <span className={styles.classBtnLabel}>{cat.label}</span>
+                {cat.badge !== cat.label && (
+                  <span className={styles.classBtnLabel}>{cat.label}</span>
+                )}
               </button>
             ))}
           </div>
@@ -194,7 +196,9 @@ export default function HttpHeadersPage({ groups }: { groups: typeof HEADER_CATE
                   }
                 >
                   <span className={styles.sectionClass}>{section.badge}</span>
-                  <span className={styles.sectionLabel}>{section.label}</span>
+                  {section.badge !== section.label && (
+                    <span className={styles.sectionLabel}>{section.label}</span>
+                  )}
                   <span className={styles.sectionCount}>
                     {section.headers.length}{" "}
                     {section.headers.length === 1 ? "header" : "headers"}

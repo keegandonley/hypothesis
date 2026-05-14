@@ -146,7 +146,9 @@ export default function MimeTypesPage({ groups }: { groups: typeof MIME_CATEGORI
                 onClick={() => handleCategoryToggle(cat.category)}
               >
                 {cat.badge}
-                <span className={styles.classBtnLabel}>{cat.label}</span>
+                {cat.badge !== cat.label && (
+                  <span className={styles.classBtnLabel}>{cat.label}</span>
+                )}
               </button>
             ))}
           </div>
@@ -171,7 +173,9 @@ export default function MimeTypesPage({ groups }: { groups: typeof MIME_CATEGORI
                   }
                 >
                   <span className={styles.sectionClass}>{section.badge}</span>
-                  <span className={styles.sectionLabel}>{section.label}</span>
+                  {section.badge !== section.label && (
+                    <span className={styles.sectionLabel}>{section.label}</span>
+                  )}
                   <span className={styles.sectionCount}>
                     {section.types.length}{" "}
                     {section.types.length === 1 ? "type" : "types"}

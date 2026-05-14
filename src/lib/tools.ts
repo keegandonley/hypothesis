@@ -271,6 +271,19 @@ export const references: ReferenceItem[] = [
   },
   {
     kind: "reference",
+    name: "tmux",
+    description:
+      "Default tmux prefix key bindings (C-b) for sessions, windows, panes, layouts, and copy mode, plus CLI subcommands with full syntax.",
+    href: "/references/tmux",
+    tags: ["sysadmin"],
+    fieldConfig: {
+      primary: "command",
+      secondary: "description",
+      detail: "syntax",
+    },
+  },
+  {
+    kind: "reference",
     name: "Ionicons",
     description:
       "All icons available via @expo/vector-icons Ionicons — 422 base icons each with filled, outline, and sharp variants, plus 94 logo icons. Searchable by name, filterable by category.",

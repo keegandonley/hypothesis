@@ -4,16 +4,16 @@ import { useState, useEffect, useMemo } from "react";
 import { GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
-import { PSQL_COMMAND_GROUPS } from "@/data/psql-meta-commands";
+import { TMUX_GROUPS } from "@/data/tmux";
 
 export const getStaticProps: GetStaticProps = () => ({
-  props: { groups: PSQL_COMMAND_GROUPS },
+  props: { groups: TMUX_GROUPS },
 });
 
-export default function PsqlMetaCommandsPage({
+export default function TmuxReferencePage({
   groups,
 }: {
-  groups: typeof PSQL_COMMAND_GROUPS;
+  groups: typeof TMUX_GROUPS;
 }) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
@@ -67,27 +67,24 @@ export default function PsqlMetaCommandsPage({
   return (
     <div className={styles.page}>
       <Head>
-        <title>{`${branding.name.toUpperCase()} — PSQL META-COMMANDS`}</title>
+        <title>{`${branding.name.toUpperCase()} — TMUX REFERENCE`}</title>
         <meta
           name="description"
-          content="Complete reference for psql backslash meta-commands: informational \\d* listings, formatting, I/O, conditional blocks, connection, and more."
+          content="tmux quick reference: default prefix key bindings for sessions, windows, panes, layouts, and copy mode, plus CLI subcommands with full syntax."
         />
-        <meta property="og:title" content="psql Meta-Commands" />
+        <meta property="og:title" content="tmux Reference" />
         <meta
           property="og:description"
-          content="All psql backslash commands with syntax and descriptions — from \\dt to \\gexec to \\pset."
+          content="Every default tmux key binding and CLI subcommand, searchable and grouped by purpose."
         />
         <meta
           property="og:url"
-          content="https://hypothesis.sh/references/psql-meta-commands"
+          content="https://hypothesis.sh/references/tmux"
         />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="psql Meta-Commands" />
-        <link
-          rel="canonical"
-          href="https://hypothesis.sh/references/psql-meta-commands"
-        />
+        <meta name="twitter:title" content="tmux Reference" />
+        <link rel="canonical" href="https://hypothesis.sh/references/tmux" />
       </Head>
 
       <div className={styles.inner}>
@@ -101,11 +98,11 @@ export default function PsqlMetaCommandsPage({
         <hr className={styles.divider} />
 
         <div className={styles.header}>
-          <h1 className={styles.title}>psql Meta-Commands</h1>
+          <h1 className={styles.title}>tmux</h1>
           <p className={styles.tagline}>
-            Backslash commands for the Postgres interactive terminal —
-            informational listings, query buffer control, formatting,
-            conditionals, and more.
+            Default prefix key bindings (with C-b as the prefix) and CLI
+            subcommands — sessions, windows, panes, layouts, copy mode, and
+            more.
           </p>
         </div>
 
@@ -115,7 +112,7 @@ export default function PsqlMetaCommandsPage({
             <input
               className={styles.searchInput}
               type="text"
-              placeholder="Search by command, syntax, or description..."
+              placeholder="Search by key, command, or description..."
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
               autoComplete="off"
