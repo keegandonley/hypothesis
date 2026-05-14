@@ -178,7 +178,7 @@ export default function IframeProxyPage() {
               />
             </form>
           )}
-          <span className={styles.topBarBrand}>
+          <span className={styles.topBarBrand} data-eyebrow>
             <Link
               href="/"
               target={isIframe ? "_blank" : undefined}
