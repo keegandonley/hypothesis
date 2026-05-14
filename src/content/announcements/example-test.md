@@ -6,13 +6,9 @@ active: true
 publishedAt: 2026-05-13
 highlights:
   - kind: tool
-    name: Example Tool
-    description: Replace this with a real tool href before publishing.
     href: /qr-decoder
   - kind: reference
-    name: Example Reference
-    description: Replace this with a real reference href before publishing.
-    href: /reference/http-status
+    href: /reference/http-status-codes
 ---
 
 ## Hello

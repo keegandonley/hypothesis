@@ -7,8 +7,6 @@ export type PopupHighlightKind = "tool" | "experiment" | "reference";
 
 export interface PopupHighlight {
   kind: PopupHighlightKind;
-  name: string;
-  description: string;
   href: string;
 }
 
