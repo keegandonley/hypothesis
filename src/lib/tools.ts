@@ -244,6 +244,33 @@ export const references: ReferenceItem[] = [
   },
   {
     kind: "reference",
+    name: "psql meta-commands",
+    description:
+      "Complete reference for psql backslash commands — informational \\d* listings, formatting, I/O, conditionals, connection, and more.",
+    href: "/references/psql-meta-commands",
+    tags: ["sysadmin"],
+    fieldConfig: {
+      primary: "command",
+      secondary: "description",
+      detail: "syntax",
+    },
+  },
+  {
+    kind: "reference",
+    name: "Postgres JSONB & array operators",
+    description:
+      "Postgres operators for JSONB and array values: access (->, ->>, #>), containment (@>, <@), existence (?, ?|, ?&), modification (||, -, #-), and path queries (@?, @@).",
+    href: "/references/postgres-operators",
+    tags: ["sysadmin", "web"],
+    fieldConfig: {
+      primary: "operator",
+      secondary: "description",
+      detail: "example",
+      badge: "since",
+    },
+  },
+  {
+    kind: "reference",
     name: "Ionicons",
     description:
       "All icons available via @expo/vector-icons Ionicons — 422 base icons each with filled, outline, and sharp variants, plus 94 logo icons. Searchable by name, filterable by category.",

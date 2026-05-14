@@ -15,6 +15,8 @@ import { MEDIA_FILE_GROUPS } from "@/data/media-files";
 import { URL_SCHEME_GROUPS } from "@/data/ios-url-schemes";
 import { PERMISSION_GROUPS } from "@/data/ios-permissions";
 import { IONICON_GROUPS } from "@/data/ionicons";
+import { PSQL_COMMAND_GROUPS } from "@/data/psql-meta-commands";
+import { PG_OPERATOR_GROUPS } from "@/data/postgres-operators";
 
 const REFERENCE_DATA: Record<string, unknown> = {
   "css-selectors": CSS_SELECTOR_GROUPS,
@@ -33,6 +35,8 @@ const REFERENCE_DATA: Record<string, unknown> = {
   "ios-url-schemes": URL_SCHEME_GROUPS,
   "ios-permissions": PERMISSION_GROUPS,
   "ionicons": IONICON_GROUPS,
+  "psql-meta-commands": PSQL_COMMAND_GROUPS,
+  "postgres-operators": PG_OPERATOR_GROUPS,
 };
 
 export default function handler(
