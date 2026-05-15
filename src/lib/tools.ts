@@ -284,6 +284,19 @@ export const references: ReferenceItem[] = [
   },
   {
     kind: "reference",
+    name: "macOS shortcuts",
+    description:
+      "Lesser-known and essential macOS keyboard shortcuts — Finder (⌘⇧. for hidden files), screenshots, Spotlight, windows, text editing, accessibility, power, and startup keys.",
+    href: "/references/macos-shortcuts",
+    tags: ["sysadmin"],
+    fieldConfig: {
+      primary: "command",
+      secondary: "description",
+      detail: "syntax",
+    },
+  },
+  {
+    kind: "reference",
     name: "Ionicons",
     description:
       "All icons available via @expo/vector-icons Ionicons — 422 base icons each with filled, outline, and sharp variants, plus 94 logo icons. Searchable by name, filterable by category.",

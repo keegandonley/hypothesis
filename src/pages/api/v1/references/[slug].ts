@@ -18,6 +18,7 @@ import { IONICON_GROUPS } from "@/data/ionicons";
 import { PSQL_COMMAND_GROUPS } from "@/data/psql-meta-commands";
 import { PG_OPERATOR_GROUPS } from "@/data/postgres-operators";
 import { TMUX_GROUPS } from "@/data/tmux";
+import { MACOS_SHORTCUT_GROUPS } from "@/data/macos-shortcuts";
 
 const REFERENCE_DATA: Record<string, unknown> = {
   "css-selectors": CSS_SELECTOR_GROUPS,
@@ -39,6 +40,7 @@ const REFERENCE_DATA: Record<string, unknown> = {
   "psql-meta-commands": PSQL_COMMAND_GROUPS,
   "postgres-operators": PG_OPERATOR_GROUPS,
   "tmux": TMUX_GROUPS,
+  "macos-shortcuts": MACOS_SHORTCUT_GROUPS,
 };
 
 export default function handler(
