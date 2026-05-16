@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { snapshotWebhookStats, snapshotDeviceTotal } from "@/lib/stats";
+import { snapshotDeviceTotal } from "@/lib/stats";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "GET") {
@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    await Promise.all([snapshotWebhookStats(), snapshotDeviceTotal()]);
+    await snapshotDeviceTotal();
     return res.json({ ok: true });
   } catch (err) {
     console.error("stats cron error", err);

@@ -5,6 +5,7 @@ import {
   countRecentSessionsByIp,
 } from "@/lib/session";
 import { track } from "@vercel/analytics/server";
+import { incrementStat } from "@/lib/stats";
 
 export default async function handler(
   req: NextApiRequest,
@@ -70,6 +71,7 @@ export default async function handler(
 
     const sessionId = crypto.randomUUID();
     const session = await createSession(sessionId, ip);
+    incrementStat("webhook_sessions_web").catch(() => {});
     try {
       await track("Session Created");
     } catch (err) {

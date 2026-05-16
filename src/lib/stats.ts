@@ -24,19 +24,3 @@ export async function snapshotDeviceTotal(): Promise<void> {
   );
 }
 
-export async function snapshotWebhookStats(): Promise<void> {
-  await pool.query(
-    `INSERT INTO hourly_stats (hour, webhook_sessions_web, webhook_events_web)
-     SELECT
-       DATE_TRUNC('hour', s.created_at),
-       COUNT(DISTINCT s.id)::INTEGER,
-       COUNT(we.id)::INTEGER
-     FROM sessions s
-     LEFT JOIN webhook_events we ON we.session_id = s.id
-     WHERE s.device_id IS NULL
-     GROUP BY 1
-     ON CONFLICT (hour) DO UPDATE SET
-       webhook_sessions_web = GREATEST(hourly_stats.webhook_sessions_web, EXCLUDED.webhook_sessions_web),
-       webhook_events_web   = GREATEST(hourly_stats.webhook_events_web,   EXCLUDED.webhook_events_web)`,
-  );
-}
