@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { pool } from "@/lib/db";
+import { flushWebhookStats } from "@/lib/stats";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "GET") {
@@ -14,6 +15,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
+
+    await flushWebhookStats(client);
 
     const eventsResult = await client.query(
       "DELETE FROM webhook_events WHERE session_id IN (SELECT id FROM sessions WHERE updated_at < NOW() - INTERVAL '1 hour' AND device_id IS NULL)"

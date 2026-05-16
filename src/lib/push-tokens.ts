@@ -2,6 +2,7 @@ import { pbkdf2, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 
 import { pool } from "./db";
+import { incrementStat } from "./stats";
 
 const pbkdf2Async = promisify(pbkdf2);
 
@@ -70,7 +71,7 @@ export async function upsertPushToken(
   if (!deviceSecret) {
     // No secret provided — legacy client. Allow the upsert unconditionally
     // but only if no secret is set yet (preserves security once a device is secured).
-    await pool.query(
+    const result = await pool.query<{ is_new: boolean }>(
       `INSERT INTO push_tokens (device_id, token, platform, sandbox)
        VALUES ($1, $2, $3, $4)
        ON CONFLICT (device_id)
@@ -79,9 +80,14 @@ export async function upsertPushToken(
          platform = EXCLUDED.platform,
          sandbox = EXCLUDED.sandbox,
          updated_at = NOW()
-       WHERE push_tokens.secret IS NULL`,
+       WHERE push_tokens.secret IS NULL
+       RETURNING (xmax = 0) AS is_new`,
       [deviceId, token, platform, sandbox],
     );
+
+    if (result.rows[0]?.is_new) {
+      incrementStat("devices_registered").catch(() => {});
+    }
 
     return;
   }
@@ -112,7 +118,7 @@ export async function upsertPushToken(
     // New device or legacy row without a secret — insert or migrate by hashing the secret now.
     const hashed = await hashSecret(deviceSecret);
 
-    await pool.query(
+    const result = await pool.query<{ is_new: boolean }>(
       `INSERT INTO push_tokens (device_id, token, platform, sandbox, secret)
        VALUES ($1, $2, $3, $4, $5)
        ON CONFLICT (device_id)
@@ -121,9 +127,14 @@ export async function upsertPushToken(
          platform = EXCLUDED.platform,
          sandbox = EXCLUDED.sandbox,
          secret = EXCLUDED.secret,
-         updated_at = NOW()`,
+         updated_at = NOW()
+       RETURNING (xmax = 0) AS is_new`,
       [deviceId, token, platform, sandbox, hashed],
     );
+
+    if (result.rows[0]?.is_new) {
+      incrementStat("devices_registered").catch(() => {});
+    }
   }
 }
 
@@ -161,10 +172,14 @@ export async function registerDeviceWithoutToken(
   if (existing.rows.length > 0) return;
 
   const hashed = deviceSecret ? await hashSecret(deviceSecret) : null;
-  await pool.query(
+  const result = await pool.query(
     `INSERT INTO push_tokens (device_id, token, platform, sandbox, secret)
      VALUES ($1, NULL, '', false, $2)
      ON CONFLICT (device_id) DO NOTHING`,
     [deviceId, hashed],
   );
+
+  if (result.rowCount && result.rowCount > 0) {
+    incrementStat("devices_registered").catch(() => {});
+  }
 }

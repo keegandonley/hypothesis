@@ -1,4 +1,5 @@
 import { pool } from "./db";
+import { incrementStat } from "./stats";
 
 export type PushNotification = {
   id: string;
@@ -33,6 +34,7 @@ export async function insertPushNotification(params: {
       params.success,
     ]
   );
+  incrementStat("push_events_sent").catch(() => {});
 }
 
 export async function getPushNotifications(params: {

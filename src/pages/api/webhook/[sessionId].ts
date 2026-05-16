@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "@/lib/session";
 import { insertEvent, countRecentEvents } from "@/lib/events";
 import { sendWebhookPushNotification } from "@/lib/webhook-push";
+import { incrementStat } from "@/lib/stats";
 import { track } from "@vercel/analytics/server";
 
 export const config = { api: { bodyParser: false } };
@@ -116,6 +117,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (native && session.deviceId) {
       await sendWebhookPushNotification(session.deviceId, req.method!, eventId).catch(() => {});
+      incrementStat("webhook_events_native").catch(() => {});
     }
 
     try {
