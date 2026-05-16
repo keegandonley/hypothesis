@@ -87,9 +87,8 @@ export async function upsertPushToken(
 
     if (result.rows[0]?.is_new) {
       incrementStat("devices_registered").catch(() => {});
-      snapshotDeviceTotal().catch(() => {});
     }
-
+    snapshotDeviceTotal().catch(() => {});
     return;
   }
 
@@ -135,9 +134,9 @@ export async function upsertPushToken(
 
     if (result.rows[0]?.is_new) {
       incrementStat("devices_registered").catch(() => {});
-      snapshotDeviceTotal().catch(() => {});
     }
   }
+  snapshotDeviceTotal().catch(() => {});
 }
 
 export async function getPushTokenByDeviceId(
@@ -183,5 +182,6 @@ export async function registerDeviceWithoutToken(
 
   if (result.rowCount && result.rowCount > 0) {
     incrementStat("devices_registered").catch(() => {});
+    snapshotDeviceTotal().catch(() => {});
   }
 }
