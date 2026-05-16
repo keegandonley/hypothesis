@@ -1,0 +1,1 @@
+ALTER TABLE hourly_stats ADD COLUMN devices_total INTEGER NOT NULL DEFAULT 0;

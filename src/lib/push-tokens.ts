@@ -2,7 +2,7 @@ import { pbkdf2, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 
 import { pool } from "./db";
-import { incrementStat } from "./stats";
+import { incrementStat, snapshotDeviceTotal } from "./stats";
 
 const pbkdf2Async = promisify(pbkdf2);
 
@@ -87,6 +87,7 @@ export async function upsertPushToken(
 
     if (result.rows[0]?.is_new) {
       incrementStat("devices_registered").catch(() => {});
+      snapshotDeviceTotal().catch(() => {});
     }
 
     return;
@@ -134,6 +135,7 @@ export async function upsertPushToken(
 
     if (result.rows[0]?.is_new) {
       incrementStat("devices_registered").catch(() => {});
+      snapshotDeviceTotal().catch(() => {});
     }
   }
 }
