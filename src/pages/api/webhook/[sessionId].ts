@@ -117,9 +117,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (native && session.deviceId) {
       await sendWebhookPushNotification(session.deviceId, req.method!, eventId).catch(() => {});
-      incrementStat("webhook_events_native").catch(() => {});
+      await incrementStat("webhook_events_native").catch((err) => console.error("[stats] failed to increment webhook_events_native", err));
     } else {
-      incrementStat("webhook_events_web").catch(() => {});
+      await incrementStat("webhook_events_web").catch((err) => console.error("[stats] failed to increment webhook_events_web", err));
     }
 
     try {

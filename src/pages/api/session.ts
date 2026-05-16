@@ -71,7 +71,7 @@ export default async function handler(
 
     const sessionId = crypto.randomUUID();
     const session = await createSession(sessionId, ip);
-    incrementStat("webhook_sessions_web").catch(() => {});
+    await incrementStat("webhook_sessions_web").catch((err) => console.error("[stats] failed to increment webhook_sessions_web", err));
     try {
       await track("Session Created");
     } catch (err) {

@@ -34,7 +34,7 @@ export async function insertPushNotification(params: {
       params.success,
     ]
   );
-  incrementStat("push_events_sent").catch(() => {});
+  await incrementStat("push_events_sent").catch((err) => console.error("[stats] failed to increment push_events_sent", err));
 }
 
 export async function getPushNotifications(params: {

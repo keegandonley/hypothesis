@@ -86,9 +86,9 @@ export async function upsertPushToken(
     );
 
     if (result.rows[0]?.is_new) {
-      incrementStat("devices_registered").catch(() => {});
+      await incrementStat("devices_registered").catch((err) => console.error("[stats] failed to increment devices_registered", err));
     }
-    snapshotDeviceTotal().catch(() => {});
+    await snapshotDeviceTotal().catch((err) => console.error("[stats] failed to snapshot device total", err));
     return;
   }
 
@@ -133,10 +133,10 @@ export async function upsertPushToken(
     );
 
     if (result.rows[0]?.is_new) {
-      incrementStat("devices_registered").catch(() => {});
+      await incrementStat("devices_registered").catch((err) => console.error("[stats] failed to increment devices_registered", err));
     }
   }
-  snapshotDeviceTotal().catch(() => {});
+  await snapshotDeviceTotal().catch((err) => console.error("[stats] failed to snapshot device total", err));
 }
 
 export async function getPushTokenByDeviceId(
@@ -181,7 +181,7 @@ export async function registerDeviceWithoutToken(
   );
 
   if (result.rowCount && result.rowCount > 0) {
-    incrementStat("devices_registered").catch(() => {});
-    snapshotDeviceTotal().catch(() => {});
+    await incrementStat("devices_registered").catch((err) => console.error("[stats] failed to increment devices_registered", err));
+    await snapshotDeviceTotal().catch((err) => console.error("[stats] failed to snapshot device total", err));
   }
 }
