@@ -406,6 +406,23 @@
   color: var(--accent);
 }
 
+.footerSocial {
+  display: flex;
+  gap: 16px;
+}
+
+.footerSocialLink {
+  color: var(--muted);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease;
+}
+
+.footerSocialLink:hover {
+  color: var(--accent);
+}
+
 .blogCard {
   display: flex;
   flex-direction: row;

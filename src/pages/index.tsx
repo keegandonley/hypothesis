@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import styles from "../styles/index.module.css";
 import { DocIcon } from "@/components/icons/doc";
+import { SiBluesky, SiGithub } from "react-icons/si";
 import { useBranding, getBranding } from "@/lib/branding";
 import {
   tools,
@@ -567,6 +568,26 @@ export default function HomePage({
               rel="noopener noreferrer"
             >
               keegan donley
+            </a>
+          </div>
+          <div className={styles.footerSocial}>
+            <a
+              href="https://keegan.codes/bluesky"
+              className={styles.footerSocialLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Bluesky"
+            >
+              <SiBluesky />
+            </a>
+            <a
+              href="https://github.com/keegandonley/hypothesis"
+              className={styles.footerSocialLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+            >
+              <SiGithub />
             </a>
           </div>
         </div>
