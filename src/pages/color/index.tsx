@@ -296,6 +296,7 @@ export default function ColorPage() {
   const [copiedId, setCopiedId] = useState<ColorFormat | null>(null);
   const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [url, setUrl] = useState("");
+  const [supportsEyeDropper, setSupportsEyeDropper] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
@@ -315,6 +316,7 @@ export default function ColorPage() {
       setColor(parseColor(v));
     }
     setUrl(window.location.href);
+    setSupportsEyeDropper("EyeDropper" in window);
   }, []);
 
   useEffect(() => {
@@ -329,6 +331,16 @@ export default function ColorPage() {
     const newUrl = buildUrl(value.trim());
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
+  };
+
+  const handleEyeDropper = async () => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await new (window as any).EyeDropper().open();
+      handleInputChange(result.sRGBHex);
+    } catch {
+      // user cancelled
+    }
   };
 
   const handleReset = () => {
@@ -462,6 +474,11 @@ export default function ColorPage() {
           placeholder="#7ee8a2, rgb(126, 232, 162), oklch(0.84 0.12 152), etc."
           spellCheck={false}
         />
+        {supportsEyeDropper && !isIframe && (
+          <button className={styles.eyeDropperBtn} onClick={handleEyeDropper} title="Pick a color from anywhere on screen">
+            Eyedropper
+          </button>
+        )}
         <button className={styles.resetBtn} onClick={handleReset}>
           Reset
         </button>

@@ -340,6 +340,27 @@
   color: var(--bg);
 }
 
+.eyeDropperBtn {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.eyeDropperBtn:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
 .resetBtn {
   flex-shrink: 0;
   padding: 6px 14px;

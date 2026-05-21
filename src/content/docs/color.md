@@ -22,9 +22,15 @@ Supported input formats:
 
 The large preview bar above the input shows the parsed color. A checkerboard pattern is rendered underneath to make transparency (alpha < 1) visible. If the input is empty or invalid, the swatch is blank.
 
-**Clicking the swatch opens a visual color picker.** The selected color is written into the text input as `rgb(...)` or `rgba(...)` (the latter when the picker returns an alpha value), and all output cards update immediately.
+**Clicking the swatch opens a visual color picker.** The selected color is written into the text input as `rgb(...)` and all output cards update immediately.
 
 A **format badge** next to the swatch shows which format was detected from the input string.
+
+## Eyedropper
+
+On supported browsers (Chromium-based: Chrome, Edge, Arc, etc.), an **Eyedropper** button appears in the input row. Clicking it activates the browser's native screen color picker — move the crosshair over any pixel on screen and click to sample it. The picked color is loaded into the tool exactly as if you had typed it.
+
+The button is hidden in unsupported browsers (Firefox, Safari) and when the tool is embedded in an iframe.
 
 ## Output Cards
 
