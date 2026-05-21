@@ -57,12 +57,12 @@ function md5(bytes: Uint8Array): string {
   return Array.from(out).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function hashText(text: string): Promise<Record<string, string>> {
-  const encoded = new TextEncoder().encode(text);
+async function hashBytes(buffer: ArrayBuffer): Promise<Record<string, string>> {
+  const bytes = new Uint8Array(buffer);
   const results: Record<string, string> = {};
-  results["MD5"] = md5(encoded);
+  results["MD5"] = md5(bytes);
   for (const algo of SHA_ALGOS) {
-    const buf = await crypto.subtle.digest(algo, encoded);
+    const buf = await crypto.subtle.digest(algo, buffer);
     results[algo] = Array.from(new Uint8Array(buf))
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
@@ -70,14 +70,31 @@ async function hashText(text: string): Promise<Record<string, string>> {
   return results;
 }
 
+async function hashText(text: string): Promise<Record<string, string>> {
+  const encoded = new TextEncoder().encode(text);
+  return hashBytes(encoded.buffer as ArrayBuffer);
+}
+
+function formatBytes(n: number): string {
+  if (n < 1024) return `${n} B`;
+  if (n < 1048576) return `${(n / 1024).toFixed(1)} KB`;
+  if (n < 1073741824) return `${(n / 1048576).toFixed(1)} MB`;
+  return `${(n / 1073741824).toFixed(1)} GB`;
+}
+
 export default function HashPage() {
   const branding = useBranding();
   const isIframe = useIsIframe();
+  const [mode, setMode] = useState<"text" | "file">("text");
   const [input, setInput] = useState("");
   const [hashes, setHashes] = useState<Record<string, string>>({});
   const [copiedAlgo, setCopiedAlgo] = useState<string | null>(null);
   const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [url, setUrl] = useState("");
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [fileSize, setFileSize] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -114,9 +131,28 @@ export default function HashPage() {
   const handleReset = () => {
     setInput("");
     setHashes({});
+    setFileName(null);
+    setFileSize(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
+  };
+
+  const handleModeChange = (newMode: "text" | "file") => {
+    setMode(newMode);
+    setHashes({});
+    setFileName(null);
+    setFileSize(null);
+    setInput("");
+    const newUrl = `${window.location.origin}${window.location.pathname}`;
+    history.replaceState(null, "", newUrl);
+    setUrl(newUrl);
+  };
+
+  const handleFile = (file: File) => {
+    setFileName(file.name);
+    setFileSize(file.size);
+    file.arrayBuffer().then((buf) => hashBytes(buf).then(setHashes));
   };
 
   const handleCopyHash = (algo: string) => {
@@ -168,7 +204,7 @@ export default function HashPage() {
         </div>
         <h1 className={styles.title}>Hash Generator</h1>
         <p className={styles.tagline}>
-          Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text input
+          Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text or file
         </p>
       </div>
 
@@ -177,14 +213,62 @@ export default function HashPage() {
       <div className={styles.inputPanel}>
         <div className={styles.panelHeader}>
           <span className={styles.panelLabel}>Input</span>
+          <div className={styles.modeTabs}>
+            <button
+              className={`${styles.modeTab}${mode === "text" ? ` ${styles.modeTabActive}` : ""}`}
+              onClick={() => handleModeChange("text")}
+            >
+              Text
+            </button>
+            <button
+              className={`${styles.modeTab}${mode === "file" ? ` ${styles.modeTabActive}` : ""}`}
+              onClick={() => handleModeChange("file")}
+            >
+              File
+            </button>
+          </div>
         </div>
-        <textarea
-          className={styles.textarea}
-          value={input}
-          onChange={(e) => handleInputChange(e.target.value)}
-          placeholder="Enter text to hash..."
-          spellCheck={false}
-        />
+        {mode === "text" ? (
+          <textarea
+            className={styles.textarea}
+            value={input}
+            onChange={(e) => handleInputChange(e.target.value)}
+            placeholder="Enter text to hash..."
+            spellCheck={false}
+          />
+        ) : (
+          <div
+            className={`${styles.dropZone}${isDragging ? ` ${styles.dropZoneDragging}` : ""}`}
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDragging(false);
+              const file = e.dataTransfer.files[0];
+              if (file) handleFile(file);
+            }}
+          >
+            {fileName ? (
+              <div className={styles.fileInfo}>
+                <span className={styles.fileName}>{fileName}</span>
+                <span className={styles.fileSizeLabel}>{formatBytes(fileSize!)}</span>
+              </div>
+            ) : (
+              <span className={styles.dropZoneHint}>Drop a file here or click to browse</span>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFile(file);
+                e.target.value = "";
+              }}
+            />
+          </div>
+        )}
       </div>
 
       <div className={styles.hashList}>
@@ -213,7 +297,7 @@ export default function HashPage() {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
+      <div className={styles.permalinkRow} data-permalink-row style={mode === "file" ? { display: "none" } : undefined}>
         <span className={styles.fieldLabel}>Permalink</span>
         <span className={styles.permalinkUrl}>{url}</span>
         {!isIframe && (
