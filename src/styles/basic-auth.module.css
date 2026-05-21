@@ -63,6 +63,40 @@
   transition: color 0.15s ease;
 }
 
+/* Mode tabs */
+
+.modeTabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.modeTab {
+  padding: 4px 14px;
+  background-color: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.modeTab:hover:not(.modeTabActive) {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+.modeTabActive {
+  background-color: var(--accent-subtle);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
 .body {
   flex: 1;
   display: flex;
@@ -106,6 +140,10 @@
 }
 
 .input:focus { border-color: var(--accent-border); }
+
+.inputError {
+  border-color: #ef444466 !important;
+}
 
 .input::placeholder {
   color: var(--muted);
@@ -178,6 +216,21 @@
   letter-spacing: 0.02em;
   word-break: break-all;
   line-height: 1.5;
+}
+
+.outputEmpty {
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+.outputActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.outputActions .showHideBtn {
+  position: static;
 }
 
 /* Panel copy buttons (copy content, not URL) */
