@@ -1,10 +1,24 @@
 # qr code
 
-Generate QR codes from any text or URL. Download as SVG or PNG, or copy the SVG markup directly.
+Generate QR codes from text, URLs, WiFi credentials, or contact cards. Download as SVG or PNG, or copy the SVG markup directly.
 
 ## Overview
 
-Enter any text or URL in the input field and a QR code is generated in real time as an inline SVG. The SVG uses the tool's color scheme by default. PNG downloads render on a standard white background for maximum scanner compatibility.
+Select an input mode, fill in the fields, and a QR code is generated in real time as an inline SVG. The SVG uses the tool's color scheme by default. PNG downloads render on a standard white background for maximum scanner compatibility.
+
+## Input modes
+
+**Text** — free-form text or URL. Any string is accepted. Existing permalinks using `?value=` continue to work.
+
+**WiFi** — generates a WiFi QR code that phones can scan to join a network automatically. Fields:
+- **SSID** — the network name (required)
+- **Password** — network password (disabled when security is None)
+- **Security** — WPA/WPA2, WEP, or None (open network)
+- **Hidden** — whether the network is hidden (not broadcast)
+
+Produces a string like `WIFI:T:WPA;S:MyNetwork;P:secret;H:false;;`.
+
+**vCard** — generates a contact card QR code. Phones scan it to offer adding the contact. Fields: first name, last name, phone, email, organization, URL. All fields are optional; the QR code is generated as soon as any field is filled. Produces a vCard 3.0 payload.
 
 ## Error correction levels
 
@@ -25,7 +39,13 @@ Higher error correction increases QR code density (more modules, larger image).
 
 ## URL parameters
 
-`?value=<encoded-text>&ecl=<L|M|Q|H>` — pre-fills the input and error correction level. Useful for sharing or bookmarking specific QR codes.
+All modes support permalinks. The `ecl` parameter is shared across modes.
+
+| Mode | Parameters |
+|------|-----------|
+| Text | `?value=<text>&ecl=M` |
+| WiFi | `?mode=wifi&ssid=<name>&wpass=<pw>&sec=<WPA\|WEP\|nopass>&hidden=1&ecl=M` |
+| vCard | `?mode=vcard&fn=<first>&ln=<last>&tel=<phone>&email=<email>&org=<org>&url=<url>&ecl=M` |
 
 ## API
 

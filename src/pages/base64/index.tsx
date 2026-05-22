@@ -7,7 +7,9 @@ import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 
-export default function Base64Page(): React.ReactNode {
+type Tab = "text" | "image";
+
+export default function Base64Page() {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [plain, setPlain] = useState("");
@@ -19,7 +21,19 @@ export default function Base64Page(): React.ReactNode {
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const plainRef = useRef<HTMLTextAreaElement>(null);
 
-  const buildUrl = (enc: string, json: boolean): string => {
+  const [tab, setTab] = useState<Tab>("text");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageDataUrl, setImageDataUrl] = useState<string>("");
+  const [imageBase64, setImageBase64] = useState<string>("");
+  const [imageDragging, setImageDragging] = useState(false);
+  const [imageError, setImageError] = useState<string>("");
+  const [imageCopiedRaw, setImageCopiedRaw] = useState(false);
+  const [imageCopiedDataUrl, setImageCopiedDataUrl] = useState(false);
+  const imageFileInputRef = useRef<HTMLInputElement>(null);
+  const imageCopyRawTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const imageCopyDataUrlTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const buildUrl = (enc: string, json: boolean) => {
     if (!enc) return `${window.location.origin}${window.location.pathname}`;
     const params = new URLSearchParams({ value: enc });
 
@@ -32,6 +46,9 @@ export default function Base64Page(): React.ReactNode {
     const params = new URLSearchParams(window.location.search);
     const value = params.get("value");
     const jsonParam = params.get("json") === "1";
+    const tabParam = params.get("tab");
+
+    if (tabParam === "image") setTab("image");
 
     if (value) {
       /* eslint-disable-next-line react-hooks/set-state-in-effect */
@@ -190,6 +207,82 @@ export default function Base64Page(): React.ReactNode {
     });
   };
 
+  const handleTabChange = (next: Tab) => {
+    setTab(next);
+    const newUrl =
+      next === "image"
+        ? `${window.location.origin}${window.location.pathname}?tab=image`
+        : buildUrl(encoded, jsonMode);
+    history.replaceState(null, "", newUrl);
+    setUrl(newUrl);
+  };
+
+  const handleImageFile = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      setImageError("Unsupported file type. Please drop an image.");
+      return;
+    }
+    if (file.size / (1024 * 1024) > 5) {
+      setImageError(
+        `Warning: large file (${(file.size / 1024 / 1024).toFixed(1)} MB). Output may be very long.`
+      );
+    } else {
+      setImageError("");
+    }
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target!.result as string;
+      setImageDataUrl(dataUrl);
+      setImageBase64(dataUrl.split(",")[1] ?? "");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleImageDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setImageDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleImageFile(file);
+  };
+
+  const handleImageDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setImageDragging(true);
+  };
+
+  const handleImageDragLeave = () => setImageDragging(false);
+
+  const handleImageFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleImageFile(file);
+    e.target.value = "";
+  };
+
+  const handleCopyRaw = () => {
+    copyToClipboard(imageBase64).then(() => {
+      setImageCopiedRaw(true);
+      if (imageCopyRawTimeoutRef.current)
+        clearTimeout(imageCopyRawTimeoutRef.current);
+      imageCopyRawTimeoutRef.current = setTimeout(
+        () => setImageCopiedRaw(false),
+        1500
+      );
+    });
+  };
+
+  const handleCopyDataUrl = () => {
+    copyToClipboard(imageDataUrl).then(() => {
+      setImageCopiedDataUrl(true);
+      if (imageCopyDataUrlTimeoutRef.current)
+        clearTimeout(imageCopyDataUrlTimeoutRef.current);
+      imageCopyDataUrlTimeoutRef.current = setTimeout(
+        () => setImageCopiedDataUrl(false),
+        1500
+      );
+    });
+  };
+
   return (
     <div className={styles.page}>
       <ToolHead
@@ -224,77 +317,186 @@ export default function Base64Page(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>
-              {jsonMode ? "JSON" : "Plain Text"}
-            </span>
-            <div className={styles.panelHeaderRight}>
-              <button
-                className={`${styles.toggleBtn}${jsonMode ? ` ${styles.active}` : ""}`}
-                onClick={handleJsonToggle}
-              >
-                JSON Mode {jsonMode ? "ON" : "OFF"}
-              </button>
-              {jsonMode ? (
-                plain.length > 0 &&
-                (jsonValid ? (
-                  <span className={styles.badge}>valid</span>
+      <div className={styles.tabRow}>
+        {(["text", "image"] as Tab[]).map((t) => (
+          <button
+            key={t}
+            className={`${styles.tabBtn}${tab === t ? ` ${styles.tabBtnActive}` : ""}`}
+            onClick={() => handleTabChange(t)}
+          >
+            {t.toUpperCase()}
+          </button>
+        ))}
+      </div>
+
+      {tab === "text" ? (
+        <div className={styles.panels}>
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelLabel}>
+                {jsonMode ? "JSON" : "Plain Text"}
+              </span>
+              <div className={styles.panelHeaderRight}>
+                <button
+                  className={`${styles.toggleBtn}${jsonMode ? ` ${styles.active}` : ""}`}
+                  onClick={handleJsonToggle}
+                >
+                  JSON Mode {jsonMode ? "ON" : "OFF"}
+                </button>
+                {jsonMode ? (
+                  plain.length > 0 &&
+                  (jsonValid ? (
+                    <span className={styles.badge}>valid</span>
+                  ) : (
+                    <span className={styles.badgeError}>invalid</span>
+                  ))
                 ) : (
-                  <span className={styles.badgeError}>invalid</span>
-                ))
-              ) : (
-                <span className={styles.badge}>{plain.length} chars</span>
+                  <span className={styles.badge}>{plain.length} chars</span>
+                )}
+              </div>
+            </div>
+            <div className={styles.textareaWrapper}>
+              <textarea
+                ref={plainRef}
+                className={styles.textarea}
+                value={plain}
+                onChange={(e) => handlePlainChange(e.target.value)}
+                onKeyDown={handlePlainKeyDown}
+                placeholder={`Type or paste ${jsonMode ? "JSON" : "plain text"} here...`}
+                spellCheck={false}
+              />
+              {jsonMode && (
+                <button
+                  className={styles.formatBtn}
+                  disabled={!jsonValid}
+                  onClick={handleFormat}
+                >
+                  Format
+                </button>
               )}
             </div>
           </div>
-          <div className={styles.textareaWrapper}>
-            <textarea
-              ref={plainRef}
-              className={styles.textarea}
-              value={plain}
-              onChange={(e) => {
-                handlePlainChange(e.target.value);
-              }}
-              onKeyDown={handlePlainKeyDown}
-              placeholder={`Type or paste ${jsonMode ? "JSON" : "plain text"} here...`}
-              spellCheck={false}
-            />
-            {jsonMode && (
-              <button
-                className={styles.formatBtn}
-                disabled={!jsonValid}
-                onClick={handleFormat}
-              >
-                Format
-              </button>
+
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelLabel}>Base64</span>
+              <span className={styles.badge}>{encoded.length} chars</span>
+            </div>
+            <div className={styles.textareaWrapper}>
+              <textarea
+                className={styles.textarea}
+                value={encoded}
+                onChange={(e) => handleEncodedChange(e.target.value)}
+                placeholder="Paste base64 here..."
+                spellCheck={false}
+              />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className={styles.imagePanels}>
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelLabel}>Image</span>
+              {imageFile && (
+                <span className={styles.badge}>{imageFile.name}</span>
+              )}
+            </div>
+            <div
+              className={`${styles.imageDropZone}${imageDragging ? ` ${styles.imageDropZoneDragging}` : ""}`}
+              onDrop={handleImageDrop}
+              onDragOver={handleImageDragOver}
+              onDragLeave={handleImageDragLeave}
+              onClick={() => imageFileInputRef.current?.click()}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) =>
+                e.key === "Enter" && imageFileInputRef.current?.click()
+              }
+            >
+              <input
+                ref={imageFileInputRef}
+                type="file"
+                accept="image/*"
+                className={styles.hiddenInput}
+                onChange={handleImageFileInput}
+              />
+              {imageDataUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={imageDataUrl}
+                  className={styles.imagePreview}
+                  alt="Preview"
+                />
+              ) : (
+                <>
+                  <span className={styles.dropZoneIcon}>↑</span>
+                  <span className={styles.dropZoneText}>
+                    Drop an image or{" "}
+                    <span className={styles.browseLink}>browse</span>
+                  </span>
+                  <span className={styles.dropZoneHint}>Any image format</span>
+                </>
+              )}
+            </div>
+            {imageError && (
+              <p className={styles.imageError}>{imageError}</p>
             )}
           </div>
-        </div>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Base64</span>
-            <span className={styles.badge}>{encoded.length} chars</span>
-          </div>
-          <div className={styles.textareaWrapper}>
-            <textarea
-              className={styles.textarea}
-              value={encoded}
-              onChange={(e) => {
-                handleEncodedChange(e.target.value);
-              }}
-              placeholder="Paste base64 here..."
-              spellCheck={false}
-            />
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelLabel}>Raw Base64</span>
+              <span className={styles.badge}>{imageBase64.length} chars</span>
+            </div>
+            <div className={styles.textareaWrapper}>
+              <textarea
+                className={styles.textarea}
+                value={imageBase64}
+                readOnly
+                placeholder="Encode an image to see its raw base64 string..."
+                spellCheck={false}
+              />
+              {imageBase64 && !isIframe && (
+                <button
+                  className={`${styles.formatBtn}${imageCopiedRaw ? ` ${styles.formatBtnCopied}` : ""}`}
+                  onClick={handleCopyRaw}
+                >
+                  {imageCopiedRaw ? "Copied!" : "Copy"}
+                </button>
+              )}
+            </div>
+            <div className={styles.panelHeaderDivided}>
+              <span className={styles.panelLabel}>Data URL</span>
+              <span className={styles.badge}>{imageDataUrl.length} chars</span>
+            </div>
+            <div className={styles.textareaWrapper}>
+              <textarea
+                className={styles.textarea}
+                value={imageDataUrl}
+                readOnly
+                placeholder="data:image/png;base64,..."
+                spellCheck={false}
+              />
+              {imageDataUrl && !isIframe && (
+                <button
+                  className={`${styles.formatBtn}${imageCopiedDataUrl ? ` ${styles.formatBtnCopied}` : ""}`}
+                  onClick={handleCopyDataUrl}
+                >
+                  {imageCopiedDataUrl ? "Copied!" : "Copy"}
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
+      <div
+        className={`${styles.permalinkRow}${tab === "image" ? ` ${styles.permalinkRowMuted}` : ""}`}
+        data-permalink-row
+      >
         <span className={styles.fieldLabel}>Permalink</span>
         <span className={styles.permalinkUrl}>{url}</span>
         {!isIframe && (

@@ -65,6 +65,10 @@ While the webhook page is open, the browser sends a **heartbeat** to the server 
 
 If you navigate away or close the tab, heartbeats stop. After **5 minutes of inactivity**, the webhook receiver returns **HTTP 410 Gone** to any incoming requests. Returning to the page or reloading it resumes heartbeats and reactivates the session immediately.
 
+## Session idle timeout
+
+The UI also tracks inactivity independently. If **no requests are received for 30 minutes**, the page enters an idle state and displays a prompt to re-activate the session. Clicking **Re-activate session** resumes polling and resets the idle timer. This only affects the browser UI — the underlying session remains on the server.
+
 ## Session expiry and cleanup
 
 There are two distinct inactivity thresholds:

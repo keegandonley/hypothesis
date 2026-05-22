@@ -319,3 +319,138 @@
   color: #fbbf24;
   text-transform: uppercase;
 }
+
+.tabRow {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.tabBtn {
+  padding: 4px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.tabBtn:hover {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.tabBtnActive {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.imagePanels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 640px) {
+  .imagePanels {
+    grid-template-columns: 1fr;
+  }
+}
+
+.imageDropZone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-top: none;
+  cursor: pointer;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  transition: background 0.15s;
+  outline: none;
+  min-height: 160px;
+  background: transparent;
+}
+
+.imageDropZone:hover,
+.imageDropZone:focus {
+  background: var(--accent-subtle);
+}
+
+.imageDropZoneDragging {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.imagePreview {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 4px;
+  display: block;
+}
+
+.dropZoneIcon {
+  font-size: 1.5rem;
+  opacity: 0.4;
+  line-height: 1;
+}
+
+.dropZoneText {
+  font-size: 12px;
+  color: var(--text);
+}
+
+.browseLink {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.dropZoneHint {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.imageError {
+  font-size: 10px;
+  color: #fbbf24;
+  letter-spacing: 0.04em;
+  padding: 4px 14px 8px;
+  margin: 0;
+}
+
+.panelHeaderDivided {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.formatBtnCopied {
+  background-color: var(--accent-subtle) !important;
+  border-color: var(--accent-border) !important;
+  color: var(--accent) !important;
+}
+
+.permalinkRowMuted {
+  opacity: 0.4;
+  pointer-events: none;
+}
