@@ -82,7 +82,11 @@ function ResultRows({
   const flatItems = groups.flatMap((g) => g.items);
 
   if (flatItems.length === 0) {
-    return <div className={styles.emptyState}>no results for &ldquo;{query}&rdquo;</div>;
+    return (
+      <div className={styles.emptyState}>
+        no results for &ldquo;{query}&rdquo;
+      </div>
+    );
   }
 
   let flatIndex = 0;
@@ -168,8 +172,8 @@ function ResultRows({
 type Tab = {
   id: string;
   item: AnyItem;
-  initialSrc: string;  // iframe src — set once at creation/restore, never updated
-  currentUrl: string;  // live URL from url-update messages, used only for persistence
+  initialSrc: string; // iframe src — set once at creation/restore, never updated
+  currentUrl: string; // live URL from url-update messages, used only for persistence
 };
 
 type StoredTabs = {
@@ -224,7 +228,9 @@ export default function DashboardPage() {
     const saved = localStorage.getItem("work_tabs");
     if (saved) {
       try {
-        const { tabs: savedTabs, activeTabId: savedActiveId } = JSON.parse(saved) as StoredTabs;
+        const { tabs: savedTabs, activeTabId: savedActiveId } = JSON.parse(
+          saved,
+        ) as StoredTabs;
         const allItems = [...tools, ...experiments, ...references];
         const restoredTabs: Tab[] = savedTabs.flatMap(({ id, href, url }) => {
           const item = allItems.find((i) => i.href === href);
@@ -251,17 +257,26 @@ export default function DashboardPage() {
   // Handle postMessages from embedded tools
   useEffect(() => {
     function handleMessage(e: MessageEvent) {
-      if (e.data?.type === "clipboard-write" && typeof e.data.text === "string") {
+      if (
+        e.data?.type === "clipboard-write" &&
+        typeof e.data.text === "string"
+      ) {
         navigator.clipboard.writeText(e.data.text).catch(() => {});
       }
       if (e.data?.type === "focus-search") {
         inputRef.current?.focus();
         if (activeTabIdRef.current) setResultsOpen(true);
       }
-      if (e.data?.type === "url-update" && typeof e.data.url === "string" && e.data.tabId) {
+      if (
+        e.data?.type === "url-update" &&
+        typeof e.data.url === "string" &&
+        e.data.tabId
+      ) {
         const { url, tabId } = e.data as { url: string; tabId: string };
         setTabs((prev) => {
-          const next = prev.map((t) => (t.id === tabId ? { ...t, currentUrl: url } : t));
+          const next = prev.map((t) =>
+            t.id === tabId ? { ...t, currentUrl: url } : t,
+          );
           saveToStorage(next, activeTabIdRef.current);
           return next;
         });
@@ -313,7 +328,11 @@ export default function DashboardPage() {
   function saveWorkspace() {
     const data: HypFile = {
       version: 1,
-      tabs: tabs.map((t) => ({ id: t.id, href: t.item.href, url: t.currentUrl })),
+      tabs: tabs.map((t) => ({
+        id: t.id,
+        href: t.item.href,
+        url: t.currentUrl,
+      })),
       activeTabId,
     };
     const json = JSON.stringify(data, null, 2);
@@ -331,7 +350,9 @@ export default function DashboardPage() {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const { tabs: savedTabs, activeTabId: savedActiveId } = JSON.parse(e.target?.result as string) as HypFile;
+        const { tabs: savedTabs, activeTabId: savedActiveId } = JSON.parse(
+          e.target?.result as string,
+        ) as HypFile;
         const allItems = [...tools, ...experiments, ...references];
         const restoredTabs: Tab[] = savedTabs.flatMap(({ id, href, url }) => {
           const item = allItems.find((i) => i.href === href);
@@ -356,7 +377,9 @@ export default function DashboardPage() {
   }
 
   function openTab(item: AnyItem) {
-    const id = crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const id =
+      crypto.randomUUID?.() ??
+      `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const url = `${item.href}?workMode=1&tabId=${id}`;
     const newTab: Tab = { id, item, initialSrc: url, currentUrl: url };
     const newTabs = [...tabs, newTab];
@@ -513,7 +536,10 @@ export default function DashboardPage() {
             <button className={styles.closeBtn} onClick={saveWorkspace}>
               save
             </button>
-            <button className={styles.closeBtn} onClick={() => fileInputRef.current?.click()}>
+            <button
+              className={styles.closeBtn}
+              onClick={() => fileInputRef.current?.click()}
+            >
               load
             </button>
           </div>
@@ -526,8 +552,12 @@ export default function DashboardPage() {
                 styles.tab,
                 tab.id === activeTabId ? styles.tabActive : "",
                 tab.id === dragTabId ? styles.tabDragging : "",
-                tab.id === dragOverTabId && tab.id !== dragTabId ? styles.tabDragOver : "",
-              ].filter(Boolean).join(" ")}
+                tab.id === dragOverTabId && tab.id !== dragTabId
+                  ? styles.tabDragOver
+                  : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
               draggable
               onDragStart={(e) => handleDragStart(e, tab.id)}
               onDragOver={(e) => handleDragOver(e, tab.id)}

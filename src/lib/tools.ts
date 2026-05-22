@@ -139,7 +139,11 @@ export const references: ReferenceItem[] = [
       "Signal numbers, names, and default actions for POSIX signals — from SIGTERM and SIGKILL to SIGWINCH and SIGCHLD.",
     href: "/references/unix-signals",
     tags: ["sysadmin"],
-    fieldConfig: { primary: "name", secondary: "number", detail: "description" },
+    fieldConfig: {
+      primary: "name",
+      secondary: "number",
+      detail: "description",
+    },
   },
   {
     kind: "reference",
@@ -192,7 +196,11 @@ export const references: ReferenceItem[] = [
       "Regular expression quick reference: anchors, character classes, quantifiers, groups, lookaheads, flags, and escape sequences.",
     href: "/references/regex-syntax",
     tags: ["text", "web"],
-    fieldConfig: { primary: "token", secondary: "description", detail: "example" },
+    fieldConfig: {
+      primary: "token",
+      secondary: "description",
+      detail: "example",
+    },
   },
   {
     kind: "reference",
@@ -571,8 +579,7 @@ export const tools: ToolItem[] = [
   {
     kind: "tool",
     name: "qr decoder",
-    description:
-      "Decode QR codes using your device camera.",
+    description: "Decode QR codes using your device camera.",
     href: "/qr-decoder",
     docsHref: "/docs/qr-decoder",
     tags: ["mobile"],

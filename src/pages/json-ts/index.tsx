@@ -25,7 +25,7 @@ function jsonToTs(input: string, rootName: string, optional: boolean): string {
       .charAt(0)
       .toUpperCase()
       .concat(
-        s.slice(1).replace(/[-_\s]+(.)/g, (_, c: string) => c.toUpperCase())
+        s.slice(1).replace(/[-_\s]+(.)/g, (_, c: string) => c.toUpperCase()),
       );
   }
 
@@ -119,13 +119,13 @@ export default function JsonTsPage() {
   const [copiedOutput, setCopiedOutput] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const copyOutputTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
+    null,
   );
 
   const buildUrl = (j: string, n: string, o: boolean) => {
     if (!j) return `${window.location.origin}${window.location.pathname}`;
     const payload = btoa(
-      unescape(encodeURIComponent(JSON.stringify({ j, n, o })))
+      unescape(encodeURIComponent(JSON.stringify({ j, n, o }))),
     );
     return `${window.location.origin}${window.location.pathname}?v=${payload}`;
   };
@@ -217,7 +217,7 @@ export default function JsonTsPage() {
         clearTimeout(copyOutputTimeoutRef.current);
       copyOutputTimeoutRef.current = setTimeout(
         () => setCopiedOutput(false),
-        1500
+        1500,
       );
     });
   };

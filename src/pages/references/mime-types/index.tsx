@@ -10,7 +10,11 @@ export const getStaticProps: GetStaticProps = () => ({
   props: { groups: MIME_CATEGORIES },
 });
 
-export default function MimeTypesPage({ groups }: { groups: typeof MIME_CATEGORIES }) {
+export default function MimeTypesPage({
+  groups,
+}: {
+  groups: typeof MIME_CATEGORIES;
+}) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
@@ -44,19 +48,21 @@ export default function MimeTypesPage({ groups }: { groups: typeof MIME_CATEGORI
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return groups.map((cat) => {
-      const types = cat.types.filter((t) => {
-        if (activeCategory !== "all" && activeCategory !== cat.category)
-          return false;
-        if (!q) return true;
-        return (
-          t.type.toLowerCase().includes(q) ||
-          t.description.toLowerCase().includes(q) ||
-          t.extensions.some((e) => e.toLowerCase().includes(q))
-        );
-      });
-      return { ...cat, types };
-    }).filter((s) => s.types.length > 0);
+    return groups
+      .map((cat) => {
+        const types = cat.types.filter((t) => {
+          if (activeCategory !== "all" && activeCategory !== cat.category)
+            return false;
+          if (!q) return true;
+          return (
+            t.type.toLowerCase().includes(q) ||
+            t.description.toLowerCase().includes(q) ||
+            t.extensions.some((e) => e.toLowerCase().includes(q))
+          );
+        });
+        return { ...cat, types };
+      })
+      .filter((s) => s.types.length > 0);
   }, [search, activeCategory]);
 
   return (
@@ -98,8 +104,7 @@ export default function MimeTypesPage({ groups }: { groups: typeof MIME_CATEGORI
         <div className={styles.header}>
           <h1 className={styles.title}>MIME Types</h1>
           <p className={styles.tagline}>
-            Content-Type values for text, images, audio, video, fonts, and
-            more.
+            Content-Type values for text, images, audio, video, fonts, and more.
           </p>
         </div>
 
@@ -197,9 +202,7 @@ export default function MimeTypesPage({ groups }: { groups: typeof MIME_CATEGORI
                     >
                       <div className={styles.codeInfo}>
                         <span className={styles.codeNameMono}>{t.type}</span>
-                        <span className={styles.codeDesc}>
-                          {t.description}
-                        </span>
+                        <span className={styles.codeDesc}>{t.description}</span>
                         {t.extensions.length > 0 && (
                           <div className={styles.extList}>
                             {t.extensions.map((ext) => (

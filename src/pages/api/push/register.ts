@@ -7,13 +7,14 @@ const UUID_RE =
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "method not allowed" });
   }
 
-  const { deviceId, deviceSecret, token, platform, sandbox } = (req.body ?? {}) as {
+  const { deviceId, deviceSecret, token, platform, sandbox } = (req.body ??
+    {}) as {
     deviceId?: string;
     deviceSecret?: string;
     token?: string;

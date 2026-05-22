@@ -35,7 +35,9 @@ function intToIp(n: number): string {
 
 function ipToInt(ip: string): number {
   const parts = ip.split(".").map(Number);
-  return ((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0;
+  return (
+    ((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0
+  );
 }
 
 function isValidIp(ip: string): boolean {
@@ -127,7 +129,9 @@ export default function CidrPage() {
   const [copied, setCopied] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyFieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyFieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const buildUrl = (cidr: string) => {
     if (!cidr) return `${window.location.origin}${window.location.pathname}`;
@@ -189,22 +193,43 @@ export default function CidrPage() {
   const handleCopyField = (key: string, val: string) => {
     copyToClipboard(val).then(() => {
       setCopiedKey(key);
-      if (copyFieldTimeoutRef.current) clearTimeout(copyFieldTimeoutRef.current);
+      if (copyFieldTimeoutRef.current)
+        clearTimeout(copyFieldTimeoutRef.current);
       copyFieldTimeoutRef.current = setTimeout(() => setCopiedKey(null), 1500);
     });
   };
 
   const rows: { label: string; key: string; value: string }[] = info
     ? [
-        { label: "Network Address", key: "network", value: info.networkAddress },
-        { label: "Broadcast Address", key: "broadcast", value: info.broadcastAddress },
+        {
+          label: "Network Address",
+          key: "network",
+          value: info.networkAddress,
+        },
+        {
+          label: "Broadcast Address",
+          key: "broadcast",
+          value: info.broadcastAddress,
+        },
         { label: "Subnet Mask", key: "mask", value: info.subnetMask },
         { label: "Wildcard Mask", key: "wildcard", value: info.wildcardMask },
         { label: "First Host", key: "first", value: info.firstHost },
         { label: "Last Host", key: "last", value: info.lastHost },
-        { label: "Total Hosts", key: "total", value: formatNumber(info.totalHosts) },
-        { label: "Usable Hosts", key: "usable", value: formatNumber(info.usableHosts) },
-        { label: "CIDR Notation", key: "cidr", value: `${info.networkAddress}/${info.prefix}` },
+        {
+          label: "Total Hosts",
+          key: "total",
+          value: formatNumber(info.totalHosts),
+        },
+        {
+          label: "Usable Hosts",
+          key: "usable",
+          value: formatNumber(info.usableHosts),
+        },
+        {
+          label: "CIDR Notation",
+          key: "cidr",
+          value: `${info.networkAddress}/${info.prefix}`,
+        },
         {
           label: "IPv4 Class",
           key: "class",
@@ -235,13 +260,25 @@ export default function CidrPage() {
             {branding.domain}
           </Link>
           {"·"}
-          <Link href="/docs/cidr" className={styles.docsLink} target="_blank" rel="noopener noreferrer">
+          <Link
+            href="/docs/cidr"
+            className={styles.docsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>
         <h1 className={styles.title}>CIDR</h1>
-        <p className={styles.tagline}>Calculate subnet details from CIDR notation</p>
-        <ReferenceLinks refs={[{ name: "DNS Record Types", slug: "dns-record-types" }, { name: "Port Numbers", slug: "port-numbers" }]} />
+        <p className={styles.tagline}>
+          Calculate subnet details from CIDR notation
+        </p>
+        <ReferenceLinks
+          refs={[
+            { name: "DNS Record Types", slug: "dns-record-types" },
+            { name: "Port Numbers", slug: "port-numbers" },
+          ]}
+        />
       </div>
 
       <hr className={styles.divider} />

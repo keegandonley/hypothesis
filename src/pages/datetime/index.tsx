@@ -32,33 +32,87 @@ function formatRelative(d: Date): string {
   let unit: string;
   let count: number;
 
-  if (years >= 1) { count = years; unit = years === 1 ? "year" : "years"; }
-  else if (months >= 1) { count = months; unit = months === 1 ? "month" : "months"; }
-  else if (days >= 1) { count = days; unit = days === 1 ? "day" : "days"; }
-  else if (hours >= 1) { count = hours; unit = hours === 1 ? "hour" : "hours"; }
-  else if (minutes >= 1) { count = minutes; unit = minutes === 1 ? "minute" : "minutes"; }
-  else { count = seconds; unit = seconds === 1 ? "second" : "seconds"; }
+  if (years >= 1) {
+    count = years;
+    unit = years === 1 ? "year" : "years";
+  } else if (months >= 1) {
+    count = months;
+    unit = months === 1 ? "month" : "months";
+  } else if (days >= 1) {
+    count = days;
+    unit = days === 1 ? "day" : "days";
+  } else if (hours >= 1) {
+    count = hours;
+    unit = hours === 1 ? "hour" : "hours";
+  } else if (minutes >= 1) {
+    count = minutes;
+    unit = minutes === 1 ? "minute" : "minutes";
+  } else {
+    count = seconds;
+    unit = seconds === 1 ? "second" : "seconds";
+  }
 
   return future ? `in ${count} ${unit}` : `${count} ${unit} ago`;
 }
 
 function formatRfc2822(d: Date): string {
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   return `${days[d.getUTCDay()]}, ${pad(d.getUTCDate())} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())} +0000`;
 }
 
 const FORMAT_ROWS: FormatRow[] = [
-  { id: "unix_s", label: "Unix (sec)", format: (d) => String(Math.floor(d.getTime() / 1000)) },
+  {
+    id: "unix_s",
+    label: "Unix (sec)",
+    format: (d) => String(Math.floor(d.getTime() / 1000)),
+  },
   { id: "unix_ms", label: "Unix (ms)", format: (d) => String(d.getTime()) },
   { id: "iso", label: "ISO 8601", format: (d) => d.toISOString() },
   { id: "utc", label: "UTC String", format: (d) => d.toUTCString() },
   { id: "rfc2822", label: "RFC 2822", format: (d) => formatRfc2822(d) },
   { id: "local", label: "Local", format: (d) => d.toLocaleString() },
-  { id: "date_only", label: "Date", format: (d) => `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}` },
-  { id: "time_utc", label: "Time (UTC)", format: (d) => `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}` },
-  { id: "day_of_week", label: "Day of Week", format: (d) => d.toLocaleDateString(undefined, { weekday: "long", timeZone: "UTC" }) },
-  { id: "month_year", label: "Month / Year", format: (d) => d.toLocaleDateString(undefined, { month: "long", year: "numeric", timeZone: "UTC" }) },
+  {
+    id: "date_only",
+    label: "Date",
+    format: (d) =>
+      `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`,
+  },
+  {
+    id: "time_utc",
+    label: "Time (UTC)",
+    format: (d) =>
+      `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`,
+  },
+  {
+    id: "day_of_week",
+    label: "Day of Week",
+    format: (d) =>
+      d.toLocaleDateString(undefined, { weekday: "long", timeZone: "UTC" }),
+  },
+  {
+    id: "month_year",
+    label: "Month / Year",
+    format: (d) =>
+      d.toLocaleDateString(undefined, {
+        month: "long",
+        year: "numeric",
+        timeZone: "UTC",
+      }),
+  },
   { id: "relative", label: "Relative", format: (d) => formatRelative(d) },
   { id: "http", label: "HTTP Date", format: (d) => d.toUTCString() },
 ];
@@ -97,10 +151,14 @@ export default function DateTimePage() {
   const [copied, setCopied] = useState<string | null>(null);
   const [url, setUrl] = useState("");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const permalinkCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const [permalinkCopied, setPermalinkCopied] = useState(false);
   const liveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const relativeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const relativeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
+    null,
+  );
 
   const buildUrl = (val: string, live: boolean) => {
     const params = new URLSearchParams();
@@ -165,9 +223,13 @@ export default function DateTimePage() {
 
   const handlePermalinkCopy = () => {
     copyToClipboard(url).then(() => {
-      if (permalinkCopyTimeoutRef.current) clearTimeout(permalinkCopyTimeoutRef.current);
+      if (permalinkCopyTimeoutRef.current)
+        clearTimeout(permalinkCopyTimeoutRef.current);
       setPermalinkCopied(true);
-      permalinkCopyTimeoutRef.current = setTimeout(() => setPermalinkCopied(false), 1500);
+      permalinkCopyTimeoutRef.current = setTimeout(
+        () => setPermalinkCopied(false),
+        1500,
+      );
     });
   };
 
@@ -182,7 +244,10 @@ export default function DateTimePage() {
 
   useEffect(() => {
     if (relativeLive && !liveMode) {
-      relativeIntervalRef.current = setInterval(() => setRelativeTick((t) => t + 1), 1000);
+      relativeIntervalRef.current = setInterval(
+        () => setRelativeTick((t) => t + 1),
+        1000,
+      );
     } else {
       if (relativeIntervalRef.current) {
         clearInterval(relativeIntervalRef.current);
@@ -190,7 +255,8 @@ export default function DateTimePage() {
       }
     }
     return () => {
-      if (relativeIntervalRef.current) clearInterval(relativeIntervalRef.current);
+      if (relativeIntervalRef.current)
+        clearInterval(relativeIntervalRef.current);
     };
   }, [relativeLive, liveMode]);
 
@@ -238,7 +304,9 @@ export default function DateTimePage() {
           </Link>
         </div>
         <h1 className={styles.title}>DateTime</h1>
-        <p className={styles.tagline}>Convert timestamps and dates between many formats at once</p>
+        <p className={styles.tagline}>
+          Convert timestamps and dates between many formats at once
+        </p>
       </div>
 
       <hr className={styles.divider} />
@@ -249,12 +317,20 @@ export default function DateTimePage() {
           type="text"
           value={liveMode ? "" : input}
           onChange={(e) => handleInputChange(e.target.value)}
-          placeholder={liveMode ? "Live mode active..." : "Enter a timestamp, ISO string, or any date..."}
+          placeholder={
+            liveMode
+              ? "Live mode active..."
+              : "Enter a timestamp, ISO string, or any date..."
+          }
           spellCheck={false}
           autoComplete="off"
           disabled={liveMode}
         />
-        <button className={styles.nowBtn} onClick={handleNow} disabled={liveMode}>
+        <button
+          className={styles.nowBtn}
+          onClick={handleNow}
+          disabled={liveMode}
+        >
           Now
         </button>
         <button
@@ -264,12 +340,16 @@ export default function DateTimePage() {
           Live {liveMode ? "ON" : "OFF"}
         </button>
         {liveMode && <span className={styles.badgeReady}>Live</span>}
-        {!liveMode && !hasInput && <span className={styles.badgeBlue}>Ready</span>}
-        {!liveMode && hasInput && (
-          isInvalid
-            ? <span className={styles.badgeError}>Invalid</span>
-            : <span className={styles.badgeReady}>Valid</span>
+        {!liveMode && !hasInput && (
+          <span className={styles.badgeBlue}>Ready</span>
         )}
+        {!liveMode &&
+          hasInput &&
+          (isInvalid ? (
+            <span className={styles.badgeError}>Invalid</span>
+          ) : (
+            <span className={styles.badgeReady}>Valid</span>
+          ))}
       </div>
 
       <div className={styles.conversionGrid}>
@@ -292,19 +372,22 @@ export default function DateTimePage() {
                     onClick={liveMode ? undefined : handleRelativeLiveToggle}
                     disabled={liveMode}
                   >
-                    {liveMode ? "Live Unavailable" : `Live ${relativeLive ? "ON" : "OFF"}`}
+                    {liveMode
+                      ? "Live Unavailable"
+                      : `Live ${relativeLive ? "ON" : "OFF"}`}
                   </button>
                 )}
-                {!isIframe && (value !== null ? (
-                  <button
-                    className={`${styles.copyRowBtn}${isCopied ? ` ${styles.copied}` : ""}`}
-                    onClick={() => handleRowCopy(row.id, value)}
-                  >
-                    {isCopied ? "Copied!" : "Copy"}
-                  </button>
-                ) : (
-                  <span className={styles.copyRowBtnDisabled}>Copy</span>
-                ))}
+                {!isIframe &&
+                  (value !== null ? (
+                    <button
+                      className={`${styles.copyRowBtn}${isCopied ? ` ${styles.copied}` : ""}`}
+                      onClick={() => handleRowCopy(row.id, value)}
+                    >
+                      {isCopied ? "Copied!" : "Copy"}
+                    </button>
+                  ) : (
+                    <span className={styles.copyRowBtnDisabled}>Copy</span>
+                  ))}
               </div>
             </div>
           );

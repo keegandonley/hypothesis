@@ -13,7 +13,9 @@ function generateJwt(): string {
   const teamId = process.env.APNS_TEAM_ID!;
   const privateKey = process.env.APNS_KEY_P8!.replace(/\\n/g, "\n");
 
-  const header = Buffer.from(JSON.stringify({ alg: "ES256", kid: keyId })).toString("base64url");
+  const header = Buffer.from(
+    JSON.stringify({ alg: "ES256", kid: keyId }),
+  ).toString("base64url");
   const payload = Buffer.from(
     JSON.stringify({ iss: teamId, iat: Math.floor(Date.now() / 1000) }),
   ).toString("base64url");
@@ -22,7 +24,10 @@ function generateJwt(): string {
   const sign = createSign("SHA256");
   sign.update(signingInput);
   sign.end();
-  const signature = sign.sign({ key: privateKey, dsaEncoding: "ieee-p1363" }, "base64url");
+  const signature = sign.sign(
+    { key: privateKey, dsaEncoding: "ieee-p1363" },
+    "base64url",
+  );
 
   return `${signingInput}.${signature}`;
 }

@@ -33,7 +33,10 @@ function readBody(req: NextApiRequest): Promise<string> {
   });
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   Object.entries(corsHeaders).forEach(([k, v]) => res.setHeader(k, v));
 
   if (req.method === "OPTIONS") {
@@ -42,7 +45,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { sessionId } = req.query as { sessionId: string };
 
-  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const UUID_RE =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!UUID_RE.test(sessionId)) {
     return res.status(404).json({ error: "session not found" });
   }
@@ -66,16 +70,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (session.ipAddress !== "::1" && session.ipAddress !== "::native") {
       const recentCount = await countRecentEvents(sessionId);
       if (recentCount >= 500) {
-        return res.status(429).json({ error: "rate limit exceeded: max 500 events per hour" });
+        return res
+          .status(429)
+          .json({ error: "rate limit exceeded: max 500 events per hour" });
       }
     }
 
     const STRIP_HEADER_PREFIXES = ["x-vercel-", "x-forwarded-"];
-    const STRIP_HEADERS = new Set(["forwarded", "x-real-ip", "x-matched-path", "connection"]);
+    const STRIP_HEADERS = new Set([
+      "forwarded",
+      "x-real-ip",
+      "x-matched-path",
+      "connection",
+    ]);
 
     const headersObj: Record<string, string> = {};
     Object.entries(req.headers).forEach(([k, v]) => {
-      if (STRIP_HEADERS.has(k) || STRIP_HEADER_PREFIXES.some((p) => k.startsWith(p))) return;
+      if (
+        STRIP_HEADERS.has(k) ||
+        STRIP_HEADER_PREFIXES.some((p) => k.startsWith(p))
+      )
+        return;
       headersObj[k] = Array.isArray(v) ? v.join(", ") : (v ?? "");
     });
 
@@ -116,10 +131,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     if (native && session.deviceId) {
-      await sendWebhookPushNotification(session.deviceId, req.method!, eventId).catch(() => {});
-      await incrementStat("webhook_events_native").catch((err) => console.error("[stats] failed to increment webhook_events_native", err));
+      await sendWebhookPushNotification(
+        session.deviceId,
+        req.method!,
+        eventId,
+      ).catch(() => {});
+      await incrementStat("webhook_events_native").catch((err) =>
+        console.error("[stats] failed to increment webhook_events_native", err),
+      );
     } else {
-      await incrementStat("webhook_events_web").catch((err) => console.error("[stats] failed to increment webhook_events_web", err));
+      await incrementStat("webhook_events_web").catch((err) =>
+        console.error("[stats] failed to increment webhook_events_web", err),
+      );
     }
 
     try {

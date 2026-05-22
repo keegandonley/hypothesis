@@ -41,7 +41,7 @@ export default function ViewerPage() {
   const [debug, setDebug] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sentTimeoutRefs = useRef<Record<number, ReturnType<typeof setTimeout>>>(
-    {}
+    {},
   );
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function ViewerPage() {
     if (raw) {
       setActions(decodeActions(raw));
       setDesignerUrl(
-        `${window.location.origin}/message-factory/designer?actions=${raw}`
+        `${window.location.origin}/message-factory/designer?actions=${raw}`,
       );
     } else {
       setDesignerUrl(`${window.location.origin}/message-factory/designer`);
@@ -62,7 +62,8 @@ export default function ViewerPage() {
   const handleSend = (action: Action, idx: number) => {
     window.parent.postMessage({ id: action.id, payload: action.payload }, "*");
     setSentKeys((prev) => ({ ...prev, [idx]: true }));
-    if (sentTimeoutRefs.current[idx]) clearTimeout(sentTimeoutRefs.current[idx]);
+    if (sentTimeoutRefs.current[idx])
+      clearTimeout(sentTimeoutRefs.current[idx]);
     sentTimeoutRefs.current[idx] = setTimeout(() => {
       setSentKeys((prev) => ({ ...prev, [idx]: false }));
     }, 1500);
@@ -92,7 +93,12 @@ export default function ViewerPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}

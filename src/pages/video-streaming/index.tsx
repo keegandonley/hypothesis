@@ -91,23 +91,47 @@ const DEFAULTS: Settings = {
 };
 
 const VIDEO_EVENTS = [
-  "loadstart", "durationchange", "loadedmetadata", "loadeddata",
-  "progress", "canplay", "canplaythrough", "play", "playing",
-  "pause", "ended", "seeking", "seeked", "timeupdate", "ratechange",
-  "volumechange", "waiting", "stalled", "suspend", "abort", "emptied", "error",
+  "loadstart",
+  "durationchange",
+  "loadedmetadata",
+  "loadeddata",
+  "progress",
+  "canplay",
+  "canplaythrough",
+  "play",
+  "playing",
+  "pause",
+  "ended",
+  "seeking",
+  "seeked",
+  "timeupdate",
+  "ratechange",
+  "volumechange",
+  "waiting",
+  "stalled",
+  "suspend",
+  "abort",
+  "emptied",
+  "error",
 ] as const;
 
-type VideoEventName = typeof VIDEO_EVENTS[number];
+type VideoEventName = (typeof VIDEO_EVENTS)[number];
 
 const NOISY_EVENTS = new Set<VideoEventName>(["timeupdate", "progress"]);
 
 const NETWORK_STATE_LABELS: Record<number, string> = {
-  0: "EMPTY (0)", 1: "IDLE (1)", 2: "LOADING (2)", 3: "NO_SOURCE (3)",
+  0: "EMPTY (0)",
+  1: "IDLE (1)",
+  2: "LOADING (2)",
+  3: "NO_SOURCE (3)",
 };
 
 const READY_STATE_LABELS: Record<number, string> = {
-  0: "HAVE_NOTHING (0)", 1: "HAVE_METADATA (1)", 2: "HAVE_CURRENT_DATA (2)",
-  3: "HAVE_FUTURE_DATA (3)", 4: "HAVE_ENOUGH_DATA (4)",
+  0: "HAVE_NOTHING (0)",
+  1: "HAVE_METADATA (1)",
+  2: "HAVE_CURRENT_DATA (2)",
+  3: "HAVE_FUTURE_DATA (3)",
+  4: "HAVE_ENOUGH_DATA (4)",
 };
 
 const ERROR_CODES: Record<number, string> = {
@@ -119,7 +143,8 @@ const ERROR_CODES: Record<number, string> = {
 
 function extractRanges(r: TimeRanges): BarSegment[] {
   const segs: BarSegment[] = [];
-  for (let i = 0; i < r.length; i++) segs.push({ start: r.start(i), end: r.end(i) });
+  for (let i = 0; i < r.length; i++)
+    segs.push({ start: r.start(i), end: r.end(i) });
   return segs;
 }
 
@@ -162,9 +187,11 @@ function settingsToParams(s: Settings): string {
   if (s.clNodownload) p.set("clND", "1");
   if (s.clNofullscreen) p.set("clNFS", "1");
   if (s.clNoremoteplayback) p.set("clNRP", "1");
-  if (s.initialCurrentTime !== 0) p.set("startAt", String(s.initialCurrentTime));
+  if (s.initialCurrentTime !== 0)
+    p.set("startAt", String(s.initialCurrentTime));
   if (s.playbackRate !== 1) p.set("rate", String(s.playbackRate));
-  if (s.defaultPlaybackRate !== 1) p.set("dRate", String(s.defaultPlaybackRate));
+  if (s.defaultPlaybackRate !== 1)
+    p.set("dRate", String(s.defaultPlaybackRate));
   if (s.volume !== 1) p.set("volume", String(s.volume));
   const qs = p.toString();
   return qs ? `?${qs}` : "";
@@ -220,7 +247,9 @@ function RangeBar({
   variant: "buffered" | "seekable" | "played";
 }) {
   const valid = isFinite(duration) && duration > 0;
-  const pct = valid ? Math.min(100, Math.max(0, (100 * currentTime) / duration)) : 0;
+  const pct = valid
+    ? Math.min(100, Math.max(0, (100 * currentTime) / duration))
+    : 0;
   return (
     <div className={styles.bar}>
       {valid &&
@@ -242,7 +271,12 @@ function RangeBar({
 function logEntryClass(event: string): string {
   if (event === "error") return styles.logError;
   if (["waiting", "stalled", "suspend"].includes(event)) return styles.logWarn;
-  if (["canplay", "canplaythrough", "loadeddata", "loadedmetadata"].includes(event)) return styles.logGood;
+  if (
+    ["canplay", "canplaythrough", "loadeddata", "loadedmetadata"].includes(
+      event,
+    )
+  )
+    return styles.logGood;
   if (["play", "playing"].includes(event)) return styles.logAccent;
   return "";
 }
@@ -286,7 +320,11 @@ export default function VideoStreamingPage() {
 
   useEffect(() => {
     if (!initialized) return;
-    history.replaceState(null, "", window.location.pathname + settingsToParams(settings));
+    history.replaceState(
+      null,
+      "",
+      window.location.pathname + settingsToParams(settings),
+    );
   }, [settings, initialized]);
 
   // ── addLog helper ──────────────────────────────────────────────────────────
@@ -313,7 +351,8 @@ export default function VideoStreamingPage() {
     });
     if (logAutoscrollRef.current) {
       requestAnimationFrame(() => {
-        if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
+        if (logRef.current)
+          logRef.current.scrollTop = logRef.current.scrollHeight;
       });
     }
   }, []);
@@ -327,9 +366,13 @@ export default function VideoStreamingPage() {
 
     const old = videoRef.current;
     if (old) {
-      try { old.pause(); } catch {}
+      try {
+        old.pause();
+      } catch {}
       old.removeAttribute("src");
-      try { old.load(); } catch {}
+      try {
+        old.load();
+      } catch {}
       old.remove();
       videoRef.current = null;
     }
@@ -350,7 +393,8 @@ export default function VideoStreamingPage() {
     else v.removeAttribute("playsinline");
     v.disablePictureInPicture = s.disablePictureInPicture;
     const vx = v as VideoWithExtras;
-    if ("disableRemotePlayback" in v) vx.disableRemotePlayback = s.disableRemotePlayback;
+    if ("disableRemotePlayback" in v)
+      vx.disableRemotePlayback = s.disableRemotePlayback;
     const clTokens: string[] = [];
     if (s.clNodownload) clTokens.push("nodownload");
     if (s.clNofullscreen) clTokens.push("nofullscreen");
@@ -365,9 +409,10 @@ export default function VideoStreamingPage() {
         let d = "";
         if (ev === "error") {
           const code = v.error?.code;
-          d = code != null
-            ? `code=${code} (${ERROR_CODES[code] ?? "?"}) ${v.error?.message ?? ""}`
-            : "unknown error";
+          d =
+            code != null
+              ? `code=${code} (${ERROR_CODES[code] ?? "?"}) ${v.error?.message ?? ""}`
+              : "unknown error";
           setErrorMsg(`Media error: ${d}`);
         } else if (ev === "durationchange") {
           d = `duration=${v.duration}`;
@@ -375,12 +420,16 @@ export default function VideoStreamingPage() {
           d = `duration=${v.duration} ${v.videoWidth}×${v.videoHeight}`;
           const t0 = settingsRef.current.initialCurrentTime;
           if (t0 > 0 && isFinite(v.duration) && t0 < v.duration) {
-            try { v.currentTime = t0; } catch {}
+            try {
+              v.currentTime = t0;
+            } catch {}
           }
         } else if (ev === "progress") {
           const ranges: string[] = [];
           for (let i = 0; i < v.buffered.length; i++)
-            ranges.push(`${v.buffered.start(i).toFixed(2)}–${v.buffered.end(i).toFixed(2)}`);
+            ranges.push(
+              `${v.buffered.start(i).toFixed(2)}–${v.buffered.end(i).toFixed(2)}`,
+            );
           d = `buffered=[${ranges.join(", ")}]`;
         } else if (ev === "ratechange") {
           d = `rate=${v.playbackRate}`;
@@ -411,7 +460,8 @@ export default function VideoStreamingPage() {
     if (settings.poster !== undefined) v.poster = settings.poster;
     v.disablePictureInPicture = settings.disablePictureInPicture;
     const vx = v as VideoWithExtras;
-    if ("disableRemotePlayback" in v) vx.disableRemotePlayback = settings.disableRemotePlayback;
+    if ("disableRemotePlayback" in v)
+      vx.disableRemotePlayback = settings.disableRemotePlayback;
     v.playbackRate = settings.playbackRate || 1;
     v.defaultPlaybackRate = settings.defaultPlaybackRate || 1;
     v.volume = Math.min(1, Math.max(0, settings.volume));
@@ -425,10 +475,18 @@ export default function VideoStreamingPage() {
     }
     setSnap(snapshotVideo(v));
   }, [
-    settings.loop, settings.muted, settings.controls, settings.poster,
-    settings.disablePictureInPicture, settings.disableRemotePlayback,
-    settings.playbackRate, settings.defaultPlaybackRate, settings.volume,
-    settings.clNodownload, settings.clNofullscreen, settings.clNoremoteplayback,
+    settings.loop,
+    settings.muted,
+    settings.controls,
+    settings.poster,
+    settings.disablePictureInPicture,
+    settings.disableRemotePlayback,
+    settings.playbackRate,
+    settings.defaultPlaybackRate,
+    settings.volume,
+    settings.clNodownload,
+    settings.clNofullscreen,
+    settings.clNoremoteplayback,
     initialized,
   ]);
 
@@ -457,7 +515,9 @@ export default function VideoStreamingPage() {
     return () => {
       const v = videoRef.current;
       if (v) {
-        try { v.pause(); } catch {}
+        try {
+          v.pause();
+        } catch {}
         v.removeAttribute("src");
         videoRef.current = null;
       }
@@ -480,11 +540,17 @@ export default function VideoStreamingPage() {
   // ── Player controls ───────────────────────────────────────────────────────
 
   const handlePlay = useCallback(() => {
-    videoRef.current?.play().catch((e: unknown) => addLog("play-rejected", String(e)));
+    videoRef.current
+      ?.play()
+      .catch((e: unknown) => addLog("play-rejected", String(e)));
   }, [addLog]);
 
-  const handlePause = useCallback(() => { videoRef.current?.pause(); }, []);
-  const handleLoad = useCallback(() => { videoRef.current?.load(); }, []);
+  const handlePause = useCallback(() => {
+    videoRef.current?.pause();
+  }, []);
+  const handleLoad = useCallback(() => {
+    videoRef.current?.load();
+  }, []);
 
   const handleFrameBack = useCallback(() => {
     const v = videoRef.current;
@@ -493,7 +559,8 @@ export default function VideoStreamingPage() {
 
   const handleFrameFwd = useCallback(() => {
     const v = videoRef.current;
-    if (v && isFinite(v.duration)) v.currentTime = Math.min(v.duration, v.currentTime + 1 / 30);
+    if (v && isFinite(v.duration))
+      v.currentTime = Math.min(v.duration, v.currentTime + 1 / 30);
   }, []);
 
   const handleSeek = useCallback(() => {
@@ -530,27 +597,38 @@ export default function VideoStreamingPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} style={{ color: "inherit", textDecoration: "none" }}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            style={{ color: "inherit", textDecoration: "none" }}
+          >
             {branding.domain}
           </Link>
           {"·"}
           <Link
             href="/docs/video-streaming"
-            style={{ color: "inherit", textDecoration: "none", display: "flex", alignItems: "center", gap: "0.3em" }}
+            style={{
+              color: "inherit",
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3em",
+            }}
           >
             <DocIcon /> docs
           </Link>
         </div>
         <h1 className={styles.title}>video streaming</h1>
         <p className={styles.tagline}>
-          Test HTML video element behavior — buffering, events, and playback state — with full telemetry.
+          Test HTML video element behavior — buffering, events, and playback
+          state — with full telemetry.
         </p>
       </div>
 
       <hr className={styles.divider} />
 
       <div className={styles.grid}>
-
         {/* ── Settings panel ──────────────────────────────────────────── */}
         <section className={styles.panel}>
           <h2 className={styles.panelTitle}>Settings</h2>
@@ -558,23 +636,36 @@ export default function VideoStreamingPage() {
           <div className={styles.group}>
             <div className={styles.groupTitle}>
               <span>Source</span>
-              <span className={`${styles.tag} ${styles.tagRebuild}`}>rebuild</span>
+              <span className={`${styles.tag} ${styles.tagRebuild}`}>
+                rebuild
+              </span>
             </div>
-            <label className={styles.blockLabel} htmlFor="vs-preset">Example file</label>
+            <label className={styles.blockLabel} htmlFor="vs-preset">
+              Example file
+            </label>
             <select
               id="vs-preset"
               className={styles.select}
               value={MEDIA_FILES.find((f) => f.url === settings.src)?.url ?? ""}
-              onChange={(e) => { if (e.target.value) upd("src", e.target.value); }}
+              onChange={(e) => {
+                if (e.target.value) upd("src", e.target.value);
+              }}
             >
               <option value="">— paste a custom URL below —</option>
               {MEDIA_FILES.filter((f) => f.type === "video").map((f) => (
                 <option key={f.filename} value={f.url}>
-                  {f.filename} ({f.label}{f.short ? " · short" : ""})
+                  {f.filename} ({f.label}
+                  {f.short ? " · short" : ""})
                 </option>
               ))}
             </select>
-            <label className={styles.blockLabel} style={{ marginTop: 8 }} htmlFor="vs-src">Custom URL</label>
+            <label
+              className={styles.blockLabel}
+              style={{ marginTop: 8 }}
+              htmlFor="vs-src"
+            >
+              Custom URL
+            </label>
             <input
               id="vs-src"
               type="url"
@@ -586,7 +677,10 @@ export default function VideoStreamingPage() {
               onChange={(e) => upd("src", e.target.value)}
             />
             <div className={styles.btnRow} style={{ marginTop: 8 }}>
-              <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={buildVideo}>
+              <button
+                className={`${styles.btn} ${styles.btnPrimary}`}
+                onClick={buildVideo}
+              >
                 Load / Reload
               </button>
               <button
@@ -598,7 +692,8 @@ export default function VideoStreamingPage() {
               </button>
             </div>
             <p className={styles.helpText}>
-              Changing the URL, <code>preload</code>, or <code>crossorigin</code> requires a rebuild.
+              Changing the URL, <code>preload</code>, or{" "}
+              <code>crossorigin</code> requires a rebuild.
             </p>
           </div>
 
@@ -609,67 +704,126 @@ export default function VideoStreamingPage() {
             </div>
             <div className={styles.grid2}>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={settings.autoplay} onChange={(e) => upd("autoplay", e.target.checked)} />
-                autoplay <span className={styles.warnText} title="Most browsers require muted for autoplay">⚠︎</span>
+                <input
+                  type="checkbox"
+                  checked={settings.autoplay}
+                  onChange={(e) => upd("autoplay", e.target.checked)}
+                />
+                autoplay{" "}
+                <span
+                  className={styles.warnText}
+                  title="Most browsers require muted for autoplay"
+                >
+                  ⚠︎
+                </span>
               </label>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={settings.loop} onChange={(e) => upd("loop", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.loop}
+                  onChange={(e) => upd("loop", e.target.checked)}
+                />
                 loop
               </label>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={settings.muted} onChange={(e) => upd("muted", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.muted}
+                  onChange={(e) => upd("muted", e.target.checked)}
+                />
                 muted
               </label>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={settings.controls} onChange={(e) => upd("controls", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.controls}
+                  onChange={(e) => upd("controls", e.target.checked)}
+                />
                 controls
               </label>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={settings.playsinline} onChange={(e) => upd("playsinline", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.playsinline}
+                  onChange={(e) => upd("playsinline", e.target.checked)}
+                />
                 playsinline
               </label>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={settings.disablePictureInPicture} onChange={(e) => upd("disablePictureInPicture", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.disablePictureInPicture}
+                  onChange={(e) =>
+                    upd("disablePictureInPicture", e.target.checked)
+                  }
+                />
                 disable PiP
               </label>
               <label className={`${styles.checkLabel} ${styles.fullSpan}`}>
-                <input type="checkbox" checked={settings.disableRemotePlayback} onChange={(e) => upd("disableRemotePlayback", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.disableRemotePlayback}
+                  onChange={(e) =>
+                    upd("disableRemotePlayback", e.target.checked)
+                  }
+                />
                 disable remote playback
               </label>
             </div>
             <p className={styles.helpText}>
-              <code>autoplay</code> and <code>playsinline</code> only apply on rebuild.
+              <code>autoplay</code> and <code>playsinline</code> only apply on
+              rebuild.
             </p>
           </div>
 
           <div className={styles.group}>
             <div className={styles.groupTitle}>
               <span>Load behavior</span>
-              <span className={`${styles.tag} ${styles.tagRebuild}`}>rebuild</span>
+              <span className={`${styles.tag} ${styles.tagRebuild}`}>
+                rebuild
+              </span>
             </div>
-            <label className={styles.blockLabel} htmlFor="vs-preload">preload</label>
+            <label className={styles.blockLabel} htmlFor="vs-preload">
+              preload
+            </label>
             <select
               id="vs-preload"
               className={styles.select}
               value={settings.preload}
-              onChange={(e) => upd("preload", e.target.value as Settings["preload"])}
+              onChange={(e) =>
+                upd("preload", e.target.value as Settings["preload"])
+              }
             >
               <option value="none">none</option>
               <option value="metadata">metadata</option>
               <option value="auto">auto</option>
             </select>
-            <label className={styles.blockLabel} style={{ marginTop: 8 }} htmlFor="vs-crossorigin">crossorigin</label>
+            <label
+              className={styles.blockLabel}
+              style={{ marginTop: 8 }}
+              htmlFor="vs-crossorigin"
+            >
+              crossorigin
+            </label>
             <select
               id="vs-crossorigin"
               className={styles.select}
               value={settings.crossorigin}
-              onChange={(e) => upd("crossorigin", e.target.value as Settings["crossorigin"])}
+              onChange={(e) =>
+                upd("crossorigin", e.target.value as Settings["crossorigin"])
+              }
             >
               <option value="">(unset)</option>
               <option value="anonymous">anonymous</option>
               <option value="use-credentials">use-credentials</option>
             </select>
-            <label className={styles.blockLabel} style={{ marginTop: 8 }} htmlFor="vs-poster">poster URL</label>
+            <label
+              className={styles.blockLabel}
+              style={{ marginTop: 8 }}
+              htmlFor="vs-poster"
+            >
+              poster URL
+            </label>
             <input
               id="vs-poster"
               type="url"
@@ -688,15 +842,27 @@ export default function VideoStreamingPage() {
             </div>
             <div className={styles.grid2}>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={settings.clNodownload} onChange={(e) => upd("clNodownload", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.clNodownload}
+                  onChange={(e) => upd("clNodownload", e.target.checked)}
+                />
                 nodownload
               </label>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={settings.clNofullscreen} onChange={(e) => upd("clNofullscreen", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.clNofullscreen}
+                  onChange={(e) => upd("clNofullscreen", e.target.checked)}
+                />
                 nofullscreen
               </label>
               <label className={`${styles.checkLabel} ${styles.fullSpan}`}>
-                <input type="checkbox" checked={settings.clNoremoteplayback} onChange={(e) => upd("clNoremoteplayback", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.clNoremoteplayback}
+                  onChange={(e) => upd("clNoremoteplayback", e.target.checked)}
+                />
                 noremoteplayback
               </label>
             </div>
@@ -709,7 +875,9 @@ export default function VideoStreamingPage() {
             </div>
             <div className={styles.grid2}>
               <div>
-                <label className={styles.blockLabel} htmlFor="vs-ict">initial currentTime (s)</label>
+                <label className={styles.blockLabel} htmlFor="vs-ict">
+                  initial currentTime (s)
+                </label>
                 <input
                   id="vs-ict"
                   type="number"
@@ -717,11 +885,15 @@ export default function VideoStreamingPage() {
                   min={0}
                   step={0.1}
                   value={settings.initialCurrentTime}
-                  onChange={(e) => upd("initialCurrentTime", parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    upd("initialCurrentTime", parseFloat(e.target.value) || 0)
+                  }
                 />
               </div>
               <div>
-                <label className={styles.blockLabel} htmlFor="vs-rate">playbackRate</label>
+                <label className={styles.blockLabel} htmlFor="vs-rate">
+                  playbackRate
+                </label>
                 <input
                   id="vs-rate"
                   type="number"
@@ -730,11 +902,15 @@ export default function VideoStreamingPage() {
                   max={4}
                   step={0.25}
                   value={settings.playbackRate}
-                  onChange={(e) => upd("playbackRate", parseFloat(e.target.value) || 1)}
+                  onChange={(e) =>
+                    upd("playbackRate", parseFloat(e.target.value) || 1)
+                  }
                 />
               </div>
               <div>
-                <label className={styles.blockLabel} htmlFor="vs-defaultRate">defaultPlaybackRate</label>
+                <label className={styles.blockLabel} htmlFor="vs-defaultRate">
+                  defaultPlaybackRate
+                </label>
                 <input
                   id="vs-defaultRate"
                   type="number"
@@ -743,12 +919,17 @@ export default function VideoStreamingPage() {
                   max={4}
                   step={0.25}
                   value={settings.defaultPlaybackRate}
-                  onChange={(e) => upd("defaultPlaybackRate", parseFloat(e.target.value) || 1)}
+                  onChange={(e) =>
+                    upd("defaultPlaybackRate", parseFloat(e.target.value) || 1)
+                  }
                 />
               </div>
               <div>
                 <label className={styles.blockLabel} htmlFor="vs-volume">
-                  volume <span className={styles.mutedInline}>{settings.volume.toFixed(2)}</span>
+                  volume{" "}
+                  <span className={styles.mutedInline}>
+                    {settings.volume.toFixed(2)}
+                  </span>
                 </label>
                 <input
                   id="vs-volume"
@@ -763,16 +944,23 @@ export default function VideoStreamingPage() {
               </div>
             </div>
             <p className={styles.helpText}>
-              Initial <code>currentTime</code> is applied after <code>loadedmetadata</code>.
+              Initial <code>currentTime</code> is applied after{" "}
+              <code>loadedmetadata</code>.
             </p>
           </div>
 
           <div className={styles.btnRow}>
-            <button className={`${styles.btn} ${styles.btnGhost}`} onClick={handleReset}>
+            <button
+              className={`${styles.btn} ${styles.btnGhost}`}
+              onClick={handleReset}
+            >
               Reset settings
             </button>
             {!isIframe && (
-              <button className={`${styles.btn} ${styles.btnGhost}`} onClick={handleExport}>
+              <button
+                className={`${styles.btn} ${styles.btnGhost}`}
+                onClick={handleExport}
+              >
                 {exportCopied ? "Copied!" : "Copy URL"}
               </button>
             )}
@@ -801,14 +989,37 @@ export default function VideoStreamingPage() {
             ))}
           </div>
 
-          <div className={styles.btnRow} style={{ marginTop: 10, flexWrap: "wrap" }}>
-            <button className={styles.btn} onClick={handlePlay}>Play</button>
-            <button className={styles.btn} onClick={handlePause}>Pause</button>
-            <button className={styles.btn} onClick={handleLoad} title="Calls video.load()">
+          <div
+            className={styles.btnRow}
+            style={{ marginTop: 10, flexWrap: "wrap" }}
+          >
+            <button className={styles.btn} onClick={handlePlay}>
+              Play
+            </button>
+            <button className={styles.btn} onClick={handlePause}>
+              Pause
+            </button>
+            <button
+              className={styles.btn}
+              onClick={handleLoad}
+              title="Calls video.load()"
+            >
               video.load()
             </button>
-            <button className={styles.btn} onClick={handleFrameBack} title="Approx −1/30s">−1f</button>
-            <button className={styles.btn} onClick={handleFrameFwd} title="Approx +1/30s">+1f</button>
+            <button
+              className={styles.btn}
+              onClick={handleFrameBack}
+              title="Approx −1/30s"
+            >
+              −1f
+            </button>
+            <button
+              className={styles.btn}
+              onClick={handleFrameFwd}
+              title="Approx +1/30s"
+            >
+              +1f
+            </button>
             <label className={styles.seekLabel}>
               seek %
               <input
@@ -822,7 +1033,9 @@ export default function VideoStreamingPage() {
                 onChange={(e) => setSeekPct(Number(e.target.value))}
               />
             </label>
-            <button className={styles.btn} onClick={handleSeek}>Seek</button>
+            <button className={styles.btn} onClick={handleSeek}>
+              Seek
+            </button>
           </div>
         </section>
 
@@ -833,48 +1046,74 @@ export default function VideoStreamingPage() {
           <div className={styles.kv}>
             <span className={styles.kvKey}>networkState</span>
             <span className={styles.kvVal}>
-              {snap ? (NETWORK_STATE_LABELS[snap.networkState] ?? String(snap.networkState)) : "–"}
+              {snap
+                ? (NETWORK_STATE_LABELS[snap.networkState] ??
+                  String(snap.networkState))
+                : "–"}
             </span>
 
             <span className={styles.kvKey}>readyState</span>
             <span className={styles.kvVal}>
-              {snap ? (READY_STATE_LABELS[snap.readyState] ?? String(snap.readyState)) : "–"}
+              {snap
+                ? (READY_STATE_LABELS[snap.readyState] ??
+                  String(snap.readyState))
+                : "–"}
             </span>
 
             <span className={styles.kvKey}>currentSrc</span>
             <span className={styles.kvVal}>{snap?.currentSrc || "(none)"}</span>
 
             <span className={styles.kvKey}>duration</span>
-            <span className={styles.kvVal}>{snap ? fmtNum(snap.duration) : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? fmtNum(snap.duration) : "–"}
+            </span>
 
             <span className={styles.kvKey}>currentTime</span>
-            <span className={styles.kvVal}>{snap ? fmtNum(snap.currentTime) : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? fmtNum(snap.currentTime) : "–"}
+            </span>
 
             <span className={styles.kvKey}>paused</span>
-            <span className={`${styles.kvVal} ${snap ? (snap.paused ? styles.colorWarn : styles.colorGood) : ""}`}>
+            <span
+              className={`${styles.kvVal} ${snap ? (snap.paused ? styles.colorWarn : styles.colorGood) : ""}`}
+            >
               {snap ? String(snap.paused) : "–"}
             </span>
 
             <span className={styles.kvKey}>ended</span>
-            <span className={styles.kvVal}>{snap ? String(snap.ended) : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? String(snap.ended) : "–"}
+            </span>
 
             <span className={styles.kvKey}>seeking</span>
-            <span className={styles.kvVal}>{snap ? String(snap.seeking) : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? String(snap.seeking) : "–"}
+            </span>
 
             <span className={styles.kvKey}>dimensions</span>
-            <span className={styles.kvVal}>{snap ? `${snap.videoWidth}×${snap.videoHeight}` : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? `${snap.videoWidth}×${snap.videoHeight}` : "–"}
+            </span>
 
             <span className={styles.kvKey}>playbackRate</span>
-            <span className={styles.kvVal}>{snap ? snap.playbackRate : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? snap.playbackRate : "–"}
+            </span>
 
             <span className={styles.kvKey}>volume</span>
-            <span className={styles.kvVal}>{snap ? snap.volume.toFixed(2) : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? snap.volume.toFixed(2) : "–"}
+            </span>
 
             <span className={styles.kvKey}>muted</span>
-            <span className={styles.kvVal}>{snap ? String(snap.muted) : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? String(snap.muted) : "–"}
+            </span>
 
             <span className={styles.kvKey}>error</span>
-            <span className={`${styles.kvVal} ${snap?.errorCode != null ? styles.colorBad : ""}`}>
+            <span
+              className={`${styles.kvVal} ${snap?.errorCode != null ? styles.colorBad : ""}`}
+            >
               {snap?.errorCode != null
                 ? `${snap.errorCode} ${ERROR_CODES[snap.errorCode] ?? ""} ${snap.errorMessage}`.trim()
                 : "–"}
@@ -882,14 +1121,24 @@ export default function VideoStreamingPage() {
           </div>
 
           <div className={styles.logHeader}>
-            <h2 className={styles.panelTitle} style={{ margin: 0 }}>Event log</h2>
+            <h2 className={styles.panelTitle} style={{ margin: 0 }}>
+              Event log
+            </h2>
             <div className={styles.logControls}>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={logQuiet} onChange={(e) => setLogQuiet(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={logQuiet}
+                  onChange={(e) => setLogQuiet(e.target.checked)}
+                />
                 quiet
               </label>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={logAutoscroll} onChange={(e) => setLogAutoscroll(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={logAutoscroll}
+                  onChange={(e) => setLogAutoscroll(e.target.checked)}
+                />
                 autoscroll
               </label>
               <button
@@ -904,7 +1153,10 @@ export default function VideoStreamingPage() {
 
           <div className={styles.log} ref={logRef} aria-live="polite">
             {logEntries.map((entry) => (
-              <div key={entry.id} className={`${styles.logEntry} ${logEntryClass(entry.event)}`}>
+              <div
+                key={entry.id}
+                className={`${styles.logEntry} ${logEntryClass(entry.event)}`}
+              >
                 <span className={styles.logTs}>{entry.ts}</span>
                 <span className={styles.logEvent}>{entry.event}</span>
                 <span className={styles.logDetail}>{entry.detail}</span>
@@ -912,7 +1164,6 @@ export default function VideoStreamingPage() {
             ))}
           </div>
         </section>
-
       </div>
     </div>
   );

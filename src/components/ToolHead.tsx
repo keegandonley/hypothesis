@@ -7,7 +7,12 @@ interface ToolHeadProps {
   brandName?: string;
 }
 
-export function ToolHead({ title, description, path, brandName }: ToolHeadProps) {
+export function ToolHead({
+  title,
+  description,
+  path,
+  brandName,
+}: ToolHeadProps) {
   const brand = (brandName ?? "HYPOTHESIS").toUpperCase();
   const canonicalUrl = `https://hypothesis.sh${path}`;
   const ogImage = "https://hypothesis.sh/api/og?domain=hypothesis.sh";
@@ -23,7 +28,11 @@ export function ToolHead({ title, description, path, brandName }: ToolHeadProps)
     browserRequirements: "Requires JavaScript",
     isAccessibleForFree: true,
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-    creator: { "@type": "Person", name: "Keegan Donley", url: "https://keegan.codes" },
+    creator: {
+      "@type": "Person",
+      name: "Keegan Donley",
+      url: "https://keegan.codes",
+    },
   };
 
   return (

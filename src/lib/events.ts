@@ -27,14 +27,14 @@ export async function insertEvent(params: {
       JSON.stringify(params.headers),
       params.payload !== null ? JSON.stringify(params.payload) : null,
       params.rawBody,
-    ]
+    ],
   );
 }
 
 export async function countRecentEvents(sessionId: string): Promise<number> {
   const result = await pool.query(
     "SELECT COUNT(*) FROM webhook_events WHERE session_id = $1 AND received_at > NOW() - INTERVAL '1 hour'",
-    [sessionId]
+    [sessionId],
   );
   return parseInt(result.rows[0].count, 10);
 }
@@ -48,12 +48,12 @@ export async function getEvents(params: {
   if (params.after) {
     result = await pool.query(
       "SELECT id, session_id, method, headers, payload, raw_body, received_at FROM webhook_events WHERE session_id = $1 AND received_at > $2 ORDER BY received_at DESC LIMIT $3",
-      [params.sessionId, params.after, params.limit]
+      [params.sessionId, params.after, params.limit],
     );
   } else {
     result = await pool.query(
       "SELECT id, session_id, method, headers, payload, raw_body, received_at FROM webhook_events WHERE session_id = $1 ORDER BY received_at DESC LIMIT $2",
-      [params.sessionId, params.limit]
+      [params.sessionId, params.limit],
     );
   }
 

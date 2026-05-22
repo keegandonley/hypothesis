@@ -10,7 +10,11 @@ export const getStaticProps: GetStaticProps = () => ({
   props: { groups: EXIT_CODE_GROUPS },
 });
 
-export default function ExitCodesPage({ groups }: { groups: typeof EXIT_CODE_GROUPS }) {
+export default function ExitCodesPage({
+  groups,
+}: {
+  groups: typeof EXIT_CODE_GROUPS;
+}) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeGroup, setActiveGroup] = useState("all");
@@ -44,19 +48,21 @@ export default function ExitCodesPage({ groups }: { groups: typeof EXIT_CODE_GRO
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return groups.map((group) => {
-      const codes = group.codes.filter((c) => {
-        if (activeGroup !== "all" && activeGroup !== group.id) return false;
-        if (!q) return true;
-        return (
-          c.code.toLowerCase().includes(q) ||
-          c.name.toLowerCase().includes(q) ||
-          c.description.toLowerCase().includes(q) ||
-          (c.notes ?? "").toLowerCase().includes(q)
-        );
-      });
-      return { ...group, codes };
-    }).filter((g) => g.codes.length > 0);
+    return groups
+      .map((group) => {
+        const codes = group.codes.filter((c) => {
+          if (activeGroup !== "all" && activeGroup !== group.id) return false;
+          if (!q) return true;
+          return (
+            c.code.toLowerCase().includes(q) ||
+            c.name.toLowerCase().includes(q) ||
+            c.description.toLowerCase().includes(q) ||
+            (c.notes ?? "").toLowerCase().includes(q)
+          );
+        });
+        return { ...group, codes };
+      })
+      .filter((g) => g.codes.length > 0);
   }, [search, activeGroup]);
 
   return (
@@ -200,7 +206,14 @@ export default function ExitCodesPage({ groups }: { groups: typeof EXIT_CODE_GRO
                         </div>
                         {code.notes && (
                           <div className={styles.flagRow}>
-                            <span className={styles.flagBadge} style={{ color: group.color, backgroundColor: group.subtle, borderColor: group.border }}>
+                            <span
+                              className={styles.flagBadge}
+                              style={{
+                                color: group.color,
+                                backgroundColor: group.subtle,
+                                borderColor: group.border,
+                              }}
+                            >
                               {code.notes}
                             </span>
                           </div>

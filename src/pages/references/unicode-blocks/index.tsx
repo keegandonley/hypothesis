@@ -14,7 +14,11 @@ function formatRange(start: number, end: number): string {
   return `U+${start.toString(16).toUpperCase().padStart(4, "0")}–U+${end.toString(16).toUpperCase().padStart(4, "0")}`;
 }
 
-export default function UnicodeBlocksPage({ groups }: { groups: typeof UNICODE_BLOCK_GROUPS }) {
+export default function UnicodeBlocksPage({
+  groups,
+}: {
+  groups: typeof UNICODE_BLOCK_GROUPS;
+}) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeGroup, setActiveGroup] = useState("all");
@@ -48,18 +52,20 @@ export default function UnicodeBlocksPage({ groups }: { groups: typeof UNICODE_B
 
   const filteredGroups = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return groups.map((grp) => {
-      const blocks = grp.blocks.filter((b) => {
-        if (activeGroup !== "all" && activeGroup !== grp.id) return false;
-        if (!q) return true;
-        return (
-          b.name.toLowerCase().includes(q) ||
-          formatRange(b.start, b.end).toLowerCase().includes(q) ||
-          b.sample.some((s) => s.includes(q))
-        );
-      });
-      return { ...grp, blocks };
-    }).filter((g) => g.blocks.length > 0);
+    return groups
+      .map((grp) => {
+        const blocks = grp.blocks.filter((b) => {
+          if (activeGroup !== "all" && activeGroup !== grp.id) return false;
+          if (!q) return true;
+          return (
+            b.name.toLowerCase().includes(q) ||
+            formatRange(b.start, b.end).toLowerCase().includes(q) ||
+            b.sample.some((s) => s.includes(q))
+          );
+        });
+        return { ...grp, blocks };
+      })
+      .filter((g) => g.blocks.length > 0);
   }, [search, activeGroup]);
 
   return (

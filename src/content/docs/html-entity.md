@@ -14,6 +14,7 @@ Type or paste any text into the **Decoded Text** panel. The **HTML Entities** pa
 
 **Special (& < > " ')**  
 Default mode. Only encodes essential HTML special characters:
+
 - `&` → `&amp;`
 - `<` → `&lt;`
 - `>` → `&gt;`
@@ -33,6 +34,7 @@ Encodes all special HTML characters plus all non-ASCII characters. This provides
 Type or paste HTML entities into the **HTML Entities** panel. The **Decoded Text** panel updates on every keystroke with the decoded output.
 
 The decoder supports:
+
 - **Named entities** — `&amp;`, `&lt;`, `&eacute;`, `&copy;`, etc.
 - **Decimal numeric entities** — `&#38;`, `&#233;`, `&#169;`
 - **Hexadecimal numeric entities** — `&#x26;`, `&#xe9;`, `&#xa9;`
@@ -42,6 +44,7 @@ If the input contains an unrecognized entity, it remains unchanged rather than c
 ## Entity Support
 
 This tool includes comprehensive HTML5 named entity support, covering:
+
 - Basic HTML entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`)
 - Latin characters with diacritics (`&agrave;`, `&eacute;`, `&ntilde;`)
 - Currency symbols (`&euro;`, `&pound;`, `&yen;`)

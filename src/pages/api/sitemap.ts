@@ -17,7 +17,11 @@ function getStaticRoutes(): string[] {
   ];
 }
 
-function generateSitemap(baseUrl: string, docSlugs: string[], releaseSlugs: string[]): string {
+function generateSitemap(
+  baseUrl: string,
+  docSlugs: string[],
+  releaseSlugs: string[],
+): string {
   const urls = [
     ...getStaticRoutes().map((route) => `${baseUrl}${route}`),
     ...docSlugs.map((slug) => `${baseUrl}/docs/${slug}`),
@@ -30,7 +34,7 @@ ${urls
   .map(
     (url) => `  <url>
     <loc>${url}</loc>
-  </url>`
+  </url>`,
   )
   .join("\n")}
 </urlset>`;

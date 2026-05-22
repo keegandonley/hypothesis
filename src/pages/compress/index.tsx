@@ -133,7 +133,10 @@ export default function CompressPage() {
         setEntries((prev) => {
           const stillQueued = prev.find((e) => e.status === "queued");
           if (stillQueued) {
-            setTimeout(() => processNext(prev, currentFormat, currentQuality), 0);
+            setTimeout(
+              () => processNext(prev, currentFormat, currentQuality),
+              0,
+            );
           }
           return prev;
         });
@@ -232,7 +235,12 @@ export default function CompressPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}

@@ -10,7 +10,11 @@ export const getStaticProps: GetStaticProps = () => ({
   props: { groups: CSS_SELECTOR_GROUPS },
 });
 
-export default function CssSelectorsPage({ groups }: { groups: typeof CSS_SELECTOR_GROUPS }) {
+export default function CssSelectorsPage({
+  groups,
+}: {
+  groups: typeof CSS_SELECTOR_GROUPS;
+}) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeGroup, setActiveGroup] = useState("all");
@@ -44,19 +48,21 @@ export default function CssSelectorsPage({ groups }: { groups: typeof CSS_SELECT
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return groups.map((group) => {
-      const selectors = group.selectors.filter((s) => {
-        if (activeGroup !== "all" && activeGroup !== group.id) return false;
-        if (!q) return true;
-        return (
-          s.selector.toLowerCase().includes(q) ||
-          s.description.toLowerCase().includes(q) ||
-          s.example.toLowerCase().includes(q) ||
-          s.specificity.toLowerCase().includes(q)
-        );
-      });
-      return { ...group, selectors };
-    }).filter((g) => g.selectors.length > 0);
+    return groups
+      .map((group) => {
+        const selectors = group.selectors.filter((s) => {
+          if (activeGroup !== "all" && activeGroup !== group.id) return false;
+          if (!q) return true;
+          return (
+            s.selector.toLowerCase().includes(q) ||
+            s.description.toLowerCase().includes(q) ||
+            s.example.toLowerCase().includes(q) ||
+            s.specificity.toLowerCase().includes(q)
+          );
+        });
+        return { ...group, selectors };
+      })
+      .filter((g) => g.selectors.length > 0);
   }, [search, activeGroup]);
 
   return (
@@ -98,7 +104,8 @@ export default function CssSelectorsPage({ groups }: { groups: typeof CSS_SELECT
         <div className={styles.header}>
           <h1 className={styles.title}>CSS Selectors</h1>
           <p className={styles.tagline}>
-            All selector types with descriptions, examples, and specificity values.
+            All selector types with descriptions, examples, and specificity
+            values.
           </p>
         </div>
 
@@ -191,7 +198,13 @@ export default function CssSelectorsPage({ groups }: { groups: typeof CSS_SELECT
                         } as React.CSSProperties
                       }
                     >
-                      <span className={styles.codeBadge} style={{ fontFamily: "var(--font-mono)", fontSize: "10px" }}>
+                      <span
+                        className={styles.codeBadge}
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "10px",
+                        }}
+                      >
                         {sel.selector}
                       </span>
                       <div className={styles.codeInfo}>
@@ -201,12 +214,26 @@ export default function CssSelectorsPage({ groups }: { groups: typeof CSS_SELECT
                           </span>
                         </div>
                         <div className={styles.flagRow}>
-                          <code className={styles.codeDesc} style={{ fontFamily: "var(--font-mono)", fontSize: "10px", opacity: 0.7 }}>
+                          <code
+                            className={styles.codeDesc}
+                            style={{
+                              fontFamily: "var(--font-mono)",
+                              fontSize: "10px",
+                              opacity: 0.7,
+                            }}
+                          >
                             {sel.example}
                           </code>
                         </div>
                         <div className={styles.flagRow}>
-                          <span className={styles.flagBadge} style={{ color: group.color, backgroundColor: group.subtle, borderColor: group.border }}>
+                          <span
+                            className={styles.flagBadge}
+                            style={{
+                              color: group.color,
+                              backgroundColor: group.subtle,
+                              borderColor: group.border,
+                            }}
+                          >
                             specificity: {sel.specificity}
                           </span>
                         </div>

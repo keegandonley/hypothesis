@@ -14,7 +14,14 @@ export async function sendWebhookPushNotification(
   const body = `${method} request received`;
   const data = { type: "webhook_event", method, eventId };
 
-  const result = await sendApnsNotification(device.token, title, body, data, undefined, device.sandbox);
+  const result = await sendApnsNotification(
+    device.token,
+    title,
+    body,
+    data,
+    undefined,
+    device.sandbox,
+  );
 
   await insertPushNotification({
     deviceId,
@@ -23,5 +30,7 @@ export async function sendWebhookPushNotification(
     data,
     apnsId: result.apnsId ?? null,
     success: result.ok,
-  }).catch((err) => console.error("[webhook-push] failed to record notification", err));
+  }).catch((err) =>
+    console.error("[webhook-push] failed to record notification", err),
+  );
 }

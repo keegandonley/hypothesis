@@ -118,7 +118,11 @@ export default function IframeProxyPage() {
     setUrlFromParam(true);
     const params = new URLSearchParams(window.location.search);
     params.set("url", validated);
-    history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+    history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}?${params.toString()}`,
+    );
   };
 
   return (

@@ -52,10 +52,14 @@ function analyzeText(text: string, wpm: number): TextStats {
   const lines = text.split("\n").length;
 
   // Sentences: split by . ! ?
-  const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0).length;
+  const sentences = text
+    .split(/[.!?]+/)
+    .filter((s) => s.trim().length > 0).length;
 
   // Paragraphs: split by double newline or more
-  const paragraphs = text.split(/\n\s*\n/).filter((p) => p.trim().length > 0).length;
+  const paragraphs = text
+    .split(/\n\s*\n/)
+    .filter((p) => p.trim().length > 0).length;
 
   // Reading time (default 250 WPM for reading)
   const readingMinutes = words / wpm;
@@ -68,14 +72,20 @@ function analyzeText(text: string, wpm: number): TextStats {
   const speakingSecs = Math.round((speakingMinutes - speakingMins) * 60);
 
   // Average word length
-  const totalWordLength = wordsArray.reduce((sum, word) => sum + word.length, 0);
+  const totalWordLength = wordsArray.reduce(
+    (sum, word) => sum + word.length,
+    0,
+  );
   const avgWordLength = words > 0 ? totalWordLength / words : 0;
 
   // Longest word (strip punctuation before comparing)
   const longestWord = wordsArray
     .map((w) => w.replace(/[^a-zA-Z0-9]/g, ""))
     .filter((w) => w.length > 0)
-    .reduce((longest, word) => (word.length > longest.length ? word : longest), "");
+    .reduce(
+      (longest, word) => (word.length > longest.length ? word : longest),
+      "",
+    );
 
   // Word frequency (top 20, case-insensitive, alphabetic only)
   const wordMap = new Map<string, number>();
@@ -198,7 +208,12 @@ export default function TextStatsPage() {
       />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -212,7 +227,9 @@ export default function TextStatsPage() {
           </Link>
         </div>
         <h1 className={styles.title}>Text Stats</h1>
-        <p className={styles.tagline}>Analyze text statistics and word frequency</p>
+        <p className={styles.tagline}>
+          Analyze text statistics and word frequency
+        </p>
       </div>
 
       <hr className={styles.divider} />
@@ -228,7 +245,9 @@ export default function TextStatsPage() {
                   type="number"
                   className={styles.wpmInput}
                   value={wpm}
-                  onChange={(e) => handleWpmChange(parseInt(e.target.value, 10) || DEFAULT_WPM)}
+                  onChange={(e) =>
+                    handleWpmChange(parseInt(e.target.value, 10) || DEFAULT_WPM)
+                  }
                   min="50"
                   max="1000"
                   step="10"
@@ -251,47 +270,65 @@ export default function TextStatsPage() {
             <h2 className={styles.sectionTitle}>Statistics</h2>
             <div className={styles.statsGrid}>
               <div className={styles.statCard}>
-                <div className={styles.statValue}>{stats.characters.total.toLocaleString()}</div>
+                <div className={styles.statValue}>
+                  {stats.characters.total.toLocaleString()}
+                </div>
                 <div className={styles.statLabel}>Characters</div>
               </div>
               <div className={styles.statCard}>
-                <div className={styles.statValue}>{stats.characters.withoutSpaces.toLocaleString()}</div>
+                <div className={styles.statValue}>
+                  {stats.characters.withoutSpaces.toLocaleString()}
+                </div>
                 <div className={styles.statLabel}>Without Spaces</div>
               </div>
               <div className={styles.statCard}>
-                <div className={styles.statValue}>{stats.words.toLocaleString()}</div>
+                <div className={styles.statValue}>
+                  {stats.words.toLocaleString()}
+                </div>
                 <div className={styles.statLabel}>Words</div>
               </div>
               <div className={styles.statCard}>
-                <div className={styles.statValue}>{stats.lines.toLocaleString()}</div>
+                <div className={styles.statValue}>
+                  {stats.lines.toLocaleString()}
+                </div>
                 <div className={styles.statLabel}>Lines</div>
               </div>
               <div className={styles.statCard}>
-                <div className={styles.statValue}>{stats.sentences.toLocaleString()}</div>
+                <div className={styles.statValue}>
+                  {stats.sentences.toLocaleString()}
+                </div>
                 <div className={styles.statLabel}>Sentences</div>
               </div>
               <div className={styles.statCard}>
-                <div className={styles.statValue}>{stats.paragraphs.toLocaleString()}</div>
+                <div className={styles.statValue}>
+                  {stats.paragraphs.toLocaleString()}
+                </div>
                 <div className={styles.statLabel}>Paragraphs</div>
               </div>
               <div className={styles.statCard}>
                 <div className={styles.statValue}>
-                  {stats.readingTime.minutes}:{stats.readingTime.seconds.toString().padStart(2, "0")}
+                  {stats.readingTime.minutes}:
+                  {stats.readingTime.seconds.toString().padStart(2, "0")}
                 </div>
                 <div className={styles.statLabel}>Reading Time</div>
               </div>
               <div className={styles.statCard}>
                 <div className={styles.statValue}>
-                  {stats.speakingTime.minutes}:{stats.speakingTime.seconds.toString().padStart(2, "0")}
+                  {stats.speakingTime.minutes}:
+                  {stats.speakingTime.seconds.toString().padStart(2, "0")}
                 </div>
                 <div className={styles.statLabel}>Speaking Time</div>
               </div>
               <div className={styles.statCard}>
-                <div className={styles.statValue}>{stats.avgWordLength.toFixed(1)}</div>
+                <div className={styles.statValue}>
+                  {stats.avgWordLength.toFixed(1)}
+                </div>
                 <div className={styles.statLabel}>Avg Word Length</div>
               </div>
               <div className={styles.statCard}>
-                <div className={styles.statValue}>{stats.longestWord || "—"}</div>
+                <div className={styles.statValue}>
+                  {stats.longestWord || "—"}
+                </div>
                 <div className={styles.statLabel}>Longest Word</div>
               </div>
             </div>

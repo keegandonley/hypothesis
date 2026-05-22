@@ -12,7 +12,8 @@ import { useIsIframe } from "@/lib/useIsIframe";
 function arrayBufferToBase64(buf: ArrayBuffer): string {
   const bytes = new Uint8Array(buf);
   let binary = "";
-  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  for (let i = 0; i < bytes.length; i++)
+    binary += String.fromCharCode(bytes[i]);
   return btoa(binary);
 }
 
@@ -53,8 +54,12 @@ export default function RsaPage() {
   const [decryptKey, setDecryptKey] = useState<CryptoKey | null>(null);
   const [publicKeyPem, setPublicKeyPem] = useState("");
   const [privateKeyPem, setPrivateKeyPem] = useState("");
-  const [pubKeyImportError, setPubKeyImportError] = useState<string | null>(null);
-  const [privKeyImportError, setPrivKeyImportError] = useState<string | null>(null);
+  const [pubKeyImportError, setPubKeyImportError] = useState<string | null>(
+    null,
+  );
+  const [privKeyImportError, setPrivKeyImportError] = useState<string | null>(
+    null,
+  );
 
   // Step 2
   const [plaintext, setPlaintext] = useState("Hello, RSA!");
@@ -93,7 +98,9 @@ export default function RsaPage() {
   const pubTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const privTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const ctTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const plaintextBytes = new TextEncoder().encode(plaintext).length;
 
@@ -123,11 +130,22 @@ export default function RsaPage() {
       return;
     }
     const buf = parsePemBody(publicKeyPem);
-    if (!buf) { setPubKeyImportError("Could not parse PEM"); return; }
+    if (!buf) {
+      setPubKeyImportError("Could not parse PEM");
+      return;
+    }
     window.crypto.subtle
-      .importKey("spki", buf, { name: "RSA-OAEP", hash: "SHA-256" }, true, ["encrypt"])
-      .then((key) => { setEncryptKey(key); setPubKeyImportError(null); })
-      .catch((e) => { setEncryptKey(null); setPubKeyImportError(e instanceof Error ? e.message : String(e)); });
+      .importKey("spki", buf, { name: "RSA-OAEP", hash: "SHA-256" }, true, [
+        "encrypt",
+      ])
+      .then((key) => {
+        setEncryptKey(key);
+        setPubKeyImportError(null);
+      })
+      .catch((e) => {
+        setEncryptKey(null);
+        setPubKeyImportError(e instanceof Error ? e.message : String(e));
+      });
   }, [publicKeyPem]);
 
   // Import private key whenever PEM changes
@@ -138,11 +156,22 @@ export default function RsaPage() {
       return;
     }
     const buf = parsePemBody(privateKeyPem);
-    if (!buf) { setPrivKeyImportError("Could not parse PEM"); return; }
+    if (!buf) {
+      setPrivKeyImportError("Could not parse PEM");
+      return;
+    }
     window.crypto.subtle
-      .importKey("pkcs8", buf, { name: "RSA-OAEP", hash: "SHA-256" }, true, ["decrypt"])
-      .then((key) => { setDecryptKey(key); setPrivKeyImportError(null); })
-      .catch((e) => { setDecryptKey(null); setPrivKeyImportError(e instanceof Error ? e.message : String(e)); });
+      .importKey("pkcs8", buf, { name: "RSA-OAEP", hash: "SHA-256" }, true, [
+        "decrypt",
+      ])
+      .then((key) => {
+        setDecryptKey(key);
+        setPrivKeyImportError(null);
+      })
+      .catch((e) => {
+        setDecryptKey(null);
+        setPrivKeyImportError(e instanceof Error ? e.message : String(e));
+      });
   }, [privateKeyPem]);
 
   const buildUrl = (ct: string) => {
@@ -181,8 +210,14 @@ export default function RsaPage() {
       const t1 = performance.now();
       setKeyGenMs(Math.round(t1 - t0));
 
-      const pubSpki = await window.crypto.subtle.exportKey("spki", kp.publicKey);
-      const privPkcs8 = await window.crypto.subtle.exportKey("pkcs8", kp.privateKey);
+      const pubSpki = await window.crypto.subtle.exportKey(
+        "spki",
+        kp.publicKey,
+      );
+      const privPkcs8 = await window.crypto.subtle.exportKey(
+        "pkcs8",
+        kp.privateKey,
+      );
 
       const pubPem = wrapPem(arrayBufferToBase64(pubSpki), "PUBLIC KEY");
       const privPem = wrapPem(arrayBufferToBase64(privPkcs8), "PRIVATE KEY");
@@ -270,8 +305,13 @@ export default function RsaPage() {
         true,
         ["encrypt", "decrypt"],
       );
-      const wrongPrivPkcs8 = await window.crypto.subtle.exportKey("pkcs8", wrongKp.privateKey);
-      setWrongPrivKeyPem(wrapPem(arrayBufferToBase64(wrongPrivPkcs8), "PRIVATE KEY"));
+      const wrongPrivPkcs8 = await window.crypto.subtle.exportKey(
+        "pkcs8",
+        wrongKp.privateKey,
+      );
+      setWrongPrivKeyPem(
+        wrapPem(arrayBufferToBase64(wrongPrivPkcs8), "PRIVATE KEY"),
+      );
       await window.crypto.subtle.decrypt(
         { name: "RSA-OAEP" },
         wrongKp.privateKey,
@@ -346,7 +386,8 @@ export default function RsaPage() {
         </div>
         <h1 className={styles.title}>RSA Encryption</h1>
         <p className={styles.tagline}>
-          EXP-005 · Interactive RSA-OAEP public-key encryption using the Web Crypto API
+          EXP-005 · Interactive RSA-OAEP public-key encryption using the Web
+          Crypto API
         </p>
       </div>
 
@@ -356,7 +397,8 @@ export default function RsaPage() {
         <div className={styles.errorPanel} style={{ marginBottom: "1.5rem" }}>
           <div className={styles.errorTitle}>Web Crypto API unavailable</div>
           <div className={styles.errorMsg}>
-            This experiment requires a secure context (HTTPS or localhost). The Web Crypto API is not available on plain HTTP origins.
+            This experiment requires a secure context (HTTPS or localhost). The
+            Web Crypto API is not available on plain HTTP origins.
           </div>
         </div>
       )}
@@ -367,7 +409,9 @@ export default function RsaPage() {
           <span className={styles.stepBadge}>Step 1</span>
           <span className={styles.stepTitle}>Generate Key Pair</span>
           {keyGenMs !== null && (
-            <span className={styles.timingBadge}>generated in {keyGenMs}ms</span>
+            <span className={styles.timingBadge}>
+              generated in {keyGenMs}ms
+            </span>
           )}
         </div>
 
@@ -418,7 +462,11 @@ export default function RsaPage() {
                 <button
                   className={`${styles.copyBtn}${copiedPriv ? ` ${styles.copied}` : ""}`}
                   onClick={() =>
-                    copyWithTimeout(privateKeyPem, setCopiedPriv, privTimeoutRef)
+                    copyWithTimeout(
+                      privateKeyPem,
+                      setCopiedPriv,
+                      privTimeoutRef,
+                    )
                   }
                 >
                   {copiedPriv ? "Copied!" : "Copy"}
@@ -443,7 +491,8 @@ export default function RsaPage() {
 
         {(encryptKey || decryptKey) && (
           <div className={styles.infoBox}>
-            Algorithm: RSA-OAEP · Hash: SHA-256 · Key size: 2048 bits · Public exponent: 65537
+            Algorithm: RSA-OAEP · Hash: SHA-256 · Key size: 2048 bits · Public
+            exponent: 65537
           </div>
         )}
       </div>
@@ -456,7 +505,9 @@ export default function RsaPage() {
           <span className={styles.stepBadge}>Step 2</span>
           <span className={styles.stepTitle}>Encrypt</span>
           {encryptMs !== null && (
-            <span className={styles.timingBadge}>encrypted in {encryptMs}ms</span>
+            <span className={styles.timingBadge}>
+              encrypted in {encryptMs}ms
+            </span>
           )}
         </div>
 
@@ -488,13 +539,20 @@ export default function RsaPage() {
         <button
           className={styles.primaryBtn}
           onClick={handleEncrypt}
-          disabled={!cryptoAvailable || !encryptKey || plaintextBytes > 190 || encrypting}
+          disabled={
+            !cryptoAvailable ||
+            !encryptKey ||
+            plaintextBytes > 190 ||
+            encrypting
+          }
         >
           {encrypting ? "Encrypting…" : "Encrypt with Public Key"}
         </button>
 
         {!encryptKey && (
-          <div className={styles.annotation}>Add a public key in Step 1 first.</div>
+          <div className={styles.annotation}>
+            Add a public key in Step 1 first.
+          </div>
         )}
 
         {ciphertext && (
@@ -514,7 +572,8 @@ export default function RsaPage() {
             </div>
             <div className={styles.ciphertextOutput}>{ciphertext}</div>
             <div className={styles.annotation}>
-              Always 344 base64 chars (256 bytes) regardless of input length — RSA-OAEP 2048 produces a fixed-size block.
+              Always 344 base64 chars (256 bytes) regardless of input length —
+              RSA-OAEP 2048 produces a fixed-size block.
             </div>
           </div>
         )}
@@ -528,13 +587,16 @@ export default function RsaPage() {
           <span className={styles.stepBadge}>Step 3</span>
           <span className={styles.stepTitle}>Decrypt</span>
           {decryptMs !== null && (
-            <span className={styles.timingBadge}>decrypted in {decryptMs}ms</span>
+            <span className={styles.timingBadge}>
+              decrypted in {decryptMs}ms
+            </span>
           )}
         </div>
 
         {ciphertextFromUrl && (
           <div className={styles.urlNote}>
-            Ciphertext loaded from URL. Generate a key pair to decrypt, or paste your own ciphertext.
+            Ciphertext loaded from URL. Generate a key pair to decrypt, or paste
+            your own ciphertext.
           </div>
         )}
 
@@ -555,7 +617,9 @@ export default function RsaPage() {
           <button
             className={styles.primaryBtn}
             onClick={handleDecrypt}
-            disabled={!cryptoAvailable || !decryptKey || !ctInput.trim() || decrypting}
+            disabled={
+              !cryptoAvailable || !decryptKey || !ctInput.trim() || decrypting
+            }
           >
             {decrypting ? "Decrypting…" : "Decrypt with Private Key"}
           </button>
@@ -588,22 +652,28 @@ export default function RsaPage() {
             <div className={styles.errorTitle}>Decryption failed</div>
             <div className={styles.errorMsg}>{decryptError}</div>
             <div className={styles.annotation}>
-              The ciphertext may have been tampered with, or the wrong key was used.
+              The ciphertext may have been tampered with, or the wrong key was
+              used.
             </div>
           </div>
         )}
 
         {wrongKeyError !== null && (
           <div className={styles.errorPanel}>
-            <div className={styles.errorTitle}>Wrong key — decryption failed (expected)</div>
+            <div className={styles.errorTitle}>
+              Wrong key — decryption failed (expected)
+            </div>
             <div className={styles.errorMsg}>{wrongKeyError}</div>
             <div className={styles.annotation}>
-              This is the expected result. Without the matching private key, decryption is computationally infeasible — RSA security relies on the hardness of factoring large primes.
+              This is the expected result. Without the matching private key,
+              decryption is computationally infeasible — RSA security relies on
+              the hardness of factoring large primes.
             </div>
             {wrongPrivKeyPem && (
               <>
                 <div className={styles.annotation} style={{ marginTop: "6px" }}>
-                  Wrong private key used (freshly generated, unrelated to the encrypting key pair):
+                  Wrong private key used (freshly generated, unrelated to the
+                  encrypting key pair):
                 </div>
                 <textarea
                   className={`${styles.keyTextarea} ${styles.privateKeyTextarea}`}

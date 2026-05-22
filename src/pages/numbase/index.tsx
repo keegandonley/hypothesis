@@ -29,7 +29,9 @@ export default function NumbasePage() {
   const [copied, setCopied] = useState(false);
   const [copiedField, setCopiedField] = useState<keyof Values | null>(null);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyFieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyFieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const buildUrl = (dec: string) => {
     if (!dec) return `${window.location.origin}${window.location.pathname}`;
@@ -41,7 +43,13 @@ export default function NumbasePage() {
     const value = params.get("value");
     if (value) {
       const n = Number(value);
-      if (!isNaN(n) && Number.isInteger(n) && n >= 0 && n <= Number.MAX_SAFE_INTEGER) setValues(fromDecimal(n));
+      if (
+        !isNaN(n) &&
+        Number.isInteger(n) &&
+        n >= 0 &&
+        n <= Number.MAX_SAFE_INTEGER
+      )
+        setValues(fromDecimal(n));
     }
     setUrl(window.location.href);
   }, []);
@@ -95,8 +103,12 @@ export default function NumbasePage() {
   const handleCopyField = (field: keyof Values) => {
     copyToClipboard(values[field]).then(() => {
       setCopiedField(field);
-      if (copyFieldTimeoutRef.current) clearTimeout(copyFieldTimeoutRef.current);
-      copyFieldTimeoutRef.current = setTimeout(() => setCopiedField(null), 1500);
+      if (copyFieldTimeoutRef.current)
+        clearTimeout(copyFieldTimeoutRef.current);
+      copyFieldTimeoutRef.current = setTimeout(
+        () => setCopiedField(null),
+        1500,
+      );
     });
   };
 
@@ -107,10 +119,34 @@ export default function NumbasePage() {
     base: number;
     placeholder: string;
   }[] = [
-    { field: "bin", label: "Binary", prefix: "0b", base: 2, placeholder: "e.g. 11111111" },
-    { field: "oct", label: "Octal", prefix: "0o", base: 8, placeholder: "e.g. 377" },
-    { field: "dec", label: "Decimal", prefix: "base 10", base: 10, placeholder: "e.g. 255" },
-    { field: "hex", label: "Hex", prefix: "0x", base: 16, placeholder: "e.g. FF" },
+    {
+      field: "bin",
+      label: "Binary",
+      prefix: "0b",
+      base: 2,
+      placeholder: "e.g. 11111111",
+    },
+    {
+      field: "oct",
+      label: "Octal",
+      prefix: "0o",
+      base: 8,
+      placeholder: "e.g. 377",
+    },
+    {
+      field: "dec",
+      label: "Decimal",
+      prefix: "base 10",
+      base: 10,
+      placeholder: "e.g. 255",
+    },
+    {
+      field: "hex",
+      label: "Hex",
+      prefix: "0x",
+      base: 16,
+      placeholder: "e.g. FF",
+    },
   ];
 
   return (

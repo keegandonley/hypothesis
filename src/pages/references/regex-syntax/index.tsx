@@ -10,7 +10,11 @@ export const getStaticProps: GetStaticProps = () => ({
   props: { groups: REGEX_GROUPS },
 });
 
-export default function RegexSyntaxPage({ groups }: { groups: typeof REGEX_GROUPS }) {
+export default function RegexSyntaxPage({
+  groups,
+}: {
+  groups: typeof REGEX_GROUPS;
+}) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeGroup, setActiveGroup] = useState("all");
@@ -44,19 +48,21 @@ export default function RegexSyntaxPage({ groups }: { groups: typeof REGEX_GROUP
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return groups.map((group) => {
-      const tokens = group.tokens.filter((t) => {
-        if (activeGroup !== "all" && activeGroup !== group.id) return false;
-        if (!q) return true;
-        return (
-          t.token.toLowerCase().includes(q) ||
-          t.description.toLowerCase().includes(q) ||
-          t.example.toLowerCase().includes(q) ||
-          (t.output ?? "").toLowerCase().includes(q)
-        );
-      });
-      return { ...group, tokens };
-    }).filter((g) => g.tokens.length > 0);
+    return groups
+      .map((group) => {
+        const tokens = group.tokens.filter((t) => {
+          if (activeGroup !== "all" && activeGroup !== group.id) return false;
+          if (!q) return true;
+          return (
+            t.token.toLowerCase().includes(q) ||
+            t.description.toLowerCase().includes(q) ||
+            t.example.toLowerCase().includes(q) ||
+            (t.output ?? "").toLowerCase().includes(q)
+          );
+        });
+        return { ...group, tokens };
+      })
+      .filter((g) => g.tokens.length > 0);
   }, [search, activeGroup]);
 
   return (
@@ -98,7 +104,8 @@ export default function RegexSyntaxPage({ groups }: { groups: typeof REGEX_GROUP
         <div className={styles.header}>
           <h1 className={styles.title}>Regex Syntax</h1>
           <p className={styles.tagline}>
-            Regular expression tokens with descriptions and examples. JavaScript flavor.
+            Regular expression tokens with descriptions and examples. JavaScript
+            flavor.
           </p>
         </div>
 
@@ -190,7 +197,13 @@ export default function RegexSyntaxPage({ groups }: { groups: typeof REGEX_GROUP
                         } as React.CSSProperties
                       }
                     >
-                      <span className={styles.codeBadge} style={{ fontFamily: "var(--font-mono)", fontSize: "10px" }}>
+                      <span
+                        className={styles.codeBadge}
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "10px",
+                        }}
+                      >
                         {token.token}
                       </span>
                       <div className={styles.codeInfo}>
@@ -200,11 +213,21 @@ export default function RegexSyntaxPage({ groups }: { groups: typeof REGEX_GROUP
                           </span>
                         </div>
                         <div className={styles.flagRow}>
-                          <code className={styles.codeDesc} style={{ fontFamily: "var(--font-mono)", fontSize: "10px", opacity: 0.7 }}>
+                          <code
+                            className={styles.codeDesc}
+                            style={{
+                              fontFamily: "var(--font-mono)",
+                              fontSize: "10px",
+                              opacity: 0.7,
+                            }}
+                          >
                             {token.example}
                           </code>
                           {token.output && (
-                            <span className={styles.codeDesc} style={{ opacity: 0.5 }}>
+                            <span
+                              className={styles.codeDesc}
+                              style={{ opacity: 0.5 }}
+                            >
                               → {token.output}
                             </span>
                           )}

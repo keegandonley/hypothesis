@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import Head from "next/head";
 import styles from "../../styles/open-mobile.module.css";
 
-const APP_STORE_URL = "https://apps.apple.com/us/app/hypothesis-sh/id6764898246";
+const APP_STORE_URL =
+  "https://apps.apple.com/us/app/hypothesis-sh/id6764898246";
 const QR_URL = "/api/qr?value=https%3A%2F%2Fhypothesis.sh%2Fopen-mobile&ecl=M";
 
 export default function OpenMobilePage() {

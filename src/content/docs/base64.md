@@ -15,7 +15,11 @@ Type or paste any text into the **Plain Text** panel. The **Base64** panel updat
 Encoding uses the standard UTF-8 → base64 pipeline:
 
 ```js
-btoa(new TextEncoder().encode(value).reduce((s, b) => s + String.fromCharCode(b), ""))
+btoa(
+  new TextEncoder()
+    .encode(value)
+    .reduce((s, b) => s + String.fromCharCode(b), ""),
+);
 ```
 
 ## Decoding
@@ -27,7 +31,7 @@ If the input is not valid base64, the plain text field is cleared rather than sh
 Decoding uses the reverse pipeline:
 
 ```js
-new TextDecoder().decode(Uint8Array.from(atob(value), c => c.charCodeAt(0)))
+new TextDecoder().decode(Uint8Array.from(atob(value), (c) => c.charCodeAt(0)));
 ```
 
 ## JSON mode

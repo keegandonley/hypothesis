@@ -33,7 +33,11 @@ export default function SqlPage() {
   let error = "";
   if (input) {
     try {
-      formatted = format(input, { language: dialect, tabWidth: 2, keywordCase: "upper" });
+      formatted = format(input, {
+        language: dialect,
+        tabWidth: 2,
+        keywordCase: "upper",
+      });
     } catch (e) {
       error = e instanceof Error ? e.message : "Formatting error";
     }
@@ -50,7 +54,11 @@ export default function SqlPage() {
     const v = params.get("v");
     const d = params.get("d") as SqlLanguage | null;
     if (v) {
-      try { setInput(decodeURIComponent(escape(atob(v)))); } catch { /* ignore */ }
+      try {
+        setInput(decodeURIComponent(escape(atob(v))));
+      } catch {
+        /* ignore */
+      }
     }
     if (d && DIALECTS.some((x) => x.value === d)) setDialect(d);
     setUrl(window.location.href);
@@ -105,16 +113,28 @@ export default function SqlPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
-          <Link href="/docs/sql" className={styles.docsLink} target="_blank" rel="noopener noreferrer">
+          <Link
+            href="/docs/sql"
+            className={styles.docsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>
         <h1 className={styles.title}>SQL Formatter</h1>
-        <p className={styles.tagline}>Format and prettify SQL queries with dialect-aware keyword casing</p>
+        <p className={styles.tagline}>
+          Format and prettify SQL queries with dialect-aware keyword casing
+        </p>
       </div>
 
       <hr className={styles.divider} />

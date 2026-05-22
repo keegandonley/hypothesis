@@ -23,4 +23,3 @@ export async function snapshotDeviceTotal(): Promise<void> {
      ON CONFLICT (hour) DO UPDATE SET devices_total = EXCLUDED.devices_total`,
   );
 }
-

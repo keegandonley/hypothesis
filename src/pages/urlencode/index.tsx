@@ -98,7 +98,12 @@ export default function UrlEncodePage() {
       />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -113,7 +118,12 @@ export default function UrlEncodePage() {
         </div>
         <h1 className={styles.title}>URL Encode</h1>
         <p className={styles.tagline}>Encode and decode URL strings</p>
-        <ReferenceLinks refs={[{ name: "MIME Types", slug: "mime-types" }, { name: "HTTP Headers", slug: "http-headers" }]} />
+        <ReferenceLinks
+          refs={[
+            { name: "MIME Types", slug: "mime-types" },
+            { name: "HTTP Headers", slug: "http-headers" },
+          ]}
+        />
       </div>
 
       <hr className={styles.divider} />

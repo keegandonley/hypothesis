@@ -87,13 +87,25 @@ export default function MyIpPage() {
             {branding.domain}
           </Link>
           {"·"}
-          <Link href="/docs/my-ip" className={styles.docsLink} target="_blank" rel="noopener noreferrer">
+          <Link
+            href="/docs/my-ip"
+            className={styles.docsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>
         <h1 className={styles.title}>My IP</h1>
-        <p className={styles.tagline}>Your current public IP address and location info</p>
-        <ReferenceLinks refs={[{ name: "DNS Record Types", slug: "dns-record-types" }, { name: "Port Numbers", slug: "port-numbers" }]} />
+        <p className={styles.tagline}>
+          Your current public IP address and location info
+        </p>
+        <ReferenceLinks
+          refs={[
+            { name: "DNS Record Types", slug: "dns-record-types" },
+            { name: "Port Numbers", slug: "port-numbers" },
+          ]}
+        />
       </div>
 
       <hr className={styles.divider} />
@@ -112,8 +124,12 @@ export default function MyIpPage() {
             )}
           </div>
           <div className={styles.ipValue}>
-            {status === "loading" && <span className={styles.muted}>Fetching…</span>}
-            {status === "error" && <span className={styles.error}>Failed to fetch IP</span>}
+            {status === "loading" && (
+              <span className={styles.muted}>Fetching…</span>
+            )}
+            {status === "error" && (
+              <span className={styles.error}>Failed to fetch IP</span>
+            )}
             {status === "success" && data && <span>{data.ip}</span>}
           </div>
         </div>

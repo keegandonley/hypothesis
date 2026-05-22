@@ -1,9 +1,4 @@
-export type TzGroup =
-  | "americas"
-  | "europe-africa"
-  | "asia"
-  | "pacific"
-  | "utc";
+export type TzGroup = "americas" | "europe-africa" | "asia" | "pacific" | "utc";
 
 export interface TimezoneEntry {
   iana: string;

@@ -25,7 +25,9 @@ export default function PrettyPrintPage() {
     return `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(encoded)}`;
   };
 
-  const formatJson = (value: string): { output: string; valid: boolean | null } => {
+  const formatJson = (
+    value: string,
+  ): { output: string; valid: boolean | null } => {
     if (value.length === 0) return { output: "", valid: null };
     try {
       const parsed = JSON.parse(value);
@@ -99,7 +101,12 @@ export default function PrettyPrintPage() {
       />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -124,8 +131,12 @@ export default function PrettyPrintPage() {
             <span className={styles.panelLabel}>Input</span>
             <div className={styles.panelHeaderRight}>
               <span className={styles.badge}>{input.length} chars</span>
-              {jsonValid === true && <span className={styles.badge}>valid</span>}
-              {jsonValid === false && <span className={styles.badgeError}>invalid</span>}
+              {jsonValid === true && (
+                <span className={styles.badge}>valid</span>
+              )}
+              {jsonValid === false && (
+                <span className={styles.badgeError}>invalid</span>
+              )}
             </div>
           </div>
           <div className={styles.textareaWrapper}>
@@ -165,7 +176,9 @@ export default function PrettyPrintPage() {
 
       <div className={styles.permalinkRow} data-permalink-row>
         <span className={styles.fieldLabel}>Permalink</span>
-        <span className={`${styles.permalinkUrl}${urlTooLong ? ` ${styles.permalinkDisabled}` : ""}`}>
+        <span
+          className={`${styles.permalinkUrl}${urlTooLong ? ` ${styles.permalinkDisabled}` : ""}`}
+        >
           {urlTooLong ? "url too long to share" : url}
         </span>
         {!isIframe && (

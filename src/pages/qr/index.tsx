@@ -29,7 +29,9 @@ export default function QrPage() {
   const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [pageUrl, setPageUrl] = useState("");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const buildUrl = (v: string, ec: ECLevel) => {
     const params = new URLSearchParams();
@@ -70,7 +72,7 @@ export default function QrPage() {
     const initialUrl = buildUrl(v, ec);
     history.replaceState(null, "", initialUrl);
     setPageUrl(initialUrl);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleValueChange = (v: string) => {
@@ -101,8 +103,12 @@ export default function QrPage() {
   const handleCopyPermalink = () => {
     copyToClipboard(pageUrl).then(() => {
       setPermalinkCopied(true);
-      if (permalinkTimeoutRef.current) clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(() => setPermalinkCopied(false), 1500);
+      if (permalinkTimeoutRef.current)
+        clearTimeout(permalinkTimeoutRef.current);
+      permalinkTimeoutRef.current = setTimeout(
+        () => setPermalinkCopied(false),
+        1500,
+      );
     });
   };
 
@@ -248,7 +254,9 @@ export default function QrPage() {
               />
             )}
             {!svgContent && !error && (
-              <div className={styles.emptyState}>Enter text to generate a QR code</div>
+              <div className={styles.emptyState}>
+                Enter text to generate a QR code
+              </div>
             )}
           </div>
         </div>

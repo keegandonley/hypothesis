@@ -32,6 +32,7 @@ Next.js app with file-based routing. Each tool lives at `src/pages/[tool-name]/i
 **URL sync (permalinks):** Tools write state to URL query params via `history.replaceState()` on every change, and restore from params in a `useEffect` on mount. This is the standard shareability pattern — nearly every tool uses it.
 
 **Shared hooks/utils:**
+
 - `useBranding()` — returns `{ name, domain, accent }` for the active domain (hypothesis.sh / conclusion.sh / falsify.sh / observation.sh). Use for `<title>` tags and any domain-aware text.
 - `useIsIframe()` — hides clipboard copy buttons when the tool is embedded cross-origin.
 - `copyToClipboard(text)` — clipboard write with older-browser fallback.

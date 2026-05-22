@@ -84,7 +84,8 @@ export const STATUS_CODES: Record<StatusClass, StatusCode[]> = {
     {
       code: 200,
       name: "OK",
-      description: "Standard success. Response body contains the requested data.",
+      description:
+        "Standard success. Response body contains the requested data.",
     },
     {
       code: 201,
@@ -317,7 +318,8 @@ export const STATUS_CODES: Record<StatusClass, StatusCode[]> = {
     {
       code: 423,
       name: "Locked",
-      description: "The resource is currently locked and cannot be modified. (WebDAV)",
+      description:
+        "The resource is currently locked and cannot be modified. (WebDAV)",
     },
     {
       code: 424,

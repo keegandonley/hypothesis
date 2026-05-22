@@ -98,22 +98,24 @@ export default function TimezonesPage({
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return tzGroups.map((group) => {
-      const entries = enriched
-        .filter((tz) => {
-          if (activeGroup !== "all" && activeGroup !== tz.group) return false;
-          if (tz.group !== group.id) return false;
-          if (!q) return true;
-          return (
-            tz.iana.toLowerCase().includes(q) ||
-            tz.offsetStr.toLowerCase().includes(q) ||
-            tz.abbrs.some((a) => a.toLowerCase().includes(q)) ||
-            tz.cities.some((c) => c.toLowerCase().includes(q))
-          );
-        })
-        .sort((a, b) => a.offsetMins - b.offsetMins);
-      return { ...group, entries };
-    }).filter((g) => g.entries.length > 0);
+    return tzGroups
+      .map((group) => {
+        const entries = enriched
+          .filter((tz) => {
+            if (activeGroup !== "all" && activeGroup !== tz.group) return false;
+            if (tz.group !== group.id) return false;
+            if (!q) return true;
+            return (
+              tz.iana.toLowerCase().includes(q) ||
+              tz.offsetStr.toLowerCase().includes(q) ||
+              tz.abbrs.some((a) => a.toLowerCase().includes(q)) ||
+              tz.cities.some((c) => c.toLowerCase().includes(q))
+            );
+          })
+          .sort((a, b) => a.offsetMins - b.offsetMins);
+        return { ...group, entries };
+      })
+      .filter((g) => g.entries.length > 0);
   }, [enriched, search, activeGroup]);
 
   return (
@@ -259,13 +261,14 @@ export default function TimezonesPage({
                             gap: "12px",
                           }}
                         >
-                          <span className={styles.codeNameMono}>
-                            {tz.iana}
-                          </span>
+                          <span className={styles.codeNameMono}>{tz.iana}</span>
                           {now && (
                             <span
                               className={styles.codeDesc}
-                              style={{ flexShrink: 0, fontVariantNumeric: "tabular-nums" }}
+                              style={{
+                                flexShrink: 0,
+                                fontVariantNumeric: "tabular-nums",
+                              }}
                             >
                               {tz.timeStr}
                             </span>

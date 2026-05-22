@@ -15,12 +15,12 @@ Settings are tagged **rebuild** or **live**:
 
 ## Player controls
 
-| Control | Description |
-|---|---|
-| Play / Pause | `video.play()` / `video.pause()` |
-| video.load() | Forces a reload of the media resource |
-| −1f / +1f | Step backward/forward one frame (~1/30s) |
-| seek % | Jump to a percentage of the total duration |
+| Control      | Description                                |
+| ------------ | ------------------------------------------ |
+| Play / Pause | `video.play()` / `video.pause()`           |
+| video.load() | Forces a reload of the media resource      |
+| −1f / +1f    | Step backward/forward one frame (~1/30s)   |
+| seek %       | Jump to a percentage of the total duration |
 
 ## Range bars
 

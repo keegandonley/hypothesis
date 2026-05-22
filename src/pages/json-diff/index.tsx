@@ -33,7 +33,12 @@ function jsonDiff(a: unknown, b: unknown, path = ""): DiffEntry[] {
   const bIsObj = b !== null && typeof b === "object" && !bIsArray;
 
   if (typeof a !== typeof b || aIsArray !== bIsArray) {
-    entries.push({ path: label, type: "type-changed", oldValue: a, newValue: b });
+    entries.push({
+      path: label,
+      type: "type-changed",
+      oldValue: a,
+      newValue: b,
+    });
     return entries;
   }
 
@@ -103,10 +108,20 @@ export default function JsonDiffPage() {
   let rightOk = false;
 
   if (left) {
-    try { leftParsed = JSON.parse(left); leftOk = true; } catch { leftOk = false; }
+    try {
+      leftParsed = JSON.parse(left);
+      leftOk = true;
+    } catch {
+      leftOk = false;
+    }
   }
   if (right) {
-    try { rightParsed = JSON.parse(right); rightOk = true; } catch { rightOk = false; }
+    try {
+      rightParsed = JSON.parse(right);
+      rightOk = true;
+    } catch {
+      rightOk = false;
+    }
   }
 
   canDiff = (left.length > 0 || right.length > 0) && leftOk && rightOk;
@@ -115,12 +130,16 @@ export default function JsonDiffPage() {
   const counts = {
     added: diff.filter((d) => d.type === "added").length,
     removed: diff.filter((d) => d.type === "removed").length,
-    changed: diff.filter((d) => d.type === "changed" || d.type === "type-changed").length,
+    changed: diff.filter(
+      (d) => d.type === "changed" || d.type === "type-changed",
+    ).length,
   };
 
   const buildUrl = (l: string, r: string) => {
     if (!l && !r) return `${window.location.origin}${window.location.pathname}`;
-    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify({ l, r }))));
+    const encoded = btoa(
+      unescape(encodeURIComponent(JSON.stringify({ l, r }))),
+    );
     return `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(encoded)}`;
   };
 
@@ -148,7 +167,12 @@ export default function JsonDiffPage() {
   const handleLeft = (v: string) => {
     setLeft(v);
     if (v) {
-      try { JSON.parse(v); setLeftError(""); } catch { setLeftError("Invalid JSON"); }
+      try {
+        JSON.parse(v);
+        setLeftError("");
+      } catch {
+        setLeftError("Invalid JSON");
+      }
     } else {
       setLeftError("");
     }
@@ -158,7 +182,12 @@ export default function JsonDiffPage() {
   const handleRight = (v: string) => {
     setRight(v);
     if (v) {
-      try { JSON.parse(v); setRightError(""); } catch { setRightError("Invalid JSON"); }
+      try {
+        JSON.parse(v);
+        setRightError("");
+      } catch {
+        setRightError("Invalid JSON");
+      }
     } else {
       setRightError("");
     }
@@ -244,7 +273,9 @@ export default function JsonDiffPage() {
               className={styles.textarea}
               value={right}
               onChange={(e) => handleRight(e.target.value)}
-              placeholder={'{\n  "name": "Alice",\n  "age": 31,\n  "city": "NYC"\n}'}
+              placeholder={
+                '{\n  "name": "Alice",\n  "age": 31,\n  "city": "NYC"\n}'
+              }
               spellCheck={false}
             />
           </div>
@@ -280,27 +311,43 @@ export default function JsonDiffPage() {
           </div>
           <div className={styles.diffList}>
             {!left && !right && (
-              <span className={styles.emptyHint}>Paste JSON into both panels to compare</span>
+              <span className={styles.emptyHint}>
+                Paste JSON into both panels to compare
+              </span>
             )}
             {(leftError || rightError) && (
-              <span className={styles.emptyHint}>Fix JSON errors to compare</span>
+              <span className={styles.emptyHint}>
+                Fix JSON errors to compare
+              </span>
             )}
             {canDiff && diff.length === 0 && (
-              <span className={styles.emptyHint}>No differences found — the two JSON values are identical</span>
+              <span className={styles.emptyHint}>
+                No differences found — the two JSON values are identical
+              </span>
             )}
             {diff.map((entry, i) => (
-              <div key={i} className={`${styles.diffEntry} ${styles[entry.type]}`}>
-                <span className={styles.diffBadge}>{DIFF_LABELS[entry.type]}</span>
+              <div
+                key={i}
+                className={`${styles.diffEntry} ${styles[entry.type]}`}
+              >
+                <span className={styles.diffBadge}>
+                  {DIFF_LABELS[entry.type]}
+                </span>
                 <span className={styles.diffPath}>{entry.path}</span>
                 <div className={styles.diffValues}>
                   {entry.oldValue !== undefined && (
-                    <span className={styles.diffOld}>{formatValue(entry.oldValue)}</span>
+                    <span className={styles.diffOld}>
+                      {formatValue(entry.oldValue)}
+                    </span>
                   )}
-                  {entry.oldValue !== undefined && entry.newValue !== undefined && (
-                    <span className={styles.arrow}>→</span>
-                  )}
+                  {entry.oldValue !== undefined &&
+                    entry.newValue !== undefined && (
+                      <span className={styles.arrow}>→</span>
+                    )}
                   {entry.newValue !== undefined && (
-                    <span className={styles.diffNew}>{formatValue(entry.newValue)}</span>
+                    <span className={styles.diffNew}>
+                      {formatValue(entry.newValue)}
+                    </span>
                   )}
                 </div>
               </div>

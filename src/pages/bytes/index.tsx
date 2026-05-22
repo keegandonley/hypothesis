@@ -44,7 +44,9 @@ export default function BytesPage() {
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [url, setUrl] = useState("");
   const [copiedUrl, setCopiedUrl] = useState(false);
-  const copyTimeouts = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+  const copyTimeouts = useRef<Map<number, ReturnType<typeof setTimeout>>>(
+    new Map(),
+  );
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -92,7 +94,10 @@ export default function BytesPage() {
     setCopiedIdx(idx);
     const prev = copyTimeouts.current.get(idx);
     if (prev) clearTimeout(prev);
-    const t = setTimeout(() => setCopiedIdx((c) => (c === idx ? null : c)), 1500);
+    const t = setTimeout(
+      () => setCopiedIdx((c) => (c === idx ? null : c)),
+      1500,
+    );
     copyTimeouts.current.set(idx, t);
   }
 
@@ -117,11 +122,21 @@ export default function BytesPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
-          <Link href="/docs/bytes" className={styles.docsLink} target="_blank" rel="noopener noreferrer">
+          <Link
+            href="/docs/bytes"
+            className={styles.docsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>
@@ -174,8 +189,7 @@ export default function BytesPage() {
 
       <div className={styles.table}>
         {units.map((u, idx) => {
-          const display =
-            bytes !== null ? formatValue(bytes, u.factor) : "—";
+          const display = bytes !== null ? formatValue(bytes, u.factor) : "—";
           const isActive = u.unit === selectedUnit;
           return (
             <div

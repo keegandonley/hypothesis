@@ -34,7 +34,11 @@ const DIR_BORDER: Record<HeaderDirection, string> = {
   both: "#a1a1aa33",
 };
 
-export default function HttpHeadersPage({ groups }: { groups: typeof HEADER_CATEGORIES }) {
+export default function HttpHeadersPage({
+  groups,
+}: {
+  groups: typeof HEADER_CATEGORIES;
+}) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
@@ -68,18 +72,21 @@ export default function HttpHeadersPage({ groups }: { groups: typeof HEADER_CATE
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return groups.map((cat) => {
-      const headers = cat.headers.filter((h) => {
-        if (activeCategory !== "all" && activeCategory !== cat.id) return false;
-        if (!q) return true;
-        return (
-          h.name.toLowerCase().includes(q) ||
-          h.description.toLowerCase().includes(q) ||
-          h.direction.includes(q)
-        );
-      });
-      return { ...cat, headers };
-    }).filter((s) => s.headers.length > 0);
+    return groups
+      .map((cat) => {
+        const headers = cat.headers.filter((h) => {
+          if (activeCategory !== "all" && activeCategory !== cat.id)
+            return false;
+          if (!q) return true;
+          return (
+            h.name.toLowerCase().includes(q) ||
+            h.description.toLowerCase().includes(q) ||
+            h.direction.includes(q)
+          );
+        });
+        return { ...cat, headers };
+      })
+      .filter((s) => s.headers.length > 0);
   }, [search, activeCategory]);
 
   return (

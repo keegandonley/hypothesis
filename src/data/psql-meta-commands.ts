@@ -170,7 +170,8 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
     commands: [
       {
         command: "\\copy",
-        syntax: "\\copy { table | (query) } { from | to } { filename | stdin | stdout | program 'cmd' } [options]",
+        syntax:
+          "\\copy { table | (query) } { from | to } { filename | stdin | stdout | program 'cmd' } [options]",
         description:
           "Client-side COPY. Streams data between a SQL table and a file (or program) on the client host — works without server filesystem access or superuser privileges.",
       },
@@ -266,7 +267,8 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
       {
         command: "\\dA",
         syntax: "\\dA[+] [PATTERN]",
-        description: "List index access methods (btree, hash, gin, gist, brin, spgist, etc.).",
+        description:
+          "List index access methods (btree, hash, gin, gist, brin, spgist, etc.).",
       },
       {
         command: "\\dAc",
@@ -433,7 +435,8 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
       {
         command: "\\drds",
         syntax: "\\drds [ROLEPTRN [DBPTRN]]",
-        description: "List per-database role settings (ALTER ROLE ... IN DATABASE).",
+        description:
+          "List per-database role settings (ALTER ROLE ... IN DATABASE).",
       },
       {
         command: "\\drg",
@@ -479,7 +482,8 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
       {
         command: "\\dx",
         syntax: "\\dx[+] [PATTERN]",
-        description: "List installed extensions. + shows the objects each extension owns.",
+        description:
+          "List installed extensions. + shows the objects each extension owns.",
       },
       {
         command: "\\dX",
@@ -531,12 +535,14 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
       {
         command: "\\C",
         syntax: "\\C [STRING]",
-        description: "Set the table caption (title), or unset it with no argument.",
+        description:
+          "Set the table caption (title), or unset it with no argument.",
       },
       {
         command: "\\f",
         syntax: "\\f [STRING]",
-        description: "Set the field separator for unaligned output (default is |).",
+        description:
+          "Set the field separator for unaligned output (default is |).",
       },
       {
         command: "\\H",
@@ -612,7 +618,8 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
       {
         command: "\\lo_export",
         syntax: "\\lo_export LOBOID FILE",
-        description: "Write a large object's contents to a file on the client host.",
+        description:
+          "Write a large object's contents to a file on the client host.",
       },
       {
         command: "\\lo_import",
@@ -643,7 +650,8 @@ export const PSQL_COMMAND_GROUPS: PsqlCommandGroup[] = [
       {
         command: "\\prompt",
         syntax: "\\prompt [TEXT] NAME",
-        description: "Prompt the user for input and store it in a psql variable.",
+        description:
+          "Prompt the user for input and store it in a psql variable.",
       },
       {
         command: "\\set",

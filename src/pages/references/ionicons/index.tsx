@@ -57,14 +57,18 @@ export default function IoniconsPage() {
       document.body.removeChild(el);
     }
     setCopiedName(name);
-    setTimeout(() => setCopiedName((prev) => (prev === name ? null : prev)), 1500);
+    setTimeout(
+      () => setCopiedName((prev) => (prev === name ? null : prev)),
+      1500,
+    );
   }
 
   const filteredCategories = useMemo(() => {
     const q = search.toLowerCase().trim();
     return IONICON_CATEGORIES.map((cat) => {
       const icons = cat.icons.filter((name) => {
-        if (activeCategory !== "all" && activeCategory !== cat.label) return false;
+        if (activeCategory !== "all" && activeCategory !== cat.label)
+          return false;
         if (!q) return true;
         return name.toLowerCase().includes(q);
       });
@@ -72,7 +76,10 @@ export default function IoniconsPage() {
     }).filter((c) => c.icons.length > 0);
   }, [search, activeCategory]);
 
-  const totalVisible = filteredCategories.reduce((n, c) => n + c.icons.length, 0);
+  const totalVisible = filteredCategories.reduce(
+    (n, c) => n + c.icons.length,
+    0,
+  );
   const totalAll = IONICON_CATEGORIES.reduce((n, c) => n + c.icons.length, 0);
 
   const isLogoCategory = (label: string) => label === "Logos & Brands";
@@ -97,7 +104,10 @@ export default function IoniconsPage() {
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="Ionicons" />
-        <link rel="canonical" href="https://hypothesis.sh/references/ionicons" />
+        <link
+          rel="canonical"
+          href="https://hypothesis.sh/references/ionicons"
+        />
       </Head>
 
       <div className={styles.inner}>
@@ -115,8 +125,8 @@ export default function IoniconsPage() {
           <p className={styles.tagline}>
             All icons available via{" "}
             <code style={{ fontSize: "11px" }}>@expo/vector-icons</code>{" "}
-            Ionicons — {totalAll} base icons, each with filled, outline, and sharp variants (except logos).
-            Click any name to copy.
+            Ionicons — {totalAll} base icons, each with filled, outline, and
+            sharp variants (except logos). Click any name to copy.
           </p>
         </div>
 
@@ -172,7 +182,9 @@ export default function IoniconsPage() {
 
         <div className={styles.content}>
           {filteredCategories.length === 0 ? (
-            <div className={styles.empty}>No icons match &ldquo;{search}&rdquo;</div>
+            <div className={styles.empty}>
+              No icons match &ldquo;{search}&rdquo;
+            </div>
           ) : (
             <>
               {search && (
@@ -194,19 +206,24 @@ export default function IoniconsPage() {
                   >
                     <span className={styles.sectionClass}>{cat.label}</span>
                     <span className={styles.sectionCount}>
-                      {cat.icons.length} {cat.icons.length === 1 ? "icon" : "icons"}
+                      {cat.icons.length}{" "}
+                      {cat.icons.length === 1 ? "icon" : "icons"}
                     </span>
                   </div>
 
                   <div className={iStyles.iconGrid}>
                     {cat.icons.map((name) => {
-                      const isLogo = isLogoCategory(cat.label) || name === "ionicons";
+                      const isLogo =
+                        isLogoCategory(cat.label) || name === "ionicons";
                       return (
                         <div
                           key={name}
                           className={iStyles.iconCard}
                           style={
-                            { "--cls-color": cat.color, "--cls-subtle": cat.subtle } as React.CSSProperties
+                            {
+                              "--cls-color": cat.color,
+                              "--cls-subtle": cat.subtle,
+                            } as React.CSSProperties
                           }
                         >
                           <button

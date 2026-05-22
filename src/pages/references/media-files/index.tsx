@@ -7,7 +7,10 @@ import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { MEDIA_FILES } from "@/data/media-files";
 
-const BADGE_STYLES: Record<string, { color: string; subtle: string; border: string }> = {
+const BADGE_STYLES: Record<
+  string,
+  { color: string; subtle: string; border: string }
+> = {
   standard: { color: "#60a5fa", subtle: "#60a5fa18", border: "#60a5fa33" },
   "fast-start": { color: "#34d399", subtle: "#34d39918", border: "#34d39933" },
   "ogg vorbis": { color: "#c084fc", subtle: "#c084fc18", border: "#c084fc33" },
@@ -16,13 +19,20 @@ const BADGE_STYLES: Record<string, { color: string; subtle: string; border: stri
 };
 
 const DESCRIPTIONS: Record<string, string> = {
-  "bbb-short.mp4": "Short clip of the standard file. Useful for quick tests where the full-length file is too long.",
-  "bbb-short-fast.mp4": "Short clip with the moov atom at the front. Fast-start variant of the short file.",
-  "bbb.mp4": "Standard H.264/AAC MP4 with the moov atom at the end of the file. The browser must download to the end of the file before it can read metadata and begin playback.",
-  "bbb-fast.mp4": "Fast-start MP4 with the moov atom relocated to the front of the file. The browser can begin buffering and playing immediately without waiting for the full file to download.",
-  "livery-stable-blues.ogg": "Ogg Vorbis audio file. For testing HTML audio element behavior and streaming.",
-  "bull-frog-blues.mp3": "MP3 audio file. For testing HTML audio element behavior with the MP3 format.",
-  "bull-frog-blues.wav": "Uncompressed WAV audio file. Larger than compressed formats; useful for testing raw PCM playback and audio element behavior.",
+  "bbb-short.mp4":
+    "Short clip of the standard file. Useful for quick tests where the full-length file is too long.",
+  "bbb-short-fast.mp4":
+    "Short clip with the moov atom at the front. Fast-start variant of the short file.",
+  "bbb.mp4":
+    "Standard H.264/AAC MP4 with the moov atom at the end of the file. The browser must download to the end of the file before it can read metadata and begin playback.",
+  "bbb-fast.mp4":
+    "Fast-start MP4 with the moov atom relocated to the front of the file. The browser can begin buffering and playing immediately without waiting for the full file to download.",
+  "livery-stable-blues.ogg":
+    "Ogg Vorbis audio file. For testing HTML audio element behavior and streaming.",
+  "bull-frog-blues.mp3":
+    "MP3 audio file. For testing HTML audio element behavior with the MP3 format.",
+  "bull-frog-blues.wav":
+    "Uncompressed WAV audio file. Larger than compressed formats; useful for testing raw PCM playback and audio element behavior.",
 };
 
 export default function MediaFilesPage() {
@@ -73,7 +83,10 @@ export default function MediaFilesPage() {
         </div>
 
         <div className={styles.content}>
-          <p className={styles.codeDesc} style={{ marginBottom: 24, lineHeight: 1.7 }}>
+          <p
+            className={styles.codeDesc}
+            style={{ marginBottom: 24, lineHeight: 1.7 }}
+          >
             A <strong>fast-start</strong> MP4 has its <code>moov</code> atom
             moved to the front of the file so browsers can begin playback before
             the full file downloads. A standard MP4 places the moov atom at the
@@ -106,7 +119,9 @@ export default function MediaFilesPage() {
                       >
                         {file.label}
                       </span>
-                      <span className={styles.codeNameMono}>{file.filename}</span>
+                      <span className={styles.codeNameMono}>
+                        {file.filename}
+                      </span>
                     </div>
 
                     <span className={styles.codeDesc}>
@@ -121,7 +136,10 @@ export default function MediaFilesPage() {
                         marginTop: 6,
                       }}
                     >
-                      <code className={styles.codeDesc} style={{ opacity: 0.7 }}>
+                      <code
+                        className={styles.codeDesc}
+                        style={{ opacity: 0.7 }}
+                      >
                         {file.url}
                       </code>
                       {!isIframe && (
@@ -130,7 +148,10 @@ export default function MediaFilesPage() {
                           style={{
                             fontFamily: "var(--font-mono)",
                             fontSize: 10,
-                            color: copiedUrl === file.url ? "#34d399" : "var(--muted)",
+                            color:
+                              copiedUrl === file.url
+                                ? "#34d399"
+                                : "var(--muted)",
                             background: "transparent",
                             border: "1px solid var(--border)",
                             borderRadius: 3,

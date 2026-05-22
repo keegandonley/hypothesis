@@ -11,7 +11,9 @@
   padding: 20px;
 }
 
-.header { margin-bottom: 16px; }
+.header {
+  margin-bottom: 16px;
+}
 
 .eyebrow {
   font-size: 10px;
@@ -45,7 +47,9 @@
   margin: 0 0 16px;
 }
 
-.icon { margin-right: 4px; }
+.icon {
+  margin-right: 4px;
+}
 
 .docsLink {
   display: flex;
@@ -54,7 +58,9 @@
   transition: color 0.15s ease;
 }
 
-.docsLink:hover { color: var(--accent); }
+.docsLink:hover {
+  color: var(--accent);
+}
 
 .domainLink {
   display: flex;
@@ -126,7 +132,9 @@
   opacity: 0.4;
 }
 
-.htmlSource { color: var(--muted); }
+.htmlSource {
+  color: var(--muted);
+}
 
 .preview {
   flex: 1;
@@ -151,10 +159,18 @@
   color: var(--text);
 }
 
-.preview :global(h1) { font-size: 1.6em; }
-.preview :global(h2) { font-size: 1.35em; }
-.preview :global(h3) { font-size: 1.15em; }
-.preview :global(p) { margin: 0 0 0.8em; }
+.preview :global(h1) {
+  font-size: 1.6em;
+}
+.preview :global(h2) {
+  font-size: 1.35em;
+}
+.preview :global(h3) {
+  font-size: 1.15em;
+}
+.preview :global(p) {
+  margin: 0 0 0.8em;
+}
 
 .preview :global(ul),
 .preview :global(ol) {
@@ -162,7 +178,9 @@
   padding: 0;
 }
 
-.preview :global(li) { margin-bottom: 0.2em; }
+.preview :global(li) {
+  margin-bottom: 0.2em;
+}
 
 .preview :global(code) {
   font-family: var(--font-mono);
@@ -225,7 +243,9 @@
   font-weight: 600;
 }
 
-.preview :global(img) { max-width: 100%; }
+.preview :global(img) {
+  max-width: 100%;
+}
 
 .toggleBtn {
   display: inline-flex;
@@ -242,7 +262,9 @@
   color: var(--muted);
   text-transform: uppercase;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
 }
 
 .toggleBtn::before {
@@ -260,7 +282,9 @@
   color: var(--accent);
 }
 
-.toggleBtn.active::before { background: var(--accent); }
+.toggleBtn.active::before {
+  background: var(--accent);
+}
 
 /* Panel copy buttons (copy HTML, not URL) */
 .panelCopyBtn {
@@ -275,10 +299,15 @@
   color: var(--text);
   text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
 }
 
-.panelCopyBtn:hover { background-color: var(--border); }
+.panelCopyBtn:hover {
+  background-color: var(--border);
+}
 
 .panelCopyBtn.panelCopied {
   background-color: var(--accent-subtle);
@@ -332,7 +361,9 @@
   transition: background-color 0.15s;
 }
 
-.copyBtn:hover { background-color: var(--accent-hover); }
+.copyBtn:hover {
+  background-color: var(--accent-hover);
+}
 
 .copyBtn.copied {
   background-color: var(--accent);
@@ -356,4 +387,6 @@
   transition: background-color 0.15s;
 }
 
-.resetBtn:hover { background-color: #ef444430; }
+.resetBtn:hover {
+  background-color: #ef444430;
+}

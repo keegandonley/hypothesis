@@ -26,7 +26,12 @@ export default function PrivacyPage() {
       </Head>
       <div className={styles.inner}>
         <nav className={styles.nav}>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.backLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.backLink}
+          >
             <span style={{ marginBottom: "3px" }}>←</span> {branding.name}
           </Link>
         </nav>
@@ -79,12 +84,12 @@ export default function PrivacyPage() {
             inspect incoming HTTP requests.
           </p>
           <p>
-            <strong>Web (anonymous) sessions:</strong> When you create a
-            session from the website without a device account, your IP address
-            is stored alongside a randomly generated session ID solely to
-            enforce a per-IP rate limit and prevent abuse. Anonymous sessions
-            and all associated webhook events are automatically deleted after
-            one hour of inactivity.
+            <strong>Web (anonymous) sessions:</strong> When you create a session
+            from the website without a device account, your IP address is stored
+            alongside a randomly generated session ID solely to enforce a per-IP
+            rate limit and prevent abuse. Anonymous sessions and all associated
+            webhook events are automatically deleted after one hour of
+            inactivity.
           </p>
           <p>
             <strong>Mobile app sessions:</strong> When you use the webhook
@@ -102,7 +107,10 @@ export default function PrivacyPage() {
             database so we can deliver notifications to your device:
           </p>
           <ul>
-            <li>A randomly generated device identifier (UUID) created on your device</li>
+            <li>
+              A randomly generated device identifier (UUID) created on your
+              device
+            </li>
             <li>Your device push token issued by the platform (Apple APNs)</li>
             <li>The platform name (e.g. "ios")</li>
           </ul>
@@ -176,8 +184,8 @@ export default function PrivacyPage() {
           <p>
             We may update this policy from time to time. The "last updated" date
             at the top of this page reflects the most recent revision. Continued
-            use of the Service after changes are posted constitutes acceptance of
-            the updated policy.
+            use of the Service after changes are posted constitutes acceptance
+            of the updated policy.
           </p>
 
           <h2>Contact</h2>

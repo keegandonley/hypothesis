@@ -2,14 +2,22 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getPushNotifications } from "@/lib/push-notifications";
 import { verifyDeviceSecret } from "@/lib/push-tokens";
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   if (req.method !== "GET") {
     return res.status(405).end();
   }
 
-  const { deviceId, after: afterParam, limit: limitParam } = req.query as {
+  const {
+    deviceId,
+    after: afterParam,
+    limit: limitParam,
+  } = req.query as {
     deviceId?: string;
     after?: string;
     limit?: string;
@@ -22,7 +30,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (afterParam) {
     const ts = Date.parse(afterParam);
     if (isNaN(ts)) {
-      return res.status(400).json({ error: "invalid 'after' parameter — expected ISO 8601 date" });
+      return res
+        .status(400)
+        .json({ error: "invalid 'after' parameter — expected ISO 8601 date" });
     }
   }
 
@@ -38,7 +48,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const notifications = await getPushNotifications({ deviceId, after: afterParam, limit });
+    const notifications = await getPushNotifications({
+      deviceId,
+      after: afterParam,
+      limit,
+    });
     return res.json({ notifications, count: notifications.length });
   } catch (err) {
     console.error("native notifications error", err);

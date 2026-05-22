@@ -60,7 +60,11 @@ type XcodeCloudEvent = {
   };
 };
 
-function formatNotification(event: XcodeCloudEvent): { title: string; subtitle: string; body: string } {
+function formatNotification(event: XcodeCloudEvent): {
+  title: string;
+  subtitle: string;
+  body: string;
+} {
   const productName = event.ciProduct?.attributes?.name ?? "Unknown App";
   const buildNumber = event.ciBuildRun?.attributes?.number;
   const branch = event.scmGitReference?.attributes?.name;
@@ -75,20 +79,39 @@ function formatNotification(event: XcodeCloudEvent): { title: string; subtitle: 
 
   let title: string;
   switch (eventType) {
-    case "BUILD_CREATED":   title = "Build created";   break;
-    case "BUILD_STARTED":   title = "Build started";   break;
-    case "BUILD_SUCCEEDED": title = "Build succeeded"; break;
-    case "BUILD_FAILED":    title = "Build failed";    break;
-    case "BUILD_ERRORED":   title = "Build errored";   break;
-    case "BUILD_CANCELED":  title = "Build canceled";  break;
-    case "BUILD_COMPLETED": title = "Build completed"; break;
-    default:                title = eventType ?? "Unknown event"; break;
+    case "BUILD_CREATED":
+      title = "Build created";
+      break;
+    case "BUILD_STARTED":
+      title = "Build started";
+      break;
+    case "BUILD_SUCCEEDED":
+      title = "Build succeeded";
+      break;
+    case "BUILD_FAILED":
+      title = "Build failed";
+      break;
+    case "BUILD_ERRORED":
+      title = "Build errored";
+      break;
+    case "BUILD_CANCELED":
+      title = "Build canceled";
+      break;
+    case "BUILD_COMPLETED":
+      title = "Build completed";
+      break;
+    default:
+      title = eventType ?? "Unknown event";
+      break;
   }
 
   return { title, subtitle: productName, body: detail };
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   if (req.method !== "POST") return res.status(405).end();
 
   const { deviceId } = req.query as { deviceId: string };
@@ -124,7 +147,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     icon: "logo-apple-appstore",
   };
 
-  const result = await sendApnsNotification(device.token, title, body, data, { subtitle }, device.sandbox);
+  const result = await sendApnsNotification(
+    device.token,
+    title,
+    body,
+    data,
+    { subtitle },
+    device.sandbox,
+  );
 
   await insertPushNotification({
     deviceId,
@@ -133,16 +163,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     data,
     apnsId: result.apnsId ?? null,
     success: result.ok,
-  }).catch((err) => console.error("[xcode-webhook] failed to record notification", err));
+  }).catch((err) =>
+    console.error("[xcode-webhook] failed to record notification", err),
+  );
 
   try {
-    await track("Xcode Cloud Webhook Received", { eventType: eventType ?? "unknown", success: result.ok });
+    await track("Xcode Cloud Webhook Received", {
+      eventType: eventType ?? "unknown",
+      success: result.ok,
+    });
   } catch (err) {
-    console.warn("[analytics] failed to track Xcode Cloud Webhook Received", err);
+    console.warn(
+      "[analytics] failed to track Xcode Cloud Webhook Received",
+      err,
+    );
   }
 
   if (!result.ok) {
-    console.error(`[xcode-webhook] APNS error for device ${deviceId}:`, result.error);
+    console.error(
+      `[xcode-webhook] APNS error for device ${deviceId}:`,
+      result.error,
+    );
   }
 
   return res.status(200).json({ ok: true });

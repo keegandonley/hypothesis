@@ -17,7 +17,7 @@ This is a **test** announcement used to verify the in-app popup pipeline end-to-
 
 It supports:
 
-- Bold and *italic* text
+- Bold and _italic_ text
 - `inline code`
 - [Links](https://hypothesis.sh)
 - Lists

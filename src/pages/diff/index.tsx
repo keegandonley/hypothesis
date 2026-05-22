@@ -34,14 +34,20 @@ export default function DiffPage() {
 
   const changes = computeDiff(original, modified, mode);
 
-  const added = changes.filter((c) => c.added).reduce((n, c) => {
-    if (mode === "lines") return n + c.value.split("\n").filter((l) => l.length > 0).length;
-    return n + 1;
-  }, 0);
-  const removed = changes.filter((c) => c.removed).reduce((n, c) => {
-    if (mode === "lines") return n + c.value.split("\n").filter((l) => l.length > 0).length;
-    return n + 1;
-  }, 0);
+  const added = changes
+    .filter((c) => c.added)
+    .reduce((n, c) => {
+      if (mode === "lines")
+        return n + c.value.split("\n").filter((l) => l.length > 0).length;
+      return n + 1;
+    }, 0);
+  const removed = changes
+    .filter((c) => c.removed)
+    .reduce((n, c) => {
+      if (mode === "lines")
+        return n + c.value.split("\n").filter((l) => l.length > 0).length;
+      return n + 1;
+    }, 0);
 
   const buildUrl = (a: string, b: string, m: Mode) => {
     if (!a && !b) return `${window.location.origin}${window.location.pathname}`;
@@ -64,7 +70,11 @@ export default function DiffPage() {
         const payload = JSON.parse(decodeURIComponent(escape(atob(encoded))));
         if (typeof payload.a === "string") setOriginal(payload.a);
         if (typeof payload.b === "string") setModified(payload.b);
-        if (payload.m === "lines" || payload.m === "words" || payload.m === "chars")
+        if (
+          payload.m === "lines" ||
+          payload.m === "words" ||
+          payload.m === "chars"
+        )
           setMode(payload.m);
       } catch {
         // invalid, ignore
@@ -127,12 +137,19 @@ export default function DiffPage() {
             {branding.domain}
           </Link>
           {"·"}
-          <Link href="/docs/diff" className={styles.docsLink} target="_blank" rel="noopener noreferrer">
+          <Link
+            href="/docs/diff"
+            className={styles.docsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>
         <h1 className={styles.title}>Text Diff</h1>
-        <p className={styles.tagline}>Compare two blocks of text and highlight additions and deletions</p>
+        <p className={styles.tagline}>
+          Compare two blocks of text and highlight additions and deletions
+        </p>
       </div>
 
       <hr className={styles.divider} />
@@ -178,16 +195,33 @@ export default function DiffPage() {
         </div>
         {!isEmpty && (
           <div className={styles.stats}>
-            <span className={styles.statAdded}>+{added} {mode === "lines" ? "lines" : mode === "words" ? "words" : "chars"}</span>
-            <span className={styles.statRemoved}>−{removed} {mode === "lines" ? "lines" : mode === "words" ? "words" : "chars"}</span>
+            <span className={styles.statAdded}>
+              +{added}{" "}
+              {mode === "lines"
+                ? "lines"
+                : mode === "words"
+                  ? "words"
+                  : "chars"}
+            </span>
+            <span className={styles.statRemoved}>
+              −{removed}{" "}
+              {mode === "lines"
+                ? "lines"
+                : mode === "words"
+                  ? "words"
+                  : "chars"}
+            </span>
           </div>
         )}
       </div>
 
       <div className={styles.output}>
         {isEmpty ? (
-          <span className={styles.placeholder}>Paste text into both fields above to see the diff.</span>
-        ) : changes.length === 0 || changes.every((c) => !c.added && !c.removed) ? (
+          <span className={styles.placeholder}>
+            Paste text into both fields above to see the diff.
+          </span>
+        ) : changes.length === 0 ||
+          changes.every((c) => !c.added && !c.removed) ? (
           <span className={styles.identical}>Texts are identical.</span>
         ) : (
           <pre className={styles.diffPre}>
@@ -198,8 +232,8 @@ export default function DiffPage() {
                   change.added
                     ? styles.added
                     : change.removed
-                    ? styles.removed
-                    : styles.unchanged
+                      ? styles.removed
+                      : styles.unchanged
                 }
               >
                 {change.value}

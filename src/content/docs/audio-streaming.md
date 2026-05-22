@@ -13,12 +13,12 @@ Settings are tagged **rebuild** or **live**:
 
 ## Player controls
 
-| Control | Description |
-|---|---|
-| Play / Pause | `audio.play()` / `audio.pause()` |
-| audio.load() | Forces a reload of the media resource |
-| −5s / +5s | Step backward/forward five seconds |
-| seek % | Jump to a percentage of the total duration |
+| Control      | Description                                |
+| ------------ | ------------------------------------------ |
+| Play / Pause | `audio.play()` / `audio.pause()`           |
+| audio.load() | Forces a reload of the media resource      |
+| −5s / +5s    | Step backward/forward five seconds         |
+| seek %       | Jump to a percentage of the total duration |
 
 ## Range bars
 

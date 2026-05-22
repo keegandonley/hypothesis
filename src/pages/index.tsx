@@ -38,20 +38,37 @@ function parseReleaseFrontmatter(raw: string): Record<string, string> {
   const meta: Record<string, string> = {};
   for (const line of block.split("\n")) {
     const colon = line.indexOf(":");
-    if (colon > -1) meta[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
+    if (colon > -1)
+      meta[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
   }
   return meta;
 }
 
 function parseReleaseTags(value?: string): string[] {
   if (!value) return [];
-  return value.split(",").map((t) => t.trim()).filter(Boolean);
+  return value
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
 }
 
 function formatReleaseDate(slug: string): string {
   const parts = slug.split("-");
   if (parts.length !== 3) return slug;
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const month = parseInt(parts[1], 10);
   return `${months[month - 1]} ${parseInt(parts[2], 10)}, ${parts[0]}`;
 }
@@ -486,7 +503,13 @@ export default function HomePage({
                 />
               ))}
             </div>
-            <div style={{ marginTop: "8px", display: "flex", justifyContent: "flex-end" }}>
+            <div
+              style={{
+                marginTop: "8px",
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
               <Link href="/release-notes" className={styles.docsLink}>
                 View all release notes →
               </Link>
@@ -639,7 +662,9 @@ function ExperimentCard({
         <div className={styles.cardMain}>
           <div className={styles.cardBodyRow}>
             {id && <div className={styles.badge}>{id}</div>}
-            <div className={styles.arrow} style={{ marginLeft: "auto" }}>→</div>
+            <div className={styles.arrow} style={{ marginLeft: "auto" }}>
+              →
+            </div>
           </div>
           <div className={styles.cardBody}>
             <div className={styles.cardName}>{name}</div>
@@ -661,7 +686,11 @@ function ExperimentCard({
                 key={tag}
                 className={styles.cardTagPill}
                 title={tag}
-                style={{ "--tag-color": TAG_COLORS[tag as Tag]?.color ?? "#888" } as React.CSSProperties}
+                style={
+                  {
+                    "--tag-color": TAG_COLORS[tag as Tag]?.color ?? "#888",
+                  } as React.CSSProperties
+                }
               >
                 {tag}
               </span>
@@ -686,7 +715,11 @@ function ExperimentCard({
             ))}
           </div>
         )}
-        {id && compact && <div className={styles.badge} style={{ marginLeft: "auto" }}>{id}</div>}
+        {id && compact && (
+          <div className={styles.badge} style={{ marginLeft: "auto" }}>
+            {id}
+          </div>
+        )}
       </div>
     </div>
   );

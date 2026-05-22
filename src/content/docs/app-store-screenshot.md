@@ -4,11 +4,11 @@ Compose device screenshots at exact Apple App Store dimensions and export ready-
 
 ## Supported Dimensions
 
-| Label | Dimensions | Device |
-|-------|-----------|--------|
-| 6.5" Portrait | 1242 × 2688 px | iPhone 11 Pro Max, XS Max |
-| 6.5" Landscape | 2688 × 1242 px | iPhone 11 Pro Max, XS Max |
-| 6.7" Portrait | 1284 × 2778 px | iPhone 12 Pro Max, 13 Pro Max, 14 Plus, 15 Plus |
+| Label          | Dimensions     | Device                                          |
+| -------------- | -------------- | ----------------------------------------------- |
+| 6.5" Portrait  | 1242 × 2688 px | iPhone 11 Pro Max, XS Max                       |
+| 6.5" Landscape | 2688 × 1242 px | iPhone 11 Pro Max, XS Max                       |
+| 6.7" Portrait  | 1284 × 2778 px | iPhone 12 Pro Max, 13 Pro Max, 14 Plus, 15 Plus |
 | 6.7" Landscape | 2778 × 1284 px | iPhone 12 Pro Max, 13 Pro Max, 14 Plus, 15 Plus |
 
 Apple requires at least one screenshot in the 6.5" or 6.7" size for App Store submission. These sizes are also used as the source for all smaller device sizes on the listing page.

@@ -37,7 +37,9 @@ function parseCron(expr: string): ParseResult | ParseError {
 
   let description: string;
   try {
-    description = cronstrue.toString(trimmed, { throwExceptionOnParseError: true });
+    description = cronstrue.toString(trimmed, {
+      throwExceptionOnParseError: true,
+    });
   } catch {
     return { error: "Invalid cron expression" };
   }
@@ -177,13 +179,25 @@ export default function CronPage() {
             {branding.domain}
           </Link>
           {"·"}
-          <Link href="/docs/cron" className={styles.docsLink} target="_blank" rel="noopener noreferrer">
+          <Link
+            href="/docs/cron"
+            className={styles.docsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>
         <h1 className={styles.title}>Cron</h1>
-        <p className={styles.tagline}>Parse cron expressions and preview the next scheduled run times</p>
-        <ReferenceLinks refs={[{ name: "Exit Codes", slug: "exit-codes" }, { name: "Unix Signals", slug: "unix-signals" }]} />
+        <p className={styles.tagline}>
+          Parse cron expressions and preview the next scheduled run times
+        </p>
+        <ReferenceLinks
+          refs={[
+            { name: "Exit Codes", slug: "exit-codes" },
+            { name: "Unix Signals", slug: "unix-signals" },
+          ]}
+        />
       </div>
 
       <hr className={styles.divider} />
@@ -237,7 +251,9 @@ export default function CronPage() {
             <div className={styles.runsList}>
               {result.nextRuns.map((d, i) => (
                 <div key={i} className={styles.runRow}>
-                  <span className={styles.runIndex}>{String(i + 1).padStart(2, "0")}</span>
+                  <span className={styles.runIndex}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   <span className={styles.runLocal}>{formatLocal(d)}</span>
                   <span className={styles.runUtc}>{formatUtc(d)}</span>
                 </div>

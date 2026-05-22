@@ -11,7 +11,8 @@ type Status = "idle" | "capturing" | "cancelled" | "error";
 
 const FRAME_DOMAINS = ["hypothesis.sh", "conclusion.sh", "observation.sh"];
 
-const LOREM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
+const LOREM =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
 
 export default function ScreenCapturePage() {
   const branding = useBranding();
@@ -19,7 +20,10 @@ export default function ScreenCapturePage() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const altDomains = FRAME_DOMAINS.filter((d) => d !== branding.domain).slice(0, 2);
+  const altDomains = FRAME_DOMAINS.filter((d) => d !== branding.domain).slice(
+    0,
+    2,
+  );
 
   async function handleCapture() {
     setStatus("capturing");
@@ -50,13 +54,24 @@ export default function ScreenCapturePage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} style={{ color: "inherit", textDecoration: "none" }}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            style={{ color: "inherit", textDecoration: "none" }}
+          >
             {branding.domain}
           </Link>
           {"·"}
           <Link
             href="/docs/screen-capture"
-            style={{ color: "inherit", textDecoration: "none", display: "flex", alignItems: "center", gap: "0.3em" }}
+            style={{
+              color: "inherit",
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3em",
+            }}
           >
             <DocIcon /> docs
           </Link>

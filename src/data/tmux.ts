@@ -43,7 +43,7 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       },
       {
         command: "C-b $",
-        syntax: "command-prompt -I \"#S\" \"rename-session -- '%%'\"",
+        syntax: 'command-prompt -I "#S" "rename-session -- \'%%\'"',
         description:
           "Prompt for a new name for the current session, pre-filled with the existing name.",
       },
@@ -87,13 +87,13 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       },
       {
         command: "C-b ,",
-        syntax: "command-prompt -I \"#W\" \"rename-window -- '%%'\"",
+        syntax: 'command-prompt -I "#W" "rename-window -- \'%%\'"',
         description:
           "Prompt for a new name for the current window, pre-filled with the existing name.",
       },
       {
         command: "C-b &",
-        syntax: "confirm-before -p \"kill-window #W? (y/n)\" kill-window",
+        syntax: 'confirm-before -p "kill-window #W? (y/n)" kill-window',
         description:
           "Kill the current window (and every pane in it) after a y/n confirmation.",
       },
@@ -138,7 +138,8 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       {
         command: "C-b .",
         syntax: "command-prompt \"move-window -t '%%'\"",
-        description: "Prompt for a new index and move the current window to it.",
+        description:
+          "Prompt for a new index and move the current window to it.",
       },
       {
         command: "C-b M-n",
@@ -174,7 +175,7 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
           "Split the current pane horizontally — the new pane opens to the right.",
       },
       {
-        command: "C-b \"",
+        command: 'C-b "',
         syntax: "split-window",
         description:
           "Split the current pane vertically — the new pane opens below.",
@@ -203,7 +204,7 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       },
       {
         command: "C-b x",
-        syntax: "confirm-before -p \"kill-pane #P? (y/n)\" kill-pane",
+        syntax: 'confirm-before -p "kill-pane #P? (y/n)" kill-pane',
         description: "Kill the current pane after a y/n confirmation.",
       },
       {
@@ -255,7 +256,8 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       {
         command: "C-b t",
         syntax: "clock-mode",
-        description: "Show a large clock in the current pane until any key is pressed.",
+        description:
+          "Show a large clock in the current pane until any key is pressed.",
       },
     ],
   },
@@ -276,12 +278,14 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       {
         command: "C-b M-1",
         syntax: "select-layout even-horizontal",
-        description: "Apply the even-horizontal layout (panes stacked side-by-side).",
+        description:
+          "Apply the even-horizontal layout (panes stacked side-by-side).",
       },
       {
         command: "C-b M-2",
         syntax: "select-layout even-vertical",
-        description: "Apply the even-vertical layout (panes stacked top-to-bottom).",
+        description:
+          "Apply the even-vertical layout (panes stacked top-to-bottom).",
       },
       {
         command: "C-b M-3",
@@ -340,12 +344,14 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       {
         command: "C-b C-←",
         syntax: "resize-pane -L",
-        description: "Resize the current pane leftward by 1 column (repeatable).",
+        description:
+          "Resize the current pane leftward by 1 column (repeatable).",
       },
       {
         command: "C-b C-→",
         syntax: "resize-pane -R",
-        description: "Resize the current pane rightward by 1 column (repeatable).",
+        description:
+          "Resize the current pane rightward by 1 column (repeatable).",
       },
     ],
   },
@@ -491,19 +497,22 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
     commands: [
       {
         command: "tmux",
-        syntax: "tmux [-2CDluvV] [-c shell-command] [-f file] [-L socket-name] [-S socket-path] [-T features] [command [flags]]",
+        syntax:
+          "tmux [-2CDluvV] [-c shell-command] [-f file] [-L socket-name] [-S socket-path] [-T features] [command [flags]]",
         description:
           "Run tmux. With no command, starts a new server (if needed) and creates a new session.",
       },
       {
         command: "tmux new",
-        syntax: "tmux new-session [-AdDEPX] [-c start-directory] [-F format] [-n window-name] [-s session-name] [-x width] [-y height] [shell-command]",
+        syntax:
+          "tmux new-session [-AdDEPX] [-c start-directory] [-F format] [-n window-name] [-s session-name] [-x width] [-y height] [shell-command]",
         description:
           "Create a new session. -d starts detached; -A attaches to an existing session of the same name (or creates it); -s names the session.",
       },
       {
         command: "tmux attach",
-        syntax: "tmux attach-session [-dErx] [-c working-directory] [-f flags] [-t target-session]",
+        syntax:
+          "tmux attach-session [-dErx] [-c working-directory] [-f flags] [-t target-session]",
         description:
           "Attach to an existing session. -d detaches every other client first; -t selects a specific session by name.",
       },
@@ -532,18 +541,22 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       },
       {
         command: "tmux switch-client",
-        syntax: "tmux switch-client [-ElnprZ] [-c target-client] [-t target-session] [-T key-table]",
+        syntax:
+          "tmux switch-client [-ElnprZ] [-c target-client] [-t target-session] [-T key-table]",
         description:
           "Switch the given client to a different session (or session/window/pane).",
       },
       {
         command: "tmux detach",
-        syntax: "tmux detach-client [-aP] [-E shell-command] [-s target-session] [-t target-client]",
-        description: "Detach a client from its session (the session keeps running).",
+        syntax:
+          "tmux detach-client [-aP] [-E shell-command] [-s target-session] [-t target-client]",
+        description:
+          "Detach a client from its session (the session keeps running).",
       },
       {
         command: "tmux new-window",
-        syntax: "tmux new-window [-abdkPS] [-c start-directory] [-e env] [-F format] [-n window-name] [-t target-window] [shell-command]",
+        syntax:
+          "tmux new-window [-abdkPS] [-c start-directory] [-e env] [-F format] [-n window-name] [-t target-window] [shell-command]",
         description:
           "Create a new window in the target session. -a inserts after the current window; -d creates without switching.",
       },
@@ -560,7 +573,8 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       },
       {
         command: "tmux split-window",
-        syntax: "tmux split-window [-bdfhIvPZ] [-c start-directory] [-e env] [-l size] [-t target-pane] [shell-command]",
+        syntax:
+          "tmux split-window [-bdfhIvPZ] [-c start-directory] [-e env] [-l size] [-t target-pane] [shell-command]",
         description:
           "Split a pane into two. -h for horizontal (side-by-side), -v for vertical (top-bottom). -l sets the new pane's size.",
       },
@@ -572,7 +586,8 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       },
       {
         command: "tmux resize-pane",
-        syntax: "tmux resize-pane [-DLMRTUZ] [-t target-pane] [-x width] [-y height] [adjustment]",
+        syntax:
+          "tmux resize-pane [-DLMRTUZ] [-t target-pane] [-x width] [-y height] [adjustment]",
         description:
           "Resize a pane. Direction flags (-D/-L/-R/-U) plus an optional adjustment; -Z toggles zoom.",
       },
@@ -584,13 +599,15 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       },
       {
         command: "tmux send-keys",
-        syntax: "tmux send-keys [-FHKlMRX] [-N repeat-count] [-t target-pane] key ...",
+        syntax:
+          "tmux send-keys [-FHKlMRX] [-N repeat-count] [-t target-pane] key ...",
         description:
           "Send one or more keys to a pane as if typed. -l sends them literally (no key-name lookup).",
       },
       {
         command: "tmux capture-pane",
-        syntax: "tmux capture-pane [-aepPqCJN] [-b buffer-name] [-E end-line] [-S start-line] [-t target-pane]",
+        syntax:
+          "tmux capture-pane [-aepPqCJN] [-b buffer-name] [-E end-line] [-S start-line] [-t target-pane]",
         description:
           "Capture a pane's contents into a buffer. -p prints to stdout; -S/-E pick a history range.",
       },
@@ -602,14 +619,16 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       },
       {
         command: "tmux display-message",
-        syntax: "tmux display-message [-aIlNpv] [-c target-client] [-d delay] [-t target-pane] [message]",
+        syntax:
+          "tmux display-message [-aIlNpv] [-c target-client] [-d delay] [-t target-pane] [message]",
         description:
           "Show a status-line message (or print one with -p). Format placeholders like #{session_name} are expanded.",
       },
       {
         command: "tmux list-keys",
         syntax: "tmux list-keys [-1aN] [-P prefix-string] [-T key-table] [key]",
-        description: "List every key binding, optionally filtered by key-table.",
+        description:
+          "List every key binding, optionally filtered by key-table.",
       },
       {
         command: "tmux list-commands",
@@ -618,7 +637,8 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       },
       {
         command: "tmux list-windows",
-        syntax: "tmux list-windows [-aF format] [-f filter] [-t target-session]",
+        syntax:
+          "tmux list-windows [-aF format] [-f filter] [-t target-session]",
         description: "List windows in a session (-a for every session).",
       },
       {
@@ -641,14 +661,16 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       },
       {
         command: "tmux bind-key",
-        syntax: "tmux bind-key [-nr] [-N note] [-T key-table] key command [arguments]",
+        syntax:
+          "tmux bind-key [-nr] [-N note] [-T key-table] key command [arguments]",
         description:
           "Bind a key to a tmux command. -n binds without the prefix; -r marks the binding as repeatable.",
       },
       {
         command: "tmux unbind-key",
         syntax: "tmux unbind-key [-anq] [-T key-table] key",
-        description: "Remove a key binding. -a removes every binding in the table.",
+        description:
+          "Remove a key binding. -a removes every binding in the table.",
       },
       {
         command: "tmux source-file",
@@ -658,7 +680,8 @@ export const TMUX_GROUPS: TmuxCommandGroup[] = [
       },
       {
         command: "tmux choose-tree",
-        syntax: "tmux choose-tree [-GNrswZ] [-F format] [-f filter] [-K key-format] [-O sort-order] [-t target-pane] [template]",
+        syntax:
+          "tmux choose-tree [-GNrswZ] [-F format] [-f filter] [-K key-format] [-O sort-order] [-t target-pane] [template]",
         description:
           "Open the interactive session/window picker in a pane (the same one that C-b s and C-b w use).",
       },

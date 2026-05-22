@@ -234,8 +234,10 @@ export default function PostgresOperatorsPage({
                         </span>
                         {(() => {
                           const idx = op.example.indexOf(" →  ");
-                          const input = idx === -1 ? op.example : op.example.slice(0, idx);
-                          const output = idx === -1 ? null : op.example.slice(idx + 4);
+                          const input =
+                            idx === -1 ? op.example : op.example.slice(0, idx);
+                          const output =
+                            idx === -1 ? null : op.example.slice(idx + 4);
                           return (
                             <div
                               style={{
@@ -249,7 +251,9 @@ export default function PostgresOperatorsPage({
                                 gap: "2px",
                               }}
                             >
-                              <div style={{ color: "var(--text)" }}>{input}</div>
+                              <div style={{ color: "var(--text)" }}>
+                                {input}
+                              </div>
                               {output !== null && (
                                 <div>
                                   <span style={{ opacity: 0.6 }}>→ </span>

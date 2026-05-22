@@ -11,7 +11,7 @@ export type Session = {
 export async function getSession(id: string): Promise<Session | null> {
   const result = await pool.query(
     "SELECT id, ip_address, created_at, updated_at, device_id FROM sessions WHERE id = $1",
-    [id]
+    [id],
   );
   const row = result.rows[0];
   if (!row) return null;
@@ -26,37 +26,38 @@ export async function getSession(id: string): Promise<Session | null> {
 
 export async function createSession(
   id: string,
-  ipAddress: string
+  ipAddress: string,
 ): Promise<Session> {
-  await pool.query(
-    "INSERT INTO sessions (id, ip_address) VALUES ($1, $2)",
-    [id, ipAddress]
-  );
+  await pool.query("INSERT INTO sessions (id, ip_address) VALUES ($1, $2)", [
+    id,
+    ipAddress,
+  ]);
   return (await getSession(id))!;
 }
 
-export async function countRecentSessionsByIp(ipAddress: string): Promise<number> {
+export async function countRecentSessionsByIp(
+  ipAddress: string,
+): Promise<number> {
   const result = await pool.query(
     "SELECT COUNT(*) FROM sessions WHERE ip_address = $1 AND created_at > NOW() - INTERVAL '10 minutes'",
-    [ipAddress]
+    [ipAddress],
   );
   return parseInt(result.rows[0].count, 10);
 }
 
-export async function touchSession(
-  id: string
-): Promise<Session | null> {
-  await pool.query(
-    "UPDATE sessions SET updated_at = NOW() WHERE id = $1",
-    [id]
-  );
+export async function touchSession(id: string): Promise<Session | null> {
+  await pool.query("UPDATE sessions SET updated_at = NOW() WHERE id = $1", [
+    id,
+  ]);
   return getSession(id);
 }
 
-export async function getOrCreateNativeSession(deviceId: string): Promise<Session> {
+export async function getOrCreateNativeSession(
+  deviceId: string,
+): Promise<Session> {
   const existing = await pool.query(
     "SELECT id FROM sessions WHERE device_id = $1",
-    [deviceId]
+    [deviceId],
   );
   if (existing.rows[0]) {
     await touchSession(existing.rows[0].id);
@@ -65,7 +66,7 @@ export async function getOrCreateNativeSession(deviceId: string): Promise<Sessio
   const id = crypto.randomUUID();
   await pool.query(
     "INSERT INTO sessions (id, ip_address, device_id) VALUES ($1, $2, $3)",
-    [id, "::native", deviceId]
+    [id, "::native", deviceId],
   );
   return (await getSession(id))!;
 }
@@ -73,7 +74,7 @@ export async function getOrCreateNativeSession(deviceId: string): Promise<Sessio
 export async function isNativeSession(sessionId: string): Promise<boolean> {
   const result = await pool.query(
     "SELECT device_id FROM sessions WHERE id = $1",
-    [sessionId]
+    [sessionId],
   );
   return result.rows[0]?.device_id != null;
 }

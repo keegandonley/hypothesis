@@ -8,20 +8,136 @@ import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 const WORDS = [
-  "lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit","sed","do",
-  "eiusmod","tempor","incididunt","ut","labore","et","dolore","magna","aliqua","enim",
-  "ad","minim","veniam","quis","nostrud","exercitation","ullamco","laboris","nisi",
-  "aliquip","ex","ea","commodo","consequat","duis","aute","irure","in","reprehenderit",
-  "voluptate","velit","esse","cillum","eu","fugiat","nulla","pariatur","excepteur","sint",
-  "occaecat","cupidatat","non","proident","sunt","culpa","qui","officia","deserunt",
-  "mollit","anim","id","est","laborum","perspiciatis","unde","omnis","iste","natus",
-  "error","voluptatem","accusantium","doloremque","laudantium","totam","rem","aperiam",
-  "eaque","ipsa","quae","ab","inventore","veritatis","quasi","architecto","beatae",
-  "vitae","dicta","explicabo","nemo","ipsam","quia","voluptas","aspernatur","aut",
-  "odit","fugit","consequuntur","magni","dolores","eos","ratione","sequi","nesciunt",
-  "neque","porro","quisquam","dolorem","adipisci","numquam","eius","modi","tempora",
-  "incidunt","labore","magnam","quaerat","soluta","nobis","eligendi","optio","cumque",
-  "impedit","quo","minus","maxime","placeat","facere","possimus","assumenda","repellendus",
+  "lorem",
+  "ipsum",
+  "dolor",
+  "sit",
+  "amet",
+  "consectetur",
+  "adipiscing",
+  "elit",
+  "sed",
+  "do",
+  "eiusmod",
+  "tempor",
+  "incididunt",
+  "ut",
+  "labore",
+  "et",
+  "dolore",
+  "magna",
+  "aliqua",
+  "enim",
+  "ad",
+  "minim",
+  "veniam",
+  "quis",
+  "nostrud",
+  "exercitation",
+  "ullamco",
+  "laboris",
+  "nisi",
+  "aliquip",
+  "ex",
+  "ea",
+  "commodo",
+  "consequat",
+  "duis",
+  "aute",
+  "irure",
+  "in",
+  "reprehenderit",
+  "voluptate",
+  "velit",
+  "esse",
+  "cillum",
+  "eu",
+  "fugiat",
+  "nulla",
+  "pariatur",
+  "excepteur",
+  "sint",
+  "occaecat",
+  "cupidatat",
+  "non",
+  "proident",
+  "sunt",
+  "culpa",
+  "qui",
+  "officia",
+  "deserunt",
+  "mollit",
+  "anim",
+  "id",
+  "est",
+  "laborum",
+  "perspiciatis",
+  "unde",
+  "omnis",
+  "iste",
+  "natus",
+  "error",
+  "voluptatem",
+  "accusantium",
+  "doloremque",
+  "laudantium",
+  "totam",
+  "rem",
+  "aperiam",
+  "eaque",
+  "ipsa",
+  "quae",
+  "ab",
+  "inventore",
+  "veritatis",
+  "quasi",
+  "architecto",
+  "beatae",
+  "vitae",
+  "dicta",
+  "explicabo",
+  "nemo",
+  "ipsam",
+  "quia",
+  "voluptas",
+  "aspernatur",
+  "aut",
+  "odit",
+  "fugit",
+  "consequuntur",
+  "magni",
+  "dolores",
+  "eos",
+  "ratione",
+  "sequi",
+  "nesciunt",
+  "neque",
+  "porro",
+  "quisquam",
+  "dolorem",
+  "adipisci",
+  "numquam",
+  "eius",
+  "modi",
+  "tempora",
+  "incidunt",
+  "labore",
+  "magnam",
+  "quaerat",
+  "soluta",
+  "nobis",
+  "eligendi",
+  "optio",
+  "cumque",
+  "impedit",
+  "quo",
+  "minus",
+  "maxime",
+  "placeat",
+  "facere",
+  "possimus",
+  "assumenda",
+  "repellendus",
 ];
 
 function pick(arr: string[]): string {
@@ -52,9 +168,12 @@ type UnitType = "words" | "sentences" | "paragraphs";
 
 function generate(type: UnitType, count: number): string {
   switch (type) {
-    case "words": return generateWords(count);
-    case "sentences": return generateSentences(count);
-    case "paragraphs": return generateParagraphs(count);
+    case "words":
+      return generateWords(count);
+    case "sentences":
+      return generateSentences(count);
+    case "paragraphs":
+      return generateParagraphs(count);
   }
 }
 
@@ -68,7 +187,9 @@ export default function LoremPage() {
   const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [url, setUrl] = useState("");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const regenerate = useCallback((t: UnitType, c: number) => {
     setOutput(generate(t, c));
@@ -83,16 +204,20 @@ export default function LoremPage() {
     const params = new URLSearchParams(window.location.search);
     const typeParam = params.get("type") as UnitType | null;
     const countParam = params.get("count");
-    const t: UnitType = typeParam && ["words","sentences","paragraphs"].includes(typeParam)
-      ? typeParam : "paragraphs";
-    const c = countParam ? Math.max(1, Math.min(100, parseInt(countParam, 10) || 3)) : 3;
+    const t: UnitType =
+      typeParam && ["words", "sentences", "paragraphs"].includes(typeParam)
+        ? typeParam
+        : "paragraphs";
+    const c = countParam
+      ? Math.max(1, Math.min(100, parseInt(countParam, 10) || 3))
+      : 3;
     setType(t);
     setCount(c);
     setOutput(generate(t, c));
     const initialUrl = buildUrl(t, c);
     history.replaceState(null, "", initialUrl);
     setUrl(initialUrl);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleTypeChange = (t: UnitType) => {
@@ -126,8 +251,12 @@ export default function LoremPage() {
   const handleCopyPermalink = () => {
     copyToClipboard(url).then(() => {
       setPermalinkCopied(true);
-      if (permalinkTimeoutRef.current) clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(() => setPermalinkCopied(false), 1500);
+      if (permalinkTimeoutRef.current)
+        clearTimeout(permalinkTimeoutRef.current);
+      permalinkTimeoutRef.current = setTimeout(
+        () => setPermalinkCopied(false),
+        1500,
+      );
     });
   };
 

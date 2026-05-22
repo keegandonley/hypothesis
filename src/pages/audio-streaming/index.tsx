@@ -76,23 +76,47 @@ const DEFAULTS: Settings = {
 };
 
 const AUDIO_EVENTS = [
-  "loadstart", "durationchange", "loadedmetadata", "loadeddata",
-  "progress", "canplay", "canplaythrough", "play", "playing",
-  "pause", "ended", "seeking", "seeked", "timeupdate", "ratechange",
-  "volumechange", "waiting", "stalled", "suspend", "abort", "emptied", "error",
+  "loadstart",
+  "durationchange",
+  "loadedmetadata",
+  "loadeddata",
+  "progress",
+  "canplay",
+  "canplaythrough",
+  "play",
+  "playing",
+  "pause",
+  "ended",
+  "seeking",
+  "seeked",
+  "timeupdate",
+  "ratechange",
+  "volumechange",
+  "waiting",
+  "stalled",
+  "suspend",
+  "abort",
+  "emptied",
+  "error",
 ] as const;
 
-type AudioEventName = typeof AUDIO_EVENTS[number];
+type AudioEventName = (typeof AUDIO_EVENTS)[number];
 
 const NOISY_EVENTS = new Set<AudioEventName>(["timeupdate", "progress"]);
 
 const NETWORK_STATE_LABELS: Record<number, string> = {
-  0: "EMPTY (0)", 1: "IDLE (1)", 2: "LOADING (2)", 3: "NO_SOURCE (3)",
+  0: "EMPTY (0)",
+  1: "IDLE (1)",
+  2: "LOADING (2)",
+  3: "NO_SOURCE (3)",
 };
 
 const READY_STATE_LABELS: Record<number, string> = {
-  0: "HAVE_NOTHING (0)", 1: "HAVE_METADATA (1)", 2: "HAVE_CURRENT_DATA (2)",
-  3: "HAVE_FUTURE_DATA (3)", 4: "HAVE_ENOUGH_DATA (4)",
+  0: "HAVE_NOTHING (0)",
+  1: "HAVE_METADATA (1)",
+  2: "HAVE_CURRENT_DATA (2)",
+  3: "HAVE_FUTURE_DATA (3)",
+  4: "HAVE_ENOUGH_DATA (4)",
 };
 
 const ERROR_CODES: Record<number, string> = {
@@ -104,7 +128,8 @@ const ERROR_CODES: Record<number, string> = {
 
 function extractRanges(r: TimeRanges): BarSegment[] {
   const segs: BarSegment[] = [];
-  for (let i = 0; i < r.length; i++) segs.push({ start: r.start(i), end: r.end(i) });
+  for (let i = 0; i < r.length; i++)
+    segs.push({ start: r.start(i), end: r.end(i) });
   return segs;
 }
 
@@ -141,9 +166,11 @@ function settingsToParams(s: Settings): string {
   if (s.crossorigin) p.set("crossorigin", s.crossorigin);
   if (s.clNodownload) p.set("clND", "1");
   if (s.clNoremoteplayback) p.set("clNRP", "1");
-  if (s.initialCurrentTime !== 0) p.set("startAt", String(s.initialCurrentTime));
+  if (s.initialCurrentTime !== 0)
+    p.set("startAt", String(s.initialCurrentTime));
   if (s.playbackRate !== 1) p.set("rate", String(s.playbackRate));
-  if (s.defaultPlaybackRate !== 1) p.set("dRate", String(s.defaultPlaybackRate));
+  if (s.defaultPlaybackRate !== 1)
+    p.set("dRate", String(s.defaultPlaybackRate));
   if (s.volume !== 1) p.set("volume", String(s.volume));
   const qs = p.toString();
   return qs ? `?${qs}` : "";
@@ -195,7 +222,9 @@ function RangeBar({
   variant: "buffered" | "seekable" | "played";
 }) {
   const valid = isFinite(duration) && duration > 0;
-  const pct = valid ? Math.min(100, Math.max(0, (100 * currentTime) / duration)) : 0;
+  const pct = valid
+    ? Math.min(100, Math.max(0, (100 * currentTime) / duration))
+    : 0;
   return (
     <div className={styles.bar}>
       {valid &&
@@ -217,7 +246,12 @@ function RangeBar({
 function logEntryClass(event: string): string {
   if (event === "error") return styles.logError;
   if (["waiting", "stalled", "suspend"].includes(event)) return styles.logWarn;
-  if (["canplay", "canplaythrough", "loadeddata", "loadedmetadata"].includes(event)) return styles.logGood;
+  if (
+    ["canplay", "canplaythrough", "loadeddata", "loadedmetadata"].includes(
+      event,
+    )
+  )
+    return styles.logGood;
   if (["play", "playing"].includes(event)) return styles.logAccent;
   return "";
 }
@@ -257,7 +291,11 @@ export default function AudioStreamingPage() {
 
   useEffect(() => {
     if (!initialized) return;
-    history.replaceState(null, "", window.location.pathname + settingsToParams(settings));
+    history.replaceState(
+      null,
+      "",
+      window.location.pathname + settingsToParams(settings),
+    );
   }, [settings, initialized]);
 
   const addLog = useCallback((event: string, detail: string) => {
@@ -282,7 +320,8 @@ export default function AudioStreamingPage() {
     });
     if (logAutoscrollRef.current) {
       requestAnimationFrame(() => {
-        if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
+        if (logRef.current)
+          logRef.current.scrollTop = logRef.current.scrollHeight;
       });
     }
   }, []);
@@ -294,9 +333,13 @@ export default function AudioStreamingPage() {
 
     const old = audioRef.current;
     if (old) {
-      try { old.pause(); } catch {}
+      try {
+        old.pause();
+      } catch {}
       old.removeAttribute("src");
-      try { old.load(); } catch {}
+      try {
+        old.load();
+      } catch {}
       old.remove();
       audioRef.current = null;
     }
@@ -312,7 +355,9 @@ export default function AudioStreamingPage() {
     a.defaultMuted = s.muted;
     a.controls = s.controls;
     if ("disableRemotePlayback" in a) {
-      (a as HTMLAudioElement & { disableRemotePlayback: boolean }).disableRemotePlayback = s.disableRemotePlayback;
+      (
+        a as HTMLAudioElement & { disableRemotePlayback: boolean }
+      ).disableRemotePlayback = s.disableRemotePlayback;
     }
     const clTokens: string[] = [];
     if (s.clNodownload) clTokens.push("nodownload");
@@ -327,9 +372,10 @@ export default function AudioStreamingPage() {
         let d = "";
         if (ev === "error") {
           const code = a.error?.code;
-          d = code != null
-            ? `code=${code} (${ERROR_CODES[code] ?? "?"}) ${a.error?.message ?? ""}`
-            : "unknown error";
+          d =
+            code != null
+              ? `code=${code} (${ERROR_CODES[code] ?? "?"}) ${a.error?.message ?? ""}`
+              : "unknown error";
           setErrorMsg(`Media error: ${d}`);
         } else if (ev === "durationchange") {
           d = `duration=${a.duration}`;
@@ -337,12 +383,16 @@ export default function AudioStreamingPage() {
           d = `duration=${a.duration}`;
           const t0 = settingsRef.current.initialCurrentTime;
           if (t0 > 0 && isFinite(a.duration) && t0 < a.duration) {
-            try { a.currentTime = t0; } catch {}
+            try {
+              a.currentTime = t0;
+            } catch {}
           }
         } else if (ev === "progress") {
           const ranges: string[] = [];
           for (let i = 0; i < a.buffered.length; i++)
-            ranges.push(`${a.buffered.start(i).toFixed(2)}–${a.buffered.end(i).toFixed(2)}`);
+            ranges.push(
+              `${a.buffered.start(i).toFixed(2)}–${a.buffered.end(i).toFixed(2)}`,
+            );
           d = `buffered=[${ranges.join(", ")}]`;
         } else if (ev === "ratechange") {
           d = `rate=${a.playbackRate}`;
@@ -369,12 +419,15 @@ export default function AudioStreamingPage() {
     a.muted = settings.muted;
     a.controls = settings.controls;
     if ("disableRemotePlayback" in a) {
-      (a as HTMLAudioElement & { disableRemotePlayback: boolean }).disableRemotePlayback = settings.disableRemotePlayback;
+      (
+        a as HTMLAudioElement & { disableRemotePlayback: boolean }
+      ).disableRemotePlayback = settings.disableRemotePlayback;
     }
     a.playbackRate = settings.playbackRate || 1;
     a.defaultPlaybackRate = settings.defaultPlaybackRate || 1;
     a.volume = Math.min(1, Math.max(0, settings.volume));
-    const cl = (a as HTMLAudioElement & { controlsList?: DOMTokenList }).controlsList;
+    const cl = (a as HTMLAudioElement & { controlsList?: DOMTokenList })
+      .controlsList;
     if (cl) {
       if (settings.clNodownload) cl.add("nodownload");
       else cl.remove("nodownload");
@@ -383,10 +436,15 @@ export default function AudioStreamingPage() {
     }
     setSnap(snapshotAudio(a));
   }, [
-    settings.loop, settings.muted, settings.controls,
+    settings.loop,
+    settings.muted,
+    settings.controls,
     settings.disableRemotePlayback,
-    settings.playbackRate, settings.defaultPlaybackRate, settings.volume,
-    settings.clNodownload, settings.clNoremoteplayback,
+    settings.playbackRate,
+    settings.defaultPlaybackRate,
+    settings.volume,
+    settings.clNodownload,
+    settings.clNoremoteplayback,
     initialized,
   ]);
 
@@ -410,7 +468,9 @@ export default function AudioStreamingPage() {
     return () => {
       const a = audioRef.current;
       if (a) {
-        try { a.pause(); } catch {}
+        try {
+          a.pause();
+        } catch {}
         a.removeAttribute("src");
         audioRef.current = null;
       }
@@ -429,11 +489,17 @@ export default function AudioStreamingPage() {
   }, []);
 
   const handlePlay = useCallback(() => {
-    audioRef.current?.play().catch((e: unknown) => addLog("play-rejected", String(e)));
+    audioRef.current
+      ?.play()
+      .catch((e: unknown) => addLog("play-rejected", String(e)));
   }, [addLog]);
 
-  const handlePause = useCallback(() => { audioRef.current?.pause(); }, []);
-  const handleLoad = useCallback(() => { audioRef.current?.load(); }, []);
+  const handlePause = useCallback(() => {
+    audioRef.current?.pause();
+  }, []);
+  const handleLoad = useCallback(() => {
+    audioRef.current?.load();
+  }, []);
 
   const handleStepBack = useCallback(() => {
     const a = audioRef.current;
@@ -442,7 +508,8 @@ export default function AudioStreamingPage() {
 
   const handleStepFwd = useCallback(() => {
     const a = audioRef.current;
-    if (a && isFinite(a.duration)) a.currentTime = Math.min(a.duration, a.currentTime + 5);
+    if (a && isFinite(a.duration))
+      a.currentTime = Math.min(a.duration, a.currentTime + 5);
   }, []);
 
   const handleSeek = useCallback(() => {
@@ -479,27 +546,38 @@ export default function AudioStreamingPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} style={{ color: "inherit", textDecoration: "none" }}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            style={{ color: "inherit", textDecoration: "none" }}
+          >
             {branding.domain}
           </Link>
           {"·"}
           <Link
             href="/docs/audio-streaming"
-            style={{ color: "inherit", textDecoration: "none", display: "flex", alignItems: "center", gap: "0.3em" }}
+            style={{
+              color: "inherit",
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3em",
+            }}
           >
             <DocIcon /> docs
           </Link>
         </div>
         <h1 className={styles.title}>audio streaming</h1>
         <p className={styles.tagline}>
-          Test HTML audio element behavior — buffering, events, and playback state — with full telemetry.
+          Test HTML audio element behavior — buffering, events, and playback
+          state — with full telemetry.
         </p>
       </div>
 
       <hr className={styles.divider} />
 
       <div className={styles.grid}>
-
         {/* ── Settings panel ──────────────────────────────────────────── */}
         <section className={styles.panel}>
           <h2 className={styles.panelTitle}>Settings</h2>
@@ -507,14 +585,20 @@ export default function AudioStreamingPage() {
           <div className={styles.group}>
             <div className={styles.groupTitle}>
               <span>Source</span>
-              <span className={`${styles.tag} ${styles.tagRebuild}`}>rebuild</span>
+              <span className={`${styles.tag} ${styles.tagRebuild}`}>
+                rebuild
+              </span>
             </div>
-            <label className={styles.blockLabel} htmlFor="as-preset">Example file</label>
+            <label className={styles.blockLabel} htmlFor="as-preset">
+              Example file
+            </label>
             <select
               id="as-preset"
               className={styles.select}
               value={MEDIA_FILES.find((f) => f.url === settings.src)?.url ?? ""}
-              onChange={(e) => { if (e.target.value) upd("src", e.target.value); }}
+              onChange={(e) => {
+                if (e.target.value) upd("src", e.target.value);
+              }}
             >
               <option value="">— paste a custom URL below —</option>
               {MEDIA_FILES.filter((f) => f.type === "audio").map((f) => (
@@ -523,7 +607,13 @@ export default function AudioStreamingPage() {
                 </option>
               ))}
             </select>
-            <label className={styles.blockLabel} style={{ marginTop: 8 }} htmlFor="as-src">Custom URL</label>
+            <label
+              className={styles.blockLabel}
+              style={{ marginTop: 8 }}
+              htmlFor="as-src"
+            >
+              Custom URL
+            </label>
             <input
               id="as-src"
               type="url"
@@ -535,7 +625,10 @@ export default function AudioStreamingPage() {
               onChange={(e) => upd("src", e.target.value)}
             />
             <div className={styles.btnRow} style={{ marginTop: 8 }}>
-              <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={buildAudio}>
+              <button
+                className={`${styles.btn} ${styles.btnPrimary}`}
+                onClick={buildAudio}
+              >
                 Load / Reload
               </button>
               <button
@@ -547,7 +640,8 @@ export default function AudioStreamingPage() {
               </button>
             </div>
             <p className={styles.helpText}>
-              Changing the URL, <code>preload</code>, or <code>crossorigin</code> requires a rebuild.
+              Changing the URL, <code>preload</code>, or{" "}
+              <code>crossorigin</code> requires a rebuild.
             </p>
           </div>
 
@@ -558,23 +652,51 @@ export default function AudioStreamingPage() {
             </div>
             <div className={styles.grid2}>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={settings.autoplay} onChange={(e) => upd("autoplay", e.target.checked)} />
-                autoplay <span className={styles.warnText} title="Most browsers require muted for autoplay">⚠︎</span>
+                <input
+                  type="checkbox"
+                  checked={settings.autoplay}
+                  onChange={(e) => upd("autoplay", e.target.checked)}
+                />
+                autoplay{" "}
+                <span
+                  className={styles.warnText}
+                  title="Most browsers require muted for autoplay"
+                >
+                  ⚠︎
+                </span>
               </label>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={settings.loop} onChange={(e) => upd("loop", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.loop}
+                  onChange={(e) => upd("loop", e.target.checked)}
+                />
                 loop
               </label>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={settings.muted} onChange={(e) => upd("muted", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.muted}
+                  onChange={(e) => upd("muted", e.target.checked)}
+                />
                 muted
               </label>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={settings.controls} onChange={(e) => upd("controls", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.controls}
+                  onChange={(e) => upd("controls", e.target.checked)}
+                />
                 controls
               </label>
               <label className={`${styles.checkLabel} ${styles.fullSpan}`}>
-                <input type="checkbox" checked={settings.disableRemotePlayback} onChange={(e) => upd("disableRemotePlayback", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.disableRemotePlayback}
+                  onChange={(e) =>
+                    upd("disableRemotePlayback", e.target.checked)
+                  }
+                />
                 disable remote playback
               </label>
             </div>
@@ -586,25 +708,39 @@ export default function AudioStreamingPage() {
           <div className={styles.group}>
             <div className={styles.groupTitle}>
               <span>Load behavior</span>
-              <span className={`${styles.tag} ${styles.tagRebuild}`}>rebuild</span>
+              <span className={`${styles.tag} ${styles.tagRebuild}`}>
+                rebuild
+              </span>
             </div>
-            <label className={styles.blockLabel} htmlFor="as-preload">preload</label>
+            <label className={styles.blockLabel} htmlFor="as-preload">
+              preload
+            </label>
             <select
               id="as-preload"
               className={styles.select}
               value={settings.preload}
-              onChange={(e) => upd("preload", e.target.value as Settings["preload"])}
+              onChange={(e) =>
+                upd("preload", e.target.value as Settings["preload"])
+              }
             >
               <option value="none">none</option>
               <option value="metadata">metadata</option>
               <option value="auto">auto</option>
             </select>
-            <label className={styles.blockLabel} style={{ marginTop: 8 }} htmlFor="as-crossorigin">crossorigin</label>
+            <label
+              className={styles.blockLabel}
+              style={{ marginTop: 8 }}
+              htmlFor="as-crossorigin"
+            >
+              crossorigin
+            </label>
             <select
               id="as-crossorigin"
               className={styles.select}
               value={settings.crossorigin}
-              onChange={(e) => upd("crossorigin", e.target.value as Settings["crossorigin"])}
+              onChange={(e) =>
+                upd("crossorigin", e.target.value as Settings["crossorigin"])
+              }
             >
               <option value="">(unset)</option>
               <option value="anonymous">anonymous</option>
@@ -619,11 +755,19 @@ export default function AudioStreamingPage() {
             </div>
             <div className={styles.grid2}>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={settings.clNodownload} onChange={(e) => upd("clNodownload", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.clNodownload}
+                  onChange={(e) => upd("clNodownload", e.target.checked)}
+                />
                 nodownload
               </label>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={settings.clNoremoteplayback} onChange={(e) => upd("clNoremoteplayback", e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={settings.clNoremoteplayback}
+                  onChange={(e) => upd("clNoremoteplayback", e.target.checked)}
+                />
                 noremoteplayback
               </label>
             </div>
@@ -636,7 +780,9 @@ export default function AudioStreamingPage() {
             </div>
             <div className={styles.grid2}>
               <div>
-                <label className={styles.blockLabel} htmlFor="as-ict">initial currentTime (s)</label>
+                <label className={styles.blockLabel} htmlFor="as-ict">
+                  initial currentTime (s)
+                </label>
                 <input
                   id="as-ict"
                   type="number"
@@ -644,11 +790,15 @@ export default function AudioStreamingPage() {
                   min={0}
                   step={0.1}
                   value={settings.initialCurrentTime}
-                  onChange={(e) => upd("initialCurrentTime", parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    upd("initialCurrentTime", parseFloat(e.target.value) || 0)
+                  }
                 />
               </div>
               <div>
-                <label className={styles.blockLabel} htmlFor="as-rate">playbackRate</label>
+                <label className={styles.blockLabel} htmlFor="as-rate">
+                  playbackRate
+                </label>
                 <input
                   id="as-rate"
                   type="number"
@@ -657,11 +807,15 @@ export default function AudioStreamingPage() {
                   max={4}
                   step={0.25}
                   value={settings.playbackRate}
-                  onChange={(e) => upd("playbackRate", parseFloat(e.target.value) || 1)}
+                  onChange={(e) =>
+                    upd("playbackRate", parseFloat(e.target.value) || 1)
+                  }
                 />
               </div>
               <div>
-                <label className={styles.blockLabel} htmlFor="as-defaultRate">defaultPlaybackRate</label>
+                <label className={styles.blockLabel} htmlFor="as-defaultRate">
+                  defaultPlaybackRate
+                </label>
                 <input
                   id="as-defaultRate"
                   type="number"
@@ -670,12 +824,17 @@ export default function AudioStreamingPage() {
                   max={4}
                   step={0.25}
                   value={settings.defaultPlaybackRate}
-                  onChange={(e) => upd("defaultPlaybackRate", parseFloat(e.target.value) || 1)}
+                  onChange={(e) =>
+                    upd("defaultPlaybackRate", parseFloat(e.target.value) || 1)
+                  }
                 />
               </div>
               <div>
                 <label className={styles.blockLabel} htmlFor="as-volume">
-                  volume <span className={styles.mutedInline}>{settings.volume.toFixed(2)}</span>
+                  volume{" "}
+                  <span className={styles.mutedInline}>
+                    {settings.volume.toFixed(2)}
+                  </span>
                 </label>
                 <input
                   id="as-volume"
@@ -690,16 +849,23 @@ export default function AudioStreamingPage() {
               </div>
             </div>
             <p className={styles.helpText}>
-              Initial <code>currentTime</code> is applied after <code>loadedmetadata</code>.
+              Initial <code>currentTime</code> is applied after{" "}
+              <code>loadedmetadata</code>.
             </p>
           </div>
 
           <div className={styles.btnRow}>
-            <button className={`${styles.btn} ${styles.btnGhost}`} onClick={handleReset}>
+            <button
+              className={`${styles.btn} ${styles.btnGhost}`}
+              onClick={handleReset}
+            >
               Reset settings
             </button>
             {!isIframe && (
-              <button className={`${styles.btn} ${styles.btnGhost}`} onClick={handleExport}>
+              <button
+                className={`${styles.btn} ${styles.btnGhost}`}
+                onClick={handleExport}
+              >
                 {exportCopied ? "Copied!" : "Copy URL"}
               </button>
             )}
@@ -728,14 +894,37 @@ export default function AudioStreamingPage() {
             ))}
           </div>
 
-          <div className={styles.btnRow} style={{ marginTop: 10, flexWrap: "wrap" }}>
-            <button className={styles.btn} onClick={handlePlay}>Play</button>
-            <button className={styles.btn} onClick={handlePause}>Pause</button>
-            <button className={styles.btn} onClick={handleLoad} title="Calls audio.load()">
+          <div
+            className={styles.btnRow}
+            style={{ marginTop: 10, flexWrap: "wrap" }}
+          >
+            <button className={styles.btn} onClick={handlePlay}>
+              Play
+            </button>
+            <button className={styles.btn} onClick={handlePause}>
+              Pause
+            </button>
+            <button
+              className={styles.btn}
+              onClick={handleLoad}
+              title="Calls audio.load()"
+            >
               audio.load()
             </button>
-            <button className={styles.btn} onClick={handleStepBack} title="Step back 5 seconds">−5s</button>
-            <button className={styles.btn} onClick={handleStepFwd} title="Step forward 5 seconds">+5s</button>
+            <button
+              className={styles.btn}
+              onClick={handleStepBack}
+              title="Step back 5 seconds"
+            >
+              −5s
+            </button>
+            <button
+              className={styles.btn}
+              onClick={handleStepFwd}
+              title="Step forward 5 seconds"
+            >
+              +5s
+            </button>
             <label className={styles.seekLabel}>
               seek %
               <input
@@ -749,7 +938,9 @@ export default function AudioStreamingPage() {
                 onChange={(e) => setSeekPct(Number(e.target.value))}
               />
             </label>
-            <button className={styles.btn} onClick={handleSeek}>Seek</button>
+            <button className={styles.btn} onClick={handleSeek}>
+              Seek
+            </button>
           </div>
         </section>
 
@@ -760,45 +951,69 @@ export default function AudioStreamingPage() {
           <div className={styles.kv}>
             <span className={styles.kvKey}>networkState</span>
             <span className={styles.kvVal}>
-              {snap ? (NETWORK_STATE_LABELS[snap.networkState] ?? String(snap.networkState)) : "–"}
+              {snap
+                ? (NETWORK_STATE_LABELS[snap.networkState] ??
+                  String(snap.networkState))
+                : "–"}
             </span>
 
             <span className={styles.kvKey}>readyState</span>
             <span className={styles.kvVal}>
-              {snap ? (READY_STATE_LABELS[snap.readyState] ?? String(snap.readyState)) : "–"}
+              {snap
+                ? (READY_STATE_LABELS[snap.readyState] ??
+                  String(snap.readyState))
+                : "–"}
             </span>
 
             <span className={styles.kvKey}>currentSrc</span>
             <span className={styles.kvVal}>{snap?.currentSrc || "(none)"}</span>
 
             <span className={styles.kvKey}>duration</span>
-            <span className={styles.kvVal}>{snap ? fmtNum(snap.duration) : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? fmtNum(snap.duration) : "–"}
+            </span>
 
             <span className={styles.kvKey}>currentTime</span>
-            <span className={styles.kvVal}>{snap ? fmtNum(snap.currentTime) : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? fmtNum(snap.currentTime) : "–"}
+            </span>
 
             <span className={styles.kvKey}>paused</span>
-            <span className={`${styles.kvVal} ${snap ? (snap.paused ? styles.colorWarn : styles.colorGood) : ""}`}>
+            <span
+              className={`${styles.kvVal} ${snap ? (snap.paused ? styles.colorWarn : styles.colorGood) : ""}`}
+            >
               {snap ? String(snap.paused) : "–"}
             </span>
 
             <span className={styles.kvKey}>ended</span>
-            <span className={styles.kvVal}>{snap ? String(snap.ended) : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? String(snap.ended) : "–"}
+            </span>
 
             <span className={styles.kvKey}>seeking</span>
-            <span className={styles.kvVal}>{snap ? String(snap.seeking) : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? String(snap.seeking) : "–"}
+            </span>
 
             <span className={styles.kvKey}>playbackRate</span>
-            <span className={styles.kvVal}>{snap ? snap.playbackRate : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? snap.playbackRate : "–"}
+            </span>
 
             <span className={styles.kvKey}>volume</span>
-            <span className={styles.kvVal}>{snap ? snap.volume.toFixed(2) : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? snap.volume.toFixed(2) : "–"}
+            </span>
 
             <span className={styles.kvKey}>muted</span>
-            <span className={styles.kvVal}>{snap ? String(snap.muted) : "–"}</span>
+            <span className={styles.kvVal}>
+              {snap ? String(snap.muted) : "–"}
+            </span>
 
             <span className={styles.kvKey}>error</span>
-            <span className={`${styles.kvVal} ${snap?.errorCode != null ? styles.colorBad : ""}`}>
+            <span
+              className={`${styles.kvVal} ${snap?.errorCode != null ? styles.colorBad : ""}`}
+            >
               {snap?.errorCode != null
                 ? `${snap.errorCode} ${ERROR_CODES[snap.errorCode] ?? ""} ${snap.errorMessage}`.trim()
                 : "–"}
@@ -806,14 +1021,24 @@ export default function AudioStreamingPage() {
           </div>
 
           <div className={styles.logHeader}>
-            <h2 className={styles.panelTitle} style={{ margin: 0 }}>Event log</h2>
+            <h2 className={styles.panelTitle} style={{ margin: 0 }}>
+              Event log
+            </h2>
             <div className={styles.logControls}>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={logQuiet} onChange={(e) => setLogQuiet(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={logQuiet}
+                  onChange={(e) => setLogQuiet(e.target.checked)}
+                />
                 quiet
               </label>
               <label className={styles.checkLabel}>
-                <input type="checkbox" checked={logAutoscroll} onChange={(e) => setLogAutoscroll(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={logAutoscroll}
+                  onChange={(e) => setLogAutoscroll(e.target.checked)}
+                />
                 autoscroll
               </label>
               <button
@@ -828,7 +1053,10 @@ export default function AudioStreamingPage() {
 
           <div className={styles.log} ref={logRef} aria-live="polite">
             {logEntries.map((entry) => (
-              <div key={entry.id} className={`${styles.logEntry} ${logEntryClass(entry.event)}`}>
+              <div
+                key={entry.id}
+                className={`${styles.logEntry} ${logEntryClass(entry.event)}`}
+              >
                 <span className={styles.logTs}>{entry.ts}</span>
                 <span className={styles.logEvent}>{entry.event}</span>
                 <span className={styles.logDetail}>{entry.detail}</span>
@@ -836,7 +1064,6 @@ export default function AudioStreamingPage() {
             ))}
           </div>
         </section>
-
       </div>
     </div>
   );

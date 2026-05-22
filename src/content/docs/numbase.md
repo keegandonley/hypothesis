@@ -12,12 +12,12 @@ Supports non-negative integers up to `Number.MAX_SAFE_INTEGER` (2⁵³ − 1).
 
 The tool shows four panels side by side:
 
-| Panel | Base | Prefix |
-|-------|------|--------|
-| Binary | 2 | `0b` |
-| Octal | 8 | `0o` |
-| Decimal | 10 | — |
-| Hex | 16 | `0x` |
+| Panel   | Base | Prefix |
+| ------- | ---- | ------ |
+| Binary  | 2    | `0b`   |
+| Octal   | 8    | `0o`   |
+| Decimal | 10   | —      |
+| Hex     | 16   | `0x`   |
 
 Edit any panel — the other three update on every keystroke. Hex output is always uppercase (`FF`, not `ff`).
 
@@ -30,10 +30,10 @@ Conversion goes through decimal as an intermediate step:
 const n = parseInt(input, fromBase);
 
 // Decimal → all bases
-n.toString(2)   // binary
-n.toString(8)   // octal
-n.toString(10)  // decimal
-n.toString(16).toUpperCase()  // hex
+n.toString(2); // binary
+n.toString(8); // octal
+n.toString(10); // decimal
+n.toString(16).toUpperCase(); // hex
 ```
 
 ## Validation

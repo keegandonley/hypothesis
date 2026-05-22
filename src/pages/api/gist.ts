@@ -15,7 +15,10 @@ interface GistResponse {
   message?: string;
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   if (req.method !== "GET") {
     res.status(405).json({ error: "Method not allowed" });
     return;
@@ -35,7 +38,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const match = url.match(GIST_URL_RE);
   if (!match) {
-    res.status(400).json({ error: "url must be a GitHub Gist URL (https://gist.github.com/user/id)" });
+    res
+      .status(400)
+      .json({
+        error:
+          "url must be a GitHub Gist URL (https://gist.github.com/user/id)",
+      });
     return;
   }
 
@@ -44,7 +52,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let gistData: GistResponse;
   try {
     const apiRes = await fetch(`https://api.github.com/gists/${gistId}`, {
-      headers: { Accept: "application/vnd.github+json", "User-Agent": "hypothesis.sh" },
+      headers: {
+        Accept: "application/vnd.github+json",
+        "User-Agent": "hypothesis.sh",
+      },
     });
     if (apiRes.status === 404) {
       res.status(404).json({ error: "Gist not found or is private" });
@@ -70,7 +81,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (fileParam && typeof fileParam === "string") {
     const found = gistData.files[fileParam];
     if (!found) {
-      res.status(400).json({ error: `File "${fileParam}" not found in gist. Available: ${fileNames.join(", ")}` });
+      res
+        .status(400)
+        .json({
+          error: `File "${fileParam}" not found in gist. Available: ${fileNames.join(", ")}`,
+        });
       return;
     }
     targetFile = found;

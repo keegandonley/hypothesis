@@ -9,7 +9,7 @@ const UUID_RE =
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "POST" && req.method !== "GET") {
     return res.status(405).json({ error: "method not allowed" });
@@ -30,7 +30,9 @@ export default async function handler(
   const queryDataRaw =
     typeof req.query.data === "string" ? req.query.data : undefined;
   const querySandbox =
-    typeof req.query.sandbox === "string" ? req.query.sandbox === "true" : undefined;
+    typeof req.query.sandbox === "string"
+      ? req.query.sandbox === "true"
+      : undefined;
 
   let queryData: object | undefined;
   if (queryDataRaw) {
@@ -47,7 +49,9 @@ export default async function handler(
   if (queryBadgeRaw !== undefined) {
     queryBadge = parseInt(queryBadgeRaw, 10);
     if (isNaN(queryBadge) || queryBadge < 0) {
-      return res.status(400).json({ error: "badge must be a non-negative integer" });
+      return res
+        .status(400)
+        .json({ error: "badge must be a non-negative integer" });
     }
   }
 
@@ -66,7 +70,10 @@ export default async function handler(
   const title = bodyParams.title ?? queryTitle;
   const body = bodyParams.body ?? queryBody;
   const data = bodyParams.data ?? queryData;
-  const sandbox = bodyParams.sandbox ?? querySandbox ?? (process.env.APNS_PRODUCTION !== "true");
+  const sandbox =
+    bodyParams.sandbox ??
+    querySandbox ??
+    process.env.APNS_PRODUCTION !== "true";
 
   const options: ApnsOptions = {};
   const subtitle = bodyParams.subtitle ?? querySubtitle;
@@ -112,10 +119,15 @@ export default async function handler(
       data: data ?? null,
       apnsId: result.apnsId ?? null,
       success: result.ok,
-    }).catch((err) => console.error("[push/send] failed to record notification", err));
+    }).catch((err) =>
+      console.error("[push/send] failed to record notification", err),
+    );
 
     try {
-      await track("Push Notification Sent", { platform: record.platform, success: result.ok });
+      await track("Push Notification Sent", {
+        platform: record.platform,
+        success: result.ok,
+      });
     } catch (err) {
       console.warn("[analytics] failed to track Push Notification Sent", err);
     }

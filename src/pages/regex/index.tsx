@@ -187,7 +187,9 @@ export default function RegexPage() {
         <p className={styles.tagline}>
           Test regular expressions against strings with live match results
         </p>
-        <ReferenceLinks refs={[{ name: "Regex Syntax", slug: "regex-syntax" }]} />
+        <ReferenceLinks
+          refs={[{ name: "Regex Syntax", slug: "regex-syntax" }]}
+        />
       </div>
 
       <hr className={styles.divider} />

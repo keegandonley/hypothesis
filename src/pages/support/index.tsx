@@ -26,7 +26,12 @@ export default function SupportPage() {
       </Head>
       <div className={styles.inner}>
         <nav className={styles.nav}>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.backLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.backLink}
+          >
             <span style={{ marginBottom: "3px" }}>←</span> {branding.name}
           </Link>
         </nav>

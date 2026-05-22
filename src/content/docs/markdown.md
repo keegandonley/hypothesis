@@ -11,20 +11,20 @@ Convert Markdown to HTML with a live preview. Paste or type Markdown on the left
 
 This tool uses [marked](https://github.com/markedjs/marked) and supports the CommonMark spec plus GitHub Flavored Markdown extensions:
 
-| Syntax | Output |
-|--------|--------|
-| `# Heading` | `<h1>` through `<h6>` |
-| `**bold**` | `<strong>` |
-| `_italic_` | `<em>` |
-| `` `code` `` | `<code>` |
+| Syntax          | Output                     |
+| --------------- | -------------------------- | --- | --------- |
+| `# Heading`     | `<h1>` through `<h6>`      |
+| `**bold**`      | `<strong>`                 |
+| `_italic_`      | `<em>`                     |
+| `` `code` ``    | `<code>`                   |
 | ` ```lang ``` ` | `<pre><code>` fenced block |
-| `> text` | `<blockquote>` |
-| `- item` | `<ul><li>` |
-| `1. item` | `<ol><li>` |
-| `[text](url)` | `<a href="url">` |
-| `![alt](url)` | `<img>` |
-| `---` | `<hr>` |
-| `| col |` | `<table>` |
+| `> text`        | `<blockquote>`             |
+| `- item`        | `<ul><li>`                 |
+| `1. item`       | `<ol><li>`                 |
+| `[text](url)`   | `<a href="url">`           |
+| `![alt](url)`   | `<img>`                    |
+| `---`           | `<hr>`                     |
+| `               | col                        | `   | `<table>` |
 
 ## Permalinks
 

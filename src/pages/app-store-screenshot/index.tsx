@@ -16,15 +16,18 @@ type Dimension =
   | "2048x2732"
   | "2732x2048";
 
-const DIMS: Record<Dimension, { w: number; h: number; label: string; group: string }> = {
-  "1242x2688": { w: 1242, h: 2688, label: '6.5" Portrait',  group: "iPhone" },
+const DIMS: Record<
+  Dimension,
+  { w: number; h: number; label: string; group: string }
+> = {
+  "1242x2688": { w: 1242, h: 2688, label: '6.5" Portrait', group: "iPhone" },
   "2688x1242": { w: 2688, h: 1242, label: '6.5" Landscape', group: "iPhone" },
-  "1284x2778": { w: 1284, h: 2778, label: '6.7" Portrait',  group: "iPhone" },
+  "1284x2778": { w: 1284, h: 2778, label: '6.7" Portrait', group: "iPhone" },
   "2778x1284": { w: 2778, h: 1284, label: '6.7" Landscape', group: "iPhone" },
-  "2064x2752": { w: 2064, h: 2752, label: '12.9" Portrait',  group: "iPad" },
+  "2064x2752": { w: 2064, h: 2752, label: '12.9" Portrait', group: "iPad" },
   "2752x2064": { w: 2752, h: 2064, label: '12.9" Landscape', group: "iPad" },
-  "2048x2732": { w: 2048, h: 2732, label: '13" Portrait',    group: "iPad" },
-  "2732x2048": { w: 2732, h: 2048, label: '13" Landscape',   group: "iPad" },
+  "2048x2732": { w: 2048, h: 2732, label: '13" Portrait', group: "iPad" },
+  "2732x2048": { w: 2732, h: 2048, label: '13" Landscape', group: "iPad" },
 };
 
 const DIM_KEYS = Object.keys(DIMS) as Dimension[];
@@ -108,10 +111,28 @@ export default function AppStoreScreenshot() {
 
   // Sync URL on state change
   useEffect(() => {
-    const url = buildUrl(dim, bgColor, scale, borderRadius, shadowBlur, gradientEnabled, bgColor2, gradientAngle);
+    const url = buildUrl(
+      dim,
+      bgColor,
+      scale,
+      borderRadius,
+      shadowBlur,
+      gradientEnabled,
+      bgColor2,
+      gradientAngle,
+    );
     history.replaceState(null, "", url);
     setPageUrl(url);
-  }, [dim, bgColor, scale, borderRadius, shadowBlur, gradientEnabled, bgColor2, gradientAngle]);
+  }, [
+    dim,
+    bgColor,
+    scale,
+    borderRadius,
+    shadowBlur,
+    gradientEnabled,
+    bgColor2,
+    gradientAngle,
+  ]);
 
   // Redraw canvas on any relevant state change
   useEffect(() => {
@@ -167,7 +188,17 @@ export default function AppStoreScreenshot() {
       ctx.restore();
     };
     img.src = imageSrc;
-  }, [dim, bgColor, imageSrc, scale, borderRadius, shadowBlur, gradientEnabled, bgColor2, gradientAngle]);
+  }, [
+    dim,
+    bgColor,
+    imageSrc,
+    scale,
+    borderRadius,
+    shadowBlur,
+    gradientEnabled,
+    bgColor2,
+    gradientAngle,
+  ]);
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -236,7 +267,12 @@ export default function AppStoreScreenshot() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -247,7 +283,8 @@ export default function AppStoreScreenshot() {
         </div>
         <h1 className={styles.title}>App Store Screenshot</h1>
         <p className={styles.tagline}>
-          Compose screenshots at exact Apple App Store dimensions and export ready-to-submit PNGs
+          Compose screenshots at exact Apple App Store dimensions and export
+          ready-to-submit PNGs
         </p>
       </div>
 
@@ -270,7 +307,9 @@ export default function AppStoreScreenshot() {
                       onClick={() => setDim(d)}
                     >
                       {DIMS[d].label}
-                      <span className={styles.dimPx}>{d.replace("x", "×")}</span>
+                      <span className={styles.dimPx}>
+                        {d.replace("x", "×")}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -309,7 +348,9 @@ export default function AppStoreScreenshot() {
                       onChange={(e) => setBgColor2(e.target.value)}
                       className={styles.colorInput}
                     />
-                    <span className={styles.colorHex}>{bgColor2.toUpperCase()}</span>
+                    <span className={styles.colorHex}>
+                      {bgColor2.toUpperCase()}
+                    </span>
                   </label>
                 </div>
                 <div className={styles.controlRow}>
@@ -378,7 +419,9 @@ export default function AppStoreScreenshot() {
             onDragLeave={handleDragLeave}
             onClick={() => fileInputRef.current?.click()}
             tabIndex={0}
-            onKeyDown={(e) => e.key === "Enter" && fileInputRef.current?.click()}
+            onKeyDown={(e) =>
+              e.key === "Enter" && fileInputRef.current?.click()
+            }
           >
             <input
               ref={fileInputRef}
@@ -390,21 +433,22 @@ export default function AppStoreScreenshot() {
             <span className={styles.dropZoneIcon}>📱</span>
             {imageSrc ? (
               <span className={styles.dropZoneText}>
-                Replace image — <span className={styles.browseLink}>browse</span> or drop
+                Replace image —{" "}
+                <span className={styles.browseLink}>browse</span> or drop
               </span>
             ) : (
               <span className={styles.dropZoneText}>
-                Drop screenshot or <span className={styles.browseLink}>browse</span>
+                Drop screenshot or{" "}
+                <span className={styles.browseLink}>browse</span>
               </span>
             )}
-            <span className={styles.dropZoneHint}>PNG, JPEG, WEBP supported</span>
+            <span className={styles.dropZoneHint}>
+              PNG, JPEG, WEBP supported
+            </span>
           </div>
 
           {!isIframe && (
-            <button
-              className={styles.downloadBtn}
-              onClick={handleDownload}
-            >
+            <button className={styles.downloadBtn} onClick={handleDownload}>
               Download PNG — {dim.replace("x", "×")}
             </button>
           )}
@@ -414,7 +458,9 @@ export default function AppStoreScreenshot() {
           <div className={styles.previewPanel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelLabel}>Preview</span>
-              <span className={styles.panelDim}>{w}×{h}px</span>
+              <span className={styles.panelDim}>
+                {w}×{h}px
+              </span>
             </div>
             <div className={styles.previewBody}>
               <div
@@ -431,7 +477,8 @@ export default function AppStoreScreenshot() {
               </div>
               {!imageSrc && (
                 <p className={styles.emptyState}>
-                  Upload a screenshot to preview the composition, or download a template
+                  Upload a screenshot to preview the composition, or download a
+                  template
                 </p>
               )}
             </div>

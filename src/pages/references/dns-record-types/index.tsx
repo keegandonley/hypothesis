@@ -10,7 +10,11 @@ export const getStaticProps: GetStaticProps = () => ({
   props: { groups: DNS_GROUPS },
 });
 
-export default function DnsRecordTypesPage({ groups }: { groups: typeof DNS_GROUPS }) {
+export default function DnsRecordTypesPage({
+  groups,
+}: {
+  groups: typeof DNS_GROUPS;
+}) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeGroup, setActiveGroup] = useState("all");
@@ -44,19 +48,21 @@ export default function DnsRecordTypesPage({ groups }: { groups: typeof DNS_GROU
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return groups.map((group) => {
-      const records = group.records.filter((r) => {
-        if (activeGroup !== "all" && activeGroup !== group.id) return false;
-        if (!q) return true;
-        return (
-          r.type.toLowerCase().includes(q) ||
-          r.fullName.toLowerCase().includes(q) ||
-          r.description.toLowerCase().includes(q) ||
-          r.example.toLowerCase().includes(q)
-        );
-      });
-      return { ...group, records };
-    }).filter((g) => g.records.length > 0);
+    return groups
+      .map((group) => {
+        const records = group.records.filter((r) => {
+          if (activeGroup !== "all" && activeGroup !== group.id) return false;
+          if (!q) return true;
+          return (
+            r.type.toLowerCase().includes(q) ||
+            r.fullName.toLowerCase().includes(q) ||
+            r.description.toLowerCase().includes(q) ||
+            r.example.toLowerCase().includes(q)
+          );
+        });
+        return { ...group, records };
+      })
+      .filter((g) => g.records.length > 0);
   }, [search, activeGroup]);
 
   return (
@@ -98,7 +104,8 @@ export default function DnsRecordTypesPage({ groups }: { groups: typeof DNS_GROU
         <div className={styles.header}>
           <h1 className={styles.title}>DNS Record Types</h1>
           <p className={styles.tagline}>
-            Common DNS record types with descriptions, use cases, and example syntax.
+            Common DNS record types with descriptions, use cases, and example
+            syntax.
           </p>
         </div>
 
@@ -190,22 +197,40 @@ export default function DnsRecordTypesPage({ groups }: { groups: typeof DNS_GROU
                         } as React.CSSProperties
                       }
                     >
-                      <span className={styles.codeBadge}>{record.type.split(" ")[0]}</span>
+                      <span className={styles.codeBadge}>
+                        {record.type.split(" ")[0]}
+                      </span>
                       <div className={styles.codeInfo}>
-                        <span className={styles.codeName}>{record.fullName}</span>
+                        <span className={styles.codeName}>
+                          {record.fullName}
+                        </span>
                         <div className={styles.flagRow}>
                           <span className={styles.codeDesc}>
                             {record.description}
                           </span>
                         </div>
                         <div className={styles.flagRow}>
-                          <code className={styles.codeDesc} style={{ fontFamily: "var(--font-mono)", fontSize: "10px", opacity: 0.7 }}>
+                          <code
+                            className={styles.codeDesc}
+                            style={{
+                              fontFamily: "var(--font-mono)",
+                              fontSize: "10px",
+                              opacity: 0.7,
+                            }}
+                          >
                             {record.example}
                           </code>
                         </div>
                         {record.notes && (
                           <div className={styles.flagRow}>
-                            <span className={styles.flagBadge} style={{ color: group.color, backgroundColor: group.subtle, borderColor: group.border }}>
+                            <span
+                              className={styles.flagBadge}
+                              style={{
+                                color: group.color,
+                                backgroundColor: group.subtle,
+                                borderColor: group.border,
+                              }}
+                            >
                               {record.notes}
                             </span>
                           </div>

@@ -10,7 +10,11 @@ export const getStaticProps: GetStaticProps = () => ({
   props: { groups: SIGNAL_GROUPS },
 });
 
-export default function UnixSignalsPage({ groups }: { groups: typeof SIGNAL_GROUPS }) {
+export default function UnixSignalsPage({
+  groups,
+}: {
+  groups: typeof SIGNAL_GROUPS;
+}) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeAction, setActiveAction] = useState("all");
@@ -44,19 +48,21 @@ export default function UnixSignalsPage({ groups }: { groups: typeof SIGNAL_GROU
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return groups.map((group) => {
-      const signals = group.signals.filter((s) => {
-        if (activeAction !== "all" && activeAction !== group.action)
-          return false;
-        if (!q) return true;
-        return (
-          String(s.number).includes(q) ||
-          s.name.toLowerCase().includes(q) ||
-          s.description.toLowerCase().includes(q)
-        );
-      });
-      return { ...group, signals };
-    }).filter((g) => g.signals.length > 0);
+    return groups
+      .map((group) => {
+        const signals = group.signals.filter((s) => {
+          if (activeAction !== "all" && activeAction !== group.action)
+            return false;
+          if (!q) return true;
+          return (
+            String(s.number).includes(q) ||
+            s.name.toLowerCase().includes(q) ||
+            s.description.toLowerCase().includes(q)
+          );
+        });
+        return { ...group, signals };
+      })
+      .filter((g) => g.signals.length > 0);
   }, [search, activeAction]);
 
   return (

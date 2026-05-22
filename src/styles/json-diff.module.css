@@ -245,10 +245,18 @@
   padding-top: 1px;
 }
 
-.added .diffBadge { color: #22c55e; }
-.removed .diffBadge { color: #f87171; }
-.changed .diffBadge { color: #fbbf24; }
-.type-changed .diffBadge { color: #c084fc; }
+.added .diffBadge {
+  color: #22c55e;
+}
+.removed .diffBadge {
+  color: #f87171;
+}
+.changed .diffBadge {
+  color: #fbbf24;
+}
+.type-changed .diffBadge {
+  color: #c084fc;
+}
 
 .diffPath {
   font-size: 13px;
@@ -328,7 +336,9 @@
   transition: background-color 0.15s;
 }
 
-.copyBtn:hover { background-color: var(--accent-hover); }
+.copyBtn:hover {
+  background-color: var(--accent-hover);
+}
 
 .copyBtn.copied {
   background-color: var(--accent);
@@ -352,4 +362,6 @@
   transition: background-color 0.15s;
 }
 
-.resetBtn:hover { background-color: #ef444430; }
+.resetBtn:hover {
+  background-color: #ef444430;
+}

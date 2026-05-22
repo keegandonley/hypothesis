@@ -23,15 +23,15 @@ function toJsx(svg: string): string {
   result = result.replace(/\s+xmlns(?::[a-z]+)?="[^"]*"/g, "");
 
   const attrMap: Record<string, string> = {
-    "class": "className",
-    "for": "htmlFor",
-    "tabindex": "tabIndex",
-    "readonly": "readOnly",
-    "crossorigin": "crossOrigin",
-    "autocomplete": "autoComplete",
-    "autofocus": "autoFocus",
-    "autoplay": "autoPlay",
-    "srcset": "srcSet",
+    class: "className",
+    for: "htmlFor",
+    tabindex: "tabIndex",
+    readonly: "readOnly",
+    crossorigin: "crossOrigin",
+    autocomplete: "autoComplete",
+    autofocus: "autoFocus",
+    autoplay: "autoPlay",
+    srcset: "srcSet",
     "clip-path": "clipPath",
     "clip-rule": "clipRule",
     "fill-opacity": "fillOpacity",
@@ -58,7 +58,10 @@ function toJsx(svg: string): string {
   };
 
   for (const [html, jsx] of Object.entries(attrMap)) {
-    const re = new RegExp(`\\b${html.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}=`, "g");
+    const re = new RegExp(
+      `\\b${html.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}=`,
+      "g",
+    );
     result = result.replace(re, `${jsx}=`);
   }
 
@@ -70,18 +73,25 @@ function toJsx(svg: string): string {
       .map((decl) => {
         const [prop, ...rest] = decl.split(":");
         const value = rest.join(":").trim();
-        const camel = prop.trim().replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
-        const jsValue = /^\d/.test(value) && !value.includes("%") && !value.includes("px") && !value.includes("em")
-          ? value
-          : `"${value}"`;
+        const camel = prop
+          .trim()
+          .replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
+        const jsValue =
+          /^\d/.test(value) &&
+          !value.includes("%") &&
+          !value.includes("px") &&
+          !value.includes("em")
+            ? value
+            : `"${value}"`;
         return `${camel}: ${jsValue}`;
       })
       .join(", ");
     return `style={{ ${props} }}`;
   });
 
-  result = result.replace(/<(circle|ellipse|line|path|polygon|polyline|rect|stop|use|image|animateTransform|animate|set|mpath|tref|feBlend|feColorMatrix|feComposite|feConvolveMatrix|feDiffuseLighting|feDisplacementMap|feDistantLight|feFlood|feFuncA|feFuncB|feFuncG|feFuncR|feGaussianBlur|feImage|feMergeNode|feMorphology|feOffset|fePointLight|feSpecularLighting|feSpotLight|feTile|feTurbulence)(\s[^>]*)?>(?!<\/)/g,
-    (_, tag, attrs = "") => `<${tag}${attrs} />`
+  result = result.replace(
+    /<(circle|ellipse|line|path|polygon|polyline|rect|stop|use|image|animateTransform|animate|set|mpath|tref|feBlend|feColorMatrix|feComposite|feConvolveMatrix|feDiffuseLighting|feDisplacementMap|feDistantLight|feFlood|feFuncA|feFuncB|feFuncG|feFuncR|feGaussianBlur|feImage|feMergeNode|feMorphology|feOffset|fePointLight|feSpecularLighting|feSpotLight|feTile|feTurbulence)(\s[^>]*)?>(?!<\/)/g,
+    (_, tag, attrs = "") => `<${tag}${attrs} />`,
   );
 
   const componentBody = result
@@ -113,7 +123,11 @@ export default function SvgJsxPage() {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("v");
     if (v) {
-      try { setInput(decodeURIComponent(escape(atob(v)))); } catch { /* ignore */ }
+      try {
+        setInput(decodeURIComponent(escape(atob(v))));
+      } catch {
+        /* ignore */
+      }
     }
     setUrl(window.location.href);
   }, []);
@@ -159,11 +173,21 @@ export default function SvgJsxPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
-          <Link href="/docs/svg-jsx" className={styles.docsLink} target="_blank" rel="noopener noreferrer">
+          <Link
+            href="/docs/svg-jsx"
+            className={styles.docsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>

@@ -35,11 +35,7 @@ export default function HttpStatusCodesPage({
     if (q) params.set("q", q);
     if (cls !== "all") params.set("class", cls);
     const qs = params.toString();
-    history.replaceState(
-      null,
-      "",
-      qs ? `?${qs}` : window.location.pathname,
-    );
+    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }
 
   function handleSearch(value: string) {
@@ -55,18 +51,20 @@ export default function HttpStatusCodesPage({
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return statusClasses.map((cls) => {
-      const codes = statusCodes[cls.class].filter((code) => {
-        if (activeClass !== "all" && activeClass !== cls.class) return false;
-        if (!q) return true;
-        return (
-          String(code.code).includes(q) ||
-          code.name.toLowerCase().includes(q) ||
-          code.description.toLowerCase().includes(q)
-        );
-      });
-      return { ...cls, codes };
-    }).filter((s) => s.codes.length > 0);
+    return statusClasses
+      .map((cls) => {
+        const codes = statusCodes[cls.class].filter((code) => {
+          if (activeClass !== "all" && activeClass !== cls.class) return false;
+          if (!q) return true;
+          return (
+            String(code.code).includes(q) ||
+            code.name.toLowerCase().includes(q) ||
+            code.description.toLowerCase().includes(q)
+          );
+        });
+        return { ...cls, codes };
+      })
+      .filter((s) => s.codes.length > 0);
   }, [search, activeClass]);
 
   return (

@@ -25,7 +25,12 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { url, format, filename, quality: rawQuality } = req.body as {
+  const {
+    url,
+    format,
+    filename,
+    quality: rawQuality,
+  } = req.body as {
     url: string;
     format: OutputFormat;
     filename: string;
@@ -68,7 +73,10 @@ export default async function handler(
     const pipeline = sharp(inputBuffer);
 
     if (format === "png") {
-      const compressionLevel = Math.max(1, Math.min(9, Math.round(quality / 100 * 9)));
+      const compressionLevel = Math.max(
+        1,
+        Math.min(9, Math.round((quality / 100) * 9)),
+      );
       outputBuffer = await pipeline
         .png({ compressionLevel, adaptiveFiltering: true })
         .toBuffer();

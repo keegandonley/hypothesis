@@ -57,7 +57,12 @@ export default function ScratchPage() {
       />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -71,7 +76,9 @@ export default function ScratchPage() {
           </Link>
         </div>
         <h1 className={styles.title}>Scratch</h1>
-        <p className={styles.tagline}>Type anything — copy the permalink to bookmark it</p>
+        <p className={styles.tagline}>
+          Type anything — copy the permalink to bookmark it
+        </p>
       </div>
 
       <hr className={styles.divider} />

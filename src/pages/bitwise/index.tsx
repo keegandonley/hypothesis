@@ -26,12 +26,32 @@ type Operation = {
 
 const OPERATIONS: Operation[] = [
   { label: "AND", key: "and", compute: (a, b) => a & b, description: "a & b" },
-  { label: "OR",  key: "or",  compute: (a, b) => a | b, description: "a | b" },
+  { label: "OR", key: "or", compute: (a, b) => a | b, description: "a | b" },
   { label: "XOR", key: "xor", compute: (a, b) => a ^ b, description: "a ^ b" },
-  { label: "NAND", key: "nand", compute: (a, b) => ~(a & b), description: "~(a & b)" },
-  { label: "NOR",  key: "nor",  compute: (a, b) => ~(a | b), description: "~(a | b)" },
-  { label: "SHL", key: "shl", compute: (a, _b) => a << 1, description: "a << 1" },
-  { label: "SHR", key: "shr", compute: (a, _b) => a >> 1, description: "a >> 1" },
+  {
+    label: "NAND",
+    key: "nand",
+    compute: (a, b) => ~(a & b),
+    description: "~(a & b)",
+  },
+  {
+    label: "NOR",
+    key: "nor",
+    compute: (a, b) => ~(a | b),
+    description: "~(a | b)",
+  },
+  {
+    label: "SHL",
+    key: "shl",
+    compute: (a, _b) => a << 1,
+    description: "a << 1",
+  },
+  {
+    label: "SHR",
+    key: "shr",
+    compute: (a, _b) => a >> 1,
+    description: "a >> 1",
+  },
 ];
 
 export default function BitwisePage() {
@@ -43,7 +63,9 @@ export default function BitwisePage() {
   const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [url, setUrl] = useState("");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const parseInput = (val: string): number | null => {
     if (val.trim() === "" || val.trim() === "-") return null;
@@ -98,8 +120,12 @@ export default function BitwisePage() {
   const handleCopyPermalink = () => {
     copyToClipboard(url).then(() => {
       setPermalinkCopied(true);
-      if (permalinkTimeoutRef.current) clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(() => setPermalinkCopied(false), 1500);
+      if (permalinkTimeoutRef.current)
+        clearTimeout(permalinkTimeoutRef.current);
+      permalinkTimeoutRef.current = setTimeout(
+        () => setPermalinkCopied(false),
+        1500,
+      );
     });
   };
 
@@ -142,7 +168,8 @@ export default function BitwisePage() {
         </div>
         <h1 className={styles.title}>Bitwise Operations</h1>
         <p className={styles.tagline}>
-          Visualize AND, OR, XOR, NAND, NOR, and shift operations with binary and decimal output
+          Visualize AND, OR, XOR, NAND, NOR, and shift operations with binary
+          and decimal output
         </p>
       </div>
 
@@ -192,7 +219,10 @@ export default function BitwisePage() {
           const binStr = result !== null ? formatBin(result) : "—";
           const isCopied = copiedKey === op.key;
           return (
-            <div key={op.key} className={`${styles.tableRow}${!isValid ? ` ${styles.rowDisabled}` : ""}`}>
+            <div
+              key={op.key}
+              className={`${styles.tableRow}${!isValid ? ` ${styles.rowDisabled}` : ""}`}
+            >
               <span className={styles.colOp}>
                 <span className={styles.opBadge}>{op.label}</span>
                 <span className={styles.opDesc}>{op.description}</span>

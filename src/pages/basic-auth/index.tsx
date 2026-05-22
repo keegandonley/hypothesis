@@ -111,7 +111,8 @@ export default function BasicAuthPage() {
         </div>
         <h1 className={styles.title}>Basic Auth</h1>
         <p className={styles.tagline}>
-          Generate HTTP Basic Authentication headers from a username and password
+          Generate HTTP Basic Authentication headers from a username and
+          password
         </p>
       </div>
 

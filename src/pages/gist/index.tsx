@@ -31,7 +31,9 @@ export default function GistPage() {
   const [iframeKey, setIframeKey] = useState(0);
   const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [pageUrl, setPageUrl] = useState("");
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const isValid = GIST_URL_RE.test(url);
 
@@ -42,7 +44,7 @@ export default function GistPage() {
     setUrl(u);
     setFile(f);
     setPageUrl(window.location.href);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleUrlChange = (u: string) => {
@@ -73,8 +75,12 @@ export default function GistPage() {
   const handleCopyPermalink = () => {
     copyToClipboard(pageUrl).then(() => {
       setPermalinkCopied(true);
-      if (permalinkTimeoutRef.current) clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(() => setPermalinkCopied(false), 1500);
+      if (permalinkTimeoutRef.current)
+        clearTimeout(permalinkTimeoutRef.current);
+      permalinkTimeoutRef.current = setTimeout(
+        () => setPermalinkCopied(false),
+        1500,
+      );
     });
   };
 
@@ -115,7 +121,8 @@ export default function GistPage() {
         </div>
         <h1 className={styles.title}>Gist</h1>
         <p className={styles.tagline}>
-          Serve a public GitHub Gist's raw content via a proxy URL — preview it live
+          Serve a public GitHub Gist's raw content via a proxy URL — preview it
+          live
         </p>
       </div>
 
@@ -123,7 +130,9 @@ export default function GistPage() {
 
       <div className={styles.inputRow}>
         <div className={styles.inputGroup}>
-          <label className={styles.inputLabel} htmlFor="gist-url">Gist URL</label>
+          <label className={styles.inputLabel} htmlFor="gist-url">
+            Gist URL
+          </label>
           <input
             id="gist-url"
             className={styles.input}
@@ -135,7 +144,9 @@ export default function GistPage() {
           />
         </div>
         <div className={styles.inputGroupNarrow}>
-          <label className={styles.inputLabel} htmlFor="gist-file">File <span className={styles.optional}>(optional)</span></label>
+          <label className={styles.inputLabel} htmlFor="gist-file">
+            File <span className={styles.optional}>(optional)</span>
+          </label>
           <input
             id="gist-file"
             className={styles.input}
@@ -177,7 +188,9 @@ export default function GistPage() {
           />
         ) : (
           <div className={styles.emptyState}>
-            {url ? "Enter a valid GitHub Gist URL to preview" : "Enter a GitHub Gist URL above to preview its content"}
+            {url
+              ? "Enter a valid GitHub Gist URL to preview"
+              : "Enter a GitHub Gist URL above to preview its content"}
           </div>
         )}
       </div>

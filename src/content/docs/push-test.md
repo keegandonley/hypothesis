@@ -40,6 +40,7 @@ Two webhook endpoints deliver push notifications directly from external services
 Receive push notifications for Vercel deployment events.
 
 **Webhook URL:**
+
 ```
 https://hypothesis.sh/api/vercel-webhook/<device-id>
 ```
@@ -51,6 +52,7 @@ Add this URL in the Vercel dashboard under **Team Settings → Webhooks**. All e
 Receive push notifications for Xcode Cloud build events.
 
 **Webhook URL:**
+
 ```
 https://hypothesis.sh/api/xcode-webhook/<device-id>
 ```

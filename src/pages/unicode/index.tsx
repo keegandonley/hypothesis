@@ -205,7 +205,12 @@ export default function UnicodePage() {
       />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -219,8 +224,16 @@ export default function UnicodePage() {
           </Link>
         </div>
         <h1 className={styles.title}>Unicode Inspector</h1>
-        <p className={styles.tagline}>Inspect code points, UTF-8/UTF-16 bytes, category, script, and HTML entity</p>
-        <ReferenceLinks refs={[{ name: "Unicode Blocks", slug: "unicode-blocks" }, { name: "ASCII Table", slug: "ascii" }]} />
+        <p className={styles.tagline}>
+          Inspect code points, UTF-8/UTF-16 bytes, category, script, and HTML
+          entity
+        </p>
+        <ReferenceLinks
+          refs={[
+            { name: "Unicode Blocks", slug: "unicode-blocks" },
+            { name: "ASCII Table", slug: "ascii" },
+          ]}
+        />
       </div>
 
       <hr className={styles.divider} />
@@ -234,7 +247,8 @@ export default function UnicodePage() {
                 <span className={styles.badgeReady}>Ready</span>
               ) : (
                 <span className={styles.badge}>
-                  {cpCount} code point{cpCount !== 1 ? "s" : ""} · {text.length} char{text.length !== 1 ? "s" : ""}
+                  {cpCount} code point{cpCount !== 1 ? "s" : ""} · {text.length}{" "}
+                  char{text.length !== 1 ? "s" : ""}
                 </span>
               )}
             </div>
@@ -255,7 +269,9 @@ export default function UnicodePage() {
 
         <div className={styles.rightPanel}>
           {chars.length === 0 ? (
-            <div className={styles.emptyState}>Enter text to inspect characters</div>
+            <div className={styles.emptyState}>
+              Enter text to inspect characters
+            </div>
           ) : (
             <div className={styles.charList}>
               {chars.map((info, i) => (
@@ -264,7 +280,9 @@ export default function UnicodePage() {
                   <div className={styles.charFields}>
                     <div className={styles.charField}>
                       <span className={styles.fieldLabel}>Code Point</span>
-                      <span className={styles.fieldValueAccent}>{info.codePoint}</span>
+                      <span className={styles.fieldValueAccent}>
+                        {info.codePoint}
+                      </span>
                     </div>
                     <div className={styles.charField}>
                       <span className={styles.fieldLabel}>Decimal</span>
@@ -288,11 +306,15 @@ export default function UnicodePage() {
                     </div>
                     <div className={styles.charField}>
                       <span className={styles.fieldLabel}>HTML Entity</span>
-                      <span className={styles.fieldValue}>{info.htmlEntity}</span>
+                      <span className={styles.fieldValue}>
+                        {info.htmlEntity}
+                      </span>
                     </div>
                     <div className={styles.charField}>
                       <span className={styles.fieldLabel}>Name</span>
-                      <span className={styles.fieldValue}>U+{info.cp.toString(16).toUpperCase().padStart(4, "0")}</span>
+                      <span className={styles.fieldValue}>
+                        U+{info.cp.toString(16).toUpperCase().padStart(4, "0")}
+                      </span>
                     </div>
                   </div>
                 </div>

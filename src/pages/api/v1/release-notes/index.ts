@@ -6,7 +6,10 @@ const RELEASES_DIR = path.join(process.cwd(), "src/content/releases");
 
 function parseTags(value?: string): string[] {
   if (!value) return [];
-  return value.split(",").map((t) => t.trim()).filter(Boolean);
+  return value
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
 }
 
 function parseFrontmatter(raw: string): Record<string, string> {
@@ -17,7 +20,8 @@ function parseFrontmatter(raw: string): Record<string, string> {
   const meta: Record<string, string> = {};
   for (const line of block.split("\n")) {
     const colon = line.indexOf(":");
-    if (colon > -1) meta[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
+    if (colon > -1)
+      meta[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
   }
   return meta;
 }
@@ -41,6 +45,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     })
     .sort((a, b) => b.date.localeCompare(a.date));
 
-  res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=3600, stale-while-revalidate=86400",
+  );
   res.json(releases);
 }

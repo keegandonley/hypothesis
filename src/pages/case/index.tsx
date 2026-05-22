@@ -22,7 +22,7 @@ function toCamel(words: string[]): string {
     .map((w, i) =>
       i === 0
         ? w.toLowerCase()
-        : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+        : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(),
     )
     .join("");
 }
@@ -84,7 +84,7 @@ export default function CasePage() {
   const [copiedUrl, setCopiedUrl] = useState(false);
   const copiedUrlTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const copyTimeouts = useRef<Map<number, ReturnType<typeof setTimeout>>>(
-    new Map()
+    new Map(),
   );
 
   useEffect(() => {
@@ -99,11 +99,7 @@ export default function CasePage() {
     const params = new URLSearchParams();
     if (value) params.set("input", value);
     const qs = params.toString();
-    history.replaceState(
-      null,
-      "",
-      qs ? `?${qs}` : window.location.pathname
-    );
+    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
     setUrl(window.location.href);
   }
 
@@ -132,11 +128,21 @@ export default function CasePage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
-          <Link href="/docs/case" className={styles.docsLink} target="_blank" rel="noopener noreferrer">
+          <Link
+            href="/docs/case"
+            className={styles.docsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>
@@ -197,8 +203,12 @@ export default function CasePage() {
             onClick={() => {
               copyToClipboard(url);
               setCopiedUrl(true);
-              if (copiedUrlTimeout.current) clearTimeout(copiedUrlTimeout.current);
-              copiedUrlTimeout.current = setTimeout(() => setCopiedUrl(false), 1500);
+              if (copiedUrlTimeout.current)
+                clearTimeout(copiedUrlTimeout.current);
+              copiedUrlTimeout.current = setTimeout(
+                () => setCopiedUrl(false),
+                1500,
+              );
             }}
           >
             {copiedUrl ? "Copied!" : "Copy"}

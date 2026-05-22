@@ -10,10 +10,10 @@ Compare two blocks of text side by side and see exactly what changed — additio
 
 ## Modes
 
-| Mode | Description |
-|------|-------------|
-| **Lines** | Compares line by line (default). Best for code, config files, logs. |
-| **Words** | Compares word by word. Useful for prose and documentation. |
+| Mode      | Description                                                          |
+| --------- | -------------------------------------------------------------------- |
+| **Lines** | Compares line by line (default). Best for code, config files, logs.  |
+| **Words** | Compares word by word. Useful for prose and documentation.           |
 | **Chars** | Compares character by character. Useful for spotting subtle changes. |
 
 ## Stats

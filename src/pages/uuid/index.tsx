@@ -30,7 +30,9 @@ export default function UuidPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const verParam = params.get("version");
-    const ver = (verParam === "1" || verParam === "7" ? Number(verParam) : 4) as 1 | 4 | 7;
+    const ver = (
+      verParam === "1" || verParam === "7" ? Number(verParam) : 4
+    ) as 1 | 4 | 7;
     setVersion(ver);
     setUuid(generate(ver));
     history.replaceState(null, "", buildUrl(ver));
@@ -64,7 +66,12 @@ export default function UuidPage() {
       />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -78,7 +85,9 @@ export default function UuidPage() {
           </Link>
         </div>
         <h1 className={styles.title}>UUID</h1>
-        <p className={styles.tagline}>Generate UUIDs of any version with one click</p>
+        <p className={styles.tagline}>
+          Generate UUIDs of any version with one click
+        </p>
       </div>
 
       <hr className={styles.divider} />
@@ -97,7 +106,11 @@ export default function UuidPage() {
                   v{ver}
                 </button>
               ))}
-              <span className={version === 4 ? styles.badgeBlue : styles.badgeAlt}>v{version}</span>
+              <span
+                className={version === 4 ? styles.badgeBlue : styles.badgeAlt}
+              >
+                v{version}
+              </span>
             </div>
           </div>
           <div className={styles.textareaWrapper}>

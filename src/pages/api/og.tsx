@@ -9,7 +9,20 @@ export const config = {
 function formatOgDate(slug: string): string {
   const parts = slug.split("-");
   if (parts.length !== 3) return slug;
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const month = parseInt(parts[1], 10);
   return `${months[month - 1]} ${parseInt(parts[2], 10)}, ${parts[0]}`;
 }

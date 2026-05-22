@@ -18,7 +18,7 @@ function generatePasswords(
   lower: boolean,
   digits: boolean,
   symbols: boolean,
-  count: number
+  count: number,
 ): string[] {
   let charset = "";
   if (upper) charset += UPPER;
@@ -34,7 +34,7 @@ function generatePasswords(
     results.push(
       Array.from(arr)
         .map((n) => charset[n % charset.length])
-        .join("")
+        .join(""),
     );
   }
   return results;
@@ -54,10 +54,14 @@ export default function PasswordPage() {
   const [copiedAll, setCopiedAll] = useState(false);
   const [url, setUrl] = useState("");
   const [copiedUrl, setCopiedUrl] = useState(false);
-  const copyTimeouts = useRef<Map<number | "all", ReturnType<typeof setTimeout>>>(new Map());
+  const copyTimeouts = useRef<
+    Map<number | "all", ReturnType<typeof setTimeout>>
+  >(new Map());
 
   const generate = useCallback(() => {
-    setPasswords(generatePasswords(length, upper, lower, digits, symbols, count));
+    setPasswords(
+      generatePasswords(length, upper, lower, digits, symbols, count),
+    );
   }, [length, upper, lower, digits, symbols, count]);
 
   useEffect(() => {
@@ -83,7 +87,7 @@ export default function PasswordPage() {
     lo: boolean,
     d: boolean,
     s: boolean,
-    c: number
+    c: number,
   ) {
     const params = new URLSearchParams({
       len: String(l),
@@ -127,7 +131,10 @@ export default function PasswordPage() {
     setCopiedIdx(idx);
     const prev = copyTimeouts.current.get(idx);
     if (prev) clearTimeout(prev);
-    const t = setTimeout(() => setCopiedIdx((c) => (c === idx ? null : c)), 1500);
+    const t = setTimeout(
+      () => setCopiedIdx((c) => (c === idx ? null : c)),
+      1500,
+    );
     copyTimeouts.current.set(idx, t);
   }
 
@@ -153,11 +160,21 @@ export default function PasswordPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
-          <Link href="/docs/password" className={styles.docsLink} target="_blank" rel="noopener noreferrer">
+          <Link
+            href="/docs/password"
+            className={styles.docsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>

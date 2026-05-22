@@ -129,7 +129,9 @@
   letter-spacing: 0.06em;
   color: var(--muted);
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
 }
 
 .exampleBtn:hover {
@@ -188,7 +190,10 @@
   color: var(--muted);
   text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
 }
 
 .copyFieldBtn:hover {

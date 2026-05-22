@@ -10,7 +10,9 @@
   padding: 20px;
 }
 
-.header { margin-bottom: 16px; }
+.header {
+  margin-bottom: 16px;
+}
 
 .eyebrow {
   font-size: 10px;
@@ -44,7 +46,9 @@
   margin: 0 0 16px;
 }
 
-.icon { margin-right: 4px; }
+.icon {
+  margin-right: 4px;
+}
 
 .docsLink {
   display: flex;
@@ -53,7 +57,9 @@
   transition: color 0.15s ease;
 }
 
-.docsLink:hover { color: var(--accent); }
+.docsLink:hover {
+  color: var(--accent);
+}
 
 .domainLink {
   display: flex;
@@ -105,7 +111,9 @@
   transition: border-color 0.15s;
 }
 
-.hexInput:focus { border-color: var(--accent-border); }
+.hexInput:focus {
+  border-color: var(--accent-border);
+}
 
 /* Panel copy buttons */
 .panelCopyBtn {
@@ -120,11 +128,19 @@
   color: var(--text);
   text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
 }
 
-.panelCopyBtn:disabled { opacity: 0.4; cursor: default; }
-.panelCopyBtn:not(:disabled):hover { background: var(--border); }
+.panelCopyBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.panelCopyBtn:not(:disabled):hover {
+  background: var(--border);
+}
 
 .panelCopyBtn.panelCopied {
   background: var(--accent-subtle);
@@ -150,12 +166,14 @@
   justify-content: flex-end;
   padding: 0 4px 8px;
   gap: 2px;
-  transition: transform 0.1s, box-shadow 0.1s;
+  transition:
+    transform 0.1s,
+    box-shadow 0.1s;
 }
 
 .shade:hover {
   transform: scaleY(1.06);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 1;
 }
 
@@ -224,7 +242,9 @@
   transition: background-color 0.15s;
 }
 
-.copyBtn:hover { background-color: var(--accent-hover); }
+.copyBtn:hover {
+  background-color: var(--accent-hover);
+}
 
 .copyBtn.copied {
   background-color: var(--accent);
@@ -248,4 +268,6 @@
   transition: background-color 0.15s;
 }
 
-.resetBtn:hover { background-color: #ef444430; }
+.resetBtn:hover {
+  background-color: #ef444430;
+}

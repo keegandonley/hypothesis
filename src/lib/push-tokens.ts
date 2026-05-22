@@ -86,9 +86,13 @@ export async function upsertPushToken(
     );
 
     if (result.rows[0]?.is_new) {
-      await incrementStat("devices_registered").catch((err) => console.error("[stats] failed to increment devices_registered", err));
+      await incrementStat("devices_registered").catch((err) =>
+        console.error("[stats] failed to increment devices_registered", err),
+      );
     }
-    await snapshotDeviceTotal().catch((err) => console.error("[stats] failed to snapshot device total", err));
+    await snapshotDeviceTotal().catch((err) =>
+      console.error("[stats] failed to snapshot device total", err),
+    );
     return;
   }
 
@@ -133,10 +137,14 @@ export async function upsertPushToken(
     );
 
     if (result.rows[0]?.is_new) {
-      await incrementStat("devices_registered").catch((err) => console.error("[stats] failed to increment devices_registered", err));
+      await incrementStat("devices_registered").catch((err) =>
+        console.error("[stats] failed to increment devices_registered", err),
+      );
     }
   }
-  await snapshotDeviceTotal().catch((err) => console.error("[stats] failed to snapshot device total", err));
+  await snapshotDeviceTotal().catch((err) =>
+    console.error("[stats] failed to snapshot device total", err),
+  );
 }
 
 export async function getPushTokenByDeviceId(
@@ -181,7 +189,11 @@ export async function registerDeviceWithoutToken(
   );
 
   if (result.rowCount && result.rowCount > 0) {
-    await incrementStat("devices_registered").catch((err) => console.error("[stats] failed to increment devices_registered", err));
-    await snapshotDeviceTotal().catch((err) => console.error("[stats] failed to snapshot device total", err));
+    await incrementStat("devices_registered").catch((err) =>
+      console.error("[stats] failed to increment devices_registered", err),
+    );
+    await snapshotDeviceTotal().catch((err) =>
+      console.error("[stats] failed to snapshot device total", err),
+    );
   }
 }

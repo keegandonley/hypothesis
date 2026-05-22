@@ -38,7 +38,7 @@ function decodeActions(raw: string): Action[] {
       payload: JSON.stringify(
         item.payload !== undefined ? item.payload : {},
         null,
-        2
+        2,
       ),
     }));
   } catch {
@@ -51,9 +51,7 @@ function buildBaseUrl(): string {
 }
 
 function buildUrl(actions: Action[]): string {
-  const hasContent = actions.some(
-    (a) => a.id || a.name || a.payload !== "{}"
-  );
+  const hasContent = actions.some((a) => a.id || a.name || a.payload !== "{}");
   if (!hasContent && actions.length === 0) return buildBaseUrl();
   return `${buildBaseUrl()}?actions=${encodeActions(actions)}`;
 }
@@ -87,7 +85,9 @@ export default function DesignerPage() {
   const [copied, setCopied] = useState(false);
   const [copiedViewer, setCopiedViewer] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyViewerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyViewerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -98,7 +98,7 @@ export default function DesignerPage() {
         decoded.map((a) => {
           actionIdCounter += 1;
           return { ...a, _key: String(actionIdCounter) };
-        })
+        }),
       );
       setViewerUrl(buildViewerUrl(decoded));
     } else {
@@ -114,13 +114,9 @@ export default function DesignerPage() {
     setViewerUrl(buildViewerUrl(next));
   };
 
-  const handleChange = (
-    key: string,
-    field: keyof Action,
-    value: string
-  ) => {
+  const handleChange = (key: string, field: keyof Action, value: string) => {
     const next = actions.map((a) =>
-      a._key === key ? { ...a, [field]: value } : a
+      a._key === key ? { ...a, [field]: value } : a,
     );
     setActions(next);
     syncUrl(next);
@@ -149,8 +145,12 @@ export default function DesignerPage() {
   const handleCopyViewer = () => {
     copyToClipboard(viewerUrl).then(() => {
       setCopiedViewer(true);
-      if (copyViewerTimeoutRef.current) clearTimeout(copyViewerTimeoutRef.current);
-      copyViewerTimeoutRef.current = setTimeout(() => setCopiedViewer(false), 1500);
+      if (copyViewerTimeoutRef.current)
+        clearTimeout(copyViewerTimeoutRef.current);
+      copyViewerTimeoutRef.current = setTimeout(
+        () => setCopiedViewer(false),
+        1500,
+      );
     });
   };
 
@@ -170,7 +170,12 @@ export default function DesignerPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -201,9 +206,7 @@ export default function DesignerPage() {
         {actions.map((action, idx) => (
           <div key={action._key} className={styles.actionCard}>
             <div className={styles.actionCardHeader}>
-              <span className={styles.actionIndex}>
-                action {idx + 1}
-              </span>
+              <span className={styles.actionIndex}>action {idx + 1}</span>
               <button
                 className={styles.removeBtn}
                 onClick={() => handleRemove(action._key)}
@@ -296,10 +299,20 @@ export default function DesignerPage() {
           </button>
         )}
         <div className={styles.viewerLinks}>
-          <a href={viewerUrl} className={styles.viewerLink} target="_blank" rel="noreferrer">
+          <a
+            href={viewerUrl}
+            className={styles.viewerLink}
+            target="_blank"
+            rel="noreferrer"
+          >
             Open Viewer →
           </a>
-          <a href={`${viewerUrl}${viewerUrl.includes("?") ? "&" : "?"}debug=true`} className={styles.viewerLink} target="_blank" rel="noreferrer">
+          <a
+            href={`${viewerUrl}${viewerUrl.includes("?") ? "&" : "?"}debug=true`}
+            className={styles.viewerLink}
+            target="_blank"
+            rel="noreferrer"
+          >
             Open Viewer (debug) →
           </a>
         </div>

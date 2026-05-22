@@ -4,13 +4,18 @@ import QRCode from "qrcode";
 type ECLevel = "L" | "M" | "Q" | "H";
 const EC_LEVELS: ECLevel[] = ["L", "M", "Q", "H"];
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   if (req.method !== "GET") return res.status(405).end();
 
   const { value, ecl, dark, light } = req.query;
 
   if (!value || typeof value !== "string" || !value.trim()) {
-    return res.status(400).json({ error: "Missing required query parameter: value" });
+    return res
+      .status(400)
+      .json({ error: "Missing required query parameter: value" });
   }
 
   const ecLevel: ECLevel =
@@ -19,8 +24,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       : "M";
 
   const hexColor = /^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/;
-  const darkColor = typeof dark === "string" && hexColor.test(dark) ? dark : "#000000";
-  const lightColor = typeof light === "string" && hexColor.test(light) ? light : "#ffffff";
+  const darkColor =
+    typeof dark === "string" && hexColor.test(dark) ? dark : "#000000";
+  const lightColor =
+    typeof light === "string" && hexColor.test(light) ? light : "#ffffff";
 
   try {
     const svg = await QRCode.toString(value, {
@@ -31,7 +38,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     res.setHeader("Content-Type", "image/svg+xml");
-    res.setHeader("Cache-Control", "public, s-maxage=86400, stale-while-revalidate=604800");
+    res.setHeader(
+      "Cache-Control",
+      "public, s-maxage=86400, stale-while-revalidate=604800",
+    );
     res.status(200).send(svg);
   } catch {
     res.status(500).json({ error: "Failed to generate QR code" });

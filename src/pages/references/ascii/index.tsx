@@ -10,7 +10,11 @@ export const getStaticProps: GetStaticProps = () => ({
   props: { groups: ASCII_GROUPS },
 });
 
-function renderGlyph(abbr: string, category: AsciiCategory, ctrl?: string): string {
+function renderGlyph(
+  abbr: string,
+  category: AsciiCategory,
+  ctrl?: string,
+): string {
   if (category === "control") {
     return ctrl ?? abbr;
   }
@@ -51,21 +55,23 @@ export default function AsciiPage({ groups }: { groups: typeof ASCII_GROUPS }) {
 
   const filteredGroups = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return groups.map((grp) => {
-      const chars = grp.chars.filter((c) => {
-        if (activeGroup !== "all" && activeGroup !== grp.id) return false;
-        if (!q) return true;
-        return (
-          String(c.code).includes(q) ||
-          c.hex.toLowerCase().includes(q) ||
-          c.oct.includes(q) ||
-          c.abbr.toLowerCase() === q ||
-          c.name.toLowerCase().includes(q) ||
-          (c.ctrl && c.ctrl.toLowerCase().includes(q))
-        );
-      });
-      return { ...grp, chars };
-    }).filter((g) => g.chars.length > 0);
+    return groups
+      .map((grp) => {
+        const chars = grp.chars.filter((c) => {
+          if (activeGroup !== "all" && activeGroup !== grp.id) return false;
+          if (!q) return true;
+          return (
+            String(c.code).includes(q) ||
+            c.hex.toLowerCase().includes(q) ||
+            c.oct.includes(q) ||
+            c.abbr.toLowerCase() === q ||
+            c.name.toLowerCase().includes(q) ||
+            (c.ctrl && c.ctrl.toLowerCase().includes(q))
+          );
+        });
+        return { ...grp, chars };
+      })
+      .filter((g) => g.chars.length > 0);
   }, [search, activeGroup]);
 
   return (
@@ -88,10 +94,7 @@ export default function AsciiPage({ groups }: { groups: typeof ASCII_GROUPS }) {
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="ASCII Table" />
-        <link
-          rel="canonical"
-          href="https://hypothesis.sh/references/ascii"
-        />
+        <link rel="canonical" href="https://hypothesis.sh/references/ascii" />
       </Head>
 
       <div className={styles.inner}>
@@ -107,8 +110,8 @@ export default function AsciiPage({ groups }: { groups: typeof ASCII_GROUPS }) {
         <div className={styles.header}>
           <h1 className={styles.title}>ASCII Table</h1>
           <p className={styles.tagline}>
-            All 128 ASCII characters with decimal, hexadecimal, octal, and
-            named descriptions.
+            All 128 ASCII characters with decimal, hexadecimal, octal, and named
+            descriptions.
           </p>
         </div>
 

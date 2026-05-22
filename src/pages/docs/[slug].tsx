@@ -293,7 +293,12 @@ function MarkdownContent({
             );
           case "pre":
             return (
-              <pre key={i} className={slug === "ascii-art" ? styles.asciiExample : undefined}>
+              <pre
+                key={i}
+                className={
+                  slug === "ascii-art" ? styles.asciiExample : undefined
+                }
+              >
                 <code>{node.code}</code>
               </pre>
             );
@@ -393,7 +398,11 @@ export default function DocsPage({
             <hr className={styles.divider} />
           </>
         )}
-        <MarkdownContent content={content} actionType={branding.actionType} slug={slug} />
+        <MarkdownContent
+          content={content}
+          actionType={branding.actionType}
+          slug={slug}
+        />
       </div>
     </div>
   );

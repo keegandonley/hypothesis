@@ -14,11 +14,11 @@ The encoding is done entirely in your browser — credentials are never sent to 
 
 ## Output fields
 
-| Field | Description |
-|-------|-------------|
-| Authorization Header | The full header ready to paste into a request |
-| Base64 Token | Just the encoded credential string |
-| Decoded | The raw `username:password` string before encoding |
+| Field                | Description                                        |
+| -------------------- | -------------------------------------------------- |
+| Authorization Header | The full header ready to paste into a request      |
+| Base64 Token         | Just the encoded credential string                 |
+| Decoded              | The raw `username:password` string before encoding |
 
 ## Usage
 

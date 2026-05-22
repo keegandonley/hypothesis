@@ -9,8 +9,8 @@ import { useIsIframe } from "@/lib/useIsIframe";
 
 type ImageAdjustments = {
   brightness: number; // 50–200, where 100 = unchanged
-  contrast: number;   // 50–200, where 100 = unchanged
-  sharpness: number;  // 0–100
+  contrast: number; // 50–200, where 100 = unchanged
+  sharpness: number; // 0–100
   grayscale: boolean;
 };
 
@@ -41,13 +41,18 @@ function applySharpen(
       const idx = (y * width + x) * 4;
       for (let c = 0; c < 3; c++) {
         const center = data[idx + c];
-        const top    = y > 0          ? data[((y - 1) * width + x) * 4 + c] : center;
-        const bottom = y < height - 1 ? data[((y + 1) * width + x) * 4 + c] : center;
-        const left   = x > 0          ? data[(y * width + (x - 1)) * 4 + c] : center;
-        const right  = x < width - 1  ? data[(y * width + (x + 1)) * 4 + c] : center;
+        const top = y > 0 ? data[((y - 1) * width + x) * 4 + c] : center;
+        const bottom =
+          y < height - 1 ? data[((y + 1) * width + x) * 4 + c] : center;
+        const left = x > 0 ? data[(y * width + (x - 1)) * 4 + c] : center;
+        const right =
+          x < width - 1 ? data[(y * width + (x + 1)) * 4 + c] : center;
         // Sharpen kernel: 5×center − top − bottom − left − right
         const sharpened = 5 * center - top - bottom - left - right;
-        out[idx + c] = Math.max(0, Math.min(255, Math.round(center * (1 - amount) + sharpened * amount)));
+        out[idx + c] = Math.max(
+          0,
+          Math.min(255, Math.round(center * (1 - amount) + sharpened * amount)),
+        );
       }
       out[idx + 3] = data[idx + 3];
     }
@@ -76,7 +81,8 @@ function renderAscii(
 
   // Apply CSS filters before drawing (brightness, contrast, grayscale are free)
   const filters: string[] = [];
-  if (adj.brightness !== 100) filters.push(`brightness(${adj.brightness / 100})`);
+  if (adj.brightness !== 100)
+    filters.push(`brightness(${adj.brightness / 100})`);
   if (adj.contrast !== 100) filters.push(`contrast(${adj.contrast / 100})`);
   if (adj.grayscale) filters.push("grayscale(1)");
   ctx.filter = filters.length > 0 ? filters.join(" ") : "none";
@@ -168,7 +174,15 @@ export default function AsciiArtPage() {
       charAspect: number,
     ) => {
       if (!canvasRef.current) return;
-      const output = renderAscii(img, canvasRef.current, c, CHAR_SETS[cs], inv, adj, charAspect);
+      const output = renderAscii(
+        img,
+        canvasRef.current,
+        c,
+        CHAR_SETS[cs],
+        inv,
+        adj,
+        charAspect,
+      );
       setAsciiOutput(output);
     },
     [],
@@ -192,14 +206,29 @@ export default function AsciiArtPage() {
   // Re-render when any control changes
   useEffect(() => {
     if (!imgRef.current) return;
-    triggerRender(imgRef.current, cols, charSetKey, invert, {
-      brightness,
-      contrast,
-      sharpness,
-      grayscale,
-    }, charAspectRef.current);
-  }, [cols, charSetKey, invert, brightness, contrast, sharpness, grayscale, triggerRender]);
-
+    triggerRender(
+      imgRef.current,
+      cols,
+      charSetKey,
+      invert,
+      {
+        brightness,
+        contrast,
+        sharpness,
+        grayscale,
+      },
+      charAspectRef.current,
+    );
+  }, [
+    cols,
+    charSetKey,
+    invert,
+    brightness,
+    contrast,
+    sharpness,
+    grayscale,
+    triggerRender,
+  ]);
 
   const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -211,7 +240,14 @@ export default function AsciiArtPage() {
         imgRef.current = img;
         setImageSrc(dataUrl);
         setUrlError("");
-        triggerRender(img, cols, charSetKey, invert, { brightness, contrast, sharpness, grayscale }, charAspectRef.current);
+        triggerRender(
+          img,
+          cols,
+          charSetKey,
+          invert,
+          { brightness, contrast, sharpness, grayscale },
+          charAspectRef.current,
+        );
       } catch {
         setUrlError("Could not decode image");
       }
@@ -246,7 +282,14 @@ export default function AsciiArtPage() {
       const img = await loadImage(urlInput.trim());
       imgRef.current = img;
       setImageSrc(urlInput.trim());
-      triggerRender(img, cols, charSetKey, invert, { brightness, contrast, sharpness, grayscale }, charAspectRef.current);
+      triggerRender(
+        img,
+        cols,
+        charSetKey,
+        invert,
+        { brightness, contrast, sharpness, grayscale },
+        charAspectRef.current,
+      );
     } catch {
       setUrlError("Could not load image — check the URL or CORS policy");
     }
@@ -404,7 +447,9 @@ export default function AsciiArtPage() {
             onClick={() => setBrightness(DEFAULT_ADJ.brightness)}
             disabled={brightness === DEFAULT_ADJ.brightness}
             title="Reset"
-          >reset</button>
+          >
+            reset
+          </button>
         </div>
         <div className={styles.controlRow}>
           <span className={styles.controlLabel}>Contrast</span>
@@ -422,7 +467,9 @@ export default function AsciiArtPage() {
             onClick={() => setContrast(DEFAULT_ADJ.contrast)}
             disabled={contrast === DEFAULT_ADJ.contrast}
             title="Reset"
-          >reset</button>
+          >
+            reset
+          </button>
         </div>
         <div className={styles.controlRow}>
           <span className={styles.controlLabel}>Sharpness</span>
@@ -440,7 +487,9 @@ export default function AsciiArtPage() {
             onClick={() => setSharpness(DEFAULT_ADJ.sharpness)}
             disabled={sharpness === DEFAULT_ADJ.sharpness}
             title="Reset"
-          >reset</button>
+          >
+            reset
+          </button>
         </div>
       </div>
 
@@ -453,13 +502,16 @@ export default function AsciiArtPage() {
               className={styles.preview}
               alt="Loaded image preview"
               style={{
-                filter: [
-                  brightness !== 100 ? `brightness(${brightness / 100})` : null,
-                  contrast !== 100 ? `contrast(${contrast / 100})` : null,
-                  grayscale ? "grayscale(1)" : null,
-                ]
-                  .filter(Boolean)
-                  .join(" ") || undefined,
+                filter:
+                  [
+                    brightness !== 100
+                      ? `brightness(${brightness / 100})`
+                      : null,
+                    contrast !== 100 ? `contrast(${contrast / 100})` : null,
+                    grayscale ? "grayscale(1)" : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" ") || undefined,
               }}
             />
           )}
@@ -504,9 +556,7 @@ export default function AsciiArtPage() {
               <button className={styles.loadBtn} onClick={handleUrlLoad}>
                 Load
               </button>
-              {urlError && (
-                <span className={styles.urlError}>{urlError}</span>
-              )}
+              {urlError && <span className={styles.urlError}>{urlError}</span>}
             </div>
           )}
         </div>

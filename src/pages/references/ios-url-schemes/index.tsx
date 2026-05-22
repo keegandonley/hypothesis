@@ -204,7 +204,14 @@ export default function IosUrlSchemesPage({
                         <span className={styles.codeDesc}>{s.description}</span>
                         {s.note && (
                           <div className={styles.flagRow}>
-                            <span className={styles.flagBadge} style={{ color: group.color, backgroundColor: group.subtle, borderColor: group.border }}>
+                            <span
+                              className={styles.flagBadge}
+                              style={{
+                                color: group.color,
+                                backgroundColor: group.subtle,
+                                borderColor: group.border,
+                              }}
+                            >
                               note
                             </span>
                             <span className={styles.codeDesc}>{s.note}</span>

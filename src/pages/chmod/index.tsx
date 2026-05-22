@@ -27,7 +27,11 @@ function parseNumeric(raw: string): Perms | null {
 function parseSymbolic(raw: string): Perms | null {
   const trimmed = raw.trim().toLowerCase();
   if (!/^[rwx-]{9}$/.test(trimmed)) return null;
-  const groups = [trimmed.slice(0, 3), trimmed.slice(3, 6), trimmed.slice(6, 9)];
+  const groups = [
+    trimmed.slice(0, 3),
+    trimmed.slice(3, 6),
+    trimmed.slice(6, 9),
+  ];
   return groups.map((g) => {
     let n = 0;
     if (g[0] === "r") n += 4;
@@ -66,9 +70,13 @@ export default function ChmodPage() {
   const [error, setError] = useState(false);
   const [url, setUrl] = useState("");
   const [copied, setCopied] = useState(false);
-  const [copiedField, setCopiedField] = useState<"numeric" | "symbolic" | null>(null);
+  const [copiedField, setCopiedField] = useState<"numeric" | "symbolic" | null>(
+    null,
+  );
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyFieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyFieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const buildUrl = (mode: string) => {
     if (!mode) return `${window.location.origin}${window.location.pathname}`;
@@ -103,7 +111,8 @@ export default function ChmodPage() {
       setError(trimmed.length >= 3);
       return;
     }
-    const p = kind === "numeric" ? parseNumeric(trimmed) : parseSymbolic(trimmed);
+    const p =
+      kind === "numeric" ? parseNumeric(trimmed) : parseSymbolic(trimmed);
     if (!p) {
       setPerms(null);
       setError(true);
@@ -143,8 +152,12 @@ export default function ChmodPage() {
     const val = field === "numeric" ? toNumeric(perms) : toSymbolic(perms);
     copyToClipboard(val).then(() => {
       setCopiedField(field);
-      if (copyFieldTimeoutRef.current) clearTimeout(copyFieldTimeoutRef.current);
-      copyFieldTimeoutRef.current = setTimeout(() => setCopiedField(null), 1500);
+      if (copyFieldTimeoutRef.current)
+        clearTimeout(copyFieldTimeoutRef.current);
+      copyFieldTimeoutRef.current = setTimeout(
+        () => setCopiedField(null),
+        1500,
+      );
     });
   };
 
@@ -176,13 +189,25 @@ export default function ChmodPage() {
             {branding.domain}
           </Link>
           {"·"}
-          <Link href="/docs/chmod" className={styles.docsLink} target="_blank" rel="noopener noreferrer">
+          <Link
+            href="/docs/chmod"
+            className={styles.docsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>
         <h1 className={styles.title}>chmod</h1>
-        <p className={styles.tagline}>Convert between numeric and symbolic Unix file permission modes</p>
-        <ReferenceLinks refs={[{ name: "Unix Signals", slug: "unix-signals" }, { name: "Exit Codes", slug: "exit-codes" }]} />
+        <p className={styles.tagline}>
+          Convert between numeric and symbolic Unix file permission modes
+        </p>
+        <ReferenceLinks
+          refs={[
+            { name: "Unix Signals", slug: "unix-signals" },
+            { name: "Exit Codes", slug: "exit-codes" },
+          ]}
+        />
       </div>
 
       <hr className={styles.divider} />
@@ -252,7 +277,9 @@ export default function ChmodPage() {
                 <tr>
                   <th className={styles.th}></th>
                   {entities.map((e) => (
-                    <th key={e} className={styles.th}>{e}</th>
+                    <th key={e} className={styles.th}>
+                      {e}
+                    </th>
                   ))}
                 </tr>
               </thead>
@@ -272,7 +299,9 @@ export default function ChmodPage() {
                 <tr>
                   <td className={styles.tdLabel}>Octal</td>
                   {perms.map((d, i) => (
-                    <td key={i} className={styles.tdMuted}>{d}</td>
+                    <td key={i} className={styles.tdMuted}>
+                      {d}
+                    </td>
                   ))}
                 </tr>
               </tbody>

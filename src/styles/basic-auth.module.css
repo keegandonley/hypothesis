@@ -11,7 +11,9 @@
   padding: 20px;
 }
 
-.header { margin-bottom: 16px; }
+.header {
+  margin-bottom: 16px;
+}
 
 .eyebrow {
   font-size: 10px;
@@ -45,7 +47,9 @@
   margin: 0 0 16px;
 }
 
-.icon { margin-right: 4px; }
+.icon {
+  margin-right: 4px;
+}
 
 .docsLink {
   display: flex;
@@ -54,7 +58,9 @@
   transition: color 0.15s ease;
 }
 
-.docsLink:hover { color: var(--accent); }
+.docsLink:hover {
+  color: var(--accent);
+}
 
 .domainLink {
   display: flex;
@@ -105,7 +111,9 @@
   transition: border-color 0.15s;
 }
 
-.input:focus { border-color: var(--accent-border); }
+.input:focus {
+  border-color: var(--accent-border);
+}
 
 .input::placeholder {
   color: var(--muted);
@@ -118,7 +126,9 @@
   align-items: center;
 }
 
-.passwordInput { padding-right: 60px; }
+.passwordInput {
+  padding-right: 60px;
+}
 
 .showHideBtn {
   position: absolute;
@@ -134,7 +144,9 @@
   color: var(--muted);
   text-transform: uppercase;
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
 }
 
 .showHideBtn:hover {
@@ -193,10 +205,15 @@
   color: var(--text);
   text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
 }
 
-.panelCopyBtn:hover { background-color: var(--border); }
+.panelCopyBtn:hover {
+  background-color: var(--border);
+}
 
 .panelCopyBtn.panelCopied {
   background-color: var(--accent-subtle);
@@ -250,7 +267,9 @@
   transition: background-color 0.15s;
 }
 
-.copyBtn:hover { background-color: var(--accent-hover); }
+.copyBtn:hover {
+  background-color: var(--accent-hover);
+}
 
 .copyBtn.copied {
   background-color: var(--accent);
@@ -274,4 +293,6 @@
   transition: background-color 0.15s;
 }
 
-.resetBtn:hover { background-color: #ef444430; }
+.resetBtn:hover {
+  background-color: #ef444430;
+}

@@ -29,12 +29,16 @@ export async function insertPushNotification(params: {
       params.title,
       params.body,
       params.subtitle ?? null,
-      params.data !== undefined && params.data !== null ? JSON.stringify(params.data) : null,
+      params.data !== undefined && params.data !== null
+        ? JSON.stringify(params.data)
+        : null,
       params.apnsId ?? null,
       params.success,
-    ]
+    ],
   );
-  await incrementStat("push_events_sent").catch((err) => console.error("[stats] failed to increment push_events_sent", err));
+  await incrementStat("push_events_sent").catch((err) =>
+    console.error("[stats] failed to increment push_events_sent", err),
+  );
 }
 
 export async function getPushNotifications(params: {
@@ -46,12 +50,12 @@ export async function getPushNotifications(params: {
   if (params.after) {
     result = await pool.query(
       "SELECT id, device_id, title, body, subtitle, data, apns_id, success, sent_at FROM push_notifications WHERE device_id = $1 AND sent_at > $2 ORDER BY sent_at DESC LIMIT $3",
-      [params.deviceId, params.after, params.limit]
+      [params.deviceId, params.after, params.limit],
     );
   } else {
     result = await pool.query(
       "SELECT id, device_id, title, body, subtitle, data, apns_id, success, sent_at FROM push_notifications WHERE device_id = $1 ORDER BY sent_at DESC LIMIT $2",
-      [params.deviceId, params.limit]
+      [params.deviceId, params.limit],
     );
   }
 

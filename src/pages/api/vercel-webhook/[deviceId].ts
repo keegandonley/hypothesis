@@ -40,7 +40,10 @@ type VercelEvent = {
   };
 };
 
-function formatNotification(event: VercelEvent): { title: string; body: string } {
+function formatNotification(event: VercelEvent): {
+  title: string;
+  body: string;
+} {
   const project =
     event.payload?.project?.name ??
     event.payload?.deployment?.name ??
@@ -62,7 +65,10 @@ function formatNotification(event: VercelEvent): { title: string; body: string }
     case "project.removed":
       return { title: project, body: "Project removed" };
     case "domain.created":
-      return { title: event.payload?.domain?.name ?? "New domain", body: "Domain added to Vercel" };
+      return {
+        title: event.payload?.domain?.name ?? "New domain",
+        body: "Domain added to Vercel",
+      };
     case "integration-configuration.permission-upgraded":
       return { title: project, body: "Integration permissions upgraded" };
     case "integration-configuration.removed":
@@ -74,7 +80,10 @@ function formatNotification(event: VercelEvent): { title: string; body: string }
   }
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   if (req.method !== "POST") return res.status(405).end();
 
   const { deviceId } = req.query as { deviceId: string };
@@ -103,7 +112,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const computed = createHmac("sha1", secret).update(rawBody).digest("hex");
   const sigBuf = Buffer.from(signature);
   const computedBuf = Buffer.from(computed);
-  if (sigBuf.length !== computedBuf.length || !timingSafeEqual(sigBuf, computedBuf)) {
+  if (
+    sigBuf.length !== computedBuf.length ||
+    !timingSafeEqual(sigBuf, computedBuf)
+  ) {
     return res.status(401).json({ error: "invalid signature" });
   }
 
@@ -122,11 +134,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const data = {
     type: "vercel_event",
     eventType: event.type,
-    projectName: event.payload?.project?.name ?? event.payload?.deployment?.name,
+    projectName:
+      event.payload?.project?.name ?? event.payload?.deployment?.name,
     icon: "logo-vercel",
   };
 
-  const result = await sendApnsNotification(device.token, title, body, data, undefined, device.sandbox);
+  const result = await sendApnsNotification(
+    device.token,
+    title,
+    body,
+    data,
+    undefined,
+    device.sandbox,
+  );
 
   await insertPushNotification({
     deviceId,
@@ -135,16 +155,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     data,
     apnsId: result.apnsId ?? null,
     success: result.ok,
-  }).catch((err) => console.error("[vercel-webhook] failed to record notification", err));
+  }).catch((err) =>
+    console.error("[vercel-webhook] failed to record notification", err),
+  );
 
   try {
-    await track("Vercel Webhook Received", { eventType: event.type, success: result.ok });
+    await track("Vercel Webhook Received", {
+      eventType: event.type,
+      success: result.ok,
+    });
   } catch (err) {
     console.warn("[analytics] failed to track Vercel Webhook Received", err);
   }
 
   if (!result.ok) {
-    console.error(`[vercel-webhook] APNS error for device ${deviceId}:`, result.error);
+    console.error(
+      `[vercel-webhook] APNS error for device ${deviceId}:`,
+      result.error,
+    );
   }
 
   return res.status(200).json({ ok: true });

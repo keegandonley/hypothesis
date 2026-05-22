@@ -61,17 +61,17 @@ export default async function handler(
     if (ip !== "::1") {
       const recentCount = await countRecentSessionsByIp(ip);
       if (recentCount >= 3) {
-        return res
-          .status(429)
-          .json({
-            error: "rate limit exceeded: max 3 sessions per IP per 10 minutes",
-          });
+        return res.status(429).json({
+          error: "rate limit exceeded: max 3 sessions per IP per 10 minutes",
+        });
       }
     }
 
     const sessionId = crypto.randomUUID();
     const session = await createSession(sessionId, ip);
-    await incrementStat("webhook_sessions_web").catch((err) => console.error("[stats] failed to increment webhook_sessions_web", err));
+    await incrementStat("webhook_sessions_web").catch((err) =>
+      console.error("[stats] failed to increment webhook_sessions_web", err),
+    );
     try {
       await track("Session Created");
     } catch (err) {

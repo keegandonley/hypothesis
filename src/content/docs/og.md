@@ -8,16 +8,16 @@ Open Graph (OG) tags are `<meta>` tags in your HTML `<head>` that control how a 
 
 ## Fields
 
-| Field | Tag | Notes |
-|-------|-----|-------|
-| Title | `og:title`, `twitter:title` | Keep under 60 characters |
-| Description | `og:description`, `twitter:description` | Keep under 160 characters |
-| Image URL | `og:image`, `twitter:image` | Recommended size: 1200×630px |
-| Page URL | `og:url` | Canonical URL of the page |
-| Site Name | `og:site_name` | Your brand or site name |
-| Twitter @handle | `twitter:site` | Include the `@` prefix |
-| OG Type | `og:type` | `website` for most pages |
-| Twitter Card | `twitter:card` | `summary_large_image` shows a big image |
+| Field           | Tag                                     | Notes                                   |
+| --------------- | --------------------------------------- | --------------------------------------- |
+| Title           | `og:title`, `twitter:title`             | Keep under 60 characters                |
+| Description     | `og:description`, `twitter:description` | Keep under 160 characters               |
+| Image URL       | `og:image`, `twitter:image`             | Recommended size: 1200×630px            |
+| Page URL        | `og:url`                                | Canonical URL of the page               |
+| Site Name       | `og:site_name`                          | Your brand or site name                 |
+| Twitter @handle | `twitter:site`                          | Include the `@` prefix                  |
+| OG Type         | `og:type`                               | `website` for most pages                |
+| Twitter Card    | `twitter:card`                          | `summary_large_image` shows a big image |
 
 ## Pasting into your HTML
 

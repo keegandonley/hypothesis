@@ -11,7 +11,10 @@ const RELEASES_DIR = path.join(process.cwd(), "src/content/releases");
 
 function parseTags(value?: string): string[] {
   if (!value) return [];
-  return value.split(",").map((t) => t.trim()).filter(Boolean);
+  return value
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
 }
 
 function parseFrontmatter(raw: string): Record<string, string> {
@@ -22,7 +25,8 @@ function parseFrontmatter(raw: string): Record<string, string> {
   const meta: Record<string, string> = {};
   for (const line of block.split("\n")) {
     const colon = line.indexOf(":");
-    if (colon > -1) meta[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
+    if (colon > -1)
+      meta[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
   }
   return meta;
 }
@@ -31,8 +35,18 @@ function formatDate(slug: string): string {
   const parts = slug.split("-");
   if (parts.length !== 3) return slug;
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
   const month = parseInt(parts[1], 10);
   return `${months[month - 1]} ${parseInt(parts[2], 10)}, ${parts[0]}`;
@@ -67,7 +81,11 @@ export const getStaticProps: GetStaticProps = async () => {
   return { props: { releases } };
 };
 
-export default function ReleaseNotesIndex({ releases }: { releases: ReleaseEntry[] }) {
+export default function ReleaseNotesIndex({
+  releases,
+}: {
+  releases: ReleaseEntry[];
+}) {
   const branding = useBranding();
   return (
     <div className={styles.page}>
@@ -91,14 +109,22 @@ export default function ReleaseNotesIndex({ releases }: { releases: ReleaseEntry
           <Link href="/" className={styles.backLink}>
             <span style={{ marginBottom: "3px" }}>←</span> {branding.name}
           </Link>
-          <a href="/api/rss" className={styles.rssLink} target="_blank" rel="noopener noreferrer">
+          <a
+            href="/api/rss"
+            className={styles.rssLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             RSS
           </a>
         </nav>
         <hr className={styles.divider} />
         <div className={styles.content}>
           <h1>Release Notes</h1>
-          <p>A changelog of new tools, features, and improvements to {branding.name}.</p>
+          <p>
+            A changelog of new tools, features, and improvements to{" "}
+            {branding.name}.
+          </p>
         </div>
         <div className={styles.releaseList}>
           {releases.map((entry) => (
@@ -123,7 +149,12 @@ export default function ReleaseNotesIndex({ releases }: { releases: ReleaseEntry
                       key={tag}
                       className={styles.cardTagDot}
                       title={tag}
-                      style={{ "--tag-color": TAG_COLORS[tag as Tag]?.color ?? "#888" } as React.CSSProperties}
+                      style={
+                        {
+                          "--tag-color":
+                            TAG_COLORS[tag as Tag]?.color ?? "#888",
+                        } as React.CSSProperties
+                      }
                     >
                       {tag}
                     </span>

@@ -54,7 +54,9 @@ function generateJwt(): string {
   // Fake but structurally valid signature (random bytes)
   const sigBytes = new Uint8Array(32);
   crypto.getRandomValues(sigBytes);
-  const sigPart = btoa(Array.from(sigBytes, (b) => String.fromCharCode(b)).join(""))
+  const sigPart = btoa(
+    Array.from(sigBytes, (b) => String.fromCharCode(b)).join(""),
+  )
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=/g, "");
@@ -74,7 +76,9 @@ function decodeJwt(token: string): JwtParts | null {
   }
 }
 
-function getExpiryStatus(payload: Record<string, unknown> | null): ExpiryStatus {
+function getExpiryStatus(
+  payload: Record<string, unknown> | null,
+): ExpiryStatus {
   if (!payload || !("exp" in payload)) return "no-exp";
   const exp = payload.exp as number;
   return exp < Date.now() / 1000 ? "expired" : "valid";
@@ -168,7 +172,12 @@ export default function JwtPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -182,8 +191,15 @@ export default function JwtPage() {
           </Link>
         </div>
         <h1 className={styles.title}>JWT Decoder</h1>
-        <p className={styles.tagline}>Decode JWT tokens and inspect header, payload, and expiry</p>
-        <ReferenceLinks refs={[{ name: "HTTP Headers", slug: "http-headers" }, { name: "HTTP Status Codes", slug: "http-status-codes" }]} />
+        <p className={styles.tagline}>
+          Decode JWT tokens and inspect header, payload, and expiry
+        </p>
+        <ReferenceLinks
+          refs={[
+            { name: "HTTP Headers", slug: "http-headers" },
+            { name: "HTTP Status Codes", slug: "http-status-codes" },
+          ]}
+        />
       </div>
 
       <hr className={styles.divider} />
@@ -224,8 +240,8 @@ export default function JwtPage() {
               {decoded?.header
                 ? JSON.stringify(decoded.header, null, 2)
                 : hasToken && error
-                ? ""
-                : ""}
+                  ? ""
+                  : ""}
             </pre>
           </div>
         </div>
@@ -234,15 +250,14 @@ export default function JwtPage() {
           <div className={styles.panelHeader}>
             <span className={styles.panelLabel}>Payload</span>
             <div className={styles.panelHeaderRight}>
-              {decoded?.payload && (
-                expiryStatus === "valid" ? (
+              {decoded?.payload &&
+                (expiryStatus === "valid" ? (
                   <span className={styles.badgeValid}>valid</span>
                 ) : expiryStatus === "expired" ? (
                   <span className={styles.badgeExpired}>expired</span>
                 ) : (
                   <span className={styles.badgeMuted}>no exp</span>
-                )
-              )}
+                ))}
             </div>
           </div>
           <div className={styles.outputWrapper}>
