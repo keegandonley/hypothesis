@@ -17,7 +17,11 @@ function getStaticRoutes(): string[] {
   ];
 }
 
-function generateSitemap(baseUrl: string, docSlugs: string[], releaseSlugs: string[]): string {
+function generateSitemap(
+  baseUrl: string,
+  docSlugs: string[],
+  releaseSlugs: string[],
+): string {
   const urls = [
     ...getStaticRoutes().map((route) => `${baseUrl}${route}`),
     ...docSlugs.map((slug) => `${baseUrl}/docs/${slug}`),
@@ -30,15 +34,18 @@ ${urls
   .map(
     (url) => `  <url>
     <loc>${url}</loc>
-  </url>`
+  </url>`,
   )
   .join("\n")}
 </urlset>`;
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+): void {
   const host = req.headers.host ?? "hypothesis.sh";
-  const protocol = req.headers["x-forwarded-proto"] ?? "https";
+  const protocol = (req.headers["x-forwarded-proto"] as string) ?? "https";
   const baseUrl = `${protocol}://${host}`;
 
   const docSlugs = fs

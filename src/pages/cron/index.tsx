@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import styles from "../../styles/cron.module.css";
@@ -33,11 +33,15 @@ interface ParseError {
 
 function parseCron(expr: string): ParseResult | ParseError {
   const trimmed = expr.trim();
+
   if (!trimmed) return { error: "empty" };
 
   let description: string;
+
   try {
-    description = cronstrue.toString(trimmed, { throwExceptionOnParseError: true });
+    description = cronstrue.toString(trimmed, {
+      throwExceptionOnParseError: true,
+    });
   } catch {
     return { error: "Invalid cron expression" };
   }
@@ -45,9 +49,11 @@ function parseCron(expr: string): ParseResult | ParseError {
   try {
     const interval = CronExpressionParser.parse(trimmed);
     const nextRuns: Date[] = [];
+
     for (let i = 0; i < NEXT_COUNT; i++) {
       nextRuns.push(interval.next().toDate());
     }
+
     return { description, nextRuns, error: null };
   } catch {
     return { error: "Invalid cron expression" };
@@ -70,7 +76,7 @@ function formatUtc(d: Date): string {
   return d.toUTCString();
 }
 
-export default function CronPage() {
+export default function CronPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
@@ -82,42 +88,52 @@ export default function CronPage() {
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const copyDescTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const buildUrl = (expr: string) => {
+  const buildUrl = (expr: string): string => {
     if (!expr) return `${window.location.origin}${window.location.pathname}`;
+
     return `${window.location.origin}${window.location.pathname}?expr=${encodeURIComponent(expr)}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const expr = params.get("expr");
+
     if (expr) {
-      setInput(expr);
+      setInput(expr); // eslint-disable-line react-hooks/set-state-in-effect
       const r = parseCron(expr);
+
       if (r.error === null) {
-        setResult(r as ParseResult);
+        setResult(r);
       } else if (r.error !== "empty") {
         setErrorMsg(r.error);
       }
     }
+
     setUrl(window.location.href);
   }, []);
 
-  const handleChange = (raw: string) => {
+  const handleChange = (raw: string): void => {
     setInput(raw);
     const trimmed = raw.trim();
+
     if (!trimmed) {
       setResult(null);
       setErrorMsg(null);
       const newUrl = buildUrl("");
+
       history.replaceState(null, "", newUrl);
       setUrl(newUrl);
+
       return;
     }
+
     const r = parseCron(trimmed);
+
     if (r.error === null) {
-      setResult(r as ParseResult);
+      setResult(r);
       setErrorMsg(null);
       const newUrl = buildUrl(trimmed);
+
       history.replaceState(null, "", newUrl);
       setUrl(newUrl);
     } else if (r.error !== "empty") {
@@ -126,34 +142,39 @@ export default function CronPage() {
     }
   };
 
-  const handleExample = (expr: string) => {
+  const handleExample = (expr: string): void => {
     setInput(expr);
     handleChange(expr);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setInput("");
     setResult(null);
     setErrorMsg(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleCopyDesc = () => {
+  const handleCopyDesc = (): void => {
     if (!result) return;
-    copyToClipboard(result.description).then(() => {
+    void copyToClipboard(result.description).then(() => {
       setCopiedDesc(true);
       if (copyDescTimeoutRef.current) clearTimeout(copyDescTimeoutRef.current);
-      copyDescTimeoutRef.current = setTimeout(() => setCopiedDesc(false), 1500);
+      copyDescTimeoutRef.current = setTimeout(() => {
+        setCopiedDesc(false);
+      }, 1500);
     });
   };
 
@@ -177,13 +198,25 @@ export default function CronPage() {
             {branding.domain}
           </Link>
           {"·"}
-          <Link href="/docs/cron" className={styles.docsLink} target="_blank" rel="noopener noreferrer">
+          <Link
+            href="/docs/cron"
+            className={styles.docsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>
         <h1 className={styles.title}>Cron</h1>
-        <p className={styles.tagline}>Parse cron expressions and preview the next scheduled run times</p>
-        <ReferenceLinks refs={[{ name: "Exit Codes", slug: "exit-codes" }, { name: "Unix Signals", slug: "unix-signals" }]} />
+        <p className={styles.tagline}>
+          Parse cron expressions and preview the next scheduled run times
+        </p>
+        <ReferenceLinks
+          refs={[
+            { name: "Exit Codes", slug: "exit-codes" },
+            { name: "Unix Signals", slug: "unix-signals" },
+          ]}
+        />
       </div>
 
       <hr className={styles.divider} />
@@ -192,7 +225,9 @@ export default function CronPage() {
         <input
           className={`${styles.input}${errorMsg ? ` ${styles.inputError}` : ""}`}
           value={input}
-          onChange={(e) => handleChange(e.target.value)}
+          onChange={(e) => {
+            handleChange(e.target.value);
+          }}
           placeholder="e.g. 0 9 * * 1-5"
           spellCheck={false}
           autoCapitalize="off"
@@ -206,7 +241,9 @@ export default function CronPage() {
           <button
             key={ex.expr}
             className={`${styles.exampleBtn}${input === ex.expr ? ` ${styles.exampleActive}` : ""}`}
-            onClick={() => handleExample(ex.expr)}
+            onClick={() => {
+              handleExample(ex.expr);
+            }}
           >
             {ex.label}
           </button>
@@ -237,7 +274,9 @@ export default function CronPage() {
             <div className={styles.runsList}>
               {result.nextRuns.map((d, i) => (
                 <div key={i} className={styles.runRow}>
-                  <span className={styles.runIndex}>{String(i + 1).padStart(2, "0")}</span>
+                  <span className={styles.runIndex}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   <span className={styles.runLocal}>{formatLocal(d)}</span>
                   <span className={styles.runUtc}>{formatUtc(d)}</span>
                 </div>

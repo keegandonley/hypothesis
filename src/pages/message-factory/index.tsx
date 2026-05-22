@@ -25,9 +25,10 @@ const subExperiments = [
   },
 ];
 
-export default function MessageFactoryPage() {
+export default function MessageFactoryPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
+
   return (
     <div className={styles.page}>
       <ToolHead
@@ -38,14 +39,21 @@ export default function MessageFactoryPage() {
       />
       <div className={styles.inner}>
         <header className={styles.header}>
-          <div className={styles.eyebrow} data-eyebrow>EXP-003</div>
+          <div className={styles.eyebrow} data-eyebrow>
+            EXP-003
+          </div>
           <h1 className={styles.title}>Message Factory</h1>
           <p className={styles.tagline}>
             Design and trigger postMessage actions with an interactive viewer
             and designer.
           </p>
           <div className={styles.backRow}>
-            <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.backLink}>
+            <Link
+              href="/"
+              target={isIframe ? "_blank" : undefined}
+              rel={isIframe ? "noopener noreferrer" : undefined}
+              className={styles.backLink}
+            >
               ← back
             </Link>
           </div>
@@ -78,8 +86,9 @@ function SubExperimentCard({
   description: string;
   href: string;
   docsHref: string;
-}) {
+}): React.ReactNode {
   const router = useRouter();
+
   return (
     <div className={styles.card} onClick={() => router.push(href)}>
       <div className={styles.cardMain}>
@@ -94,7 +103,9 @@ function SubExperimentCard({
         <Link
           href={docsHref}
           className={styles.docsLink}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
         >
           <DocIcon />
           docs

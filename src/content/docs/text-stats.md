@@ -55,11 +55,13 @@ Changes to reading speed update the Reading Time stat immediately. Speaking time
 When your text contains words, the tool displays a **Word Frequency** section showing the top 20 most common words and their occurrence counts.
 
 Words are:
+
 - Converted to lowercase for case-insensitive matching
 - Stripped of non-alphanumeric characters
 - Sorted by frequency (most common first)
 
 This is useful for:
+
 - Identifying overused words in writing
 - Spotting keyword density for SEO
 - Finding repetitive patterns in text
@@ -72,6 +74,7 @@ The **Character Frequency** section shows the top 20 most common characters (exc
 Characters are sorted by frequency and displayed with their exact count.
 
 This is useful for:
+
 - Analyzing character distribution
 - Spotting encoding issues or unusual characters
 - Understanding text patterns

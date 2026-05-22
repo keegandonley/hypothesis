@@ -11,7 +11,7 @@ import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 type Status = "idle" | "loading" | "success" | "error";
 
-export default function MyIpPage() {
+export default function MyIpPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [data, setData] = useState<IpData | null>(null);
@@ -21,12 +21,14 @@ export default function MyIpPage() {
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const copyCurlTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const fetchIp = async () => {
+  const fetchIp = async (): Promise<void> => {
     setStatus("loading");
     try {
       const res = await fetch("/api/my-ip");
+
       if (!res.ok) throw new Error("Request failed");
-      const json: IpData = await res.json();
+      const json = (await res.json()) as IpData;
+
       setData(json);
       setStatus("success");
     } catch {
@@ -35,25 +37,29 @@ export default function MyIpPage() {
   };
 
   useEffect(() => {
-    fetchIp();
+    void fetchIp(); // eslint-disable-line react-hooks/set-state-in-effect
   }, []);
 
-  const handleCopy = () => {
+  const handleCopy = (): void => {
     if (!data) return;
-    copyToClipboard(data.ip).then(() => {
+    void copyToClipboard(data.ip).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
   const curlCommand = `curl https://${branding.domain}/api/my-ip`;
 
-  const handleCopyCurl = () => {
-    copyToClipboard(curlCommand).then(() => {
+  const handleCopyCurl = (): void => {
+    void copyToClipboard(curlCommand).then(() => {
       setCopiedCurl(true);
       if (copyCurlTimeoutRef.current) clearTimeout(copyCurlTimeoutRef.current);
-      copyCurlTimeoutRef.current = setTimeout(() => setCopiedCurl(false), 1500);
+      copyCurlTimeoutRef.current = setTimeout(() => {
+        setCopiedCurl(false);
+      }, 1500);
     });
   };
 
@@ -87,13 +93,25 @@ export default function MyIpPage() {
             {branding.domain}
           </Link>
           {"·"}
-          <Link href="/docs/my-ip" className={styles.docsLink} target="_blank" rel="noopener noreferrer">
+          <Link
+            href="/docs/my-ip"
+            className={styles.docsLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <DocIcon className={styles.icon} /> docs
           </Link>
         </div>
         <h1 className={styles.title}>My IP</h1>
-        <p className={styles.tagline}>Your current public IP address and location info</p>
-        <ReferenceLinks refs={[{ name: "DNS Record Types", slug: "dns-record-types" }, { name: "Port Numbers", slug: "port-numbers" }]} />
+        <p className={styles.tagline}>
+          Your current public IP address and location info
+        </p>
+        <ReferenceLinks
+          refs={[
+            { name: "DNS Record Types", slug: "dns-record-types" },
+            { name: "Port Numbers", slug: "port-numbers" },
+          ]}
+        />
       </div>
 
       <hr className={styles.divider} />
@@ -112,8 +130,12 @@ export default function MyIpPage() {
             )}
           </div>
           <div className={styles.ipValue}>
-            {status === "loading" && <span className={styles.muted}>Fetching…</span>}
-            {status === "error" && <span className={styles.error}>Failed to fetch IP</span>}
+            {status === "loading" && (
+              <span className={styles.muted}>Fetching…</span>
+            )}
+            {status === "error" && (
+              <span className={styles.error}>Failed to fetch IP</span>
+            )}
             {status === "success" && data && <span>{data.ip}</span>}
           </div>
         </div>

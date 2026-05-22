@@ -10,7 +10,10 @@ export interface IpData {
   timezone: string | null;
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse<IpData>) {
+export default function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<IpData>,
+): void {
   const ip =
     (req.headers["x-vercel-forwarded-for"] as string) ??
     (req.headers["x-forwarded-for"] as string)?.split(",")[0].trim() ??

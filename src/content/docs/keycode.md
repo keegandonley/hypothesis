@@ -4,14 +4,14 @@ Press any key to see its JavaScript keyboard event properties in real time.
 
 ## Properties
 
-| Property | Description |
-|----------|-------------|
-| `key` | The key value string (e.g. `"a"`, `"Enter"`, `"ArrowLeft"`) |
-| `code` | The physical key identifier, layout-independent (e.g. `"KeyA"`, `"Enter"`) |
-| `keyCode` | Legacy numeric code for the key (deprecated but still widely used) |
-| `which` | Alias for `keyCode` — included for completeness |
-| `location` | Whether the key is Standard (0), Left (1), Right (2), or Numpad (3) |
-| `modifiers` | Active modifier keys at the time of the event |
+| Property    | Description                                                                |
+| ----------- | -------------------------------------------------------------------------- |
+| `key`       | The key value string (e.g. `"a"`, `"Enter"`, `"ArrowLeft"`)                |
+| `code`      | The physical key identifier, layout-independent (e.g. `"KeyA"`, `"Enter"`) |
+| `keyCode`   | Legacy numeric code for the key (deprecated but still widely used)         |
+| `which`     | Alias for `keyCode` — included for completeness                            |
+| `location`  | Whether the key is Standard (0), Left (1), Right (2), or Numpad (3)        |
+| `modifiers` | Active modifier keys at the time of the event                              |
 
 ## key vs code
 

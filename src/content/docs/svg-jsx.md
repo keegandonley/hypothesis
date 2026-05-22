@@ -4,15 +4,15 @@ Convert SVG markup to React-ready JSX. Paste any SVG and get a component you can
 
 ## What it converts
 
-| SVG | JSX |
-|-----|-----|
-| `xmlns="..."` | Removed (not needed in JSX) |
-| `class="..."` | `className="..."` |
-| `stroke-width="2"` | `strokeWidth={2}` |
-| `fill-opacity="0.5"` | `fillOpacity={0.5}` |
-| `style="color: red"` | `style={{ color: "red" }}` |
-| `xlink:href="..."` | `href="..."` |
-| Self-closing tags | Properly self-closed with ` />` |
+| SVG                  | JSX                             |
+| -------------------- | ------------------------------- |
+| `xmlns="..."`        | Removed (not needed in JSX)     |
+| `class="..."`        | `className="..."`               |
+| `stroke-width="2"`   | `strokeWidth={2}`               |
+| `fill-opacity="0.5"` | `fillOpacity={0.5}`             |
+| `style="color: red"` | `style={{ color: "red" }}`      |
+| `xlink:href="..."`   | `href="..."`                    |
+| Self-closing tags    | Properly self-closed with ` />` |
 
 ## Output format
 

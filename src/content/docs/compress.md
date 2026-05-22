@@ -11,11 +11,11 @@ Compress PNG, JPEG, and WebP images with server-side processing using [sharp](ht
 
 ## Output Formats
 
-| Format | Best for |
-|--------|----------|
-| **PNG** | Lossless compression, transparency, screenshots |
+| Format   | Best for                                                       |
+| -------- | -------------------------------------------------------------- |
+| **PNG**  | Lossless compression, transparency, screenshots                |
 | **WebP** | Lossy compression, ~80% quality — great balance for web images |
-| **AVIF** | Maximum compression, ~50% quality — smallest file sizes |
+| **AVIF** | Maximum compression, ~50% quality — smallest file sizes        |
 
 ## Notes
 

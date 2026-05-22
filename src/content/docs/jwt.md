@@ -26,11 +26,11 @@ If the token is malformed (not three dot-separated base64url segments, or non-JS
 
 The payload panel shows a status badge based on the `exp` claim:
 
-| Badge | Meaning |
-|-------|---------|
-| `valid` | `exp` is in the future |
-| `expired` | `exp` is in the past |
-| `no exp` | No `exp` claim present |
+| Badge     | Meaning                |
+| --------- | ---------------------- |
+| `valid`   | `exp` is in the future |
+| `expired` | `exp` is in the past   |
+| `no exp`  | No `exp` claim present |
 
 The check uses `Date.now()` in your local browser — no server clock is involved.
 

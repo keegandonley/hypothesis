@@ -271,7 +271,10 @@
   color: var(--text);
   text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
 }
 
 .formatBtn:hover {

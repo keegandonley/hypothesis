@@ -8,13 +8,15 @@ import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { v1, v4, v7 } from "uuid";
 
-const generators = { 1: v1, 4: v4, 7: v7 } as const;
-
 function generate(ver: 1 | 4 | 7): string {
-  return (generators[ver] as () => string)();
+  if (ver === 1) return v1();
+
+  if (ver === 4) return v4();
+
+  return v7();
 }
 
-export default function UuidPage() {
+export default function UuidPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [uuid, setUuid] = useState("");
@@ -22,35 +24,41 @@ export default function UuidPage() {
   const [copied, setCopied] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const buildUrl = (ver: number) => {
+  const buildUrl = (ver: number): string => {
     const params = new URLSearchParams({ version: String(ver) });
+
     return `${window.location.origin}${window.location.pathname}?${params}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const verParam = params.get("version");
-    const ver = (verParam === "1" || verParam === "7" ? Number(verParam) : 4) as 1 | 4 | 7;
-    setVersion(ver);
+    const ver = (
+      verParam === "1" || verParam === "7" ? Number(verParam) : 4
+    ) as 1 | 4 | 7;
+
+    setVersion(ver); // eslint-disable-line react-hooks/set-state-in-effect
     setUuid(generate(ver));
     history.replaceState(null, "", buildUrl(ver));
   }, []);
 
-  const handleRegenerate = () => {
+  const handleRegenerate = (): void => {
     setUuid(generate(version));
   };
 
-  const handleVersionChange = (ver: 1 | 4 | 7) => {
+  const handleVersionChange = (ver: 1 | 4 | 7): void => {
     setVersion(ver);
     setUuid(generate(ver));
     history.replaceState(null, "", buildUrl(ver));
   };
 
-  const handleCopy = () => {
-    copyToClipboard(uuid).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(uuid).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
@@ -64,7 +72,12 @@ export default function UuidPage() {
       />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -78,7 +91,9 @@ export default function UuidPage() {
           </Link>
         </div>
         <h1 className={styles.title}>UUID</h1>
-        <p className={styles.tagline}>Generate UUIDs of any version with one click</p>
+        <p className={styles.tagline}>
+          Generate UUIDs of any version with one click
+        </p>
       </div>
 
       <hr className={styles.divider} />
@@ -92,12 +107,18 @@ export default function UuidPage() {
                 <button
                   key={ver}
                   className={`${styles.toggleBtn}${version === ver ? ` ${styles.active}` : ""}`}
-                  onClick={() => handleVersionChange(ver)}
+                  onClick={() => {
+                    handleVersionChange(ver);
+                  }}
                 >
                   v{ver}
                 </button>
               ))}
-              <span className={version === 4 ? styles.badgeBlue : styles.badgeAlt}>v{version}</span>
+              <span
+                className={version === 4 ? styles.badgeBlue : styles.badgeAlt}
+              >
+                v{version}
+              </span>
             </div>
           </div>
           <div className={styles.textareaWrapper}>

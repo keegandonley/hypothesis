@@ -1,21 +1,22 @@
 import { pool } from "./db";
+import type { QueryResult } from "pg";
 
-export type WebhookEvent = {
+export interface WebhookEvent {
   id: string;
   sessionId: string;
   method: string;
   headers: Record<string, string>;
-  payload: unknown | null;
+  payload: unknown;
   rawBody: string | null;
   receivedAt: string;
-};
+}
 
 export async function insertEvent(params: {
   id: string;
   sessionId: string;
   method: string;
   headers: Record<string, string>;
-  payload: unknown | null;
+  payload: unknown;
   rawBody: string | null;
 }): Promise<void> {
   await pool.query(
@@ -27,16 +28,27 @@ export async function insertEvent(params: {
       JSON.stringify(params.headers),
       params.payload !== null ? JSON.stringify(params.payload) : null,
       params.rawBody,
-    ]
+    ],
   );
 }
 
 export async function countRecentEvents(sessionId: string): Promise<number> {
-  const result = await pool.query(
+  const result: QueryResult<{ count: string }> = await pool.query(
     "SELECT COUNT(*) FROM webhook_events WHERE session_id = $1 AND received_at > NOW() - INTERVAL '1 hour'",
-    [sessionId]
+    [sessionId],
   );
+
   return parseInt(result.rows[0].count, 10);
+}
+
+interface EventRow {
+  id: string;
+  session_id: string;
+  method: string;
+  headers: Record<string, string>;
+  payload: unknown;
+  raw_body: string | null;
+  received_at: string;
 }
 
 export async function getEvents(params: {
@@ -44,18 +56,15 @@ export async function getEvents(params: {
   after?: string;
   limit: number;
 }): Promise<WebhookEvent[]> {
-  let result;
-  if (params.after) {
-    result = await pool.query(
-      "SELECT id, session_id, method, headers, payload, raw_body, received_at FROM webhook_events WHERE session_id = $1 AND received_at > $2 ORDER BY received_at DESC LIMIT $3",
-      [params.sessionId, params.after, params.limit]
-    );
-  } else {
-    result = await pool.query(
-      "SELECT id, session_id, method, headers, payload, raw_body, received_at FROM webhook_events WHERE session_id = $1 ORDER BY received_at DESC LIMIT $2",
-      [params.sessionId, params.limit]
-    );
-  }
+  const result: QueryResult<EventRow> = params.after
+    ? await pool.query(
+        "SELECT id, session_id, method, headers, payload, raw_body, received_at FROM webhook_events WHERE session_id = $1 AND received_at > $2 ORDER BY received_at DESC LIMIT $3",
+        [params.sessionId, params.after, params.limit],
+      )
+    : await pool.query(
+        "SELECT id, session_id, method, headers, payload, raw_body, received_at FROM webhook_events WHERE session_id = $1 ORDER BY received_at DESC LIMIT $2",
+        [params.sessionId, params.limit],
+      );
 
   return result.rows.map((row) => ({
     id: row.id,

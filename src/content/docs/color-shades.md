@@ -8,15 +8,15 @@ The scale is generated in **OKLCH** color space, which is perceptually uniform. 
 
 ## Steps
 
-| Step | Perceived lightness |
-|------|---------------------|
-| 50 | Very light (near white) |
-| 100 | Light |
-| 200–400 | Light-to-mid |
-| 500 | Mid (close to the input color) |
-| 600–800 | Mid-to-dark |
-| 900 | Dark |
-| 950 | Very dark (near black) |
+| Step    | Perceived lightness            |
+| ------- | ------------------------------ |
+| 50      | Very light (near white)        |
+| 100     | Light                          |
+| 200–400 | Light-to-mid                   |
+| 500     | Mid (close to the input color) |
+| 600–800 | Mid-to-dark                    |
+| 900     | Dark                           |
+| 950     | Very dark (near black)         |
 
 ## Copying
 

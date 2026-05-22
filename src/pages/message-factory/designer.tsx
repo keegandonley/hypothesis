@@ -19,26 +19,34 @@ function encodeActions(actions: Action[]): string {
     name: a.name,
     payload: (() => {
       try {
-        return JSON.parse(a.payload);
+        return JSON.parse(a.payload) as Record<string, unknown>;
       } catch {
         return {};
       }
     })(),
   }));
+
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   return btoa(unescape(encodeURIComponent(JSON.stringify(clean))));
 }
 
 function decodeActions(raw: string): Action[] {
   try {
-    const parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const parsed = JSON.parse(decodeURIComponent(escape(atob(raw)))) as Record<
+      string,
+      unknown
+    >[];
+
     if (!Array.isArray(parsed)) return [];
+
     return parsed.map((item) => ({
       id: typeof item.id === "string" ? item.id : "",
       name: typeof item.name === "string" ? item.name : "",
       payload: JSON.stringify(
         item.payload !== undefined ? item.payload : {},
         null,
-        2
+        2,
       ),
     }));
   } catch {
@@ -51,21 +59,23 @@ function buildBaseUrl(): string {
 }
 
 function buildUrl(actions: Action[]): string {
-  const hasContent = actions.some(
-    (a) => a.id || a.name || a.payload !== "{}"
-  );
+  const hasContent = actions.some((a) => a.id || a.name || a.payload !== "{}");
+
   if (!hasContent && actions.length === 0) return buildBaseUrl();
+
   return `${buildBaseUrl()}?actions=${encodeActions(actions)}`;
 }
 
 function buildViewerUrl(actions: Action[]): string {
   const b64 = encodeActions(actions);
+
   return `${window.location.origin}/message-factory/viewer?actions=${b64}`;
 }
 
 function isValidJson(s: string): boolean {
   try {
     JSON.parse(s);
+
     return true;
   } catch {
     return false;
@@ -73,12 +83,14 @@ function isValidJson(s: string): boolean {
 }
 
 let actionIdCounter = 0;
+
 function newAction(): Action & { _key: string } {
   actionIdCounter += 1;
+
   return { _key: String(actionIdCounter), id: "", name: "", payload: "{}" };
 }
 
-export default function DesignerPage() {
+export default function DesignerPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [actions, setActions] = useState<(Action & { _key: string })[]>([]);
@@ -87,28 +99,36 @@ export default function DesignerPage() {
   const [copied, setCopied] = useState(false);
   const [copiedViewer, setCopiedViewer] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyViewerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyViewerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const raw = params.get("actions");
+
     if (raw) {
       const decoded = decodeActions(raw);
+
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActions(
         decoded.map((a) => {
           actionIdCounter += 1;
+
           return { ...a, _key: String(actionIdCounter) };
-        })
+        }),
       );
       setViewerUrl(buildViewerUrl(decoded));
     } else {
       setViewerUrl(`${window.location.origin}/message-factory/viewer`);
     }
+
     setUrl(window.location.href);
   }, []);
 
-  const syncUrl = (next: (Action & { _key: string })[]) => {
+  const syncUrl = (next: (Action & { _key: string })[]): void => {
     const newUrl = buildUrl(next);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
     setViewerUrl(buildViewerUrl(next));
@@ -117,48 +137,57 @@ export default function DesignerPage() {
   const handleChange = (
     key: string,
     field: keyof Action,
-    value: string
-  ) => {
+    value: string,
+  ): void => {
     const next = actions.map((a) =>
-      a._key === key ? { ...a, [field]: value } : a
+      a._key === key ? { ...a, [field]: value } : a,
     );
+
     setActions(next);
     syncUrl(next);
   };
 
-  const handleAdd = () => {
+  const handleAdd = (): void => {
     const next = [...actions, newAction()];
+
     setActions(next);
     syncUrl(next);
   };
 
-  const handleRemove = (key: string) => {
+  const handleRemove = (key: string): void => {
     const next = actions.filter((a) => a._key !== key);
+
     setActions(next);
     syncUrl(next);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setActions([]);
     const newUrl = buildBaseUrl();
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
     setViewerUrl(`${window.location.origin}/message-factory/viewer`);
   };
 
-  const handleCopyViewer = () => {
-    copyToClipboard(viewerUrl).then(() => {
+  const handleCopyViewer = (): void => {
+    void copyToClipboard(viewerUrl).then(() => {
       setCopiedViewer(true);
-      if (copyViewerTimeoutRef.current) clearTimeout(copyViewerTimeoutRef.current);
-      copyViewerTimeoutRef.current = setTimeout(() => setCopiedViewer(false), 1500);
+      if (copyViewerTimeoutRef.current)
+        clearTimeout(copyViewerTimeoutRef.current);
+      copyViewerTimeoutRef.current = setTimeout(() => {
+        setCopiedViewer(false);
+      }, 1500);
     });
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
@@ -170,7 +199,12 @@ export default function DesignerPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -195,18 +229,18 @@ export default function DesignerPage() {
       <div className={styles.actionsList}>
         {actions.length === 0 && (
           <div className={styles.emptyState}>
-            No actions yet. Click "Add Action" to get started.
+            No actions yet. Click &ldquo;Add Action&rdquo; to get started.
           </div>
         )}
         {actions.map((action, idx) => (
           <div key={action._key} className={styles.actionCard}>
             <div className={styles.actionCardHeader}>
-              <span className={styles.actionIndex}>
-                action {idx + 1}
-              </span>
+              <span className={styles.actionIndex}>action {idx + 1}</span>
               <button
                 className={styles.removeBtn}
-                onClick={() => handleRemove(action._key)}
+                onClick={() => {
+                  handleRemove(action._key);
+                }}
               >
                 Remove
               </button>
@@ -218,9 +252,9 @@ export default function DesignerPage() {
                   type="text"
                   className={styles.fieldInput}
                   value={action.name}
-                  onChange={(e) =>
-                    handleChange(action._key, "name", e.target.value)
-                  }
+                  onChange={(e) => {
+                    handleChange(action._key, "name", e.target.value);
+                  }}
                   placeholder="Button label"
                   spellCheck={false}
                   autoComplete="off"
@@ -232,9 +266,9 @@ export default function DesignerPage() {
                   type="text"
                   className={styles.fieldInput}
                   value={action.id}
-                  onChange={(e) =>
-                    handleChange(action._key, "id", e.target.value)
-                  }
+                  onChange={(e) => {
+                    handleChange(action._key, "id", e.target.value);
+                  }}
                   placeholder="action-id"
                   spellCheck={false}
                   autoComplete="off"
@@ -250,9 +284,9 @@ export default function DesignerPage() {
                 <textarea
                   className={styles.payloadTextarea}
                   value={action.payload}
-                  onChange={(e) =>
-                    handleChange(action._key, "payload", e.target.value)
-                  }
+                  onChange={(e) => {
+                    handleChange(action._key, "payload", e.target.value);
+                  }}
                   placeholder="{}"
                   spellCheck={false}
                 />
@@ -296,10 +330,20 @@ export default function DesignerPage() {
           </button>
         )}
         <div className={styles.viewerLinks}>
-          <a href={viewerUrl} className={styles.viewerLink} target="_blank" rel="noreferrer">
+          <a
+            href={viewerUrl}
+            className={styles.viewerLink}
+            target="_blank"
+            rel="noreferrer"
+          >
             Open Viewer →
           </a>
-          <a href={`${viewerUrl}${viewerUrl.includes("?") ? "&" : "?"}debug=true`} className={styles.viewerLink} target="_blank" rel="noreferrer">
+          <a
+            href={`${viewerUrl}${viewerUrl.includes("?") ? "&" : "?"}debug=true`}
+            className={styles.viewerLink}
+            target="_blank"
+            rel="noreferrer"
+          >
             Open Viewer (debug) →
           </a>
         </div>

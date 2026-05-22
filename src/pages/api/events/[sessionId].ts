@@ -2,26 +2,44 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "@/lib/session";
 import { getEvents } from "@/lib/events";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+): Promise<void> {
   if (req.method !== "GET") {
-    return res.status(405).json({ error: "method not allowed" });
+    res.status(405).json({ error: "method not allowed" });
+
+    return;
   }
 
-  const { sessionId, after: afterParam, limit: limitParam } = req.query as {
+  const {
+    sessionId,
+    after: afterParam,
+    limit: limitParam,
+  } = req.query as {
     sessionId: string;
     after?: string;
     limit?: string;
   };
 
-  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const UUID_RE =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
   if (!UUID_RE.test(sessionId)) {
-    return res.status(404).json({ error: "session not found" });
+    res.status(404).json({ error: "session not found" });
+
+    return;
   }
 
   if (afterParam) {
     const ts = Date.parse(afterParam);
+
     if (isNaN(ts)) {
-      return res.status(400).json({ error: "invalid 'after' parameter — expected ISO 8601 date" });
+      res
+        .status(400)
+        .json({ error: "invalid 'after' parameter — expected ISO 8601 date" });
+
+      return;
     }
   }
 
@@ -29,14 +47,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const session = await getSession(sessionId);
+
     if (!session) {
-      return res.status(404).json({ error: "session not found" });
+      res.status(404).json({ error: "session not found" });
+
+      return;
     }
 
-    const events = await getEvents({ sessionId: session.id, after: afterParam, limit });
-    return res.json({ events, count: events.length });
+    const events = await getEvents({
+      sessionId: session.id,
+      after: afterParam,
+      limit,
+    });
+
+    res.json({ events, count: events.length });
+
+    return;
   } catch (err) {
     console.error("events error", err);
-    return res.status(500).json({ error: "internal server error" });
+
+    res.status(500).json({ error: "internal server error" });
+
+    return;
   }
 }

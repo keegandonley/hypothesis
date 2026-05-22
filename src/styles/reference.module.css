@@ -144,7 +144,9 @@
   padding: 4px 6px;
   line-height: 1;
   border-radius: 3px;
-  transition: color 0.15s, background-color 0.15s;
+  transition:
+    color 0.15s,
+    background-color 0.15s;
 }
 
 .clearBtn:hover {
@@ -170,7 +172,10 @@
   border-radius: 4px;
   padding: 4px 10px;
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s, background-color 0.15s;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    background-color 0.15s;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;

@@ -4,14 +4,14 @@ Generate lorem ipsum placeholder text by words, sentences, or paragraphs — ins
 
 ## Overview
 
-Select a unit type and a count, then click **Regenerate** to produce new random text. The word bank is the classic lorem ipsum vocabulary drawn from Cicero's *de Finibus Bonorum et Malorum*.
+Select a unit type and a count, then click **Regenerate** to produce new random text. The word bank is the classic lorem ipsum vocabulary drawn from Cicero's _de Finibus Bonorum et Malorum_.
 
 ## Unit types
 
-| Type | Description |
-|------|-------------|
-| Words | N individual words picked at random |
-| Sentences | N sentences of 8–15 words each, capitalized with a period |
+| Type       | Description                                                  |
+| ---------- | ------------------------------------------------------------ |
+| Words      | N individual words picked at random                          |
+| Sentences  | N sentences of 8–15 words each, capitalized with a period    |
 | Paragraphs | N paragraphs of 3–6 sentences each, separated by blank lines |
 
 ## Controls

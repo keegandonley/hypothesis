@@ -92,7 +92,8 @@ export const URL_SCHEME_GROUPS: UrlSchemeGroup[] = [
       },
       {
         scheme: "maps://?saddr=",
-        example: "maps://?saddr=Current+Location&daddr=1+Infinite+Loop,Cupertino",
+        example:
+          "maps://?saddr=Current+Location&daddr=1+Infinite+Loop,Cupertino",
         description:
           "Gets turn-by-turn directions. saddr= is the origin, daddr= is the destination. Both accept plain addresses or lat,lng pairs.",
       },
@@ -113,7 +114,8 @@ export const URL_SCHEME_GROUPS: UrlSchemeGroup[] = [
       },
       {
         scheme: "itms-apps: (write-review)",
-        example: "itms-apps://itunes.apple.com/app/id123456789?action=write-review",
+        example:
+          "itms-apps://itunes.apple.com/app/id123456789?action=write-review",
         description:
           "Navigates to the app page and automatically prompts the user to write a review. Use as a fallback to SKStoreReviewController.",
       },

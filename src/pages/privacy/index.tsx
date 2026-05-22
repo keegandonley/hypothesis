@@ -4,7 +4,7 @@ import styles from "../../styles/docs.module.css";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 
-export default function PrivacyPage() {
+export default function PrivacyPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
 
@@ -26,7 +26,12 @@ export default function PrivacyPage() {
       </Head>
       <div className={styles.inner}>
         <nav className={styles.nav}>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.backLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.backLink}
+          >
             <span style={{ marginBottom: "3px" }}>←</span> {branding.name}
           </Link>
         </nav>
@@ -37,10 +42,11 @@ export default function PrivacyPage() {
 
           <p>
             This privacy policy applies to the websites hypothesis.sh,
-            conclusion.sh, falsify.sh, and observation.sh (collectively, "the
-            Service"), as well as any associated mobile applications. It
-            describes what data is collected, how it is used, and your rights
-            with respect to that data. Last updated: May 5, 2026.
+            conclusion.sh, falsify.sh, and observation.sh (collectively,
+            &quot;the Service&quot;), as well as any associated mobile
+            applications. It describes what data is collected, how it is used,
+            and your rights with respect to that data. Last updated: May 5,
+            2026.
           </p>
 
           <h2>What We Collect</h2>
@@ -79,12 +85,12 @@ export default function PrivacyPage() {
             inspect incoming HTTP requests.
           </p>
           <p>
-            <strong>Web (anonymous) sessions:</strong> When you create a
-            session from the website without a device account, your IP address
-            is stored alongside a randomly generated session ID solely to
-            enforce a per-IP rate limit and prevent abuse. Anonymous sessions
-            and all associated webhook events are automatically deleted after
-            one hour of inactivity.
+            <strong>Web (anonymous) sessions:</strong> When you create a session
+            from the website without a device account, your IP address is stored
+            alongside a randomly generated session ID solely to enforce a per-IP
+            rate limit and prevent abuse. Anonymous sessions and all associated
+            webhook events are automatically deleted after one hour of
+            inactivity.
           </p>
           <p>
             <strong>Mobile app sessions:</strong> When you use the webhook
@@ -102,9 +108,12 @@ export default function PrivacyPage() {
             database so we can deliver notifications to your device:
           </p>
           <ul>
-            <li>A randomly generated device identifier (UUID) created on your device</li>
+            <li>
+              A randomly generated device identifier (UUID) created on your
+              device
+            </li>
             <li>Your device push token issued by the platform (Apple APNs)</li>
-            <li>The platform name (e.g. "ios")</li>
+            <li>The platform name (e.g. &quot;ios&quot;)</li>
           </ul>
           <p>
             This data is used solely to route push notifications to your device.
@@ -148,10 +157,10 @@ export default function PrivacyPage() {
 
           <h3>Apple Push Notification Service (APNs)</h3>
           <p>
-            Push notifications are delivered via Apple's APNs infrastructure.
-            When a notification is sent, your push token is transmitted to
-            Apple's servers. See Apple's privacy documentation for details on
-            how APNs handles this data.
+            Push notifications are delivered via Apple&apos;s APNs
+            infrastructure. When a notification is sent, your push token is
+            transmitted to Apple&apos;s servers. See Apple&apos;s privacy
+            documentation for details on how APNs handles this data.
           </p>
 
           <h2>Data Retention and Deletion</h2>
@@ -164,7 +173,7 @@ export default function PrivacyPage() {
             with your device ID.
           </p>
 
-          <h2>Children's Privacy</h2>
+          <h2>Children&apos;s Privacy</h2>
           <p>
             The Service is not directed at children under 13. We do not
             knowingly collect personal information from children under 13. If
@@ -174,10 +183,10 @@ export default function PrivacyPage() {
 
           <h2>Changes to This Policy</h2>
           <p>
-            We may update this policy from time to time. The "last updated" date
-            at the top of this page reflects the most recent revision. Continued
-            use of the Service after changes are posted constitutes acceptance of
-            the updated policy.
+            We may update this policy from time to time. The &quot;last
+            updated&quot; date at the top of this page reflects the most recent
+            revision. Continued use of the Service after changes are posted
+            constitutes acceptance of the updated policy.
           </p>
 
           <h2>Contact</h2>

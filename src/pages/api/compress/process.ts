@@ -20,12 +20,19 @@ const CONTENT_TYPES: Record<OutputFormat, string> = {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
+): Promise<void> {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    res.status(405).json({ error: "Method not allowed" });
+
+    return;
   }
 
-  const { url, format, filename, quality: rawQuality } = req.body as {
+  const {
+    url,
+    format,
+    filename,
+    quality: rawQuality,
+  } = req.body as {
     url: string;
     format: OutputFormat;
     filename: string;
@@ -34,17 +41,24 @@ export default async function handler(
   const quality = Math.max(1, Math.min(100, Number(rawQuality) || 80));
 
   if (!url || !format || !filename) {
-    return res.status(400).json({ error: "Missing url, format, or filename" });
+    res.status(400).json({ error: "Missing url, format, or filename" });
+
+    return;
   }
 
   if (!["png", "webp", "avif"].includes(format)) {
-    return res.status(400).json({ error: "Invalid format" });
+    res.status(400).json({ error: "Invalid format" });
+
+    return;
   }
 
   const BLOB_URL_RE =
     /^https:\/\/[a-z0-9-]+\.private\.blob\.vercel-storage\.com\//;
+
   if (!BLOB_URL_RE.test(url)) {
-    return res.status(400).json({ error: "Invalid source URL" });
+    res.status(400).json({ error: "Invalid source URL" });
+
+    return;
   }
 
   let inputBuffer: Buffer;
@@ -56,19 +70,29 @@ export default async function handler(
     });
 
     if (!response.ok) {
-      return res.status(400).json({ error: "Failed to fetch blob" });
+      res.status(400).json({ error: "Failed to fetch blob" });
+
+      return;
     }
+
     inputBuffer = Buffer.from(await response.arrayBuffer());
   } catch {
-    return res.status(400).json({ error: "Failed to fetch source file" });
+    res.status(400).json({ error: "Failed to fetch source file" });
+
+    return;
   }
 
   let outputBuffer: Buffer;
+
   try {
     const pipeline = sharp(inputBuffer);
 
     if (format === "png") {
-      const compressionLevel = Math.max(1, Math.min(9, Math.round(quality / 100 * 9)));
+      const compressionLevel = Math.max(
+        1,
+        Math.min(9, Math.round((quality / 100) * 9)),
+      );
+
       outputBuffer = await pipeline
         .png({ compressionLevel, adaptiveFiltering: true })
         .toBuffer();
@@ -79,11 +103,16 @@ export default async function handler(
     }
   } catch (err) {
     console.error("Compression failed:", err);
-    return res.status(500).json({ error: "Compression failed" });
+
+    res.status(500).json({ error: "Compression failed" });
+
+    return;
   }
 
   // Clean up source blob (best-effort, don't block response)
-  del(url).catch(() => {});
+  del(url).catch(() => {
+    /* noop */
+  });
 
   try {
     await track("Image Compressed", {
@@ -101,6 +130,7 @@ export default async function handler(
 
   res.setHeader("Content-Type", CONTENT_TYPES[format]);
   const safeAsciiName = outFilename.replace(/[^a-zA-Z0-9._\-]/g, "_");
+
   res.setHeader(
     "Content-Disposition",
     `attachment; filename="${safeAsciiName}"; filename*=UTF-8''${encodeURIComponent(outFilename)}`,
@@ -109,5 +139,5 @@ export default async function handler(
   res.setHeader("X-Compressed-Size", String(outputBuffer.length));
   res.setHeader("Content-Length", String(outputBuffer.length));
 
-  return res.status(200).send(outputBuffer);
+  res.status(200).send(outputBuffer);
 }

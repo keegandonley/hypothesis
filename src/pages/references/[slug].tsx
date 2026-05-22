@@ -2,52 +2,57 @@ import fs from "fs";
 import path from "path";
 import Head from "next/head";
 import Link from "next/link";
-import { GetStaticPaths, GetStaticProps } from "next";
+import { type GetStaticPaths, type GetStaticProps } from "next";
+import React from "react";
 import styles from "../../styles/docs.module.css";
 import { useBranding } from "@/lib/branding";
 
 const REFERENCES_DIR = path.join(process.cwd(), "src/content/references");
 
-export const getStaticPaths: GetStaticPaths = async () => {
+export const getStaticPaths: GetStaticPaths = () => {
   if (!fs.existsSync(REFERENCES_DIR)) {
     return { paths: [], fallback: false };
   }
+
   const files = fs.readdirSync(REFERENCES_DIR);
   const paths = files
     .filter((f) => f.endsWith(".md"))
     .map((f) => ({ params: { slug: f.replace(/\.md$/, "") } }));
+
   return { paths, fallback: false };
 };
 
 function extractFirstParagraph(md: string): string {
-  const lines = md.split("\n");
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+  for (const line of md.split("\n")) {
+    const trimmed = line.trim();
+
     if (
-      line.length > 0 &&
-      !line.startsWith("#") &&
-      !line.startsWith("```") &&
-      !line.startsWith("-") &&
-      !line.startsWith("*") &&
-      !line.startsWith("|") &&
-      !/^\d+\./.test(line)
+      trimmed.length > 0 &&
+      !trimmed.startsWith("#") &&
+      !trimmed.startsWith("```") &&
+      !trimmed.startsWith("-") &&
+      !trimmed.startsWith("*") &&
+      !trimmed.startsWith("|") &&
+      !/^\d+\./.test(trimmed)
     ) {
-      return line
+      return trimmed
         .replace(/\*\*([^*]+)\*\*/g, "$1")
         .replace(/`([^`]+)`/g, "$1")
         .slice(0, 160);
     }
   }
+
   return "";
 }
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const slug = params!.slug as string;
+export const getStaticProps: GetStaticProps = ({ params }) => {
+  const slug = (params?.slug as string) ?? "";
   const content = fs.readFileSync(
     path.join(REFERENCES_DIR, `${slug}.md`),
     "utf-8",
   );
   const description = extractFirstParagraph(content);
+
   return { props: { slug, content, description } };
 };
 
@@ -72,11 +77,13 @@ function parseMarkdown(md: string): Node[] {
     if (line.startsWith("```")) {
       const lang = line.slice(3).trim();
       const codeLines: string[] = [];
+
       i++;
       while (i < lines.length && !lines[i].startsWith("```")) {
         codeLines.push(lines[i]);
         i++;
       }
+
       nodes.push({ type: "pre", lang, code: codeLines.join("\n") });
       i++;
       continue;
@@ -87,11 +94,13 @@ function parseMarkdown(md: string): Node[] {
       i++;
       continue;
     }
+
     if (line.startsWith("## ")) {
       nodes.push({ type: "h2", text: line.slice(3) });
       i++;
       continue;
     }
+
     if (line.startsWith("# ")) {
       nodes.push({ type: "h1", text: line.slice(2) });
       i++;
@@ -99,25 +108,29 @@ function parseMarkdown(md: string): Node[] {
     }
 
     if (line.startsWith("|")) {
-      const parseRow = (l: string) =>
+      const parseRow = (l: string): string[] =>
         l
           .split("|")
           .slice(1, -1)
           .map((c) => c.trim());
       const headers = parseRow(line);
+
       i++;
       if (i < lines.length && lines[i].startsWith("|")) i++;
       const rows: string[][] = [];
+
       while (i < lines.length && lines[i].startsWith("|")) {
         rows.push(parseRow(lines[i]));
         i++;
       }
+
       nodes.push({ type: "table", headers, rows });
       continue;
     }
 
     if (line.startsWith("- ") || line.startsWith("* ")) {
       const items: string[] = [];
+
       while (
         i < lines.length &&
         (lines[i].startsWith("- ") || lines[i].startsWith("* "))
@@ -125,16 +138,19 @@ function parseMarkdown(md: string): Node[] {
         items.push(lines[i].slice(2));
         i++;
       }
+
       nodes.push({ type: "ul", items });
       continue;
     }
 
     if (/^\d+\.\s/.test(line)) {
       const items: string[] = [];
+
       while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
         items.push(lines[i].replace(/^\d+\.\s/, ""));
         i++;
       }
+
       nodes.push({ type: "ol", items });
       continue;
     }
@@ -145,6 +161,7 @@ function parseMarkdown(md: string): Node[] {
     }
 
     const paraLines: string[] = [];
+
     while (
       i < lines.length &&
       lines[i].trim() !== "" &&
@@ -157,6 +174,7 @@ function parseMarkdown(md: string): Node[] {
       paraLines.push(lines[i]);
       i++;
     }
+
     if (paraLines.length > 0) {
       nodes.push({ type: "p", text: paraLines.join(" ") });
     }
@@ -165,25 +183,31 @@ function parseMarkdown(md: string): Node[] {
   return nodes;
 }
 
-function Inline({ text }: { text: string }) {
+function Inline({ text }: { text: string }): React.ReactNode {
   const parts = text.split(
     /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g,
   );
+
   return (
     <>
       {parts.map((part, i) => {
         if (part.startsWith("**") && part.endsWith("**")) {
           return <strong key={i}>{part.slice(2, -2)}</strong>;
         }
+
         if (part.startsWith("*") && part.endsWith("*")) {
           return <em key={i}>{part.slice(1, -1)}</em>;
         }
+
         if (part.startsWith("`") && part.endsWith("`")) {
           return <code key={i}>{part.slice(1, -1)}</code>;
         }
-        const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+
+        const linkMatch = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
+
         if (linkMatch) {
           const isExternal = /^https?:\/\//.test(linkMatch[2]);
+
           return (
             <a
               key={i}
@@ -196,14 +220,16 @@ function Inline({ text }: { text: string }) {
             </a>
           );
         }
+
         return part;
       })}
     </>
   );
 }
 
-function MarkdownContent({ content }: { content: string }) {
+function MarkdownContent({ content }: { content: string }): React.ReactNode {
   const nodes = parseMarkdown(content);
+
   return (
     <div className={styles.content}>
       {nodes.map((node, i) => {
@@ -311,12 +337,13 @@ export default function ReferencePage({
   slug: string;
   content: string;
   description: string;
-}) {
+}): React.ReactNode {
   const branding = useBranding();
   const title = slug
     .split("-")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
+
   return (
     <div className={styles.page}>
       <Head>

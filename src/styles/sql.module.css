@@ -11,7 +11,9 @@
   padding: 20px;
 }
 
-.header { margin-bottom: 16px; }
+.header {
+  margin-bottom: 16px;
+}
 
 .eyebrow {
   font-size: 10px;
@@ -45,7 +47,9 @@
   margin: 0 0 16px;
 }
 
-.icon { margin-right: 4px; }
+.icon {
+  margin-right: 4px;
+}
 
 .docsLink {
   display: flex;
@@ -54,7 +58,9 @@
   transition: color 0.15s ease;
 }
 
-.docsLink:hover { color: var(--accent); }
+.docsLink:hover {
+  color: var(--accent);
+}
 
 .domainLink {
   display: flex;
@@ -155,7 +161,9 @@
   color: var(--muted);
   text-transform: uppercase;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
 }
 
 .toggleBtn::before {
@@ -173,7 +181,9 @@
   color: var(--accent);
 }
 
-.toggleBtn.active::before { background: var(--accent); }
+.toggleBtn.active::before {
+  background: var(--accent);
+}
 
 .copyBtn {
   padding: 3px 10px;
@@ -187,7 +197,10 @@
   color: var(--text);
   text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
 }
 
 .copyBtn:disabled {
@@ -195,7 +208,9 @@
   cursor: default;
 }
 
-.copyBtn:not(:disabled):hover { background: var(--border); }
+.copyBtn:not(:disabled):hover {
+  background: var(--border);
+}
 
 .copyBtn.copied {
   background: var(--accent-subtle);
@@ -216,11 +231,19 @@
   color: var(--text);
   text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
 }
 
-.panelCopyBtn:disabled { opacity: 0.4; cursor: default; }
-.panelCopyBtn:not(:disabled):hover { background: var(--border); }
+.panelCopyBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.panelCopyBtn:not(:disabled):hover {
+  background: var(--border);
+}
 
 .panelCopyBtn.panelCopied {
   background: var(--accent-subtle);
@@ -274,7 +297,9 @@
   transition: background-color 0.15s;
 }
 
-.copyBtn:hover { background-color: var(--accent-hover); }
+.copyBtn:hover {
+  background-color: var(--accent-hover);
+}
 
 .copyBtn.copied {
   background-color: var(--accent);
@@ -298,4 +323,6 @@
   transition: background-color 0.15s;
 }
 
-.resetBtn:hover { background-color: #ef444430; }
+.resetBtn:hover {
+  background-color: #ef444430;
+}

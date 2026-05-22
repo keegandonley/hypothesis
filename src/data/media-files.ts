@@ -21,8 +21,18 @@ export const MEDIA_FILE_GROUPS: MediaFileGroup[] = [
     subtle: "#60a5fa18",
     border: "#60a5fa33",
     files: [
-      { filename: "bbb-short.mp4", url: "https://example.hypothesis.donley.xyz/bbb-short.mp4", description: "Short clip of the standard file. Useful for quick tests where the full-length file is too long." },
-      { filename: "bbb.mp4", url: "https://example.hypothesis.donley.xyz/bbb.mp4", description: "Standard H.264/AAC MP4 with the moov atom at the end of the file. The browser must download to the end before it can read metadata and begin playback." },
+      {
+        filename: "bbb-short.mp4",
+        url: "https://example.hypothesis.donley.xyz/bbb-short.mp4",
+        description:
+          "Short clip of the standard file. Useful for quick tests where the full-length file is too long.",
+      },
+      {
+        filename: "bbb.mp4",
+        url: "https://example.hypothesis.donley.xyz/bbb.mp4",
+        description:
+          "Standard H.264/AAC MP4 with the moov atom at the end of the file. The browser must download to the end before it can read metadata and begin playback.",
+      },
     ],
   },
   {
@@ -32,8 +42,18 @@ export const MEDIA_FILE_GROUPS: MediaFileGroup[] = [
     subtle: "#34d39918",
     border: "#34d39933",
     files: [
-      { filename: "bbb-short-fast.mp4", url: "https://example.hypothesis.donley.xyz/bbb-short-fast.mp4", description: "Short clip with the moov atom at the front. Fast-start variant of the short file." },
-      { filename: "bbb-fast.mp4", url: "https://example.hypothesis.donley.xyz/bbb-fast.mp4", description: "Fast-start MP4 with the moov atom relocated to the front of the file. The browser can begin buffering and playing immediately without waiting for the full file to download." },
+      {
+        filename: "bbb-short-fast.mp4",
+        url: "https://example.hypothesis.donley.xyz/bbb-short-fast.mp4",
+        description:
+          "Short clip with the moov atom at the front. Fast-start variant of the short file.",
+      },
+      {
+        filename: "bbb-fast.mp4",
+        url: "https://example.hypothesis.donley.xyz/bbb-fast.mp4",
+        description:
+          "Fast-start MP4 with the moov atom relocated to the front of the file. The browser can begin buffering and playing immediately without waiting for the full file to download.",
+      },
     ],
   },
   {
@@ -43,7 +63,12 @@ export const MEDIA_FILE_GROUPS: MediaFileGroup[] = [
     subtle: "#c084fc18",
     border: "#c084fc33",
     files: [
-      { filename: "livery-stable-blues.ogg", url: "https://example.hypothesis.donley.xyz/livery-stable-blues.ogg", description: "Ogg Vorbis audio file. For testing HTML audio element behavior and streaming." },
+      {
+        filename: "livery-stable-blues.ogg",
+        url: "https://example.hypothesis.donley.xyz/livery-stable-blues.ogg",
+        description:
+          "Ogg Vorbis audio file. For testing HTML audio element behavior and streaming.",
+      },
     ],
   },
   {
@@ -53,7 +78,12 @@ export const MEDIA_FILE_GROUPS: MediaFileGroup[] = [
     subtle: "#fb923c18",
     border: "#fb923c33",
     files: [
-      { filename: "bull-frog-blues.mp3", url: "https://example.hypothesis.donley.xyz/bull-frog-blues.mp3", description: "MP3 audio file. For testing HTML audio element behavior with the MP3 format." },
+      {
+        filename: "bull-frog-blues.mp3",
+        url: "https://example.hypothesis.donley.xyz/bull-frog-blues.mp3",
+        description:
+          "MP3 audio file. For testing HTML audio element behavior with the MP3 format.",
+      },
     ],
   },
   {
@@ -63,7 +93,12 @@ export const MEDIA_FILE_GROUPS: MediaFileGroup[] = [
     subtle: "#f472b618",
     border: "#f472b633",
     files: [
-      { filename: "bull-frog-blues.wav", url: "https://example.hypothesis.donley.xyz/bull-frog-blues.wav", description: "Uncompressed WAV audio file. Larger than compressed formats; useful for testing raw PCM playback and audio element behavior." },
+      {
+        filename: "bull-frog-blues.wav",
+        url: "https://example.hypothesis.donley.xyz/bull-frog-blues.wav",
+        description:
+          "Uncompressed WAV audio file. Larger than compressed formats; useful for testing raw PCM playback and audio element behavior.",
+      },
     ],
   },
 ];

@@ -22,13 +22,13 @@ Patterns are compiled using the browser's built-in `RegExp` constructor. Any pat
 
 Five flag toggles sit to the right of the pattern input. Click any flag to enable or disable it.
 
-| Flag | Name | Effect |
-|------|------|--------|
-| `g` | global | Find all matches in a string, not just the first |
-| `i` | ignore case | Case-insensitive matching |
-| `m` | multiline | `^` and `$` match the start/end of each line |
-| `s` | dotAll | `.` matches newline characters |
-| `u` | unicode | Treat the pattern and input as Unicode |
+| Flag | Name        | Effect                                           |
+| ---- | ----------- | ------------------------------------------------ |
+| `g`  | global      | Find all matches in a string, not just the first |
+| `i`  | ignore case | Case-insensitive matching                        |
+| `m`  | multiline   | `^` and `$` match the start/end of each line     |
+| `s`  | dotAll      | `.` matches newline characters                   |
+| `u`  | unicode     | Treat the pattern and input as Unicode           |
 
 The `g` flag is enabled by default. Match counts in the Results panel reflect the total number of non-overlapping matches per line.
 

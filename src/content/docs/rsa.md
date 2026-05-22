@@ -51,15 +51,19 @@ The ciphertext (`?ct=...`) is synced to the URL for shareability. Keys and plain
 ```ts
 // Generate key pair
 crypto.subtle.generateKey(
-  { name: "RSA-OAEP", modulusLength: 2048,
+  {
+    name: "RSA-OAEP",
+    modulusLength: 2048,
     publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-    hash: "SHA-256" },
-  true, ["encrypt", "decrypt"]
-)
+    hash: "SHA-256",
+  },
+  true,
+  ["encrypt", "decrypt"],
+);
 
 // Encrypt
-crypto.subtle.encrypt({ name: "RSA-OAEP" }, publicKey, plainBytes)
+crypto.subtle.encrypt({ name: "RSA-OAEP" }, publicKey, plainBytes);
 
 // Decrypt
-crypto.subtle.decrypt({ name: "RSA-OAEP" }, privateKey, cipherBytes)
+crypto.subtle.decrypt({ name: "RSA-OAEP" }, privateKey, cipherBytes);
 ```

@@ -8,24 +8,25 @@ Convert between CSS units: px, rem, em, %, vh, vw, pt, cm, mm, in with adjustabl
 
 ## Supported Units
 
-| Unit | Description | Type |
-|------|-------------|------|
-| `px` | Pixels (device pixels at 96 DPI) | Absolute |
-| `rem` | Root em (relative to root font size) | Relative |
-| `em` | Em (relative to parent font size) | Relative |
-| `%` | Percentage (relative to parent font size) | Relative |
-| `vh` | Viewport height (1% of viewport height) | Viewport |
-| `vw` | Viewport width (1% of viewport width) | Viewport |
-| `pt` | Points (1/72 inch at 96 DPI) | Absolute |
-| `cm` | Centimeters | Absolute |
-| `mm` | Millimeters | Absolute |
-| `in` | Inches (1 inch = 96px at 96 DPI) | Absolute |
+| Unit  | Description                               | Type     |
+| ----- | ----------------------------------------- | -------- |
+| `px`  | Pixels (device pixels at 96 DPI)          | Absolute |
+| `rem` | Root em (relative to root font size)      | Relative |
+| `em`  | Em (relative to parent font size)         | Relative |
+| `%`   | Percentage (relative to parent font size) | Relative |
+| `vh`  | Viewport height (1% of viewport height)   | Viewport |
+| `vw`  | Viewport width (1% of viewport width)     | Viewport |
+| `pt`  | Points (1/72 inch at 96 DPI)              | Absolute |
+| `cm`  | Centimeters                               | Absolute |
+| `mm`  | Millimeters                               | Absolute |
+| `in`  | Inches (1 inch = 96px at 96 DPI)          | Absolute |
 
 ## How It Works
 
 Enter a numeric value and select a unit from the dropdown. The tool immediately calculates and displays equivalents in all other units based on the current context settings.
 
 All conversions use pixels (`px`) as an intermediate value:
+
 1. Your input value is converted to pixels
 2. Pixels are then converted to each target unit
 

@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
-import { GetStaticProps } from "next";
+import React, { useState, useMemo } from "react";
+import { type GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { MIME_CATEGORIES } from "@/data/mime-types";
@@ -10,54 +10,66 @@ export const getStaticProps: GetStaticProps = () => ({
   props: { groups: MIME_CATEGORIES },
 });
 
-export default function MimeTypesPage({ groups }: { groups: typeof MIME_CATEGORIES }) {
+export default function MimeTypesPage({
+  groups,
+}: {
+  groups: typeof MIME_CATEGORIES;
+}): React.ReactNode {
   const branding = useBranding();
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [search, setSearch] = useState(() =>
+    typeof window === "undefined"
+      ? ""
+      : (new URLSearchParams(window.location.search).get("q") ?? ""),
+  );
+  const [activeCategory, setActiveCategory] = useState(() =>
+    typeof window === "undefined"
+      ? "all"
+      : (new URLSearchParams(window.location.search).get("cat") ?? "all"),
+  );
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("q");
-    const cat = params.get("cat");
-    if (q) setSearch(q);
-    if (cat) setActiveCategory(cat);
-  }, []);
-
-  function updateUrl(q: string, cat: string) {
+  function updateUrl(q: string, cat: string): void {
     const params = new URLSearchParams();
+
     if (q) params.set("q", q);
     if (cat !== "all") params.set("cat", cat);
     const qs = params.toString();
+
     history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }
 
-  function handleSearch(value: string) {
+  function handleSearch(value: string): void {
     setSearch(value);
     updateUrl(value, activeCategory);
   }
 
-  function handleCategoryToggle(cat: string) {
+  function handleCategoryToggle(cat: string): void {
     const next = activeCategory === cat ? "all" : cat;
+
     setActiveCategory(next);
     updateUrl(search, next);
   }
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return groups.map((cat) => {
-      const types = cat.types.filter((t) => {
-        if (activeCategory !== "all" && activeCategory !== cat.category)
-          return false;
-        if (!q) return true;
-        return (
-          t.type.toLowerCase().includes(q) ||
-          t.description.toLowerCase().includes(q) ||
-          t.extensions.some((e) => e.toLowerCase().includes(q))
-        );
-      });
-      return { ...cat, types };
-    }).filter((s) => s.types.length > 0);
-  }, [search, activeCategory]);
+
+    return groups
+      .map((cat) => {
+        const types = cat.types.filter((t) => {
+          if (activeCategory !== "all" && activeCategory !== cat.category)
+            return false;
+          if (!q) return true;
+
+          return (
+            t.type.toLowerCase().includes(q) ||
+            t.description.toLowerCase().includes(q) ||
+            t.extensions.some((e) => e.toLowerCase().includes(q))
+          );
+        });
+
+        return { ...cat, types };
+      })
+      .filter((s) => s.types.length > 0);
+  }, [search, activeCategory, groups]);
 
   return (
     <div className={styles.page}>
@@ -98,8 +110,7 @@ export default function MimeTypesPage({ groups }: { groups: typeof MIME_CATEGORI
         <div className={styles.header}>
           <h1 className={styles.title}>MIME Types</h1>
           <p className={styles.tagline}>
-            Content-Type values for text, images, audio, video, fonts, and
-            more.
+            Content-Type values for text, images, audio, video, fonts, and more.
           </p>
         </div>
 
@@ -111,14 +122,18 @@ export default function MimeTypesPage({ groups }: { groups: typeof MIME_CATEGORI
               type="text"
               placeholder="Search by type, extension, or description..."
               value={search}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => {
+                handleSearch(e.target.value);
+              }}
               autoComplete="off"
               spellCheck={false}
             />
             {search && (
               <button
                 className={styles.clearBtn}
-                onClick={() => handleSearch("")}
+                onClick={() => {
+                  handleSearch("");
+                }}
                 aria-label="Clear search"
               >
                 ✕
@@ -129,7 +144,9 @@ export default function MimeTypesPage({ groups }: { groups: typeof MIME_CATEGORI
           <div className={styles.classFilters}>
             <button
               className={`${styles.classBtn} ${activeCategory === "all" ? styles.classBtnActive : ""}`}
-              onClick={() => handleCategoryToggle("all")}
+              onClick={() => {
+                handleCategoryToggle("all");
+              }}
             >
               All
             </button>
@@ -143,7 +160,9 @@ export default function MimeTypesPage({ groups }: { groups: typeof MIME_CATEGORI
                     "--cls-subtle": cat.subtle,
                   } as React.CSSProperties
                 }
-                onClick={() => handleCategoryToggle(cat.category)}
+                onClick={() => {
+                  handleCategoryToggle(cat.category);
+                }}
               >
                 {cat.badge}
                 {cat.badge !== cat.label && (
@@ -197,9 +216,7 @@ export default function MimeTypesPage({ groups }: { groups: typeof MIME_CATEGORI
                     >
                       <div className={styles.codeInfo}>
                         <span className={styles.codeNameMono}>{t.type}</span>
-                        <span className={styles.codeDesc}>
-                          {t.description}
-                        </span>
+                        <span className={styles.codeDesc}>{t.description}</span>
                         {t.extensions.length > 0 && (
                           <div className={styles.extList}>
                             {t.extensions.map((ext) => (

@@ -57,7 +57,9 @@ function loadAll(): Announcement[] {
     return [];
   }
 
-  const files = fs.readdirSync(ANNOUNCEMENTS_DIR).filter((f) => f.endsWith(".md"));
+  const files = fs
+    .readdirSync(ANNOUNCEMENTS_DIR)
+    .filter((f) => f.endsWith(".md"));
 
   return files
     .map((file): Announcement | null => {
@@ -90,7 +92,9 @@ function loadAll(): Announcement[] {
 }
 
 export function getLatestActiveAnnouncement(): Announcement | null {
-  const all = loadAll().sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  const all = loadAll().sort((a, b) =>
+    b.publishedAt.localeCompare(a.publishedAt),
+  );
 
   return all[0] ?? null;
 }

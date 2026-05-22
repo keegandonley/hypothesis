@@ -9,10 +9,12 @@ const UUID_RE =
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
-) {
+  res: NextApiResponse,
+): Promise<void> {
   if (req.method !== "POST" && req.method !== "GET") {
-    return res.status(405).json({ error: "method not allowed" });
+    res.status(405).json({ error: "method not allowed" });
+
+    return;
   }
 
   const queryDeviceId =
@@ -30,24 +32,32 @@ export default async function handler(
   const queryDataRaw =
     typeof req.query.data === "string" ? req.query.data : undefined;
   const querySandbox =
-    typeof req.query.sandbox === "string" ? req.query.sandbox === "true" : undefined;
+    typeof req.query.sandbox === "string"
+      ? req.query.sandbox === "true"
+      : undefined;
 
   let queryData: object | undefined;
+
   if (queryDataRaw) {
     try {
-      queryData = JSON.parse(queryDataRaw);
+      queryData = JSON.parse(queryDataRaw) as object;
     } catch {
-      return res
+      res
         .status(400)
         .json({ error: "invalid data query param: must be valid JSON" });
+
+      return;
     }
   }
 
   let queryBadge: number | undefined;
+
   if (queryBadgeRaw !== undefined) {
     queryBadge = parseInt(queryBadgeRaw, 10);
     if (isNaN(queryBadge) || queryBadge < 0) {
-      return res.status(400).json({ error: "badge must be a non-negative integer" });
+      res.status(400).json({ error: "badge must be a non-negative integer" });
+
+      return;
     }
   }
 
@@ -66,33 +76,53 @@ export default async function handler(
   const title = bodyParams.title ?? queryTitle;
   const body = bodyParams.body ?? queryBody;
   const data = bodyParams.data ?? queryData;
-  const sandbox = bodyParams.sandbox ?? querySandbox ?? (process.env.APNS_PRODUCTION !== "true");
+  const sandbox =
+    bodyParams.sandbox ??
+    querySandbox ??
+    process.env.APNS_PRODUCTION !== "true";
 
   const options: ApnsOptions = {};
   const subtitle = bodyParams.subtitle ?? querySubtitle;
+
   if (subtitle) options.subtitle = subtitle;
   const sound = bodyParams.sound !== undefined ? bodyParams.sound : querySound;
+
   if (sound !== undefined) options.sound = sound;
   const badge = bodyParams.badge ?? queryBadge;
+
   if (badge !== undefined) options.badge = badge;
 
   if (!deviceId || !UUID_RE.test(deviceId)) {
-    return res.status(400).json({ error: "invalid or missing deviceId" });
+    res.status(400).json({ error: "invalid or missing deviceId" });
+
+    return;
   }
+
   if (!title || typeof title !== "string" || title.trim() === "") {
-    return res.status(400).json({ error: "missing title" });
+    res.status(400).json({ error: "missing title" });
+
+    return;
   }
+
   if (!body || typeof body !== "string" || body.trim() === "") {
-    return res.status(400).json({ error: "missing body" });
+    res.status(400).json({ error: "missing body" });
+
+    return;
   }
 
   try {
     const record = await getPushTokenByDeviceId(deviceId);
+
     if (!record) {
-      return res.status(404).json({ error: "device not found" });
+      res.status(404).json({ error: "device not found" });
+
+      return;
     }
+
     if (!record.token) {
-      return res.status(422).json({ error: "device has no push token" });
+      res.status(422).json({ error: "device has no push token" });
+
+      return;
     }
 
     const result = await sendApnsNotification(
@@ -105,24 +135,34 @@ export default async function handler(
     );
 
     await insertPushNotification({
-      deviceId: deviceId!,
+      deviceId: deviceId,
       title: title.trim(),
       body: body.trim(),
       subtitle: options.subtitle ?? null,
       data: data ?? null,
       apnsId: result.apnsId ?? null,
       success: result.ok,
-    }).catch((err) => console.error("[push/send] failed to record notification", err));
+    }).catch((err: unknown) => {
+      console.error("[push/send] failed to record notification", err);
+    });
 
     try {
-      await track("Push Notification Sent", { platform: record.platform, success: result.ok });
+      await track("Push Notification Sent", {
+        platform: record.platform,
+        success: result.ok,
+      });
     } catch (err) {
       console.warn("[analytics] failed to track Push Notification Sent", err);
     }
 
-    return res.status(200).json(result);
+    res.status(200).json(result);
+
+    return;
   } catch (err) {
     console.error("push send error", err);
-    return res.status(500).json({ error: "internal server error" });
+
+    res.status(500).json({ error: "internal server error" });
+
+    return;
   }
 }

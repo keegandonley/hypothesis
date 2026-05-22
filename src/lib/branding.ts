@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-export type BrandingColors = {
+export interface BrandingColors {
   accent: string;
-};
+}
 
-export type Branding = {
+export interface Branding {
   name: string;
   domain: string;
   tagline: string;
   actionType: string;
   colors: BrandingColors;
-};
+}
 
 const defaultBranding: Branding = {
   name: "hypothesis",
@@ -52,19 +52,22 @@ type CSSVarMap = React.CSSProperties & Record<string, string>;
 
 export function brandingToCssVars(colors: BrandingColors): CSSVarMap {
   const hex = colors.accent.replace("#", "");
+
   return {
     "--accent": `#${hex}`,
     "--accent-subtle": `#${hex}18`,
     "--accent-border": `#${hex}33`,
     "--accent-hover": `#${hex}30`,
     "--accent-hover-strong": `#${hex}55`,
-  } as CSSVarMap;
+  };
 }
 
 export function useBranding(): Branding {
-  const [branding, setBranding] = useState(defaultBranding);
-  useEffect(() => {
-    setBranding(getBranding(window.location.hostname));
-  }, []);
+  const [branding] = useState(() => {
+    if (typeof window === "undefined") return defaultBranding;
+
+    return getBranding(window.location.hostname);
+  });
+
   return branding;
 }

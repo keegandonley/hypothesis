@@ -1,5 +1,5 @@
 import { ImageResponse } from "@vercel/og";
-import { NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
 import { getBranding } from "@/lib/branding";
 
 export const config = {
@@ -8,13 +8,28 @@ export const config = {
 
 function formatOgDate(slug: string): string {
   const parts = slug.split("-");
+
   if (parts.length !== 3) return slug;
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const month = parseInt(parts[1], 10);
+
   return `${months[month - 1]} ${parseInt(parts[2], 10)}, ${parts[0]}`;
 }
 
-export default function handler(req: NextRequest) {
+export default function handler(req: NextRequest): ImageResponse {
   const { searchParams } = new URL(req.url);
   const domain = searchParams.get("domain") ?? "hypothesis.sh";
   const type = searchParams.get("type") ?? "";

@@ -1,72 +1,89 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
-import { GetStaticProps } from "next";
+import React, { useState, useMemo } from "react";
+import { type GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
-import { ASCII_GROUPS, AsciiCategory } from "@/data/ascii";
+import { ASCII_GROUPS, type AsciiCategory } from "@/data/ascii";
 
 export const getStaticProps: GetStaticProps = () => ({
   props: { groups: ASCII_GROUPS },
 });
 
-function renderGlyph(abbr: string, category: AsciiCategory, ctrl?: string): string {
+function renderGlyph(
+  abbr: string,
+  category: AsciiCategory,
+  ctrl?: string,
+): string {
   if (category === "control") {
     return ctrl ?? abbr;
   }
+
   return abbr;
 }
 
-export default function AsciiPage({ groups }: { groups: typeof ASCII_GROUPS }) {
+export default function AsciiPage({
+  groups,
+}: {
+  groups: typeof ASCII_GROUPS;
+}): React.ReactNode {
   const branding = useBranding();
-  const [search, setSearch] = useState("");
-  const [activeGroup, setActiveGroup] = useState("all");
+  const [search, setSearch] = useState(() =>
+    typeof window === "undefined"
+      ? ""
+      : (new URLSearchParams(window.location.search).get("q") ?? ""),
+  );
+  const [activeGroup, setActiveGroup] = useState(() =>
+    typeof window === "undefined"
+      ? "all"
+      : (new URLSearchParams(window.location.search).get("grp") ?? "all"),
+  );
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("q");
-    const grp = params.get("grp");
-    if (q) setSearch(q);
-    if (grp) setActiveGroup(grp);
-  }, []);
-
-  function updateUrl(q: string, grp: string) {
+  function updateUrl(q: string, grp: string): void {
     const params = new URLSearchParams();
+
     if (q) params.set("q", q);
     if (grp !== "all") params.set("grp", grp);
     const qs = params.toString();
+
     history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }
 
-  function handleSearch(value: string) {
+  function handleSearch(value: string): void {
     setSearch(value);
     updateUrl(value, activeGroup);
   }
 
-  function handleGroupToggle(grp: string) {
+  function handleGroupToggle(grp: string): void {
     const next = activeGroup === grp ? "all" : grp;
+
     setActiveGroup(next);
     updateUrl(search, next);
   }
 
   const filteredGroups = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return groups.map((grp) => {
-      const chars = grp.chars.filter((c) => {
-        if (activeGroup !== "all" && activeGroup !== grp.id) return false;
-        if (!q) return true;
-        return (
-          String(c.code).includes(q) ||
-          c.hex.toLowerCase().includes(q) ||
-          c.oct.includes(q) ||
-          c.abbr.toLowerCase() === q ||
-          c.name.toLowerCase().includes(q) ||
-          (c.ctrl && c.ctrl.toLowerCase().includes(q))
-        );
-      });
-      return { ...grp, chars };
-    }).filter((g) => g.chars.length > 0);
-  }, [search, activeGroup]);
+
+    return groups
+      .map((grp) => {
+        const chars = grp.chars.filter((c) => {
+          if (activeGroup !== "all" && activeGroup !== grp.id) return false;
+          if (!q) return true;
+
+          return (
+            String(c.code).includes(q) ||
+            c.hex.toLowerCase().includes(q) ||
+            c.oct.includes(q) ||
+            c.abbr.toLowerCase() === q ||
+            c.name.toLowerCase().includes(q) ||
+            c.ctrl?.toLowerCase().includes(q)
+          );
+        });
+
+        return { ...grp, chars };
+      })
+      .filter((g) => g.chars.length > 0);
+  }, [search, activeGroup, groups]);
 
   return (
     <div className={styles.page}>
@@ -88,10 +105,7 @@ export default function AsciiPage({ groups }: { groups: typeof ASCII_GROUPS }) {
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="ASCII Table" />
-        <link
-          rel="canonical"
-          href="https://hypothesis.sh/references/ascii"
-        />
+        <link rel="canonical" href="https://hypothesis.sh/references/ascii" />
       </Head>
 
       <div className={styles.inner}>
@@ -107,8 +121,8 @@ export default function AsciiPage({ groups }: { groups: typeof ASCII_GROUPS }) {
         <div className={styles.header}>
           <h1 className={styles.title}>ASCII Table</h1>
           <p className={styles.tagline}>
-            All 128 ASCII characters with decimal, hexadecimal, octal, and
-            named descriptions.
+            All 128 ASCII characters with decimal, hexadecimal, octal, and named
+            descriptions.
           </p>
         </div>
 
@@ -120,14 +134,18 @@ export default function AsciiPage({ groups }: { groups: typeof ASCII_GROUPS }) {
               type="text"
               placeholder="Search by decimal, hex, octal, or name..."
               value={search}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => {
+                handleSearch(e.target.value);
+              }}
               autoComplete="off"
               spellCheck={false}
             />
             {search && (
               <button
                 className={styles.clearBtn}
-                onClick={() => handleSearch("")}
+                onClick={() => {
+                  handleSearch("");
+                }}
                 aria-label="Clear search"
               >
                 ✕
@@ -138,7 +156,9 @@ export default function AsciiPage({ groups }: { groups: typeof ASCII_GROUPS }) {
           <div className={styles.classFilters}>
             <button
               className={`${styles.classBtn} ${activeGroup === "all" ? styles.classBtnActive : ""}`}
-              onClick={() => handleGroupToggle("all")}
+              onClick={() => {
+                handleGroupToggle("all");
+              }}
             >
               All
             </button>
@@ -152,7 +172,9 @@ export default function AsciiPage({ groups }: { groups: typeof ASCII_GROUPS }) {
                     "--cls-subtle": grp.subtle,
                   } as React.CSSProperties
                 }
-                onClick={() => handleGroupToggle(grp.id)}
+                onClick={() => {
+                  handleGroupToggle(grp.id);
+                }}
               >
                 {grp.label}
                 <span className={styles.classBtnLabel}>{grp.range}</span>

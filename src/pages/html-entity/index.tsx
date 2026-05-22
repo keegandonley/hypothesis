@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/html-entity.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -24,7 +24,7 @@ const htmlEntities: Record<string, string> = {
   "§": "&sect;",
   "¨": "&uml;",
   "©": "&copy;",
-  "ª": "&ordf;",
+  ª: "&ordf;",
   "«": "&laquo;",
   "¬": "&not;",
   "®": "&reg;",
@@ -34,81 +34,81 @@ const htmlEntities: Record<string, string> = {
   "²": "&sup2;",
   "³": "&sup3;",
   "´": "&acute;",
-  "µ": "&micro;",
+  µ: "&micro;",
   "¶": "&para;",
   "·": "&middot;",
   "¸": "&cedil;",
   "¹": "&sup1;",
-  "º": "&ordm;",
+  º: "&ordm;",
   "»": "&raquo;",
   "¼": "&frac14;",
   "½": "&frac12;",
   "¾": "&frac34;",
   "¿": "&iquest;",
-  "À": "&Agrave;",
-  "Á": "&Aacute;",
-  "Â": "&Acirc;",
-  "Ã": "&Atilde;",
-  "Ä": "&Auml;",
-  "Å": "&Aring;",
-  "Æ": "&AElig;",
-  "Ç": "&Ccedil;",
-  "È": "&Egrave;",
-  "É": "&Eacute;",
-  "Ê": "&Ecirc;",
-  "Ë": "&Euml;",
-  "Ì": "&Igrave;",
-  "Í": "&Iacute;",
-  "Î": "&Icirc;",
-  "Ï": "&Iuml;",
-  "Ð": "&ETH;",
-  "Ñ": "&Ntilde;",
-  "Ò": "&Ograve;",
-  "Ó": "&Oacute;",
-  "Ô": "&Ocirc;",
-  "Õ": "&Otilde;",
-  "Ö": "&Ouml;",
+  À: "&Agrave;",
+  Á: "&Aacute;",
+  Â: "&Acirc;",
+  Ã: "&Atilde;",
+  Ä: "&Auml;",
+  Å: "&Aring;",
+  Æ: "&AElig;",
+  Ç: "&Ccedil;",
+  È: "&Egrave;",
+  É: "&Eacute;",
+  Ê: "&Ecirc;",
+  Ë: "&Euml;",
+  Ì: "&Igrave;",
+  Í: "&Iacute;",
+  Î: "&Icirc;",
+  Ï: "&Iuml;",
+  Ð: "&ETH;",
+  Ñ: "&Ntilde;",
+  Ò: "&Ograve;",
+  Ó: "&Oacute;",
+  Ô: "&Ocirc;",
+  Õ: "&Otilde;",
+  Ö: "&Ouml;",
   "×": "&times;",
-  "Ø": "&Oslash;",
-  "Ù": "&Ugrave;",
-  "Ú": "&Uacute;",
-  "Û": "&Ucirc;",
-  "Ü": "&Uuml;",
-  "Ý": "&Yacute;",
-  "Þ": "&THORN;",
-  "ß": "&szlig;",
-  "à": "&agrave;",
-  "á": "&aacute;",
-  "â": "&acirc;",
-  "ã": "&atilde;",
-  "ä": "&auml;",
-  "å": "&aring;",
-  "æ": "&aelig;",
-  "ç": "&ccedil;",
-  "è": "&egrave;",
-  "é": "&eacute;",
-  "ê": "&ecirc;",
-  "ë": "&euml;",
-  "ì": "&igrave;",
-  "í": "&iacute;",
-  "î": "&icirc;",
-  "ï": "&iuml;",
-  "ð": "&eth;",
-  "ñ": "&ntilde;",
-  "ò": "&ograve;",
-  "ó": "&oacute;",
-  "ô": "&ocirc;",
-  "õ": "&otilde;",
-  "ö": "&ouml;",
+  Ø: "&Oslash;",
+  Ù: "&Ugrave;",
+  Ú: "&Uacute;",
+  Û: "&Ucirc;",
+  Ü: "&Uuml;",
+  Ý: "&Yacute;",
+  Þ: "&THORN;",
+  ß: "&szlig;",
+  à: "&agrave;",
+  á: "&aacute;",
+  â: "&acirc;",
+  ã: "&atilde;",
+  ä: "&auml;",
+  å: "&aring;",
+  æ: "&aelig;",
+  ç: "&ccedil;",
+  è: "&egrave;",
+  é: "&eacute;",
+  ê: "&ecirc;",
+  ë: "&euml;",
+  ì: "&igrave;",
+  í: "&iacute;",
+  î: "&icirc;",
+  ï: "&iuml;",
+  ð: "&eth;",
+  ñ: "&ntilde;",
+  ò: "&ograve;",
+  ó: "&oacute;",
+  ô: "&ocirc;",
+  õ: "&otilde;",
+  ö: "&ouml;",
   "÷": "&divide;",
-  "ø": "&oslash;",
-  "ù": "&ugrave;",
-  "ú": "&uacute;",
-  "û": "&ucirc;",
-  "ü": "&uuml;",
-  "ý": "&yacute;",
-  "þ": "&thorn;",
-  "ÿ": "&yuml;",
+  ø: "&oslash;",
+  ù: "&ugrave;",
+  ú: "&uacute;",
+  û: "&ucirc;",
+  ü: "&uuml;",
+  ý: "&yacute;",
+  þ: "&thorn;",
+  ÿ: "&yuml;",
   "€": "&euro;",
   "−": "&minus;",
   "™": "&trade;",
@@ -157,6 +157,7 @@ const htmlEntities: Record<string, string> = {
 
 // Create reverse map for decoding
 const reverseEntities: Record<string, string> = {};
+
 for (const [char, entity] of Object.entries(htmlEntities)) {
   reverseEntities[entity] = char;
 }
@@ -165,7 +166,7 @@ type EncodeMode = "all" | "special" | "non-ascii";
 
 function encodeHtmlEntities(text: string, mode: EncodeMode): string {
   if (!text) return "";
-  
+
   if (mode === "special") {
     // Only encode essential HTML special characters
     return text
@@ -181,7 +182,8 @@ function encodeHtmlEntities(text: string, mode: EncodeMode): string {
     });
   } else {
     // Encode all available entities
-    return text.replace(/[&<>"']/g, (char) => htmlEntities[char] || char)
+    return text
+      .replace(/[&<>"']/g, (char) => htmlEntities[char] || char)
       .replace(/[^\x00-\x7F]/g, (char) => {
         return htmlEntities[char] || `&#${char.charCodeAt(0)};`;
       });
@@ -190,17 +192,23 @@ function encodeHtmlEntities(text: string, mode: EncodeMode): string {
 
 function decodeHtmlEntities(text: string): string {
   if (!text) return "";
-  
-  return text
-    // Decode named entities
-    .replace(/&[a-zA-Z]+;/g, (entity) => reverseEntities[entity] || entity)
-    // Decode numeric entities (decimal)
-    .replace(/&#(\d+);/g, (_, num) => String.fromCharCode(parseInt(num, 10)))
-    // Decode numeric entities (hex)
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+
+  return (
+    text
+      // Decode named entities
+      .replace(/&[a-zA-Z]+;/g, (entity) => reverseEntities[entity] || entity)
+      // Decode numeric entities (decimal)
+      .replace(/&#(\d+);/g, (_, num: string) =>
+        String.fromCharCode(parseInt(num, 10)),
+      )
+      // Decode numeric entities (hex)
+      .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) =>
+        String.fromCharCode(parseInt(hex, 16)),
+      )
+  );
 }
 
-export default function HtmlEntityPage() {
+export default function HtmlEntityPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [decoded, setDecoded] = useState("");
@@ -210,10 +218,12 @@ export default function HtmlEntityPage() {
   const [encodeMode, setEncodeMode] = useState<EncodeMode>("special");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const buildUrl = (dec: string, mode: EncodeMode) => {
+  const buildUrl = (dec: string, mode: EncodeMode): string => {
     if (!dec) return `${window.location.origin}${window.location.pathname}`;
     const params = new URLSearchParams({ value: dec });
+
     if (mode !== "special") params.set("mode", mode);
+
     return `${window.location.origin}${window.location.pathname}?${params}`;
   };
 
@@ -223,56 +233,71 @@ export default function HtmlEntityPage() {
     const modeParam = params.get("mode") as EncodeMode;
 
     if (value) {
-      setDecoded(value);
-      const mode = modeParam && ["all", "special", "non-ascii"].includes(modeParam) ? modeParam : "special";
+      setDecoded(value); // eslint-disable-line react-hooks/set-state-in-effect
+      const mode =
+        modeParam && ["all", "special", "non-ascii"].includes(modeParam)
+          ? modeParam
+          : "special";
+
       setEncodeMode(mode);
       const enc = encodeHtmlEntities(value, mode);
+
       setEncoded(enc);
     }
+
     setUrl(window.location.href);
   }, []);
 
-  const handleDecodedChange = (value: string) => {
+  const handleDecodedChange = (value: string): void => {
     setDecoded(value);
     const enc = encodeHtmlEntities(value, encodeMode);
+
     setEncoded(enc);
     const newUrl = buildUrl(value, encodeMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleEncodedChange = (value: string) => {
+  const handleEncodedChange = (value: string): void => {
     setEncoded(value);
     const dec = decodeHtmlEntities(value);
+
     setDecoded(dec);
     const newUrl = buildUrl(dec, encodeMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleModeChange = (mode: EncodeMode) => {
+  const handleModeChange = (mode: EncodeMode): void => {
     setEncodeMode(mode);
     const enc = encodeHtmlEntities(decoded, mode);
+
     setEncoded(enc);
     const newUrl = buildUrl(decoded, mode);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setDecoded("");
     setEncoded("");
     setEncodeMode("special");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
@@ -286,7 +311,12 @@ export default function HtmlEntityPage() {
       />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -316,7 +346,9 @@ export default function HtmlEntityPage() {
             <textarea
               className={styles.textarea}
               value={decoded}
-              onChange={(e) => handleDecodedChange(e.target.value)}
+              onChange={(e) => {
+                handleDecodedChange(e.target.value);
+              }}
               placeholder="Type or paste text here..."
               spellCheck={false}
             />
@@ -332,7 +364,9 @@ export default function HtmlEntityPage() {
             <textarea
               className={styles.textarea}
               value={encoded}
-              onChange={(e) => handleEncodedChange(e.target.value)}
+              onChange={(e) => {
+                handleEncodedChange(e.target.value);
+              }}
               placeholder="Paste encoded entities here..."
               spellCheck={false}
             />
@@ -345,19 +379,25 @@ export default function HtmlEntityPage() {
         <div className={styles.modeButtons}>
           <button
             className={`${styles.modeBtn} ${encodeMode === "special" ? styles.active : ""}`}
-            onClick={() => handleModeChange("special")}
+            onClick={() => {
+              handleModeChange("special");
+            }}
           >
             Special (&lt; &gt; &amp; &quot; &apos;)
           </button>
           <button
             className={`${styles.modeBtn} ${encodeMode === "non-ascii" ? styles.active : ""}`}
-            onClick={() => handleModeChange("non-ascii")}
+            onClick={() => {
+              handleModeChange("non-ascii");
+            }}
           >
             Non-ASCII Only (excludes special chars)
           </button>
           <button
             className={`${styles.modeBtn} ${encodeMode === "all" ? styles.active : ""}`}
-            onClick={() => handleModeChange("all")}
+            onClick={() => {
+              handleModeChange("all");
+            }}
           >
             Special + Non-ASCII
           </button>

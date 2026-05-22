@@ -155,7 +155,10 @@
   text-transform: uppercase;
   color: var(--muted);
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+  transition:
+    border-color 0.15s,
+    color 0.15s,
+    background-color 0.15s;
 }
 
 .modeBtn:hover {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import { upload } from "@vercel/blob/client";
@@ -16,7 +16,7 @@ const FORMAT_QUALITY_DEFAULTS: Record<OutputFormat, number> = {
   avif: 50,
 };
 
-type FileEntry = {
+interface FileEntry {
   id: string;
   file: File;
   status: "queued" | "uploading" | "compressing" | "done" | "error";
@@ -25,11 +25,12 @@ type FileEntry = {
   downloadUrl?: string;
   compressedFilename?: string;
   error?: string;
-};
+}
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 
@@ -38,15 +39,16 @@ function savings(
   compressed: number,
 ): { pct: number; label: string } {
   const pct = ((original - compressed) / original) * 100;
+
   return { pct, label: `${Math.abs(pct).toFixed(1)}%` };
 }
 
-export default function CompressPage() {
+export default function CompressPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [entries, setEntries] = useState<FileEntry[]>([]);
   const [format, setFormat] = useState<OutputFormat>("png");
-  const [quality, setQuality] = useState(FORMAT_QUALITY_DEFAULTS["png"]);
+  const [quality, setQuality] = useState(FORMAT_QUALITY_DEFAULTS.png);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const processingRef = useRef(false);
@@ -58,147 +60,152 @@ export default function CompressPage() {
     );
   }, []);
 
-  const processNext = useCallback(
-    async (
-      currentEntries: FileEntry[],
-      currentFormat: OutputFormat,
-      currentQuality: number,
-    ) => {
-      if (processingRef.current) return;
-      const next = currentEntries.find((e) => e.status === "queued");
-      if (!next) return;
+  const processNext = async (
+    currentEntries: FileEntry[],
+    currentFormat: OutputFormat,
+    currentQuality: number,
+  ): Promise<void> => {
+    if (processingRef.current) return;
+    const next = currentEntries.find((e) => e.status === "queued");
 
-      processingRef.current = true;
-      const { id, file } = next;
+    if (!next) return;
 
-      try {
-        // Step 1: upload to Vercel Blob
-        updateEntry(id, { status: "uploading" });
-        const blob = await upload(file.name, file, {
-          access: "private",
-          handleUploadUrl: "/api/compress/upload",
-        });
+    processingRef.current = true;
+    const { id, file } = next;
 
-        // Step 2: compress via API
-        updateEntry(id, { status: "compressing" });
-        const res = await fetch("/api/compress/process", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            url: blob.url,
-            format: currentFormat,
-            filename: file.name,
-            quality: currentQuality,
-          }),
-        });
+    try {
+      // Step 1: upload to Vercel Blob
+      updateEntry(id, { status: "uploading" });
+      const blob = await upload(file.name, file, {
+        access: "private",
+        handleUploadUrl: "/api/compress/upload",
+      });
 
-        if (!res.ok) {
-          const err = await res
-            .json()
-            .catch(() => ({ error: "Compression failed" }));
-          updateEntry(id, {
-            status: "error",
-            error: "Please try again later.",
-          });
-        } else {
-          const compressedBlob = await res.blob();
-          const compressedSize =
-            parseInt(res.headers.get("X-Compressed-Size") ?? "0", 10) ||
-            compressedBlob.size;
-          const ext =
-            currentFormat === "png"
-              ? ".png"
-              : currentFormat === "webp"
-                ? ".webp"
-                : ".avif";
-          const baseName = file.name.replace(/\.[^.]+$/, "");
-          const compressedFilename = `compressed-${baseName}${ext}`;
-          const downloadUrl = URL.createObjectURL(compressedBlob);
-          updateEntry(id, {
-            status: "done",
-            compressedSize,
-            downloadUrl,
-            compressedFilename,
-          });
-        }
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : "Unknown error";
+      // Step 2: compress via API
+      updateEntry(id, { status: "compressing" });
+      const res = await fetch("/api/compress/process", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: blob.url,
+          format: currentFormat,
+          filename: file.name,
+          quality: currentQuality,
+        }),
+      });
+
+      if (!res.ok) {
+        await res.json().catch(() => ({ error: "Compression failed" }));
+
         updateEntry(id, {
           status: "error",
           error: "Please try again later.",
         });
-      } finally {
-        processingRef.current = false;
-        // Trigger next in queue
-        setEntries((prev) => {
-          const stillQueued = prev.find((e) => e.status === "queued");
-          if (stillQueued) {
-            setTimeout(() => processNext(prev, currentFormat, currentQuality), 0);
-          }
-          return prev;
+      } else {
+        const compressedBlob = await res.blob();
+        const compressedSize =
+          parseInt(res.headers.get("X-Compressed-Size") ?? "0", 10) ||
+          compressedBlob.size;
+        const ext =
+          currentFormat === "png"
+            ? ".png"
+            : currentFormat === "webp"
+              ? ".webp"
+              : ".avif";
+        const baseName = file.name.replace(/\.[^.]+$/, "");
+        const compressedFilename = `compressed-${baseName}${ext}`;
+        const downloadUrl = URL.createObjectURL(compressedBlob);
+
+        updateEntry(id, {
+          status: "done",
+          compressedSize,
+          downloadUrl,
+          compressedFilename,
         });
       }
-    },
-    [updateEntry],
-  );
-
-  const addFiles = useCallback(
-    (files: File[]) => {
-      const valid = files.filter((f) => f.type.startsWith("image/"));
-      if (!valid.length) return;
-
-      const newEntries: FileEntry[] = valid.map((file) => ({
-        id: `${Date.now()}-${Math.random()}`,
-        file,
-        status: "queued",
-        originalSize: file.size,
-      }));
-
-      setEntries((prev) => {
-        const next = [...prev, ...newEntries];
-        setTimeout(() => processNext(next, format, quality), 0);
-        return next;
+    } catch (_err) {
+      updateEntry(id, {
+        status: "error",
+        error: "Please try again later.",
       });
-    },
-    [format, quality, processNext],
-  );
+    } finally {
+      processingRef.current = false;
+      // Trigger next in queue
+      setEntries((prev) => {
+        const stillQueued = prev.find((e) => e.status === "queued");
+
+        if (stillQueued) {
+          setTimeout(() => {
+            void processNext(prev, currentFormat, currentQuality);
+          }, 0);
+        }
+
+        return prev;
+      });
+    }
+  };
+
+  const addFiles = (files: File[]): void => {
+    const valid = files.filter((f) => f.type.startsWith("image/"));
+
+    if (!valid.length) return;
+
+    const newEntries: FileEntry[] = valid.map((file) => ({
+      id: `${Date.now()}-${Math.random()}`,
+      file,
+      status: "queued",
+      originalSize: file.size,
+    }));
+
+    setEntries((prev) => {
+      const next = [...prev, ...newEntries];
+
+      setTimeout(() => {
+        void processNext(next, format, quality);
+      }, 0);
+
+      return next;
+    });
+  };
 
   useEffect(() => {
-    setQuality(FORMAT_QUALITY_DEFAULTS[format]);
+    setQuality(FORMAT_QUALITY_DEFAULTS[format]); // eslint-disable-line react-hooks/set-state-in-effect
   }, [format]);
 
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setDragging(false);
-      const files = Array.from(e.dataTransfer.files);
-      addFiles(files);
-    },
-    [addFiles],
-  );
+  const handleDrop = (e: React.DragEvent): void => {
+    e.preventDefault();
+    setDragging(false);
+    const files = Array.from(e.dataTransfer.files);
 
-  const handleDragOver = (e: React.DragEvent) => {
+    addFiles(files);
+  };
+
+  const handleDragOver = (e: React.DragEvent): void => {
     e.preventDefault();
     setDragging(true);
   };
 
-  const handleDragLeave = () => setDragging(false);
+  const handleDragLeave = (): void => {
+    setDragging(false);
+  };
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const files = Array.from(e.target.files ?? []);
+
     addFiles(files);
     e.target.value = "";
   };
 
-  const handleDownload = (entry: FileEntry) => {
+  const handleDownload = (entry: FileEntry): void => {
     if (!entry.downloadUrl || !entry.compressedFilename) return;
     const a = document.createElement("a");
+
     a.href = entry.downloadUrl;
     a.download = entry.compressedFilename;
     a.click();
   };
 
-  const handleClear = () => {
+  const handleClear = (): void => {
     entries.forEach((e) => {
       if (e.downloadUrl) URL.revokeObjectURL(e.downloadUrl);
     });
@@ -206,7 +213,7 @@ export default function CompressPage() {
     queueRef.current = [];
   };
 
-  const statusLabel = (entry: FileEntry) => {
+  const statusLabel = (entry: FileEntry): string => {
     switch (entry.status) {
       case "queued":
         return "Queued";
@@ -232,7 +239,12 @@ export default function CompressPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -262,7 +274,9 @@ export default function CompressPage() {
             <button
               key={f}
               className={`${styles.toggleBtn}${format === f ? ` ${styles.active}` : ""}`}
-              onClick={() => setFormat(f)}
+              onClick={() => {
+                setFormat(f);
+              }}
             >
               {f.toUpperCase()}
             </button>
@@ -279,7 +293,9 @@ export default function CompressPage() {
           min={1}
           max={100}
           value={quality}
-          onChange={(e) => setQuality(Number(e.target.value))}
+          onChange={(e) => {
+            setQuality(Number(e.target.value));
+          }}
           className={styles.qualitySlider}
         />
         <span className={styles.qualityValue}>{quality}</span>
@@ -333,6 +349,7 @@ export default function CompressPage() {
                             entry.originalSize,
                             entry.compressedSize,
                           );
+
                           return (
                             <span
                               className={styles.savingsBadge}
@@ -351,7 +368,9 @@ export default function CompressPage() {
                   {entry.status === "done" ? (
                     <button
                       className={styles.downloadBtn}
-                      onClick={() => handleDownload(entry)}
+                      onClick={() => {
+                        handleDownload(entry);
+                      }}
                     >
                       Download
                     </button>

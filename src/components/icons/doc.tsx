@@ -1,4 +1,10 @@
-export function DocIcon({ className }: { className?: string }) {
+import React from "react";
+
+export function DocIcon({
+  className,
+}: {
+  className?: string;
+}): React.ReactNode {
   return (
     <svg
       width="15"

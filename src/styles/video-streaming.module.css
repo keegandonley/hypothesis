@@ -391,9 +391,15 @@
   word-break: break-all;
 }
 
-.colorGood { color: #57d28a; }
-.colorWarn { color: #f0b86b; }
-.colorBad  { color: #ef6f6c; }
+.colorGood {
+  color: #57d28a;
+}
+.colorWarn {
+  color: #f0b86b;
+}
+.colorBad {
+  color: #ef6f6c;
+}
 
 /* ── Event log ──────────────────────────────────────────────────────────── */
 
@@ -450,7 +456,15 @@
   word-break: break-all;
 }
 
-.logError .logEvent  { color: #ef6f6c; }
-.logWarn  .logEvent  { color: #f0b86b; }
-.logGood  .logEvent  { color: #57d28a; }
-.logAccent .logEvent { color: var(--accent); }
+.logError .logEvent {
+  color: #ef6f6c;
+}
+.logWarn .logEvent {
+  color: #f0b86b;
+}
+.logGood .logEvent {
+  color: #57d28a;
+}
+.logAccent .logEvent {
+  color: var(--accent);
+}

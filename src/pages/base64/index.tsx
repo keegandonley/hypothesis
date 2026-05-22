@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/base64.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -9,7 +9,7 @@ import { useIsIframe } from "@/lib/useIsIframe";
 
 type Tab = "text" | "image";
 
-export default function Base64Page() {
+export default function Base64Page(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [plain, setPlain] = useState("");
@@ -30,13 +30,19 @@ export default function Base64Page() {
   const [imageCopiedRaw, setImageCopiedRaw] = useState(false);
   const [imageCopiedDataUrl, setImageCopiedDataUrl] = useState(false);
   const imageFileInputRef = useRef<HTMLInputElement>(null);
-  const imageCopyRawTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const imageCopyDataUrlTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const imageCopyRawTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const imageCopyDataUrlTimeoutRef = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
 
-  const buildUrl = (enc: string, json: boolean) => {
+  const buildUrl = (enc: string, json: boolean): string => {
     if (!enc) return `${window.location.origin}${window.location.pathname}`;
     const params = new URLSearchParams({ value: enc });
+
     if (json) params.set("json", "1");
+
     return `${window.location.origin}${window.location.pathname}?${params}`;
   };
 
@@ -46,12 +52,14 @@ export default function Base64Page() {
     const jsonParam = params.get("json") === "1";
     const tabParam = params.get("tab");
 
-    if (tabParam === "image") setTab("image");
+    if (tabParam === "image") setTab("image"); // eslint-disable-line react-hooks/set-state-in-effect
 
     if (value) {
       setEncoded(value);
       try {
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         const decoded = decodeURIComponent(escape(atob(value)));
+
         setPlain(decoded);
         if (jsonParam) {
           try {
@@ -65,15 +73,18 @@ export default function Base64Page() {
         setPlain("");
       }
     }
+
     if (jsonParam) setJsonMode(true);
     setUrl(window.location.href);
   }, []);
 
-  const validateJson = (value: string) => {
+  const validateJson = (value: string): void => {
     if (value.length === 0) {
       setJsonValid(null);
+
       return;
     }
+
     try {
       JSON.parse(value);
       setJsonValid(true);
@@ -82,51 +93,63 @@ export default function Base64Page() {
     }
   };
 
-  const handlePlainChange = (value: string) => {
+  const handlePlainChange = (value: string): void => {
     setPlain(value);
     if (jsonMode) validateJson(value);
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const enc = btoa(unescape(encodeURIComponent(value)));
+
     setEncoded(enc);
     const newUrl = buildUrl(enc, jsonMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleEncodedChange = (value: string) => {
+  const handleEncodedChange = (value: string): void => {
     setEncoded(value);
     let decoded = "";
+
     try {
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       decoded = decodeURIComponent(escape(atob(value)));
       setPlain(decoded);
     } catch {
       setPlain("");
     }
+
     if (jsonMode) validateJson(decoded);
     const newUrl = buildUrl(value, jsonMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleFormat = () => {
+  const handleFormat = (): void => {
     try {
       const formatted = JSON.stringify(JSON.parse(plain), null, 2);
+
       handlePlainChange(formatted);
     } catch {
       /* no-op */
     }
   };
 
-  const handleJsonToggle = () => {
+  const handleJsonToggle = (): void => {
     const next = !jsonMode;
+
     setJsonMode(next);
     if (next) validateJson(plain);
     else setJsonValid(null);
     const newUrl = buildUrl(encoded, next);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handlePlainKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handlePlainKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+  ): void => {
     if (!jsonMode || e.key !== "Tab") return;
     e.preventDefault();
 
@@ -137,6 +160,7 @@ export default function Base64Page() {
 
     if (!e.shiftKey) {
       const newVal = val.slice(0, start) + "  " + val.slice(end);
+
       handlePlainChange(newVal);
       requestAnimationFrame(() => {
         if (plainRef.current) {
@@ -146,14 +170,17 @@ export default function Base64Page() {
       });
     } else {
       const lineStart = val.lastIndexOf("\n", start - 1) + 1;
-      const stripped = val.slice(lineStart).match(/^ {1,2}/)?.[0] ?? "";
+      const stripped = /^ {1,2}/.exec(val.slice(lineStart))?.[0] ?? "";
+
       if (stripped.length > 0) {
         const newVal =
           val.slice(0, lineStart) + val.slice(lineStart + stripped.length);
+
         handlePlainChange(newVal);
         requestAnimationFrame(() => {
           if (plainRef.current) {
             const pos = Math.max(lineStart, start - stripped.length);
+
             plainRef.current.selectionStart = plainRef.current.selectionEnd =
               pos;
           }
@@ -162,97 +189,111 @@ export default function Base64Page() {
     }
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setPlain("");
     setEncoded("");
     setJsonMode(false);
     setJsonValid(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleTabChange = (next: Tab) => {
+  const handleTabChange = (next: Tab): void => {
     setTab(next);
     const newUrl =
       next === "image"
         ? `${window.location.origin}${window.location.pathname}?tab=image`
         : buildUrl(encoded, jsonMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleImageFile = (file: File) => {
+  const handleImageFile = (file: File): void => {
     if (!file.type.startsWith("image/")) {
       setImageError("Unsupported file type. Please drop an image.");
+
       return;
     }
+
     if (file.size / (1024 * 1024) > 5) {
       setImageError(
-        `Warning: large file (${(file.size / 1024 / 1024).toFixed(1)} MB). Output may be very long.`
+        `Warning: large file (${(file.size / 1024 / 1024).toFixed(1)} MB). Output may be very long.`,
       );
     } else {
       setImageError("");
     }
+
     setImageFile(file);
     const reader = new FileReader();
+
     reader.onload = (e) => {
-      const dataUrl = e.target!.result as string;
+      const dataUrl = e.target?.result as string;
+
       setImageDataUrl(dataUrl);
       setImageBase64(dataUrl.split(",")[1] ?? "");
     };
+
     reader.readAsDataURL(file);
   };
 
-  const handleImageDrop = (e: React.DragEvent) => {
+  const handleImageDrop = (e: React.DragEvent): void => {
     e.preventDefault();
     setImageDragging(false);
     const file = e.dataTransfer.files[0];
+
     if (file) handleImageFile(file);
   };
 
-  const handleImageDragOver = (e: React.DragEvent) => {
+  const handleImageDragOver = (e: React.DragEvent): void => {
     e.preventDefault();
     setImageDragging(true);
   };
 
-  const handleImageDragLeave = () => setImageDragging(false);
+  const handleImageDragLeave = (): void => {
+    setImageDragging(false);
+  };
 
-  const handleImageFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFileInput = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
     const file = e.target.files?.[0];
+
     if (file) handleImageFile(file);
     e.target.value = "";
   };
 
-  const handleCopyRaw = () => {
-    copyToClipboard(imageBase64).then(() => {
+  const handleCopyRaw = (): void => {
+    void copyToClipboard(imageBase64).then(() => {
       setImageCopiedRaw(true);
       if (imageCopyRawTimeoutRef.current)
         clearTimeout(imageCopyRawTimeoutRef.current);
-      imageCopyRawTimeoutRef.current = setTimeout(
-        () => setImageCopiedRaw(false),
-        1500
-      );
+      imageCopyRawTimeoutRef.current = setTimeout(() => {
+        setImageCopiedRaw(false);
+      }, 1500);
     });
   };
 
-  const handleCopyDataUrl = () => {
-    copyToClipboard(imageDataUrl).then(() => {
+  const handleCopyDataUrl = (): void => {
+    void copyToClipboard(imageDataUrl).then(() => {
       setImageCopiedDataUrl(true);
       if (imageCopyDataUrlTimeoutRef.current)
         clearTimeout(imageCopyDataUrlTimeoutRef.current);
-      imageCopyDataUrlTimeoutRef.current = setTimeout(
-        () => setImageCopiedDataUrl(false),
-        1500
-      );
+      imageCopyDataUrlTimeoutRef.current = setTimeout(() => {
+        setImageCopiedDataUrl(false);
+      }, 1500);
     });
   };
 
@@ -266,7 +307,12 @@ export default function Base64Page() {
       />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -290,7 +336,9 @@ export default function Base64Page() {
           <button
             key={t}
             className={`${styles.tabBtn}${tab === t ? ` ${styles.tabBtnActive}` : ""}`}
-            onClick={() => handleTabChange(t)}
+            onClick={() => {
+              handleTabChange(t);
+            }}
           >
             {t.toUpperCase()}
           </button>
@@ -328,7 +376,9 @@ export default function Base64Page() {
                 ref={plainRef}
                 className={styles.textarea}
                 value={plain}
-                onChange={(e) => handlePlainChange(e.target.value)}
+                onChange={(e) => {
+                  handlePlainChange(e.target.value);
+                }}
                 onKeyDown={handlePlainKeyDown}
                 placeholder={`Type or paste ${jsonMode ? "JSON" : "plain text"} here...`}
                 spellCheck={false}
@@ -354,7 +404,9 @@ export default function Base64Page() {
               <textarea
                 className={styles.textarea}
                 value={encoded}
-                onChange={(e) => handleEncodedChange(e.target.value)}
+                onChange={(e) => {
+                  handleEncodedChange(e.target.value);
+                }}
                 placeholder="Paste base64 here..."
                 spellCheck={false}
               />
@@ -407,9 +459,7 @@ export default function Base64Page() {
                 </>
               )}
             </div>
-            {imageError && (
-              <p className={styles.imageError}>{imageError}</p>
-            )}
+            {imageError && <p className={styles.imageError}>{imageError}</p>}
           </div>
 
           <div className={styles.panel}>

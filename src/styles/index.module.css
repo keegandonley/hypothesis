@@ -43,8 +43,13 @@
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .cursor {
@@ -164,7 +169,10 @@
   border-radius: 4px;
   padding: 4px 8px;
   cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
 }
 
 .tagButton:hover {
@@ -191,7 +199,9 @@
   border: 1px solid var(--border);
   border-radius: 8px;
   cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
   user-select: none;
   overflow: hidden;
   position: relative;
@@ -432,7 +442,9 @@
   border-radius: 8px;
   overflow: hidden;
   text-decoration: none;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
   padding: 12px 16px;
   gap: 16px;
 }

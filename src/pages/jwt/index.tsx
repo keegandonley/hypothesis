@@ -20,10 +20,15 @@ function base64urlDecode(str: string): string {
   const base64 = str.replace(/-/g, "+").replace(/_/g, "/");
   const pad = base64.length % 4;
   const padded = pad ? base64 + "=".repeat(4 - pad) : base64;
-  return decodeURIComponent(escape(atob(padded)));
+
+  return decodeURIComponent(
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    escape(atob(padded)),
+  );
 }
 
 function base64urlEncode(str: string): string {
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   return btoa(unescape(encodeURIComponent(str)))
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
@@ -53,8 +58,11 @@ function generateJwt(): string {
 
   // Fake but structurally valid signature (random bytes)
   const sigBytes = new Uint8Array(32);
+
   crypto.getRandomValues(sigBytes);
-  const sigPart = btoa(Array.from(sigBytes, (b) => String.fromCharCode(b)).join(""))
+  const sigPart = btoa(
+    Array.from(sigBytes, (b) => String.fromCharCode(b)).join(""),
+  )
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=/g, "");
@@ -64,23 +72,34 @@ function generateJwt(): string {
 
 function decodeJwt(token: string): JwtParts | null {
   const parts = token.split(".");
+
   if (parts.length !== 3) return null;
   try {
-    const header = JSON.parse(base64urlDecode(parts[0]));
-    const payload = JSON.parse(base64urlDecode(parts[1]));
+    const header = JSON.parse(base64urlDecode(parts[0])) as Record<
+      string,
+      unknown
+    >;
+    const payload = JSON.parse(base64urlDecode(parts[1])) as Record<
+      string,
+      unknown
+    >;
+
     return { header, payload, signature: parts[2] };
   } catch {
     return null;
   }
 }
 
-function getExpiryStatus(payload: Record<string, unknown> | null): ExpiryStatus {
+function getExpiryStatus(
+  payload: Record<string, unknown> | null,
+): ExpiryStatus {
   if (!payload || !("exp" in payload)) return "no-exp";
   const exp = payload.exp as number;
+
   return exp < Date.now() / 1000 ? "expired" : "valid";
 }
 
-export default function JwtPage() {
+export default function JwtPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [token, setToken] = useState("");
@@ -90,17 +109,20 @@ export default function JwtPage() {
   const [url, setUrl] = useState("");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const buildUrl = (t: string) => {
+  const buildUrl = (t: string): string => {
     if (!t) return `${window.location.origin}${window.location.pathname}`;
+
     return `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(t)}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("v");
+
     if (v) {
-      setToken(v);
+      setToken(v); // eslint-disable-line react-hooks/set-state-in-effect
       const result = decodeJwt(v);
+
       if (result) {
         setDecoded(result);
         setError(false);
@@ -109,16 +131,18 @@ export default function JwtPage() {
         setError(true);
       }
     }
+
     setUrl(window.location.href);
   }, []);
 
-  const handleTokenChange = (value: string) => {
+  const handleTokenChange = (value: string): void => {
     setToken(value);
     if (!value) {
       setDecoded(null);
       setError(false);
     } else {
       const result = decodeJwt(value.trim());
+
       if (result) {
         setDecoded(result);
         setError(false);
@@ -127,30 +151,36 @@ export default function JwtPage() {
         setError(true);
       }
     }
+
     const newUrl = buildUrl(value.trim());
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = (): void => {
     const t = generateJwt();
+
     handleTokenChange(t);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setToken("");
     setDecoded(null);
     setError(false);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
@@ -168,7 +198,12 @@ export default function JwtPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -182,8 +217,15 @@ export default function JwtPage() {
           </Link>
         </div>
         <h1 className={styles.title}>JWT Decoder</h1>
-        <p className={styles.tagline}>Decode JWT tokens and inspect header, payload, and expiry</p>
-        <ReferenceLinks refs={[{ name: "HTTP Headers", slug: "http-headers" }, { name: "HTTP Status Codes", slug: "http-status-codes" }]} />
+        <p className={styles.tagline}>
+          Decode JWT tokens and inspect header, payload, and expiry
+        </p>
+        <ReferenceLinks
+          refs={[
+            { name: "HTTP Headers", slug: "http-headers" },
+            { name: "HTTP Status Codes", slug: "http-status-codes" },
+          ]}
+        />
       </div>
 
       <hr className={styles.divider} />
@@ -207,7 +249,9 @@ export default function JwtPage() {
           <textarea
             className={styles.textarea}
             value={token}
-            onChange={(e) => handleTokenChange(e.target.value)}
+            onChange={(e) => {
+              handleTokenChange(e.target.value);
+            }}
             placeholder="Paste JWT token here..."
             spellCheck={false}
           />
@@ -224,8 +268,8 @@ export default function JwtPage() {
               {decoded?.header
                 ? JSON.stringify(decoded.header, null, 2)
                 : hasToken && error
-                ? ""
-                : ""}
+                  ? ""
+                  : ""}
             </pre>
           </div>
         </div>
@@ -234,15 +278,14 @@ export default function JwtPage() {
           <div className={styles.panelHeader}>
             <span className={styles.panelLabel}>Payload</span>
             <div className={styles.panelHeaderRight}>
-              {decoded?.payload && (
-                expiryStatus === "valid" ? (
+              {decoded?.payload &&
+                (expiryStatus === "valid" ? (
                   <span className={styles.badgeValid}>valid</span>
                 ) : expiryStatus === "expired" ? (
                   <span className={styles.badgeExpired}>expired</span>
                 ) : (
                   <span className={styles.badgeMuted}>no exp</span>
-                )
-              )}
+                ))}
             </div>
           </div>
           <div className={styles.outputWrapper}>

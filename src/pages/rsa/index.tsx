@@ -12,20 +12,26 @@ import { useIsIframe } from "@/lib/useIsIframe";
 function arrayBufferToBase64(buf: ArrayBuffer): string {
   const bytes = new Uint8Array(buf);
   let binary = "";
-  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+
   return btoa(binary);
 }
 
 function base64ToArrayBuffer(b64: string): ArrayBuffer {
   const binary = atob(b64);
   const bytes = new Uint8Array(binary.length);
+
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
   return bytes.buffer;
 }
 
 function wrapPem(b64: string, label: string): string {
   const lines: string[] = [];
+
   for (let i = 0; i < b64.length; i += 64) lines.push(b64.slice(i, i + 64));
+
   return `-----BEGIN ${label}-----\n${lines.join("\n")}\n-----END ${label}-----`;
 }
 
@@ -34,6 +40,7 @@ function parsePemBody(pem: string): ArrayBuffer | null {
     .replace(/-----BEGIN [^-]+-----/, "")
     .replace(/-----END [^-]+-----/, "")
     .replace(/\s/g, "");
+
   if (!b64) return null;
   try {
     return base64ToArrayBuffer(b64);
@@ -44,7 +51,7 @@ function parsePemBody(pem: string): ArrayBuffer | null {
 
 // ── Page ───────────────────────────────────────────────────────────────────────
 
-export default function RsaPage() {
+export default function RsaPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
 
@@ -53,8 +60,12 @@ export default function RsaPage() {
   const [decryptKey, setDecryptKey] = useState<CryptoKey | null>(null);
   const [publicKeyPem, setPublicKeyPem] = useState("");
   const [privateKeyPem, setPrivateKeyPem] = useState("");
-  const [pubKeyImportError, setPubKeyImportError] = useState<string | null>(null);
-  const [privKeyImportError, setPrivKeyImportError] = useState<string | null>(null);
+  const [pubKeyImportError, setPubKeyImportError] = useState<string | null>(
+    null,
+  );
+  const [privKeyImportError, setPrivKeyImportError] = useState<string | null>(
+    null,
+  );
 
   // Step 2
   const [plaintext, setPlaintext] = useState("Hello, RSA!");
@@ -93,24 +104,29 @@ export default function RsaPage() {
   const pubTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const privTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const ctTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const plaintextBytes = new TextEncoder().encode(plaintext).length;
 
   // Restore from URL and localStorage on mount
   useEffect(() => {
-    if (!window.crypto?.subtle) setCryptoAvailable(false);
+    if (!window.crypto?.subtle) setCryptoAvailable(false); // eslint-disable-line react-hooks/set-state-in-effect
     const params = new URLSearchParams(window.location.search);
     const ct = params.get("ct");
+
     if (ct) {
       setCiphertext(ct);
       setCtInput(ct);
       setCiphertextFromUrl(true);
     }
+
     setUrl(window.location.href);
 
     const savedPub = localStorage.getItem("rsa_public_key");
     const savedPriv = localStorage.getItem("rsa_private_key");
+
     if (savedPub) setPublicKeyPem(savedPub);
     if (savedPriv) setPrivateKeyPem(savedPriv);
   }, []);
@@ -118,42 +134,76 @@ export default function RsaPage() {
   // Import public key whenever PEM changes
   useEffect(() => {
     if (!publicKeyPem.includes("-----END PUBLIC KEY-----")) {
-      setEncryptKey(null);
+      setEncryptKey(null); // eslint-disable-line react-hooks/set-state-in-effect
       setPubKeyImportError(null);
+
       return;
     }
+
     const buf = parsePemBody(publicKeyPem);
-    if (!buf) { setPubKeyImportError("Could not parse PEM"); return; }
+
+    if (!buf) {
+      setPubKeyImportError("Could not parse PEM");
+
+      return;
+    }
+
     window.crypto.subtle
-      .importKey("spki", buf, { name: "RSA-OAEP", hash: "SHA-256" }, true, ["encrypt"])
-      .then((key) => { setEncryptKey(key); setPubKeyImportError(null); })
-      .catch((e) => { setEncryptKey(null); setPubKeyImportError(e instanceof Error ? e.message : String(e)); });
+      .importKey("spki", buf, { name: "RSA-OAEP", hash: "SHA-256" }, true, [
+        "encrypt",
+      ])
+      .then((key: CryptoKey) => {
+        setEncryptKey(key);
+        setPubKeyImportError(null);
+      })
+      .catch((e: unknown) => {
+        setEncryptKey(null);
+        setPubKeyImportError(e instanceof Error ? e.message : String(e));
+      });
   }, [publicKeyPem]);
 
   // Import private key whenever PEM changes
   useEffect(() => {
     if (!privateKeyPem.includes("-----END PRIVATE KEY-----")) {
-      setDecryptKey(null);
+      setDecryptKey(null); // eslint-disable-line react-hooks/set-state-in-effect
       setPrivKeyImportError(null);
+
       return;
     }
+
     const buf = parsePemBody(privateKeyPem);
-    if (!buf) { setPrivKeyImportError("Could not parse PEM"); return; }
+
+    if (!buf) {
+      setPrivKeyImportError("Could not parse PEM");
+
+      return;
+    }
+
     window.crypto.subtle
-      .importKey("pkcs8", buf, { name: "RSA-OAEP", hash: "SHA-256" }, true, ["decrypt"])
-      .then((key) => { setDecryptKey(key); setPrivKeyImportError(null); })
-      .catch((e) => { setDecryptKey(null); setPrivKeyImportError(e instanceof Error ? e.message : String(e)); });
+      .importKey("pkcs8", buf, { name: "RSA-OAEP", hash: "SHA-256" }, true, [
+        "decrypt",
+      ])
+      .then((key: CryptoKey) => {
+        setDecryptKey(key);
+        setPrivKeyImportError(null);
+      })
+      .catch((e: unknown) => {
+        setDecryptKey(null);
+        setPrivKeyImportError(e instanceof Error ? e.message : String(e));
+      });
   }, [privateKeyPem]);
 
-  const buildUrl = (ct: string) => {
+  const buildUrl = (ct: string): string => {
     const base = `${window.location.origin}${window.location.pathname}`;
+
     if (!ct) return base;
+
     return `${base}?ct=${encodeURIComponent(ct)}`;
   };
 
   // ── Step 1: Generate key pair ──────────────────────────────────────────────
 
-  async function handleGenerate() {
+  async function handleGenerate(): Promise<void> {
     setGeneratingKey(true);
     setPublicKeyPem("");
     setPrivateKeyPem("");
@@ -179,13 +229,21 @@ export default function RsaPage() {
         ["encrypt", "decrypt"],
       );
       const t1 = performance.now();
+
       setKeyGenMs(Math.round(t1 - t0));
 
-      const pubSpki = await window.crypto.subtle.exportKey("spki", kp.publicKey);
-      const privPkcs8 = await window.crypto.subtle.exportKey("pkcs8", kp.privateKey);
+      const pubSpki = await window.crypto.subtle.exportKey(
+        "spki",
+        kp.publicKey,
+      );
+      const privPkcs8 = await window.crypto.subtle.exportKey(
+        "pkcs8",
+        kp.privateKey,
+      );
 
       const pubPem = wrapPem(arrayBufferToBase64(pubSpki), "PUBLIC KEY");
       const privPem = wrapPem(arrayBufferToBase64(privPkcs8), "PRIVATE KEY");
+
       setPublicKeyPem(pubPem);
       setPrivateKeyPem(privPem);
       localStorage.setItem("rsa_public_key", pubPem);
@@ -197,7 +255,7 @@ export default function RsaPage() {
 
   // ── Step 2: Encrypt ────────────────────────────────────────────────────────
 
-  async function handleEncrypt() {
+  async function handleEncrypt(): Promise<void> {
     if (!encryptKey || plaintextBytes > 190) return;
     setEncrypting(true);
     setDecrypted("");
@@ -211,13 +269,16 @@ export default function RsaPage() {
         new TextEncoder().encode(plaintext),
       );
       const t1 = performance.now();
+
       setEncryptMs(Math.round(t1 - t0));
 
       const b64 = arrayBufferToBase64(enc);
+
       setCiphertext(b64);
       setCtInput(b64);
       setCiphertextFromUrl(false);
       const newUrl = buildUrl(b64);
+
       history.replaceState(null, "", newUrl);
       setUrl(newUrl);
     } finally {
@@ -227,7 +288,7 @@ export default function RsaPage() {
 
   // ── Step 3: Decrypt ────────────────────────────────────────────────────────
 
-  async function handleDecrypt() {
+  async function handleDecrypt(): Promise<void> {
     if (!decryptKey || !ctInput.trim()) return;
     setDecrypting(true);
     setDecrypted("");
@@ -242,17 +303,19 @@ export default function RsaPage() {
         base64ToArrayBuffer(ctInput.trim()),
       );
       const t1 = performance.now();
+
       setDecryptMs(Math.round(t1 - t0));
       setDecrypted(new TextDecoder().decode(dec));
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
+
       setDecryptError(msg || "Decryption failed (no message)");
     } finally {
       setDecrypting(false);
     }
   }
 
-  async function handleTryWrongKey() {
+  async function handleTryWrongKey(): Promise<void> {
     if (!ctInput.trim()) return;
     setTryingWrongKey(true);
     setDecrypted("");
@@ -270,8 +333,14 @@ export default function RsaPage() {
         true,
         ["encrypt", "decrypt"],
       );
-      const wrongPrivPkcs8 = await window.crypto.subtle.exportKey("pkcs8", wrongKp.privateKey);
-      setWrongPrivKeyPem(wrapPem(arrayBufferToBase64(wrongPrivPkcs8), "PRIVATE KEY"));
+      const wrongPrivPkcs8 = await window.crypto.subtle.exportKey(
+        "pkcs8",
+        wrongKp.privateKey,
+      );
+
+      setWrongPrivKeyPem(
+        wrapPem(arrayBufferToBase64(wrongPrivPkcs8), "PRIVATE KEY"),
+      );
       await window.crypto.subtle.decrypt(
         { name: "RSA-OAEP" },
         wrongKp.privateKey,
@@ -281,6 +350,7 @@ export default function RsaPage() {
       setWrongKeyError("Unexpected: decryption succeeded with wrong key.");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
+
       setWrongKeyError(msg || "Decryption failed (no message)");
     } finally {
       setTryingWrongKey(false);
@@ -292,16 +362,18 @@ export default function RsaPage() {
   function copyWithTimeout(
     text: string,
     setter: (v: boolean) => void,
-    ref: React.MutableRefObject<ReturnType<typeof setTimeout> | null>,
-  ) {
-    copyToClipboard(text).then(() => {
+    ref: React.RefObject<ReturnType<typeof setTimeout> | null>,
+  ): void {
+    void copyToClipboard(text).then(() => {
       setter(true);
       if (ref.current) clearTimeout(ref.current);
-      ref.current = setTimeout(() => setter(false), 1500);
+      ref.current = setTimeout(() => {
+        setter(false);
+      }, 1500);
     });
   }
 
-  function handleReset() {
+  function handleReset(): void {
     setCiphertext("");
     setCtInput("");
     setDecrypted("");
@@ -309,6 +381,7 @@ export default function RsaPage() {
     setWrongKeyError(null);
     setWrongPrivKeyPem("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   }
@@ -346,7 +419,8 @@ export default function RsaPage() {
         </div>
         <h1 className={styles.title}>RSA Encryption</h1>
         <p className={styles.tagline}>
-          EXP-005 · Interactive RSA-OAEP public-key encryption using the Web Crypto API
+          EXP-005 · Interactive RSA-OAEP public-key encryption using the Web
+          Crypto API
         </p>
       </div>
 
@@ -356,7 +430,8 @@ export default function RsaPage() {
         <div className={styles.errorPanel} style={{ marginBottom: "1.5rem" }}>
           <div className={styles.errorTitle}>Web Crypto API unavailable</div>
           <div className={styles.errorMsg}>
-            This experiment requires a secure context (HTTPS or localhost). The Web Crypto API is not available on plain HTTP origins.
+            This experiment requires a secure context (HTTPS or localhost). The
+            Web Crypto API is not available on plain HTTP origins.
           </div>
         </div>
       )}
@@ -367,7 +442,9 @@ export default function RsaPage() {
           <span className={styles.stepBadge}>Step 1</span>
           <span className={styles.stepTitle}>Generate Key Pair</span>
           {keyGenMs !== null && (
-            <span className={styles.timingBadge}>generated in {keyGenMs}ms</span>
+            <span className={styles.timingBadge}>
+              generated in {keyGenMs}ms
+            </span>
           )}
         </div>
 
@@ -387,9 +464,9 @@ export default function RsaPage() {
               {!isIframe && publicKeyPem && (
                 <button
                   className={`${styles.copyBtn}${copiedPub ? ` ${styles.copied}` : ""}`}
-                  onClick={() =>
-                    copyWithTimeout(publicKeyPem, setCopiedPub, pubTimeoutRef)
-                  }
+                  onClick={() => {
+                    copyWithTimeout(publicKeyPem, setCopiedPub, pubTimeoutRef);
+                  }}
                 >
                   {copiedPub ? "Copied!" : "Copy"}
                 </button>
@@ -398,7 +475,9 @@ export default function RsaPage() {
             <textarea
               className={styles.keyTextarea}
               value={publicKeyPem}
-              onChange={(e) => setPublicKeyPem(e.target.value)}
+              onChange={(e) => {
+                setPublicKeyPem(e.target.value);
+              }}
               placeholder="Paste a PEM public key, or generate one above…"
               spellCheck={false}
             />
@@ -417,9 +496,13 @@ export default function RsaPage() {
               {!isIframe && privateKeyPem && (
                 <button
                   className={`${styles.copyBtn}${copiedPriv ? ` ${styles.copied}` : ""}`}
-                  onClick={() =>
-                    copyWithTimeout(privateKeyPem, setCopiedPriv, privTimeoutRef)
-                  }
+                  onClick={() => {
+                    copyWithTimeout(
+                      privateKeyPem,
+                      setCopiedPriv,
+                      privTimeoutRef,
+                    );
+                  }}
                 >
                   {copiedPriv ? "Copied!" : "Copy"}
                 </button>
@@ -428,7 +511,9 @@ export default function RsaPage() {
             <textarea
               className={`${styles.keyTextarea} ${styles.privateKeyTextarea}`}
               value={privateKeyPem}
-              onChange={(e) => setPrivateKeyPem(e.target.value)}
+              onChange={(e) => {
+                setPrivateKeyPem(e.target.value);
+              }}
               placeholder="Paste a PEM private key, or generate one above…"
               spellCheck={false}
             />
@@ -443,7 +528,8 @@ export default function RsaPage() {
 
         {(encryptKey || decryptKey) && (
           <div className={styles.infoBox}>
-            Algorithm: RSA-OAEP · Hash: SHA-256 · Key size: 2048 bits · Public exponent: 65537
+            Algorithm: RSA-OAEP · Hash: SHA-256 · Key size: 2048 bits · Public
+            exponent: 65537
           </div>
         )}
       </div>
@@ -456,7 +542,9 @@ export default function RsaPage() {
           <span className={styles.stepBadge}>Step 2</span>
           <span className={styles.stepTitle}>Encrypt</span>
           {encryptMs !== null && (
-            <span className={styles.timingBadge}>encrypted in {encryptMs}ms</span>
+            <span className={styles.timingBadge}>
+              encrypted in {encryptMs}ms
+            </span>
           )}
         </div>
 
@@ -479,7 +567,9 @@ export default function RsaPage() {
           <textarea
             className={styles.textarea}
             value={plaintext}
-            onChange={(e) => setPlaintext(e.target.value)}
+            onChange={(e) => {
+              setPlaintext(e.target.value);
+            }}
             placeholder="Enter plaintext to encrypt…"
             spellCheck={false}
           />
@@ -488,13 +578,20 @@ export default function RsaPage() {
         <button
           className={styles.primaryBtn}
           onClick={handleEncrypt}
-          disabled={!cryptoAvailable || !encryptKey || plaintextBytes > 190 || encrypting}
+          disabled={
+            !cryptoAvailable ||
+            !encryptKey ||
+            plaintextBytes > 190 ||
+            encrypting
+          }
         >
           {encrypting ? "Encrypting…" : "Encrypt with Public Key"}
         </button>
 
         {!encryptKey && (
-          <div className={styles.annotation}>Add a public key in Step 1 first.</div>
+          <div className={styles.annotation}>
+            Add a public key in Step 1 first.
+          </div>
         )}
 
         {ciphertext && (
@@ -504,9 +601,9 @@ export default function RsaPage() {
               {!isIframe && (
                 <button
                   className={`${styles.copyBtn}${copiedCt ? ` ${styles.copied}` : ""}`}
-                  onClick={() =>
-                    copyWithTimeout(ciphertext, setCopiedCt, ctTimeoutRef)
-                  }
+                  onClick={() => {
+                    copyWithTimeout(ciphertext, setCopiedCt, ctTimeoutRef);
+                  }}
                 >
                   {copiedCt ? "Copied!" : "Copy"}
                 </button>
@@ -514,7 +611,8 @@ export default function RsaPage() {
             </div>
             <div className={styles.ciphertextOutput}>{ciphertext}</div>
             <div className={styles.annotation}>
-              Always 344 base64 chars (256 bytes) regardless of input length — RSA-OAEP 2048 produces a fixed-size block.
+              Always 344 base64 chars (256 bytes) regardless of input length —
+              RSA-OAEP 2048 produces a fixed-size block.
             </div>
           </div>
         )}
@@ -528,13 +626,16 @@ export default function RsaPage() {
           <span className={styles.stepBadge}>Step 3</span>
           <span className={styles.stepTitle}>Decrypt</span>
           {decryptMs !== null && (
-            <span className={styles.timingBadge}>decrypted in {decryptMs}ms</span>
+            <span className={styles.timingBadge}>
+              decrypted in {decryptMs}ms
+            </span>
           )}
         </div>
 
         {ciphertextFromUrl && (
           <div className={styles.urlNote}>
-            Ciphertext loaded from URL. Generate a key pair to decrypt, or paste your own ciphertext.
+            Ciphertext loaded from URL. Generate a key pair to decrypt, or paste
+            your own ciphertext.
           </div>
         )}
 
@@ -545,7 +646,9 @@ export default function RsaPage() {
           <textarea
             className={styles.textarea}
             value={ctInput}
-            onChange={(e) => setCtInput(e.target.value)}
+            onChange={(e) => {
+              setCtInput(e.target.value);
+            }}
             placeholder="Paste base64 ciphertext here, or encrypt something in Step 2…"
             spellCheck={false}
           />
@@ -555,7 +658,9 @@ export default function RsaPage() {
           <button
             className={styles.primaryBtn}
             onClick={handleDecrypt}
-            disabled={!cryptoAvailable || !decryptKey || !ctInput.trim() || decrypting}
+            disabled={
+              !cryptoAvailable || !decryptKey || !ctInput.trim() || decrypting
+            }
           >
             {decrypting ? "Decrypting…" : "Decrypt with Private Key"}
           </button>
@@ -588,22 +693,28 @@ export default function RsaPage() {
             <div className={styles.errorTitle}>Decryption failed</div>
             <div className={styles.errorMsg}>{decryptError}</div>
             <div className={styles.annotation}>
-              The ciphertext may have been tampered with, or the wrong key was used.
+              The ciphertext may have been tampered with, or the wrong key was
+              used.
             </div>
           </div>
         )}
 
         {wrongKeyError !== null && (
           <div className={styles.errorPanel}>
-            <div className={styles.errorTitle}>Wrong key — decryption failed (expected)</div>
+            <div className={styles.errorTitle}>
+              Wrong key — decryption failed (expected)
+            </div>
             <div className={styles.errorMsg}>{wrongKeyError}</div>
             <div className={styles.annotation}>
-              This is the expected result. Without the matching private key, decryption is computationally infeasible — RSA security relies on the hardness of factoring large primes.
+              This is the expected result. Without the matching private key,
+              decryption is computationally infeasible — RSA security relies on
+              the hardness of factoring large primes.
             </div>
             {wrongPrivKeyPem && (
               <>
                 <div className={styles.annotation} style={{ marginTop: "6px" }}>
-                  Wrong private key used (freshly generated, unrelated to the encrypting key pair):
+                  Wrong private key used (freshly generated, unrelated to the
+                  encrypting key pair):
                 </div>
                 <textarea
                   className={`${styles.keyTextarea} ${styles.privateKeyTextarea}`}
@@ -625,9 +736,9 @@ export default function RsaPage() {
         {!isIframe && (
           <button
             className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-            onClick={() =>
-              copyWithTimeout(url, setPermalinkCopied, permalinkTimeoutRef)
-            }
+            onClick={() => {
+              copyWithTimeout(url, setPermalinkCopied, permalinkTimeoutRef);
+            }}
           >
             {permalinkCopied ? "Copied!" : "Copy"}
           </button>

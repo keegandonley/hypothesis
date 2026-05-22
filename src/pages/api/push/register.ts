@@ -7,13 +7,16 @@ const UUID_RE =
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
-) {
+  res: NextApiResponse,
+): Promise<void> {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "method not allowed" });
+    res.status(405).json({ error: "method not allowed" });
+
+    return;
   }
 
-  const { deviceId, deviceSecret, token, platform, sandbox } = (req.body ?? {}) as {
+  const { deviceId, deviceSecret, token, platform, sandbox } = (req.body ??
+    {}) as {
     deviceId?: string;
     deviceSecret?: string;
     token?: string;
@@ -22,13 +25,21 @@ export default async function handler(
   };
 
   if (!deviceId || !UUID_RE.test(deviceId)) {
-    return res.status(400).json({ error: "invalid or missing deviceId" });
+    res.status(400).json({ error: "invalid or missing deviceId" });
+
+    return;
   }
+
   if (!token || typeof token !== "string" || token.trim() === "") {
-    return res.status(400).json({ error: "missing token" });
+    res.status(400).json({ error: "missing token" });
+
+    return;
   }
+
   if (!platform || typeof platform !== "string" || platform.trim() === "") {
-    return res.status(400).json({ error: "missing platform" });
+    res.status(400).json({ error: "missing platform" });
+
+    return;
   }
 
   try {
@@ -46,14 +57,20 @@ export default async function handler(
       console.warn("[analytics] failed to track Device Registered", err);
     }
 
-    return res.status(200).json({ ok: true });
+    res.status(200).json({ ok: true });
+
+    return;
   } catch (err) {
     if (err instanceof Error && err.message === "secret_mismatch") {
-      return res.status(403).json({ error: "forbidden" });
+      res.status(403).json({ error: "forbidden" });
+
+      return;
     }
 
     console.error("push register error", err);
 
-    return res.status(500).json({ error: "internal server error" });
+    res.status(500).json({ error: "internal server error" });
+
+    return;
   }
 }

@@ -140,8 +140,7 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       },
       {
         key: "NSRemindersUsageDescription",
-        description:
-          "Legacy key for Reminders access. Superseded in iOS 17.",
+        description: "Legacy key for Reminders access. Superseded in iOS 17.",
         introduced: "iOS 6",
         deprecated: true,
         deprecatedNote: "Use NSRemindersFullAccessUsageDescription",

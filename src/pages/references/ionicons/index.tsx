@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import styles from "@/styles/reference.module.css";
 import iStyles from "@/styles/ionicons.module.css";
 import { useBranding } from "@/lib/branding";
@@ -12,70 +12,74 @@ const VARIANT_LABELS = [
   { suffix: "-sharp", label: "sharp" },
 ] as const;
 
-export default function IoniconsPage() {
+export default function IoniconsPage(): React.ReactNode {
   const branding = useBranding();
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [search, setSearch] = useState(() =>
+    typeof window === "undefined"
+      ? ""
+      : (new URLSearchParams(window.location.search).get("q") ?? ""),
+  );
+  const [activeCategory, setActiveCategory] = useState(() =>
+    typeof window === "undefined"
+      ? "all"
+      : (new URLSearchParams(window.location.search).get("cat") ?? "all"),
+  );
   const [copiedName, setCopiedName] = useState<string | null>(null);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("q");
-    const cat = params.get("cat");
-    if (q) setSearch(q);
-    if (cat) setActiveCategory(cat);
-  }, []);
-
-  function updateUrl(q: string, cat: string) {
+  function updateUrl(q: string, cat: string): void {
     const params = new URLSearchParams();
+
     if (q) params.set("q", q);
     if (cat !== "all") params.set("cat", cat);
     const qs = params.toString();
+
     history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }
 
-  function handleSearch(value: string) {
+  function handleSearch(value: string): void {
     setSearch(value);
     updateUrl(value, activeCategory);
   }
 
-  function handleCategoryToggle(cat: string) {
+  function handleCategoryToggle(cat: string): void {
     const next = activeCategory === cat ? "all" : cat;
+
     setActiveCategory(next);
     updateUrl(search, next);
   }
 
-  async function handleCopy(name: string) {
-    try {
-      await navigator.clipboard.writeText(name);
-    } catch {
-      const el = document.createElement("textarea");
-      el.value = name;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand("copy");
-      document.body.removeChild(el);
-    }
+  function handleCopy(name: string): void {
+    void navigator.clipboard.writeText(name);
+
     setCopiedName(name);
-    setTimeout(() => setCopiedName((prev) => (prev === name ? null : prev)), 1500);
+    setTimeout(() => {
+      setCopiedName((prev) => (prev === name ? null : prev));
+    }, 1500);
   }
 
   const filteredCategories = useMemo(() => {
     const q = search.toLowerCase().trim();
+
     return IONICON_CATEGORIES.map((cat) => {
       const icons = cat.icons.filter((name) => {
-        if (activeCategory !== "all" && activeCategory !== cat.label) return false;
+        if (activeCategory !== "all" && activeCategory !== cat.label)
+          return false;
         if (!q) return true;
+
         return name.toLowerCase().includes(q);
       });
+
       return { ...cat, icons };
     }).filter((c) => c.icons.length > 0);
   }, [search, activeCategory]);
 
-  const totalVisible = filteredCategories.reduce((n, c) => n + c.icons.length, 0);
+  const totalVisible = filteredCategories.reduce(
+    (n, c) => n + c.icons.length,
+    0,
+  );
   const totalAll = IONICON_CATEGORIES.reduce((n, c) => n + c.icons.length, 0);
 
-  const isLogoCategory = (label: string) => label === "Logos & Brands";
+  const isLogoCategory = (label: string): boolean => label === "Logos & Brands";
 
   return (
     <div className={styles.page}>
@@ -97,7 +101,10 @@ export default function IoniconsPage() {
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="Ionicons" />
-        <link rel="canonical" href="https://hypothesis.sh/references/ionicons" />
+        <link
+          rel="canonical"
+          href="https://hypothesis.sh/references/ionicons"
+        />
       </Head>
 
       <div className={styles.inner}>
@@ -115,8 +122,8 @@ export default function IoniconsPage() {
           <p className={styles.tagline}>
             All icons available via{" "}
             <code style={{ fontSize: "11px" }}>@expo/vector-icons</code>{" "}
-            Ionicons — {totalAll} base icons, each with filled, outline, and sharp variants (except logos).
-            Click any name to copy.
+            Ionicons — {totalAll} base icons, each with filled, outline, and
+            sharp variants (except logos). Click any name to copy.
           </p>
         </div>
 
@@ -128,14 +135,18 @@ export default function IoniconsPage() {
               type="text"
               placeholder="Search icon names..."
               value={search}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => {
+                handleSearch(e.target.value);
+              }}
               autoComplete="off"
               spellCheck={false}
             />
             {search && (
               <button
                 className={styles.clearBtn}
-                onClick={() => handleSearch("")}
+                onClick={() => {
+                  handleSearch("");
+                }}
                 aria-label="Clear search"
               >
                 ✕
@@ -146,7 +157,9 @@ export default function IoniconsPage() {
           <div className={styles.classFilters}>
             <button
               className={`${styles.classBtn} ${activeCategory === "all" ? styles.classBtnActive : ""}`}
-              onClick={() => handleCategoryToggle("all")}
+              onClick={() => {
+                handleCategoryToggle("all");
+              }}
             >
               All
               <span className={styles.classBtnLabel}>{totalAll}</span>
@@ -161,7 +174,9 @@ export default function IoniconsPage() {
                     "--cls-subtle": cat.subtle,
                   } as React.CSSProperties
                 }
-                onClick={() => handleCategoryToggle(cat.label)}
+                onClick={() => {
+                  handleCategoryToggle(cat.label);
+                }}
               >
                 {cat.label}
                 <span className={styles.classBtnLabel}>{cat.icons.length}</span>
@@ -172,7 +187,9 @@ export default function IoniconsPage() {
 
         <div className={styles.content}>
           {filteredCategories.length === 0 ? (
-            <div className={styles.empty}>No icons match &ldquo;{search}&rdquo;</div>
+            <div className={styles.empty}>
+              No icons match &ldquo;{search}&rdquo;
+            </div>
           ) : (
             <>
               {search && (
@@ -194,24 +211,32 @@ export default function IoniconsPage() {
                   >
                     <span className={styles.sectionClass}>{cat.label}</span>
                     <span className={styles.sectionCount}>
-                      {cat.icons.length} {cat.icons.length === 1 ? "icon" : "icons"}
+                      {cat.icons.length}{" "}
+                      {cat.icons.length === 1 ? "icon" : "icons"}
                     </span>
                   </div>
 
                   <div className={iStyles.iconGrid}>
                     {cat.icons.map((name) => {
-                      const isLogo = isLogoCategory(cat.label) || name === "ionicons";
+                      const isLogo =
+                        isLogoCategory(cat.label) || name === "ionicons";
+
                       return (
                         <div
                           key={name}
                           className={iStyles.iconCard}
                           style={
-                            { "--cls-color": cat.color, "--cls-subtle": cat.subtle } as React.CSSProperties
+                            {
+                              "--cls-color": cat.color,
+                              "--cls-subtle": cat.subtle,
+                            } as React.CSSProperties
                           }
                         >
                           <button
                             className={iStyles.iconName}
-                            onClick={() => handleCopy(name)}
+                            onClick={() => {
+                              handleCopy(name);
+                            }}
                             title={`Copy "${name}"`}
                           >
                             {copiedName === name ? (
@@ -226,7 +251,9 @@ export default function IoniconsPage() {
                                 <button
                                   key={suffix}
                                   className={iStyles.variantChip}
-                                  onClick={() => handleCopy(name + suffix)}
+                                  onClick={() => {
+                                    handleCopy(name + suffix);
+                                  }}
                                   title={`Copy "${name + suffix}"`}
                                 >
                                   {copiedName === name + suffix ? "✓" : label}

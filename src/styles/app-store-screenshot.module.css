@@ -237,7 +237,10 @@
   color: var(--muted);
   text-transform: uppercase;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    color 0.15s,
+    background 0.15s;
   flex-shrink: 0;
 }
 

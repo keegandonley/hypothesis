@@ -25,13 +25,13 @@ The checked password is intentionally never written to the URL or sent anywhere.
 
 Entropy = `length × log₂(charsetSize)`, where charsetSize is the sum of each present character class: 26 (uppercase) + 26 (lowercase) + 10 (digits) + 32 (symbols). This is a lower-bound estimate — it assumes a random draw from the observed classes and does not account for dictionary words, patterns, or repeated characters.
 
-| Strength | Entropy range |
-|----------|--------------|
-| Very Weak | < 28 bits |
-| Weak | 28–35 bits |
-| Fair | 36–59 bits |
-| Strong | 60–127 bits |
-| Very Strong | ≥ 128 bits |
+| Strength    | Entropy range |
+| ----------- | ------------- |
+| Very Weak   | < 28 bits     |
+| Weak        | 28–35 bits    |
+| Fair        | 36–59 bits    |
+| Strong      | 60–127 bits   |
+| Very Strong | ≥ 128 bits    |
 
 ## Permalink
 

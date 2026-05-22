@@ -2,10 +2,11 @@ import fs from "fs";
 import path from "path";
 import Head from "next/head";
 import Link from "next/link";
-import { GetStaticPaths, GetStaticProps } from "next";
+import { type GetStaticPaths, type GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import styles from "../../styles/docs.module.css";
 import { useBranding } from "@/lib/branding";
+import React from "react";
 
 const DOCS_DIR = path.join(process.cwd(), "src/content/docs");
 const EXPERIMENT_SLUGS = new Set([
@@ -16,18 +17,21 @@ const EXPERIMENT_SLUGS = new Set([
   "rsa",
 ]);
 
-export const getStaticPaths: GetStaticPaths = async () => {
+export const getStaticPaths: GetStaticPaths = () => {
   const files = fs.readdirSync(DOCS_DIR);
   const paths = files
     .filter((f) => f.endsWith(".md"))
     .map((f) => ({ params: { slug: f.replace(/\.md$/, "") } }));
+
   return { paths, fallback: false };
 };
 
 function extractFirstParagraph(md: string): string {
   const lines = md.split("\n");
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
     if (
       line.length > 0 &&
       !line.startsWith("#") &&
@@ -43,11 +47,12 @@ function extractFirstParagraph(md: string): string {
         .slice(0, 160);
     }
   }
+
   return "";
 }
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const slug = params!.slug as string;
+export const getStaticProps: GetStaticProps = ({ params }) => {
+  const slug = (params?.slug as string) ?? "";
   const content = fs.readFileSync(path.join(DOCS_DIR, `${slug}.md`), "utf-8");
   const description = extractFirstParagraph(content);
   const toolPageExists = fs.existsSync(
@@ -58,6 +63,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       ? "experiment"
       : "tool"
     : null;
+
   return { props: { slug, content, description, itemLabel } };
 };
 
@@ -83,11 +89,13 @@ function parseMarkdown(md: string): Node[] {
     if (line.startsWith("```")) {
       const lang = line.slice(3).trim();
       const codeLines: string[] = [];
+
       i++;
       while (i < lines.length && !lines[i].startsWith("```")) {
         codeLines.push(lines[i]);
         i++;
       }
+
       nodes.push({ type: "pre", lang, code: codeLines.join("\n") });
       i++;
       continue;
@@ -99,11 +107,13 @@ function parseMarkdown(md: string): Node[] {
       i++;
       continue;
     }
+
     if (line.startsWith("## ")) {
       nodes.push({ type: "h2", text: line.slice(3) });
       i++;
       continue;
     }
+
     if (line.startsWith("# ")) {
       nodes.push({ type: "h1", text: line.slice(2) });
       i++;
@@ -112,20 +122,23 @@ function parseMarkdown(md: string): Node[] {
 
     // Table
     if (line.startsWith("|")) {
-      const parseRow = (l: string) =>
+      const parseRow = (l: string): string[] =>
         l
           .split("|")
           .slice(1, -1)
           .map((c) => c.trim());
       const headers = parseRow(line);
+
       i++;
       // skip separator row (---|---)
       if (i < lines.length && lines[i].startsWith("|")) i++;
       const rows: string[][] = [];
+
       while (i < lines.length && lines[i].startsWith("|")) {
         rows.push(parseRow(lines[i]));
         i++;
       }
+
       nodes.push({ type: "table", headers, rows });
       continue;
     }
@@ -133,6 +146,7 @@ function parseMarkdown(md: string): Node[] {
     // Unordered list
     if (line.startsWith("- ") || line.startsWith("* ")) {
       const items: string[] = [];
+
       while (
         i < lines.length &&
         (lines[i].startsWith("- ") || lines[i].startsWith("* "))
@@ -140,6 +154,7 @@ function parseMarkdown(md: string): Node[] {
         items.push(lines[i].slice(2));
         i++;
       }
+
       nodes.push({ type: "ul", items });
       continue;
     }
@@ -147,10 +162,12 @@ function parseMarkdown(md: string): Node[] {
     // Ordered list
     if (/^\d+\.\s/.test(line)) {
       const items: string[] = [];
+
       while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
         items.push(lines[i].replace(/^\d+\.\s/, ""));
         i++;
       }
+
       nodes.push({ type: "ol", items });
       continue;
     }
@@ -163,6 +180,7 @@ function parseMarkdown(md: string): Node[] {
 
     // Paragraph — collect consecutive plain lines
     const paraLines: string[] = [];
+
     while (
       i < lines.length &&
       lines[i].trim() !== "" &&
@@ -175,6 +193,7 @@ function parseMarkdown(md: string): Node[] {
       paraLines.push(lines[i]);
       i++;
     }
+
     if (paraLines.length > 0) {
       nodes.push({ type: "p", text: paraLines.join(" ") });
     }
@@ -183,25 +202,31 @@ function parseMarkdown(md: string): Node[] {
   return nodes;
 }
 
-function Inline({ text }: { text: string }) {
+function Inline({ text }: { text: string }): React.ReactNode {
   const parts = text.split(
     /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g,
   );
+
   return (
     <>
       {parts.map((part, i) => {
         if (part.startsWith("**") && part.endsWith("**")) {
           return <strong key={i}>{part.slice(2, -2)}</strong>;
         }
+
         if (part.startsWith("*") && part.endsWith("*")) {
           return <em key={i}>{part.slice(1, -1)}</em>;
         }
+
         if (part.startsWith("`") && part.endsWith("`")) {
           return <code key={i}>{part.slice(1, -1)}</code>;
         }
-        const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+
+        const linkMatch = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
+
         if (linkMatch) {
           const isExternal = /^https?:\/\//.test(linkMatch[2]);
+
           return (
             <a
               key={i}
@@ -214,6 +239,7 @@ function Inline({ text }: { text: string }) {
             </a>
           );
         }
+
         return part;
       })}
     </>
@@ -228,9 +254,10 @@ function MarkdownContent({
   content: string;
   actionType: string;
   slug: string;
-}) {
+}): React.ReactNode {
   const substituted = content.replace(/hypothesis-test/g, actionType);
   const nodes = parseMarkdown(substituted);
+
   return (
     <div className={styles.content}>
       {nodes.map((node, i) => {
@@ -293,7 +320,12 @@ function MarkdownContent({
             );
           case "pre":
             return (
-              <pre key={i} className={slug === "ascii-art" ? styles.asciiExample : undefined}>
+              <pre
+                key={i}
+                className={
+                  slug === "ascii-art" ? styles.asciiExample : undefined
+                }
+              >
                 <code>{node.code}</code>
               </pre>
             );
@@ -340,11 +372,12 @@ export default function DocsPage({
   content: string;
   description: string;
   itemLabel: "tool" | "experiment" | null;
-}) {
+}): React.ReactNode {
   const branding = useBranding();
   const router = useRouter();
   const embed = router.query.embed === "true";
   const ogTitle = `${slug.charAt(0).toUpperCase()}${slug.slice(1)} Docs`;
+
   return (
     <div className={styles.page}>
       <Head>
@@ -393,7 +426,11 @@ export default function DocsPage({
             <hr className={styles.divider} />
           </>
         )}
-        <MarkdownContent content={content} actionType={branding.actionType} slug={slug} />
+        <MarkdownContent
+          content={content}
+          actionType={branding.actionType}
+          slug={slug}
+        />
       </div>
     </div>
   );

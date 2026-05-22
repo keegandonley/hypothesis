@@ -178,7 +178,9 @@
   color: var(--muted);
   text-transform: uppercase;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
   white-space: nowrap;
   flex-shrink: 0;
 }

@@ -14,13 +14,13 @@ This tool computes all five algorithm outputs simultaneously. SHA hashing uses t
 
 ## Supported Algorithms
 
-| Algorithm | Output length | Common use |
-|-----------|--------------|------------|
-| MD5 | 32 hex chars (128 bits) | Legacy checksums, ETags, file verification |
-| SHA-1 | 40 hex chars (160 bits) | Legacy checksums, Git object IDs |
-| SHA-256 | 64 hex chars (256 bits) | File integrity, API signatures, TLS |
-| SHA-384 | 96 hex chars (384 bits) | TLS certificates, higher-security contexts |
-| SHA-512 | 128 hex chars (512 bits) | Password hashing pipelines, HMAC |
+| Algorithm | Output length            | Common use                                 |
+| --------- | ------------------------ | ------------------------------------------ |
+| MD5       | 32 hex chars (128 bits)  | Legacy checksums, ETags, file verification |
+| SHA-1     | 40 hex chars (160 bits)  | Legacy checksums, Git object IDs           |
+| SHA-256   | 64 hex chars (256 bits)  | File integrity, API signatures, TLS        |
+| SHA-384   | 96 hex chars (384 bits)  | TLS certificates, higher-security contexts |
+| SHA-512   | 128 hex chars (512 bits) | Password hashing pipelines, HMAC           |
 
 MD5 and SHA-1 are cryptographically broken and should not be used for security purposes (e.g. password storage or digital signatures). They remain useful for non-security checksums and legacy system compatibility.
 

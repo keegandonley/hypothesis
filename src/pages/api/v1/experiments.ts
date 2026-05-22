@@ -3,9 +3,17 @@ import { experiments, type ExperimentItem } from "@/lib/tools";
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ExperimentItem[]>
-) {
-  if (req.method !== "GET") return res.status(405).end();
-  res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
+  res: NextApiResponse<ExperimentItem[]>,
+): void {
+  if (req.method !== "GET") {
+    res.status(405).end();
+
+    return;
+  }
+
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=3600, stale-while-revalidate=86400",
+  );
   res.json(experiments);
 }

@@ -8,15 +8,15 @@ Look up your current public IP address and geolocation details.
 
 ## Fields
 
-| Field | Source header | Description |
-| --- | --- | --- |
-| **IP Address** | `x-vercel-forwarded-for` | Your public-facing IP address as seen by the edge |
-| **City** | `x-vercel-ip-city` | Approximate city based on IP geolocation |
-| **Region** | `x-vercel-ip-country-region` | ISO 3166-2 region/state code |
-| **Country** | `x-vercel-ip-country` | ISO 3166-1 alpha-2 country code |
-| **Latitude** | `x-vercel-ip-latitude` | Approximate latitude |
-| **Longitude** | `x-vercel-ip-longitude` | Approximate longitude |
-| **Timezone** | `x-vercel-ip-timezone` | IANA timezone identifier (e.g. `America/New_York`) |
+| Field          | Source header                | Description                                        |
+| -------------- | ---------------------------- | -------------------------------------------------- |
+| **IP Address** | `x-vercel-forwarded-for`     | Your public-facing IP address as seen by the edge  |
+| **City**       | `x-vercel-ip-city`           | Approximate city based on IP geolocation           |
+| **Region**     | `x-vercel-ip-country-region` | ISO 3166-2 region/state code                       |
+| **Country**    | `x-vercel-ip-country`        | ISO 3166-1 alpha-2 country code                    |
+| **Latitude**   | `x-vercel-ip-latitude`       | Approximate latitude                               |
+| **Longitude**  | `x-vercel-ip-longitude`      | Approximate longitude                              |
+| **Timezone**   | `x-vercel-ip-timezone`       | IANA timezone identifier (e.g. `America/New_York`) |
 
 ## API Usage
 

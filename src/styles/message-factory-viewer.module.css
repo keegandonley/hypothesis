@@ -96,7 +96,10 @@
   font-weight: 600;
   color: var(--text);
   cursor: pointer;
-  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s,
+    color 0.15s;
   min-width: 120px;
   letter-spacing: 0.02em;
 }

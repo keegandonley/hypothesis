@@ -4,17 +4,17 @@ Convert any text between common naming conventions used in code, configuration, 
 
 ## Supported formats
 
-| Format | Example |
-|---|---|
-| camelCase | helloWorldFoo |
-| PascalCase | HelloWorldFoo |
-| snake_case | hello_world_foo |
-| kebab-case | hello-world-foo |
+| Format          | Example         |
+| --------------- | --------------- |
+| camelCase       | helloWorldFoo   |
+| PascalCase      | HelloWorldFoo   |
+| snake_case      | hello_world_foo |
+| kebab-case      | hello-world-foo |
 | SCREAMING_SNAKE | HELLO_WORLD_FOO |
-| Title Case | Hello World Foo |
-| lowercase | hello world foo |
-| UPPERCASE | HELLO WORLD FOO |
-| dot.case | hello.world.foo |
+| Title Case      | Hello World Foo |
+| lowercase       | hello world foo |
+| UPPERCASE       | HELLO WORLD FOO |
+| dot.case        | hello.world.foo |
 
 ## How it works
 

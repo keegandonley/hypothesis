@@ -12,21 +12,26 @@ function readBody(req: NextApiRequest): Promise<string> {
   return new Promise((resolve, reject) => {
     let data = "";
     let byteLength = 0;
+
     req.on("data", (chunk: Buffer) => {
       byteLength += chunk.byteLength;
       if (byteLength > MAX_BODY_BYTES) {
         req.destroy();
         reject(new Error("PAYLOAD_TOO_LARGE"));
+
         return;
       }
-      data += chunk;
+
+      data += chunk.toString();
     });
-    req.on("end", () => resolve(data));
+    req.on("end", () => {
+      resolve(data);
+    });
     req.on("error", reject);
   });
 }
 
-type XcodeCloudEvent = {
+interface XcodeCloudEvent {
   metadata?: {
     attributes?: {
       eventType?: string;
@@ -58,13 +63,17 @@ type XcodeCloudEvent = {
       kind?: string;
     };
   };
-};
+}
 
-function formatNotification(event: XcodeCloudEvent): { title: string; subtitle: string; body: string } {
+function formatNotification(event: XcodeCloudEvent): {
+  title: string;
+  subtitle: string;
+  body: string;
+} {
   const productName = event.ciProduct?.attributes?.name ?? "Unknown App";
   const buildNumber = event.ciBuildRun?.attributes?.number;
   const branch = event.scmGitReference?.attributes?.name;
-  const eventType = event.metadata?.attributes?.eventType;
+  const eventType = event.metadata?.attributes?.eventType ?? "";
 
   const detail = [
     branch ?? null,
@@ -74,44 +83,85 @@ function formatNotification(event: XcodeCloudEvent): { title: string; subtitle: 
     .join(" · ");
 
   let title: string;
+
   switch (eventType) {
-    case "BUILD_CREATED":   title = "Build created";   break;
-    case "BUILD_STARTED":   title = "Build started";   break;
-    case "BUILD_SUCCEEDED": title = "Build succeeded"; break;
-    case "BUILD_FAILED":    title = "Build failed";    break;
-    case "BUILD_ERRORED":   title = "Build errored";   break;
-    case "BUILD_CANCELED":  title = "Build canceled";  break;
-    case "BUILD_COMPLETED": title = "Build completed"; break;
-    default:                title = eventType ?? "Unknown event"; break;
+    case "BUILD_CREATED":
+      title = "Build created";
+      break;
+    case "BUILD_STARTED":
+      title = "Build started";
+      break;
+    case "BUILD_SUCCEEDED":
+      title = "Build succeeded";
+      break;
+    case "BUILD_FAILED":
+      title = "Build failed";
+      break;
+    case "BUILD_ERRORED":
+      title = "Build errored";
+      break;
+    case "BUILD_CANCELED":
+      title = "Build canceled";
+      break;
+    case "BUILD_COMPLETED":
+      title = "Build completed";
+      break;
+    default:
+      title = eventType ?? "Unknown event";
+      break;
   }
 
   return { title, subtitle: productName, body: detail };
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") return res.status(405).end();
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+): Promise<void> {
+  if (req.method !== "POST") {
+    res.status(405).end();
+
+    return;
+  }
 
   const { deviceId } = req.query as { deviceId: string };
 
   let rawBody: string;
+
   try {
     rawBody = await readBody(req);
   } catch (e) {
     if ((e as Error).message === "PAYLOAD_TOO_LARGE") {
-      return res.status(413).json({ error: "payload too large" });
+      res.status(413).json({ error: "payload too large" });
+
+      return;
     }
+
     throw e;
   }
 
   const device = await getPushTokenByDeviceId(deviceId);
-  if (!device) return res.status(404).json({ error: "device not found" });
-  if (!device.token) return res.status(200).end();
+
+  if (!device) {
+    res.status(404).json({ error: "device not found" });
+
+    return;
+  }
+
+  if (!device.token) {
+    res.status(200).end();
+
+    return;
+  }
 
   let event: XcodeCloudEvent;
+
   try {
     event = JSON.parse(rawBody) as XcodeCloudEvent;
   } catch {
-    return res.status(400).json({ error: "invalid JSON" });
+    res.status(400).json({ error: "invalid JSON" });
+
+    return;
   }
 
   const eventType = event.metadata?.attributes?.eventType;
@@ -124,7 +174,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     icon: "logo-apple-appstore",
   };
 
-  const result = await sendApnsNotification(device.token, title, body, data, { subtitle }, device.sandbox);
+  const result = await sendApnsNotification(
+    device.token,
+    title,
+    body,
+    data,
+    { subtitle },
+    device.sandbox,
+  );
 
   await insertPushNotification({
     deviceId,
@@ -133,17 +190,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     data,
     apnsId: result.apnsId ?? null,
     success: result.ok,
-  }).catch((err) => console.error("[xcode-webhook] failed to record notification", err));
+  }).catch((err: unknown) => {
+    console.error("[xcode-webhook] failed to record notification", err);
+  });
 
   try {
-    await track("Xcode Cloud Webhook Received", { eventType: eventType ?? "unknown", success: result.ok });
+    await track("Xcode Cloud Webhook Received", {
+      eventType: eventType ?? "unknown",
+      success: result.ok,
+    });
   } catch (err) {
-    console.warn("[analytics] failed to track Xcode Cloud Webhook Received", err);
+    console.warn(
+      "[analytics] failed to track Xcode Cloud Webhook Received",
+      err,
+    );
   }
 
   if (!result.ok) {
-    console.error(`[xcode-webhook] APNS error for device ${deviceId}:`, result.error);
+    console.error(
+      `[xcode-webhook] APNS error for device ${deviceId}:`,
+      result.error,
+    );
   }
 
-  return res.status(200).json({ ok: true });
+  res.status(200).json({ ok: true });
 }

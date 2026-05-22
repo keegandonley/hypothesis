@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/css-unit.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -8,7 +8,17 @@ import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
-type CSSUnit = "px" | "rem" | "em" | "%" | "vh" | "vw" | "pt" | "cm" | "mm" | "in";
+type CSSUnit =
+  | "px"
+  | "rem"
+  | "em"
+  | "%"
+  | "vh"
+  | "vw"
+  | "pt"
+  | "cm"
+  | "mm"
+  | "in";
 
 interface ConversionContext {
   baseFontSize: number; // px
@@ -24,9 +34,24 @@ const DEFAULT_CONTEXT: ConversionContext = {
   parentSize: 16,
 };
 
-const UNITS: CSSUnit[] = ["px", "rem", "em", "%", "vh", "vw", "pt", "cm", "mm", "in"];
+const UNITS: CSSUnit[] = [
+  "px",
+  "rem",
+  "em",
+  "%",
+  "vh",
+  "vw",
+  "pt",
+  "cm",
+  "mm",
+  "in",
+];
 
-function convertToPx(value: number, unit: CSSUnit, context: ConversionContext): number {
+function convertToPx(
+  value: number,
+  unit: CSSUnit,
+  context: ConversionContext,
+): number {
   switch (unit) {
     case "px":
       return value;
@@ -53,7 +78,11 @@ function convertToPx(value: number, unit: CSSUnit, context: ConversionContext): 
   }
 }
 
-function convertFromPx(pxValue: number, unit: CSSUnit, context: ConversionContext): number {
+function convertFromPx(
+  pxValue: number,
+  unit: CSSUnit,
+  context: ConversionContext,
+): number {
   switch (unit) {
     case "px":
       return pxValue;
@@ -84,7 +113,7 @@ function formatNumber(num: number): string {
   return num.toFixed(3);
 }
 
-export default function CssUnitPage() {
+export default function CssUnitPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [inputValue, setInputValue] = useState<string>("16");
@@ -96,7 +125,11 @@ export default function CssUnitPage() {
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const copyUnitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const buildUrl = (value: string, unit: CSSUnit, ctx: ConversionContext) => {
+  const buildUrl = (
+    value: string,
+    unit: CSSUnit,
+    ctx: ConversionContext,
+  ): string => {
     const params = new URLSearchParams({
       value,
       unit,
@@ -105,6 +138,7 @@ export default function CssUnitPage() {
       vh: ctx.viewportHeight.toString(),
       ps: ctx.parentSize.toString(),
     });
+
     return `${window.location.origin}${window.location.pathname}?${params}`;
   };
 
@@ -118,11 +152,19 @@ export default function CssUnitPage() {
     const ps = params.get("ps");
 
     const newContext = { ...DEFAULT_CONTEXT };
-    if (base) newContext.baseFontSize = parseFloat(base) || DEFAULT_CONTEXT.baseFontSize;
-    if (vw) newContext.viewportWidth = parseFloat(vw) || DEFAULT_CONTEXT.viewportWidth;
-    if (vh) newContext.viewportHeight = parseFloat(vh) || DEFAULT_CONTEXT.viewportHeight;
-    if (ps) newContext.parentSize = parseFloat(ps) || DEFAULT_CONTEXT.parentSize;
-    setContext(newContext);
+
+    if (base)
+      newContext.baseFontSize =
+        parseFloat(base) || DEFAULT_CONTEXT.baseFontSize;
+    if (vw)
+      newContext.viewportWidth =
+        parseFloat(vw) || DEFAULT_CONTEXT.viewportWidth;
+    if (vh)
+      newContext.viewportHeight =
+        parseFloat(vh) || DEFAULT_CONTEXT.viewportHeight;
+    if (ps)
+      newContext.parentSize = parseFloat(ps) || DEFAULT_CONTEXT.parentSize;
+    setContext(newContext); // eslint-disable-line react-hooks/set-state-in-effect
 
     if (value) setInputValue(value);
     if (unit && UNITS.includes(unit)) setInputUnit(unit);
@@ -130,55 +172,69 @@ export default function CssUnitPage() {
     setUrl(window.location.href);
   }, []);
 
-  const updateUrl = (value: string, unit: CSSUnit, ctx: ConversionContext) => {
+  const updateUrl = (
+    value: string,
+    unit: CSSUnit,
+    ctx: ConversionContext,
+  ): void => {
     const newUrl = buildUrl(value, unit, ctx);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleInputChange = (value: string) => {
+  const handleInputChange = (value: string): void => {
     setInputValue(value);
     updateUrl(value, inputUnit, context);
   };
 
-  const handleUnitChange = (unit: CSSUnit) => {
+  const handleUnitChange = (unit: CSSUnit): void => {
     setInputUnit(unit);
     updateUrl(inputValue, unit, context);
   };
 
-  const handleCardClick = (unit: CSSUnit, convertedValue: string) => {
+  const handleCardClick = (unit: CSSUnit, convertedValue: string): void => {
     setInputUnit(unit);
     setInputValue(convertedValue);
     updateUrl(convertedValue, unit, context);
   };
 
-  const handleContextChange = (key: keyof ConversionContext, value: number) => {
+  const handleContextChange = (
+    key: keyof ConversionContext,
+    value: number,
+  ): void => {
     const newContext = { ...context, [key]: value };
+
     setContext(newContext);
     updateUrl(inputValue, inputUnit, newContext);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleCardCopy = (unit: string, value: string) => {
-    copyToClipboard(value).then(() => {
+  const handleCardCopy = (unit: string, value: string): void => {
+    void copyToClipboard(value).then(() => {
       setCopiedUnit(unit);
       if (copyUnitTimeoutRef.current) clearTimeout(copyUnitTimeoutRef.current);
-      copyUnitTimeoutRef.current = setTimeout(() => setCopiedUnit(null), 1500);
+      copyUnitTimeoutRef.current = setTimeout(() => {
+        setCopiedUnit(null);
+      }, 1500);
     });
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setInputValue("16");
     setInputUnit("px");
     setContext(DEFAULT_CONTEXT);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
@@ -201,7 +257,12 @@ export default function CssUnitPage() {
       />
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -216,7 +277,9 @@ export default function CssUnitPage() {
         </div>
         <h1 className={styles.title}>CSS Unit</h1>
         <p className={styles.tagline}>Convert between CSS units</p>
-        <ReferenceLinks refs={[{ name: "CSS Selectors", slug: "css-selectors" }]} />
+        <ReferenceLinks
+          refs={[{ name: "CSS Selectors", slug: "css-selectors" }]}
+        />
       </div>
 
       <hr className={styles.divider} />
@@ -230,7 +293,9 @@ export default function CssUnitPage() {
           type="number"
           className={styles.valueInput}
           value={inputValue}
-          onChange={(e) => handleInputChange(e.target.value)}
+          onChange={(e) => {
+            handleInputChange(e.target.value);
+          }}
           placeholder="Enter value"
           step="any"
         />
@@ -239,7 +304,9 @@ export default function CssUnitPage() {
             <button
               key={unit}
               className={`${styles.unitPill} ${inputUnit === unit ? styles.active : ""}`}
-              onClick={() => handleUnitChange(unit)}
+              onClick={() => {
+                handleUnitChange(unit);
+              }}
             >
               {unit}
             </button>
@@ -255,7 +322,12 @@ export default function CssUnitPage() {
               type="number"
               className={styles.contextInput}
               value={context.baseFontSize}
-              onChange={(e) => handleContextChange("baseFontSize", parseFloat(e.target.value) || DEFAULT_CONTEXT.baseFontSize)}
+              onChange={(e) => {
+                handleContextChange(
+                  "baseFontSize",
+                  parseFloat(e.target.value) || DEFAULT_CONTEXT.baseFontSize,
+                );
+              }}
               min="1"
               step="1"
             />
@@ -269,7 +341,12 @@ export default function CssUnitPage() {
               type="number"
               className={styles.contextInput}
               value={context.viewportWidth}
-              onChange={(e) => handleContextChange("viewportWidth", parseFloat(e.target.value) || DEFAULT_CONTEXT.viewportWidth)}
+              onChange={(e) => {
+                handleContextChange(
+                  "viewportWidth",
+                  parseFloat(e.target.value) || DEFAULT_CONTEXT.viewportWidth,
+                );
+              }}
               min="1"
               step="1"
             />
@@ -283,7 +360,12 @@ export default function CssUnitPage() {
               type="number"
               className={styles.contextInput}
               value={context.viewportHeight}
-              onChange={(e) => handleContextChange("viewportHeight", parseFloat(e.target.value) || DEFAULT_CONTEXT.viewportHeight)}
+              onChange={(e) => {
+                handleContextChange(
+                  "viewportHeight",
+                  parseFloat(e.target.value) || DEFAULT_CONTEXT.viewportHeight,
+                );
+              }}
               min="1"
               step="1"
             />
@@ -297,7 +379,12 @@ export default function CssUnitPage() {
               type="number"
               className={styles.contextInput}
               value={context.parentSize}
-              onChange={(e) => handleContextChange("parentSize", parseFloat(e.target.value) || DEFAULT_CONTEXT.parentSize)}
+              onChange={(e) => {
+                handleContextChange(
+                  "parentSize",
+                  parseFloat(e.target.value) || DEFAULT_CONTEXT.parentSize,
+                );
+              }}
               min="1"
               step="1"
             />
@@ -315,13 +402,18 @@ export default function CssUnitPage() {
             <div
               key={unit}
               className={`${styles.conversionCard} ${unit === inputUnit ? styles.active : ""}`}
-              onClick={() => handleCardClick(unit as CSSUnit, value)}
+              onClick={() => {
+                handleCardClick(unit, value);
+              }}
             >
               <div className={styles.conversionCardHeader}>
                 <div className={styles.conversionUnit}>{unit}</div>
                 <button
                   className={styles.cardCopyBtn}
-                  onClick={(e) => { e.stopPropagation(); handleCardCopy(unit, value); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCardCopy(unit, value);
+                  }}
                 >
                   {copiedUnit === unit ? "✓" : "copy"}
                 </button>

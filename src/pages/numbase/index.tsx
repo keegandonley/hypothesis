@@ -7,7 +7,12 @@ import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 
-type Values = { bin: string; oct: string; dec: string; hex: string };
+interface Values {
+  bin: string;
+  oct: string;
+  dec: string;
+  hex: string;
+}
 
 const empty: Values = { bin: "", oct: "", dec: "", hex: "" };
 
@@ -20,7 +25,7 @@ function fromDecimal(n: number): Values {
   };
 }
 
-export default function NumbasePage() {
+export default function NumbasePage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [values, setValues] = useState<Values>(empty);
@@ -29,24 +34,40 @@ export default function NumbasePage() {
   const [copied, setCopied] = useState(false);
   const [copiedField, setCopiedField] = useState<keyof Values | null>(null);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyFieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyFieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
-  const buildUrl = (dec: string) => {
+  const buildUrl = (dec: string): string => {
     if (!dec) return `${window.location.origin}${window.location.pathname}`;
+
     return `${window.location.origin}${window.location.pathname}?value=${dec}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const value = params.get("value");
+
     if (value) {
       const n = Number(value);
-      if (!isNaN(n) && Number.isInteger(n) && n >= 0 && n <= Number.MAX_SAFE_INTEGER) setValues(fromDecimal(n));
+
+      if (
+        !isNaN(n) &&
+        Number.isInteger(n) &&
+        n >= 0 &&
+        n <= Number.MAX_SAFE_INTEGER
+      )
+        setValues(fromDecimal(n)); // eslint-disable-line react-hooks/set-state-in-effect
     }
+
     setUrl(window.location.href);
   }, []);
 
-  const handleChange = (raw: string, field: keyof Values, base: number) => {
+  const handleChange = (
+    raw: string,
+    field: keyof Values,
+    base: number,
+  ): void => {
     const trimmed = raw.trim();
 
     // Always reflect what was typed in the active field
@@ -56,47 +77,59 @@ export default function NumbasePage() {
       setValues(empty);
       setErrorField(null);
       const newUrl = buildUrl("");
+
       history.replaceState(null, "", newUrl);
       setUrl(newUrl);
+
       return;
     }
 
     const n = parseInt(trimmed, base);
+
     if (isNaN(n) || n < 0 || n > Number.MAX_SAFE_INTEGER) {
       setErrorField(field);
+
       return;
     }
 
     setErrorField(null);
     const next = fromDecimal(n);
+
     // Keep what the user typed for their active field
     setValues({ ...next, [field]: raw.toUpperCase() });
     const newUrl = buildUrl(next.dec);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setValues(empty);
     setErrorField(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleCopyField = (field: keyof Values) => {
-    copyToClipboard(values[field]).then(() => {
+  const handleCopyField = (field: keyof Values): void => {
+    void copyToClipboard(values[field]).then(() => {
       setCopiedField(field);
-      if (copyFieldTimeoutRef.current) clearTimeout(copyFieldTimeoutRef.current);
-      copyFieldTimeoutRef.current = setTimeout(() => setCopiedField(null), 1500);
+      if (copyFieldTimeoutRef.current)
+        clearTimeout(copyFieldTimeoutRef.current);
+      copyFieldTimeoutRef.current = setTimeout(() => {
+        setCopiedField(null);
+      }, 1500);
     });
   };
 
@@ -107,10 +140,34 @@ export default function NumbasePage() {
     base: number;
     placeholder: string;
   }[] = [
-    { field: "bin", label: "Binary", prefix: "0b", base: 2, placeholder: "e.g. 11111111" },
-    { field: "oct", label: "Octal", prefix: "0o", base: 8, placeholder: "e.g. 377" },
-    { field: "dec", label: "Decimal", prefix: "base 10", base: 10, placeholder: "e.g. 255" },
-    { field: "hex", label: "Hex", prefix: "0x", base: 16, placeholder: "e.g. FF" },
+    {
+      field: "bin",
+      label: "Binary",
+      prefix: "0b",
+      base: 2,
+      placeholder: "e.g. 11111111",
+    },
+    {
+      field: "oct",
+      label: "Octal",
+      prefix: "0o",
+      base: 8,
+      placeholder: "e.g. 377",
+    },
+    {
+      field: "dec",
+      label: "Decimal",
+      prefix: "base 10",
+      base: 10,
+      placeholder: "e.g. 255",
+    },
+    {
+      field: "hex",
+      label: "Hex",
+      prefix: "0x",
+      base: 16,
+      placeholder: "e.g. FF",
+    },
   ];
 
   return (
@@ -153,6 +210,7 @@ export default function NumbasePage() {
         {panels.map(({ field, label, prefix, base, placeholder }) => {
           const isError = errorField === field;
           const val = values[field];
+
           return (
             <div key={field} className={styles.panel}>
               <div className={styles.panelHeader}>
@@ -171,7 +229,9 @@ export default function NumbasePage() {
                 <textarea
                   className={styles.textarea}
                   value={val}
-                  onChange={(e) => handleChange(e.target.value, field, base)}
+                  onChange={(e) => {
+                    handleChange(e.target.value, field, base);
+                  }}
                   placeholder={placeholder}
                   spellCheck={false}
                   autoCapitalize="off"
@@ -180,7 +240,9 @@ export default function NumbasePage() {
                 {val && !isError && !isIframe && (
                   <button
                     className={`${styles.copyFieldBtn}${copiedField === field ? ` ${styles.copied}` : ""}`}
-                    onClick={() => handleCopyField(field)}
+                    onClick={() => {
+                      handleCopyField(field);
+                    }}
                   >
                     {copiedField === field ? "Copied!" : "Copy"}
                   </button>

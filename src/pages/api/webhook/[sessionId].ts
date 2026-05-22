@@ -19,77 +19,117 @@ function readBody(req: NextApiRequest): Promise<string> {
   return new Promise((resolve, reject) => {
     let data = "";
     let byteLength = 0;
+
     req.on("data", (chunk: Buffer) => {
       byteLength += chunk.byteLength;
       if (byteLength > MAX_BODY_BYTES) {
         req.destroy();
         reject(new Error("PAYLOAD_TOO_LARGE"));
+
         return;
       }
-      data += chunk;
+
+      data += chunk.toString();
     });
-    req.on("end", () => resolve(data));
+    req.on("end", () => {
+      resolve(data);
+    });
     req.on("error", reject);
   });
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+): Promise<void> {
   Object.entries(corsHeaders).forEach(([k, v]) => res.setHeader(k, v));
 
   if (req.method === "OPTIONS") {
-    return res.status(204).end();
+    res.status(204).end();
+
+    return;
   }
 
   const { sessionId } = req.query as { sessionId: string };
 
-  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const UUID_RE =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
   if (!UUID_RE.test(sessionId)) {
-    return res.status(404).json({ error: "session not found" });
+    res.status(404).json({ error: "session not found" });
+
+    return;
   }
 
   const SESSION_TIMEOUT_MS = 5 * 60 * 1000;
 
   try {
     const session = await getSession(sessionId);
+
     if (!session) {
-      return res.status(404).json({ error: "session not found" });
+      res.status(404).json({ error: "session not found" });
+
+      return;
     }
 
     const native = session.deviceId != null;
+
     if (!native) {
       const age = Date.now() - new Date(session.updatedAt).getTime();
+
       if (age > SESSION_TIMEOUT_MS) {
-        return res.status(410).json({ error: "session expired" });
+        res.status(410).json({ error: "session expired" });
+
+        return;
       }
     }
 
     if (session.ipAddress !== "::1" && session.ipAddress !== "::native") {
       const recentCount = await countRecentEvents(sessionId);
+
       if (recentCount >= 500) {
-        return res.status(429).json({ error: "rate limit exceeded: max 500 events per hour" });
+        res
+          .status(429)
+          .json({ error: "rate limit exceeded: max 500 events per hour" });
+
+        return;
       }
     }
 
     const STRIP_HEADER_PREFIXES = ["x-vercel-", "x-forwarded-"];
-    const STRIP_HEADERS = new Set(["forwarded", "x-real-ip", "x-matched-path", "connection"]);
+    const STRIP_HEADERS = new Set([
+      "forwarded",
+      "x-real-ip",
+      "x-matched-path",
+      "connection",
+    ]);
 
     const headersObj: Record<string, string> = {};
+
     Object.entries(req.headers).forEach(([k, v]) => {
-      if (STRIP_HEADERS.has(k) || STRIP_HEADER_PREFIXES.some((p) => k.startsWith(p))) return;
+      if (
+        STRIP_HEADERS.has(k) ||
+        STRIP_HEADER_PREFIXES.some((p) => k.startsWith(p))
+      )
+        return;
       headersObj[k] = Array.isArray(v) ? v.join(", ") : (v ?? "");
     });
 
     let payload: unknown = null;
     let rawBody: string | null = null;
 
-    const contentType = (req.headers["content-type"] as string) ?? "";
+    const contentType = req.headers["content-type"] ?? "";
     let bodyText: string;
+
     try {
       bodyText = await readBody(req);
     } catch (err) {
       if (err instanceof Error && err.message === "PAYLOAD_TOO_LARGE") {
-        return res.status(413).json({ error: "payload too large: max 1MB" });
+        res.status(413).json({ error: "payload too large: max 1MB" });
+
+        return;
       }
+
       throw err;
     }
 
@@ -106,31 +146,47 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const eventId = crypto.randomUUID();
+
     await insertEvent({
       id: eventId,
       sessionId: session.id,
-      method: req.method!,
+      method: req.method ?? "",
       headers: headersObj,
       payload,
       rawBody,
     });
 
     if (native && session.deviceId) {
-      await sendWebhookPushNotification(session.deviceId, req.method!, eventId).catch(() => {});
-      await incrementStat("webhook_events_native").catch((err) => console.error("[stats] failed to increment webhook_events_native", err));
+      await sendWebhookPushNotification(
+        session.deviceId,
+        req.method ?? "",
+        eventId,
+      ).catch(() => {
+        /* noop */
+      });
+      await incrementStat("webhook_events_native").catch((err: unknown) => {
+        console.error("[stats] failed to increment webhook_events_native", err);
+      });
     } else {
-      await incrementStat("webhook_events_web").catch((err) => console.error("[stats] failed to increment webhook_events_web", err));
+      await incrementStat("webhook_events_web").catch((err: unknown) => {
+        console.error("[stats] failed to increment webhook_events_web", err);
+      });
     }
 
     try {
-      await track("Webhook Received", { method: req.method!, native });
+      await track("Webhook Received", { method: req.method ?? "", native });
     } catch (err) {
       console.warn("[analytics] failed to track Webhook Received", err);
     }
 
-    return res.status(200).json({ ok: true, eventId });
+    res.status(200).json({ ok: true, eventId });
+
+    return;
   } catch (err) {
     console.error("webhook error", err);
-    return res.status(500).json({ error: "internal server error" });
+
+    res.status(500).json({ error: "internal server error" });
+
+    return;
   }
 }

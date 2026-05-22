@@ -241,7 +241,9 @@
   border-radius: 8px;
   overflow: hidden;
   text-decoration: none;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
   padding: 12px 16px;
   gap: 16px;
   margin-top: 32px;
@@ -304,7 +306,9 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: background-color 0.15s, border-color 0.15s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
   cursor: pointer;
 }
 

@@ -17,10 +17,10 @@ GET /api/gist?url=<gist-url>&file=<filename>
 
 Calling `/api/gist` with no params redirects here.
 
-| Param | Required | Description |
-| --- | --- | --- |
-| `url` | Yes | Full GitHub Gist URL (`https://gist.github.com/user/id`) |
-| `file` | No | Filename to serve when the gist has multiple files. Defaults to the first file alphabetically. |
+| Param  | Required | Description                                                                                    |
+| ------ | -------- | ---------------------------------------------------------------------------------------------- |
+| `url`  | Yes      | Full GitHub Gist URL (`https://gist.github.com/user/id`)                                       |
+| `file` | No       | Filename to serve when the gist has multiple files. Defaults to the first file alphabetically. |
 
 ## Examples
 
@@ -52,8 +52,8 @@ Responses are cached for 60 seconds (`Cache-Control: public, max-age=60`). Updat
 
 ## Error responses
 
-| Status | Meaning |
-| --- | --- |
-| 400 | Missing or invalid `url` param, or `file` not found in the gist |
-| 404 | Gist does not exist or is private |
-| 502 | GitHub API unreachable or returned an unexpected error |
+| Status | Meaning                                                         |
+| ------ | --------------------------------------------------------------- |
+| 400    | Missing or invalid `url` param, or `file` not found in the gist |
+| 404    | Gist does not exist or is private                               |
+| 502    | GitHub API unreachable or returned an unexpected error          |

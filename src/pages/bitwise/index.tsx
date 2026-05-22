@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/bitwise.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -13,28 +13,49 @@ function toBin(n: number): string {
 
 function formatBin(n: number): string {
   const b = toBin(n);
+
   // Group into 4-bit nibbles for readability
   return b.replace(/(.{4})/g, "$1 ").trim();
 }
 
-type Operation = {
+interface Operation {
   label: string;
   key: string;
   compute: (a: number, b: number) => number;
   description: string;
-};
+}
 
 const OPERATIONS: Operation[] = [
   { label: "AND", key: "and", compute: (a, b) => a & b, description: "a & b" },
-  { label: "OR",  key: "or",  compute: (a, b) => a | b, description: "a | b" },
+  { label: "OR", key: "or", compute: (a, b) => a | b, description: "a | b" },
   { label: "XOR", key: "xor", compute: (a, b) => a ^ b, description: "a ^ b" },
-  { label: "NAND", key: "nand", compute: (a, b) => ~(a & b), description: "~(a & b)" },
-  { label: "NOR",  key: "nor",  compute: (a, b) => ~(a | b), description: "~(a | b)" },
-  { label: "SHL", key: "shl", compute: (a, _b) => a << 1, description: "a << 1" },
-  { label: "SHR", key: "shr", compute: (a, _b) => a >> 1, description: "a >> 1" },
+  {
+    label: "NAND",
+    key: "nand",
+    compute: (a, b) => ~(a & b),
+    description: "~(a & b)",
+  },
+  {
+    label: "NOR",
+    key: "nor",
+    compute: (a, b) => ~(a | b),
+    description: "~(a | b)",
+  },
+  {
+    label: "SHL",
+    key: "shl",
+    compute: (a, _b) => a << 1,
+    description: "a << 1",
+  },
+  {
+    label: "SHR",
+    key: "shr",
+    compute: (a, _b) => a >> 1,
+    description: "a >> 1",
+  },
 ];
 
-export default function BitwisePage() {
+export default function BitwisePage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [inputA, setInputA] = useState("60");
@@ -43,12 +64,16 @@ export default function BitwisePage() {
   const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [url, setUrl] = useState("");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const parseInput = (val: string): number | null => {
     if (val.trim() === "" || val.trim() === "-") return null;
     const n = parseInt(val, 10);
+
     if (isNaN(n)) return null;
+
     return n;
   };
 
@@ -56,11 +81,13 @@ export default function BitwisePage() {
   const b = parseInput(inputB);
   const isValid = a !== null && b !== null;
 
-  const buildUrl = (av: string, bv: string) => {
+  const buildUrl = (av: string, bv: string): string => {
     const params = new URLSearchParams();
+
     if (av) params.set("a", av);
     if (bv) params.set("b", bv);
     const qs = params.toString();
+
     return `${window.location.origin}${window.location.pathname}${qs ? `?${qs}` : ""}`;
   };
 
@@ -68,46 +95,55 @@ export default function BitwisePage() {
     const params = new URLSearchParams(window.location.search);
     const av = params.get("a");
     const bv = params.get("b");
-    if (av !== null) setInputA(av);
+
+    if (av !== null) setInputA(av); // eslint-disable-line react-hooks/set-state-in-effect
     if (bv !== null) setInputB(bv);
     setUrl(window.location.href);
   }, []);
 
-  const handleChangeA = (val: string) => {
+  const handleChangeA = (val: string): void => {
     setInputA(val);
     const newUrl = buildUrl(val, inputB);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleChangeB = (val: string) => {
+  const handleChangeB = (val: string): void => {
     setInputB(val);
     const newUrl = buildUrl(inputA, val);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setInputA("");
     setInputB("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopyPermalink = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopyPermalink = (): void => {
+    void copyToClipboard(url).then(() => {
       setPermalinkCopied(true);
-      if (permalinkTimeoutRef.current) clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(() => setPermalinkCopied(false), 1500);
+      if (permalinkTimeoutRef.current)
+        clearTimeout(permalinkTimeoutRef.current);
+      permalinkTimeoutRef.current = setTimeout(() => {
+        setPermalinkCopied(false);
+      }, 1500);
     });
   };
 
-  const handleCopy = (key: string, value: string) => {
-    copyToClipboard(value).then(() => {
+  const handleCopy = (key: string, value: string): void => {
+    void copyToClipboard(value).then(() => {
       setCopiedKey(key);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopiedKey(null), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopiedKey(null);
+      }, 1500);
     });
   };
 
@@ -142,7 +178,8 @@ export default function BitwisePage() {
         </div>
         <h1 className={styles.title}>Bitwise Operations</h1>
         <p className={styles.tagline}>
-          Visualize AND, OR, XOR, NAND, NOR, and shift operations with binary and decimal output
+          Visualize AND, OR, XOR, NAND, NOR, and shift operations with binary
+          and decimal output
         </p>
       </div>
 
@@ -155,7 +192,9 @@ export default function BitwisePage() {
             className={`${styles.numInput}${a === null && inputA !== "" ? ` ${styles.inputError}` : ""}`}
             type="text"
             value={inputA}
-            onChange={(e) => handleChangeA(e.target.value)}
+            onChange={(e) => {
+              handleChangeA(e.target.value);
+            }}
             placeholder="integer"
             spellCheck={false}
           />
@@ -169,7 +208,9 @@ export default function BitwisePage() {
             className={`${styles.numInput}${b === null && inputB !== "" ? ` ${styles.inputError}` : ""}`}
             type="text"
             value={inputB}
-            onChange={(e) => handleChangeB(e.target.value)}
+            onChange={(e) => {
+              handleChangeB(e.target.value);
+            }}
             placeholder="integer"
             spellCheck={false}
           />
@@ -187,12 +228,16 @@ export default function BitwisePage() {
           <span className={styles.colCopy}></span>
         </div>
         {OPERATIONS.map((op) => {
-          const result = isValid ? op.compute(a!, b!) : null;
+          const result = isValid ? op.compute(a, b) : null;
           const decStr = result !== null ? String(result) : "—";
           const binStr = result !== null ? formatBin(result) : "—";
           const isCopied = copiedKey === op.key;
+
           return (
-            <div key={op.key} className={`${styles.tableRow}${!isValid ? ` ${styles.rowDisabled}` : ""}`}>
+            <div
+              key={op.key}
+              className={`${styles.tableRow}${!isValid ? ` ${styles.rowDisabled}` : ""}`}
+            >
               <span className={styles.colOp}>
                 <span className={styles.opBadge}>{op.label}</span>
                 <span className={styles.opDesc}>{op.description}</span>
@@ -207,7 +252,9 @@ export default function BitwisePage() {
                 <button
                   className={`${styles.rowCopyBtn}${isCopied ? ` ${styles.copied}` : ""}`}
                   disabled={!isValid}
-                  onClick={() => handleCopy(op.key, decStr)}
+                  onClick={() => {
+                    handleCopy(op.key, decStr);
+                  }}
                 >
                   {isCopied ? "Copied!" : "Copy"}
                 </button>

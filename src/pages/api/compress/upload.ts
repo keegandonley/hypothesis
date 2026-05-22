@@ -16,9 +16,11 @@ async function resolveEntry(entry: string): Promise<string[]> {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
+): Promise<void> {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    res.status(405).json({ error: "Method not allowed" });
+
+    return;
   }
 
   const body = req.body as HandleUploadBody;
@@ -37,8 +39,10 @@ export default async function handler(
 
         try {
           const whitelist = await get<string[]>("ip_whitelist");
+
           if (Array.isArray(whitelist)) {
             const resolved = await Promise.all(whitelist.map(resolveEntry));
+
             if (resolved.flat().includes(ip)) {
               return {
                 allowedContentTypes: [
@@ -84,8 +88,12 @@ export default async function handler(
       },
     });
 
-    return res.status(200).json(jsonResponse);
+    res.status(200).json(jsonResponse);
+
+    return;
   } catch (err) {
-    return res.status(400).json({ error: (err as Error).message });
+    res.status(400).json({ error: (err as Error).message });
+
+    return;
   }
 }

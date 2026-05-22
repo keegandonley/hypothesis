@@ -15,8 +15,14 @@ interface Action {
 
 function decodeActions(raw: string): Action[] {
   try {
-    const parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const parsed = JSON.parse(decodeURIComponent(escape(atob(raw)))) as Record<
+      string,
+      unknown
+    >[];
+
     if (!Array.isArray(parsed)) return [];
+
     return parsed.map((item) => ({
       id: typeof item.id === "string" ? item.id : "",
       name: typeof item.name === "string" ? item.name : "",
@@ -30,7 +36,7 @@ function decodeActions(raw: string): Action[] {
   }
 }
 
-export default function ViewerPage() {
+export default function ViewerPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [actions, setActions] = useState<Action[]>([]);
@@ -41,43 +47,50 @@ export default function ViewerPage() {
   const [debug, setDebug] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sentTimeoutRefs = useRef<Record<number, ReturnType<typeof setTimeout>>>(
-    {}
+    {},
   );
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    setDebug(params.get("debug") === "true");
+
+    setDebug(params.get("debug") === "true"); // eslint-disable-line react-hooks/set-state-in-effect
     const raw = params.get("actions");
+
     if (raw) {
       setActions(decodeActions(raw));
       setDesignerUrl(
-        `${window.location.origin}/message-factory/designer?actions=${raw}`
+        `${window.location.origin}/message-factory/designer?actions=${raw}`,
       );
     } else {
       setDesignerUrl(`${window.location.origin}/message-factory/designer`);
     }
+
     setUrl(window.location.href);
   }, []);
 
-  const handleSend = (action: Action, idx: number) => {
+  const handleSend = (action: Action, idx: number): void => {
     window.parent.postMessage({ id: action.id, payload: action.payload }, "*");
     setSentKeys((prev) => ({ ...prev, [idx]: true }));
-    if (sentTimeoutRefs.current[idx]) clearTimeout(sentTimeoutRefs.current[idx]);
+    if (sentTimeoutRefs.current[idx])
+      clearTimeout(sentTimeoutRefs.current[idx]);
     sentTimeoutRefs.current[idx] = setTimeout(() => {
       setSentKeys((prev) => ({ ...prev, [idx]: false }));
     }, 1500);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
     setActions([]);
@@ -92,7 +105,12 @@ export default function ViewerPage() {
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
-          <Link href="/" target={isIframe ? "_blank" : undefined} rel={isIframe ? "noopener noreferrer" : undefined} className={styles.domainLink}>
+          <Link
+            href="/"
+            target={isIframe ? "_blank" : undefined}
+            rel={isIframe ? "noopener noreferrer" : undefined}
+            className={styles.domainLink}
+          >
             {branding.domain}
           </Link>
           {"·"}
@@ -129,7 +147,9 @@ export default function ViewerPage() {
             <button
               key={idx}
               className={`${styles.actionBtn}${sentKeys[idx] ? ` ${styles.sent}` : ""}`}
-              onClick={() => handleSend(action, idx)}
+              onClick={() => {
+                handleSend(action, idx);
+              }}
             >
               {action.name || action.id || `action ${idx + 1}`}
               <span className={styles.sentOverlay}>sent ✓</span>

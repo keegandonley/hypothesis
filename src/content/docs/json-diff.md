@@ -6,12 +6,12 @@ Compare two JSON structures and see exactly what changed — added keys, removed
 
 Paste JSON A on the left and JSON B on the right. The diff panel below shows all differences:
 
-| Symbol | Meaning |
-|--------|---------|
-| `+ added` | Key or element exists in B but not in A |
+| Symbol      | Meaning                                 |
+| ----------- | --------------------------------------- |
+| `+ added`   | Key or element exists in B but not in A |
 | `- removed` | Key or element exists in A but not in B |
-| `~ changed` | Same key, different primitive value |
-| `! type` | Same key, different value type |
+| `~ changed` | Same key, different primitive value     |
+| `! type`    | Same key, different value type          |
 
 ## Path notation
 

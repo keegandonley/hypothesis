@@ -4,16 +4,24 @@ import path from "path";
 
 const RELEASES_DIR = path.join(process.cwd(), "src/content/releases");
 
-function parseFrontmatter(raw: string): { meta: Record<string, string>; body: string } {
+function parseFrontmatter(raw: string): {
+  meta: Record<string, string>;
+  body: string;
+} {
   if (!raw.startsWith("---")) return { meta: {}, body: raw };
   const end = raw.indexOf("---", 3);
+
   if (end === -1) return { meta: {}, body: raw };
   const block = raw.slice(3, end).trim();
   const meta: Record<string, string> = {};
+
   for (const line of block.split("\n")) {
     const colon = line.indexOf(":");
-    if (colon > -1) meta[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
+
+    if (colon > -1)
+      meta[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
   }
+
   return { meta, body: raw.slice(end + 3).trim() };
 }
 
@@ -26,9 +34,12 @@ function escapeXml(str: string): string {
     .replace(/'/g, "&apos;");
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+): void {
   const host = req.headers.host ?? "hypothesis.sh";
-  const protocol = req.headers["x-forwarded-proto"] ?? "https";
+  const protocol = (req.headers["x-forwarded-proto"] as string) ?? "https";
   const baseUrl = `${protocol}://${host}`;
 
   const releases = fs
@@ -38,6 +49,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       const slug = file.replace(/\.md$/, "");
       const raw = fs.readFileSync(path.join(RELEASES_DIR, file), "utf-8");
       const { meta, body } = parseFrontmatter(raw);
+
       return { slug, meta, body };
     })
     .sort((a, b) => b.slug.localeCompare(a.slug));
@@ -45,9 +57,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const items = releases
     .map(({ slug, meta, body }) => {
       const title = escapeXml(meta.title ?? slug);
-      const description = escapeXml(meta.description ?? body.slice(0, 200).replace(/\n/g, " ").trim());
+      const description = escapeXml(
+        meta.description ?? body.slice(0, 200).replace(/\n/g, " ").trim(),
+      );
       const link = `${baseUrl}/release-notes/${slug}`;
       const pubDate = new Date(slug).toUTCString();
+
       return `    <item>
       <title>${title}</title>
       <link>${link}</link>
@@ -58,7 +73,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     })
     .join("\n");
 
-  const lastBuildDate = releases.length > 0 ? new Date(releases[0].slug).toUTCString() : new Date().toUTCString();
+  const lastBuildDate =
+    releases.length > 0
+      ? new Date(releases[0].slug).toUTCString()
+      : new Date().toUTCString();
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -74,6 +92,9 @@ ${items}
 </rss>`;
 
   res.setHeader("Content-Type", "application/rss+xml; charset=utf-8");
-  res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=3600, stale-while-revalidate=86400",
+  );
   res.send(xml);
 }

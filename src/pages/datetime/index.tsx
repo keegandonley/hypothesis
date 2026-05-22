@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/datetime.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -13,7 +13,7 @@ interface FormatRow {
   format: (d: Date) => string;
 }
 
-function pad(n: number, digits = 2) {
+function pad(n: number, digits = 2): string {
   return String(n).padStart(digits, "0");
 }
 
@@ -32,33 +32,88 @@ function formatRelative(d: Date): string {
   let unit: string;
   let count: number;
 
-  if (years >= 1) { count = years; unit = years === 1 ? "year" : "years"; }
-  else if (months >= 1) { count = months; unit = months === 1 ? "month" : "months"; }
-  else if (days >= 1) { count = days; unit = days === 1 ? "day" : "days"; }
-  else if (hours >= 1) { count = hours; unit = hours === 1 ? "hour" : "hours"; }
-  else if (minutes >= 1) { count = minutes; unit = minutes === 1 ? "minute" : "minutes"; }
-  else { count = seconds; unit = seconds === 1 ? "second" : "seconds"; }
+  if (years >= 1) {
+    count = years;
+    unit = years === 1 ? "year" : "years";
+  } else if (months >= 1) {
+    count = months;
+    unit = months === 1 ? "month" : "months";
+  } else if (days >= 1) {
+    count = days;
+    unit = days === 1 ? "day" : "days";
+  } else if (hours >= 1) {
+    count = hours;
+    unit = hours === 1 ? "hour" : "hours";
+  } else if (minutes >= 1) {
+    count = minutes;
+    unit = minutes === 1 ? "minute" : "minutes";
+  } else {
+    count = seconds;
+    unit = seconds === 1 ? "second" : "seconds";
+  }
 
   return future ? `in ${count} ${unit}` : `${count} ${unit} ago`;
 }
 
 function formatRfc2822(d: Date): string {
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
   return `${days[d.getUTCDay()]}, ${pad(d.getUTCDate())} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())} +0000`;
 }
 
 const FORMAT_ROWS: FormatRow[] = [
-  { id: "unix_s", label: "Unix (sec)", format: (d) => String(Math.floor(d.getTime() / 1000)) },
+  {
+    id: "unix_s",
+    label: "Unix (sec)",
+    format: (d) => String(Math.floor(d.getTime() / 1000)),
+  },
   { id: "unix_ms", label: "Unix (ms)", format: (d) => String(d.getTime()) },
   { id: "iso", label: "ISO 8601", format: (d) => d.toISOString() },
   { id: "utc", label: "UTC String", format: (d) => d.toUTCString() },
   { id: "rfc2822", label: "RFC 2822", format: (d) => formatRfc2822(d) },
   { id: "local", label: "Local", format: (d) => d.toLocaleString() },
-  { id: "date_only", label: "Date", format: (d) => `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}` },
-  { id: "time_utc", label: "Time (UTC)", format: (d) => `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}` },
-  { id: "day_of_week", label: "Day of Week", format: (d) => d.toLocaleDateString(undefined, { weekday: "long", timeZone: "UTC" }) },
-  { id: "month_year", label: "Month / Year", format: (d) => d.toLocaleDateString(undefined, { month: "long", year: "numeric", timeZone: "UTC" }) },
+  {
+    id: "date_only",
+    label: "Date",
+    format: (d) =>
+      `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`,
+  },
+  {
+    id: "time_utc",
+    label: "Time (UTC)",
+    format: (d) =>
+      `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`,
+  },
+  {
+    id: "day_of_week",
+    label: "Day of Week",
+    format: (d) =>
+      d.toLocaleDateString(undefined, { weekday: "long", timeZone: "UTC" }),
+  },
+  {
+    id: "month_year",
+    label: "Month / Year",
+    format: (d) =>
+      d.toLocaleDateString(undefined, {
+        month: "long",
+        year: "numeric",
+        timeZone: "UTC",
+      }),
+  },
   { id: "relative", label: "Relative", format: (d) => formatRelative(d) },
   { id: "http", label: "HTTP Date", format: (d) => d.toUTCString() },
 ];
@@ -69,23 +124,27 @@ function parseInput(value: string): Date | null {
   // Pure integer: try unix ms or unix seconds
   if (/^\d+$/.test(value.trim())) {
     const n = parseInt(value.trim(), 10);
+
     if (value.trim().length >= 13) {
       const d = new Date(n);
+
       if (!isNaN(d.getTime())) return d;
     } else {
       const d = new Date(n * 1000);
+
       if (!isNaN(d.getTime())) return d;
     }
   }
 
   // General string parse
   const d = new Date(value);
+
   if (!isNaN(d.getTime())) return d;
 
   return null;
 }
 
-export default function DateTimePage() {
+export default function DateTimePage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
@@ -97,113 +156,144 @@ export default function DateTimePage() {
   const [copied, setCopied] = useState<string | null>(null);
   const [url, setUrl] = useState("");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const permalinkCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const [permalinkCopied, setPermalinkCopied] = useState(false);
   const liveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const relativeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const relativeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
+    null,
+  );
 
-  const buildUrl = (val: string, live: boolean) => {
+  const buildUrl = (val: string, live: boolean): string => {
     const params = new URLSearchParams();
+
     if (val) params.set("value", val);
     if (live) params.set("live", "true");
     const qs = params.toString();
+
     return `${window.location.origin}${window.location.pathname}${qs ? `?${qs}` : ""}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const value = params.get("value");
+
     if (value) {
-      setInput(value);
+      setInput(value); // eslint-disable-line react-hooks/set-state-in-effect
       setParsedDate(parseInput(value));
     }
+
     const live = params.get("live") === "true";
+
     if (live) setLiveMode(true);
     setUrl(window.location.href);
   }, []);
 
   useEffect(() => {
     if (liveMode) {
-      setLiveDate(new Date());
-      liveIntervalRef.current = setInterval(() => setLiveDate(new Date()), 200);
+      setLiveDate(new Date()); // eslint-disable-line react-hooks/set-state-in-effect
+      liveIntervalRef.current = setInterval(() => {
+        setLiveDate(new Date());
+      }, 200);
     } else {
       if (liveIntervalRef.current) {
         clearInterval(liveIntervalRef.current);
         liveIntervalRef.current = null;
       }
+
       setLiveDate(null);
     }
+
     return () => {
       if (liveIntervalRef.current) clearInterval(liveIntervalRef.current);
     };
   }, [liveMode]);
 
-  const handleInputChange = (value: string) => {
+  const handleInputChange = (value: string): void => {
     setInput(value);
     setParsedDate(parseInput(value));
     const newUrl = buildUrl(value, liveMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleNow = () => {
+  const handleNow = (): void => {
     const now = String(Date.now());
+
     setInput(now);
     setParsedDate(new Date(parseInt(now, 10)));
     const newUrl = buildUrl(now, liveMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleRowCopy = (id: string, text: string) => {
-    copyToClipboard(text).then(() => {
+  const handleRowCopy = (id: string, text: string): void => {
+    void copyToClipboard(text).then(() => {
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
       setCopied(id);
-      copyTimeoutRef.current = setTimeout(() => setCopied(null), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(null);
+      }, 1500);
     });
   };
 
-  const handlePermalinkCopy = () => {
-    copyToClipboard(url).then(() => {
-      if (permalinkCopyTimeoutRef.current) clearTimeout(permalinkCopyTimeoutRef.current);
+  const handlePermalinkCopy = (): void => {
+    void copyToClipboard(url).then(() => {
+      if (permalinkCopyTimeoutRef.current)
+        clearTimeout(permalinkCopyTimeoutRef.current);
       setPermalinkCopied(true);
-      permalinkCopyTimeoutRef.current = setTimeout(() => setPermalinkCopied(false), 1500);
+      permalinkCopyTimeoutRef.current = setTimeout(() => {
+        setPermalinkCopied(false);
+      }, 1500);
     });
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setInput("");
     setParsedDate(null);
     setCopied(null);
     const newUrl = buildUrl("", liveMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
   useEffect(() => {
     if (relativeLive && !liveMode) {
-      relativeIntervalRef.current = setInterval(() => setRelativeTick((t) => t + 1), 1000);
+      relativeIntervalRef.current = setInterval(() => {
+        setRelativeTick((t) => t + 1);
+      }, 1000);
     } else {
       if (relativeIntervalRef.current) {
         clearInterval(relativeIntervalRef.current);
         relativeIntervalRef.current = null;
       }
     }
+
     return () => {
-      if (relativeIntervalRef.current) clearInterval(relativeIntervalRef.current);
+      if (relativeIntervalRef.current)
+        clearInterval(relativeIntervalRef.current);
     };
   }, [relativeLive, liveMode]);
 
-  const handleLiveToggle = () => {
+  const handleLiveToggle = (): void => {
     setLiveMode((prev) => {
       const next = !prev;
       const newUrl = buildUrl(next ? "" : input, next);
+
       history.replaceState(null, "", newUrl);
       setUrl(newUrl);
+
       return next;
     });
   };
-  const handleRelativeLiveToggle = () => setRelativeLive((prev) => !prev);
+
+  const handleRelativeLiveToggle = (): void => {
+    setRelativeLive((prev) => !prev);
+  };
 
   const displayDate = liveMode ? liveDate : parsedDate;
   const hasInput = input.trim().length > 0;
@@ -238,7 +328,9 @@ export default function DateTimePage() {
           </Link>
         </div>
         <h1 className={styles.title}>DateTime</h1>
-        <p className={styles.tagline}>Convert timestamps and dates between many formats at once</p>
+        <p className={styles.tagline}>
+          Convert timestamps and dates between many formats at once
+        </p>
       </div>
 
       <hr className={styles.divider} />
@@ -248,13 +340,23 @@ export default function DateTimePage() {
           className={styles.inputField}
           type="text"
           value={liveMode ? "" : input}
-          onChange={(e) => handleInputChange(e.target.value)}
-          placeholder={liveMode ? "Live mode active..." : "Enter a timestamp, ISO string, or any date..."}
+          onChange={(e) => {
+            handleInputChange(e.target.value);
+          }}
+          placeholder={
+            liveMode
+              ? "Live mode active..."
+              : "Enter a timestamp, ISO string, or any date..."
+          }
           spellCheck={false}
           autoComplete="off"
           disabled={liveMode}
         />
-        <button className={styles.nowBtn} onClick={handleNow} disabled={liveMode}>
+        <button
+          className={styles.nowBtn}
+          onClick={handleNow}
+          disabled={liveMode}
+        >
           Now
         </button>
         <button
@@ -264,12 +366,16 @@ export default function DateTimePage() {
           Live {liveMode ? "ON" : "OFF"}
         </button>
         {liveMode && <span className={styles.badgeReady}>Live</span>}
-        {!liveMode && !hasInput && <span className={styles.badgeBlue}>Ready</span>}
-        {!liveMode && hasInput && (
-          isInvalid
-            ? <span className={styles.badgeError}>Invalid</span>
-            : <span className={styles.badgeReady}>Valid</span>
+        {!liveMode && !hasInput && (
+          <span className={styles.badgeBlue}>Ready</span>
         )}
+        {!liveMode &&
+          hasInput &&
+          (isInvalid ? (
+            <span className={styles.badgeError}>Invalid</span>
+          ) : (
+            <span className={styles.badgeReady}>Valid</span>
+          ))}
       </div>
 
       <div className={styles.conversionGrid}>
@@ -277,6 +383,7 @@ export default function DateTimePage() {
           const value = displayDate ? row.format(displayDate) : null;
           const isCopied = copied === row.id;
           const isRelativeRow = row.id === "relative";
+
           return (
             <div key={row.id} className={styles.conversionRow}>
               <span className={styles.conversionLabel}>{row.label}</span>
@@ -292,19 +399,24 @@ export default function DateTimePage() {
                     onClick={liveMode ? undefined : handleRelativeLiveToggle}
                     disabled={liveMode}
                   >
-                    {liveMode ? "Live Unavailable" : `Live ${relativeLive ? "ON" : "OFF"}`}
+                    {liveMode
+                      ? "Live Unavailable"
+                      : `Live ${relativeLive ? "ON" : "OFF"}`}
                   </button>
                 )}
-                {!isIframe && (value !== null ? (
-                  <button
-                    className={`${styles.copyRowBtn}${isCopied ? ` ${styles.copied}` : ""}`}
-                    onClick={() => handleRowCopy(row.id, value)}
-                  >
-                    {isCopied ? "Copied!" : "Copy"}
-                  </button>
-                ) : (
-                  <span className={styles.copyRowBtnDisabled}>Copy</span>
-                ))}
+                {!isIframe &&
+                  (value !== null ? (
+                    <button
+                      className={`${styles.copyRowBtn}${isCopied ? ` ${styles.copied}` : ""}`}
+                      onClick={() => {
+                        handleRowCopy(row.id, value);
+                      }}
+                    >
+                      {isCopied ? "Copied!" : "Copy"}
+                    </button>
+                  ) : (
+                    <span className={styles.copyRowBtnDisabled}>Copy</span>
+                  ))}
               </div>
             </div>
           );

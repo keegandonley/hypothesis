@@ -26,6 +26,7 @@ The code unit(s) used in UTF-16 encoding, shown as space-separated uppercase hex
 
 **Category**
 The Unicode general category, which classifies what kind of character it is. Examples:
+
 - `Letter, Uppercase (Lu)` — `A`, `Z`
 - `Letter, Lowercase (Ll)` — `a`, `z`
 - `Number, Decimal (Nd)` — `0`–`9`

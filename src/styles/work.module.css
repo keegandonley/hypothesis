@@ -102,7 +102,9 @@
   color: var(--text);
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .searchInput:focus {
@@ -331,7 +333,9 @@
   color: var(--text);
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .searchInputCompact:focus {
@@ -400,7 +404,9 @@
   white-space: nowrap;
   user-select: none;
   border-bottom: 2px solid transparent;
-  transition: color 0.1s, opacity 0.1s;
+  transition:
+    color 0.1s,
+    opacity 0.1s;
 }
 
 .tab:hover {

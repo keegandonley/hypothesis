@@ -8,15 +8,15 @@ Enter any two integers (A and B) and the tool computes all operations simultaneo
 
 ## Operations
 
-| Operation | Expression | Description |
-|-----------|-----------|-------------|
-| AND | `a & b` | 1 only where both bits are 1 |
-| OR | `a \| b` | 1 where either bit is 1 |
-| XOR | `a ^ b` | 1 where bits differ |
-| NAND | `~(a & b)` | Bitwise NOT of AND |
-| NOR | `~(a \| b)` | Bitwise NOT of OR |
-| SHL | `a << 1` | Shift A left by 1 (multiply by 2) |
-| SHR | `a >> 1` | Shift A right by 1 (signed, divide by 2) |
+| Operation | Expression  | Description                              |
+| --------- | ----------- | ---------------------------------------- |
+| AND       | `a & b`     | 1 only where both bits are 1             |
+| OR        | `a \| b`    | 1 where either bit is 1                  |
+| XOR       | `a ^ b`     | 1 where bits differ                      |
+| NAND      | `~(a & b)`  | Bitwise NOT of AND                       |
+| NOR       | `~(a \| b)` | Bitwise NOT of OR                        |
+| SHL       | `a << 1`    | Shift A left by 1 (multiply by 2)        |
+| SHR       | `a >> 1`    | Shift A right by 1 (signed, divide by 2) |
 
 ## Binary representation
 

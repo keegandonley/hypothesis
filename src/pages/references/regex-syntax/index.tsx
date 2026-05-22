@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
-import { GetStaticProps } from "next";
+import React, { useState, useMemo } from "react";
+import { type GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { REGEX_GROUPS } from "@/data/regex-syntax";
@@ -10,54 +10,66 @@ export const getStaticProps: GetStaticProps = () => ({
   props: { groups: REGEX_GROUPS },
 });
 
-export default function RegexSyntaxPage({ groups }: { groups: typeof REGEX_GROUPS }) {
+export default function RegexSyntaxPage({
+  groups,
+}: {
+  groups: typeof REGEX_GROUPS;
+}): React.ReactNode {
   const branding = useBranding();
-  const [search, setSearch] = useState("");
-  const [activeGroup, setActiveGroup] = useState("all");
+  const [search, setSearch] = useState(() =>
+    typeof window === "undefined"
+      ? ""
+      : (new URLSearchParams(window.location.search).get("q") ?? ""),
+  );
+  const [activeGroup, setActiveGroup] = useState(() =>
+    typeof window === "undefined"
+      ? "all"
+      : (new URLSearchParams(window.location.search).get("grp") ?? "all"),
+  );
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("q");
-    const grp = params.get("grp");
-    if (q) setSearch(q);
-    if (grp) setActiveGroup(grp);
-  }, []);
-
-  function updateUrl(q: string, grp: string) {
+  function updateUrl(q: string, grp: string): void {
     const params = new URLSearchParams();
+
     if (q) params.set("q", q);
     if (grp !== "all") params.set("grp", grp);
     const qs = params.toString();
+
     history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }
 
-  function handleSearch(value: string) {
+  function handleSearch(value: string): void {
     setSearch(value);
     updateUrl(value, activeGroup);
   }
 
-  function handleGroupToggle(grp: string) {
+  function handleGroupToggle(grp: string): void {
     const next = activeGroup === grp ? "all" : grp;
+
     setActiveGroup(next);
     updateUrl(search, next);
   }
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return groups.map((group) => {
-      const tokens = group.tokens.filter((t) => {
-        if (activeGroup !== "all" && activeGroup !== group.id) return false;
-        if (!q) return true;
-        return (
-          t.token.toLowerCase().includes(q) ||
-          t.description.toLowerCase().includes(q) ||
-          t.example.toLowerCase().includes(q) ||
-          (t.output ?? "").toLowerCase().includes(q)
-        );
-      });
-      return { ...group, tokens };
-    }).filter((g) => g.tokens.length > 0);
-  }, [search, activeGroup]);
+
+    return groups
+      .map((group) => {
+        const tokens = group.tokens.filter((t) => {
+          if (activeGroup !== "all" && activeGroup !== group.id) return false;
+          if (!q) return true;
+
+          return (
+            t.token.toLowerCase().includes(q) ||
+            t.description.toLowerCase().includes(q) ||
+            t.example.toLowerCase().includes(q) ||
+            (t.output ?? "").toLowerCase().includes(q)
+          );
+        });
+
+        return { ...group, tokens };
+      })
+      .filter((g) => g.tokens.length > 0);
+  }, [search, activeGroup, groups]);
 
   return (
     <div className={styles.page}>
@@ -98,7 +110,8 @@ export default function RegexSyntaxPage({ groups }: { groups: typeof REGEX_GROUP
         <div className={styles.header}>
           <h1 className={styles.title}>Regex Syntax</h1>
           <p className={styles.tagline}>
-            Regular expression tokens with descriptions and examples. JavaScript flavor.
+            Regular expression tokens with descriptions and examples. JavaScript
+            flavor.
           </p>
         </div>
 
@@ -110,14 +123,18 @@ export default function RegexSyntaxPage({ groups }: { groups: typeof REGEX_GROUP
               type="text"
               placeholder="Search by token, description, or example..."
               value={search}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => {
+                handleSearch(e.target.value);
+              }}
               autoComplete="off"
               spellCheck={false}
             />
             {search && (
               <button
                 className={styles.clearBtn}
-                onClick={() => handleSearch("")}
+                onClick={() => {
+                  handleSearch("");
+                }}
                 aria-label="Clear search"
               >
                 ✕
@@ -128,7 +145,9 @@ export default function RegexSyntaxPage({ groups }: { groups: typeof REGEX_GROUP
           <div className={styles.classFilters}>
             <button
               className={`${styles.classBtn} ${activeGroup === "all" ? styles.classBtnActive : ""}`}
-              onClick={() => handleGroupToggle("all")}
+              onClick={() => {
+                handleGroupToggle("all");
+              }}
             >
               All
             </button>
@@ -142,7 +161,9 @@ export default function RegexSyntaxPage({ groups }: { groups: typeof REGEX_GROUP
                     "--cls-subtle": group.subtle,
                   } as React.CSSProperties
                 }
-                onClick={() => handleGroupToggle(group.id)}
+                onClick={() => {
+                  handleGroupToggle(group.id);
+                }}
               >
                 {group.id}
                 <span className={styles.classBtnLabel}>{group.label}</span>
@@ -190,7 +211,13 @@ export default function RegexSyntaxPage({ groups }: { groups: typeof REGEX_GROUP
                         } as React.CSSProperties
                       }
                     >
-                      <span className={styles.codeBadge} style={{ fontFamily: "var(--font-mono)", fontSize: "10px" }}>
+                      <span
+                        className={styles.codeBadge}
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "10px",
+                        }}
+                      >
                         {token.token}
                       </span>
                       <div className={styles.codeInfo}>
@@ -200,11 +227,21 @@ export default function RegexSyntaxPage({ groups }: { groups: typeof REGEX_GROUP
                           </span>
                         </div>
                         <div className={styles.flagRow}>
-                          <code className={styles.codeDesc} style={{ fontFamily: "var(--font-mono)", fontSize: "10px", opacity: 0.7 }}>
+                          <code
+                            className={styles.codeDesc}
+                            style={{
+                              fontFamily: "var(--font-mono)",
+                              fontSize: "10px",
+                              opacity: 0.7,
+                            }}
+                          >
                             {token.example}
                           </code>
                           {token.output && (
-                            <span className={styles.codeDesc} style={{ opacity: 0.5 }}>
+                            <span
+                              className={styles.codeDesc}
+                              style={{ opacity: 0.5 }}
+                            >
                               → {token.output}
                             </span>
                           )}

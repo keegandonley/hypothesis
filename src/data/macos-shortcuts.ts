@@ -288,7 +288,7 @@ export const MACOS_SHORTCUT_GROUPS: MacosShortcutGroup[] = [
         command: "⌃ T",
         syntax: "Transpose characters",
         description:
-          "Swap the two characters on either side of the cursor — fixes typos like \"hte\" → \"the\" without selecting anything.",
+          'Swap the two characters on either side of the cursor — fixes typos like "hte" → "the" without selecting anything.',
       },
       {
         command: "⌃ D",
@@ -524,7 +524,7 @@ export const MACOS_SHORTCUT_GROUPS: MacosShortcutGroup[] = [
         command: "Hold Power (Apple Silicon)",
         syntax: "Startup Options",
         description:
-          "On Apple Silicon Macs, press and hold the power button at boot until \"Loading startup options\" appears. From here you can pick a startup disk, enter Recovery, or open Options.",
+          'On Apple Silicon Macs, press and hold the power button at boot until "Loading startup options" appears. From here you can pick a startup disk, enter Recovery, or open Options.',
       },
       {
         command: "Hold ⌥ at boot (Intel)",

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import styles from "../../styles/ascii-art.module.css";
@@ -7,12 +7,12 @@ import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 
-type ImageAdjustments = {
+interface ImageAdjustments {
   brightness: number; // 50–200, where 100 = unchanged
-  contrast: number;   // 50–200, where 100 = unchanged
-  sharpness: number;  // 0–100
+  contrast: number; // 50–200, where 100 = unchanged
+  sharpness: number; // 0–100
   grayscale: boolean;
-};
+}
 
 const DEFAULT_ADJ: ImageAdjustments = {
   brightness: 100,
@@ -27,6 +27,7 @@ const CHAR_SETS = {
     " .'`^\",;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$",
   blocks: " ░▒▓█",
 } as const;
+
 type CharSetKey = keyof typeof CHAR_SETS;
 
 function applySharpen(
@@ -36,22 +37,32 @@ function applySharpen(
   amount: number,
 ): Uint8ClampedArray {
   const out = new Uint8ClampedArray(data.length);
+
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const idx = (y * width + x) * 4;
+
       for (let c = 0; c < 3; c++) {
         const center = data[idx + c];
-        const top    = y > 0          ? data[((y - 1) * width + x) * 4 + c] : center;
-        const bottom = y < height - 1 ? data[((y + 1) * width + x) * 4 + c] : center;
-        const left   = x > 0          ? data[(y * width + (x - 1)) * 4 + c] : center;
-        const right  = x < width - 1  ? data[(y * width + (x + 1)) * 4 + c] : center;
+        const top = y > 0 ? data[((y - 1) * width + x) * 4 + c] : center;
+        const bottom =
+          y < height - 1 ? data[((y + 1) * width + x) * 4 + c] : center;
+        const left = x > 0 ? data[(y * width + (x - 1)) * 4 + c] : center;
+        const right =
+          x < width - 1 ? data[(y * width + (x + 1)) * 4 + c] : center;
         // Sharpen kernel: 5×center − top − bottom − left − right
         const sharpened = 5 * center - top - bottom - left - right;
-        out[idx + c] = Math.max(0, Math.min(255, Math.round(center * (1 - amount) + sharpened * amount)));
+
+        out[idx + c] = Math.max(
+          0,
+          Math.min(255, Math.round(center * (1 - amount) + sharpened * amount)),
+        );
       }
+
       out[idx + 3] = data[idx + 3];
     }
   }
+
   return out;
 }
 
@@ -65,18 +76,22 @@ function renderAscii(
   charAspect: number,
 ): string {
   const ctx = canvas.getContext("2d");
+
   if (!ctx) return "";
 
   const rows = Math.max(
     1,
     Math.round((cols / img.naturalWidth) * img.naturalHeight * charAspect),
   );
+
   canvas.width = cols;
   canvas.height = rows;
 
   // Apply CSS filters before drawing (brightness, contrast, grayscale are free)
   const filters: string[] = [];
-  if (adj.brightness !== 100) filters.push(`brightness(${adj.brightness / 100})`);
+
+  if (adj.brightness !== 100)
+    filters.push(`brightness(${adj.brightness / 100})`);
   if (adj.contrast !== 100) filters.push(`contrast(${adj.contrast / 100})`);
   if (adj.grayscale) filters.push("grayscale(1)");
   ctx.filter = filters.length > 0 ? filters.join(" ") : "none";
@@ -91,8 +106,10 @@ function renderAscii(
       : imageData.data;
 
   const lines: string[] = [];
+
   for (let y = 0; y < rows; y++) {
     let line = "";
+
     for (let x = 0; x < cols; x++) {
       const i = (y * cols + x) * 4;
       const r = data[i];
@@ -106,24 +123,34 @@ function renderAscii(
         charSet.length - 1,
         Math.floor(normalized * charSet.length),
       );
+
       line += charSet[charIndex];
     }
+
     lines.push(line);
   }
+
   return lines.join("\n");
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
+
     img.crossOrigin = "anonymous";
-    img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error("Failed to load image"));
+    img.onload = () => {
+      resolve(img);
+    };
+
+    img.onerror = () => {
+      reject(new Error("Failed to load image"));
+    };
+
     img.src = src;
   });
 }
 
-export default function AsciiArtPage() {
+export default function AsciiArtPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
 
@@ -168,7 +195,16 @@ export default function AsciiArtPage() {
       charAspect: number,
     ) => {
       if (!canvasRef.current) return;
-      const output = renderAscii(img, canvasRef.current, c, CHAR_SETS[cs], inv, adj, charAspect);
+      const output = renderAscii(
+        img,
+        canvasRef.current,
+        c,
+        CHAR_SETS[cs],
+        inv,
+        adj,
+        charAspect,
+      );
+
       setAsciiOutput(output);
     },
     [],
@@ -181,9 +217,11 @@ export default function AsciiArtPage() {
   useEffect(() => {
     if (!measureRef.current) return;
     const chars = CHAR_SETS[charSetKey];
+
     measureRef.current.textContent = chars[Math.floor(chars.length / 2)];
     const charW = measureRef.current.getBoundingClientRect().width;
     const lineH = parseFloat(getComputedStyle(measureRef.current).lineHeight);
+
     if (charW > 0 && lineH > 0) {
       charAspectRef.current = charW / lineH;
     }
@@ -192,86 +230,130 @@ export default function AsciiArtPage() {
   // Re-render when any control changes
   useEffect(() => {
     if (!imgRef.current) return;
-    triggerRender(imgRef.current, cols, charSetKey, invert, {
-      brightness,
-      contrast,
-      sharpness,
-      grayscale,
-    }, charAspectRef.current);
-  }, [cols, charSetKey, invert, brightness, contrast, sharpness, grayscale, triggerRender]);
+    triggerRender(
+      imgRef.current,
+      cols,
+      charSetKey,
+      invert,
+      {
+        brightness,
+        contrast,
+        sharpness,
+        grayscale,
+      },
+      charAspectRef.current,
+    );
+  }, [
+    cols,
+    charSetKey,
+    invert,
+    brightness,
+    contrast,
+    sharpness,
+    grayscale,
+    triggerRender,
+  ]);
 
-
-  const handleFile = async (file: File) => {
+  const handleFile = (file: File): void => {
     if (!file.type.startsWith("image/")) return;
     const reader = new FileReader();
+
     reader.onload = async (e) => {
-      const dataUrl = e.target!.result as string;
+      /* eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style */
+      const dataUrl = (e.target as FileReader).result as string;
+
       try {
         const img = await loadImage(dataUrl);
+
         imgRef.current = img;
         setImageSrc(dataUrl);
         setUrlError("");
-        triggerRender(img, cols, charSetKey, invert, { brightness, contrast, sharpness, grayscale }, charAspectRef.current);
+        triggerRender(
+          img,
+          cols,
+          charSetKey,
+          invert,
+          { brightness, contrast, sharpness, grayscale },
+          charAspectRef.current,
+        );
       } catch {
         setUrlError("Could not decode image");
       }
     };
+
     reader.readAsDataURL(file);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: React.DragEvent): void => {
     e.preventDefault();
     setDragging(false);
     const file = e.dataTransfer.files[0];
+
     if (file) handleFile(file);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent): void => {
     e.preventDefault();
     setDragging(true);
   };
 
-  const handleDragLeave = () => setDragging(false);
+  const handleDragLeave = (): void => {
+    setDragging(false);
+  };
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
+
     if (file) handleFile(file);
     e.target.value = "";
   };
 
-  const handleUrlLoad = async () => {
+  const handleUrlLoad = async (): Promise<void> => {
     if (!urlInput.trim()) return;
     setUrlError("");
     try {
       const img = await loadImage(urlInput.trim());
+
       imgRef.current = img;
       setImageSrc(urlInput.trim());
-      triggerRender(img, cols, charSetKey, invert, { brightness, contrast, sharpness, grayscale }, charAspectRef.current);
+      triggerRender(
+        img,
+        cols,
+        charSetKey,
+        invert,
+        { brightness, contrast, sharpness, grayscale },
+        charAspectRef.current,
+      );
     } catch {
       setUrlError("Could not load image — check the URL or CORS policy");
     }
   };
 
-  const handleColsChange = (c: number) => setCols(c);
+  const handleColsChange = (c: number): void => {
+    setCols(c);
+  };
 
-  const handleCharSetChange = (cs: CharSetKey) => setCharSetKey(cs);
+  const handleCharSetChange = (cs: CharSetKey): void => {
+    setCharSetKey(cs);
+  };
 
-  const handleInvertChange = (inv: boolean) => setInvert(inv);
+  const handleInvertChange = (inv: boolean): void => {
+    setInvert(inv);
+  };
 
-  const handleCopyAscii = () => {
+  const handleCopyAscii = (): void => {
     if (!asciiOutput) return;
-    copyToClipboard(asciiOutput).then(() => {
+    void copyToClipboard(asciiOutput).then(() => {
       setAsciiCopied(true);
       if (asciiCopyTimeoutRef.current)
         clearTimeout(asciiCopyTimeoutRef.current);
-      asciiCopyTimeoutRef.current = setTimeout(
-        () => setAsciiCopied(false),
-        1500,
-      );
+      asciiCopyTimeoutRef.current = setTimeout(() => {
+        setAsciiCopied(false);
+      }, 1500);
     });
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     imgRef.current = null;
     setImageSrc(null);
     setAsciiOutput("");
@@ -331,7 +413,9 @@ export default function AsciiArtPage() {
               <button
                 key={m}
                 className={`${styles.toggleBtn}${inputMode === m ? ` ${styles.active}` : ""}`}
-                onClick={() => setInputMode(m)}
+                onClick={() => {
+                  setInputMode(m);
+                }}
               >
                 {m.toUpperCase()}
               </button>
@@ -345,7 +429,9 @@ export default function AsciiArtPage() {
             min={20}
             max={200}
             value={cols}
-            onChange={(e) => handleColsChange(Number(e.target.value))}
+            onChange={(e) => {
+              handleColsChange(Number(e.target.value));
+            }}
             className={styles.widthSlider}
           />
           <span className={styles.sliderValue}>{cols}</span>
@@ -357,7 +443,9 @@ export default function AsciiArtPage() {
               <button
                 key={k}
                 className={`${styles.toggleBtn}${charSetKey === k ? ` ${styles.active}` : ""}`}
-                onClick={() => handleCharSetChange(k)}
+                onClick={() => {
+                  handleCharSetChange(k);
+                }}
               >
                 {k.toUpperCase()}
               </button>
@@ -370,7 +458,9 @@ export default function AsciiArtPage() {
             <input
               type="checkbox"
               checked={invert}
-              onChange={(e) => handleInvertChange(e.target.checked)}
+              onChange={(e) => {
+                handleInvertChange(e.target.checked);
+              }}
               className={styles.checkbox}
             />
             Invert
@@ -379,7 +469,9 @@ export default function AsciiArtPage() {
             <input
               type="checkbox"
               checked={grayscale}
-              onChange={(e) => setGrayscale(e.target.checked)}
+              onChange={(e) => {
+                setGrayscale(e.target.checked);
+              }}
               className={styles.checkbox}
             />
             Grayscale
@@ -395,16 +487,22 @@ export default function AsciiArtPage() {
             min={10}
             max={200}
             value={brightness}
-            onChange={(e) => setBrightness(Number(e.target.value))}
+            onChange={(e) => {
+              setBrightness(Number(e.target.value));
+            }}
             className={styles.widthSlider}
           />
           <span className={styles.sliderValue}>{brightness}%</span>
           <button
             className={styles.sliderReset}
-            onClick={() => setBrightness(DEFAULT_ADJ.brightness)}
+            onClick={() => {
+              setBrightness(DEFAULT_ADJ.brightness);
+            }}
             disabled={brightness === DEFAULT_ADJ.brightness}
             title="Reset"
-          >reset</button>
+          >
+            reset
+          </button>
         </div>
         <div className={styles.controlRow}>
           <span className={styles.controlLabel}>Contrast</span>
@@ -413,16 +511,22 @@ export default function AsciiArtPage() {
             min={10}
             max={200}
             value={contrast}
-            onChange={(e) => setContrast(Number(e.target.value))}
+            onChange={(e) => {
+              setContrast(Number(e.target.value));
+            }}
             className={styles.widthSlider}
           />
           <span className={styles.sliderValue}>{contrast}%</span>
           <button
             className={styles.sliderReset}
-            onClick={() => setContrast(DEFAULT_ADJ.contrast)}
+            onClick={() => {
+              setContrast(DEFAULT_ADJ.contrast);
+            }}
             disabled={contrast === DEFAULT_ADJ.contrast}
             title="Reset"
-          >reset</button>
+          >
+            reset
+          </button>
         </div>
         <div className={styles.controlRow}>
           <span className={styles.controlLabel}>Sharpness</span>
@@ -431,16 +535,22 @@ export default function AsciiArtPage() {
             min={0}
             max={100}
             value={sharpness}
-            onChange={(e) => setSharpness(Number(e.target.value))}
+            onChange={(e) => {
+              setSharpness(Number(e.target.value));
+            }}
             className={styles.widthSlider}
           />
           <span className={styles.sliderValue}>{sharpness}</span>
           <button
             className={styles.sliderReset}
-            onClick={() => setSharpness(DEFAULT_ADJ.sharpness)}
+            onClick={() => {
+              setSharpness(DEFAULT_ADJ.sharpness);
+            }}
             disabled={sharpness === DEFAULT_ADJ.sharpness}
             title="Reset"
-          >reset</button>
+          >
+            reset
+          </button>
         </div>
       </div>
 
@@ -453,13 +563,16 @@ export default function AsciiArtPage() {
               className={styles.preview}
               alt="Loaded image preview"
               style={{
-                filter: [
-                  brightness !== 100 ? `brightness(${brightness / 100})` : null,
-                  contrast !== 100 ? `contrast(${contrast / 100})` : null,
-                  grayscale ? "grayscale(1)" : null,
-                ]
-                  .filter(Boolean)
-                  .join(" ") || undefined,
+                filter:
+                  [
+                    brightness !== 100
+                      ? `brightness(${brightness / 100})`
+                      : null,
+                    contrast !== 100 ? `contrast(${contrast / 100})` : null,
+                    grayscale ? "grayscale(1)" : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" ") || undefined,
               }}
             />
           )}
@@ -496,7 +609,9 @@ export default function AsciiArtPage() {
                 type="text"
                 className={styles.urlInput}
                 value={urlInput}
-                onChange={(e) => setUrlInput(e.target.value)}
+                onChange={(e) => {
+                  setUrlInput(e.target.value);
+                }}
                 onKeyDown={(e) => e.key === "Enter" && handleUrlLoad()}
                 placeholder="https://example.com/image.jpg"
                 spellCheck={false}
@@ -504,9 +619,7 @@ export default function AsciiArtPage() {
               <button className={styles.loadBtn} onClick={handleUrlLoad}>
                 Load
               </button>
-              {urlError && (
-                <span className={styles.urlError}>{urlError}</span>
-              )}
+              {urlError && <span className={styles.urlError}>{urlError}</span>}
             </div>
           )}
         </div>

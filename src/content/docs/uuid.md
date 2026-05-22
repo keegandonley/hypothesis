@@ -42,6 +42,6 @@ The URL tracks the selected version:
 
 No UUID value is stored in the URL — UUIDs are ephemeral by design. Navigating directly to `/uuid?version=7` will load the page with v7 selected and auto-generate a fresh v7 UUID.
 
-| Parameter | Values | Default |
-| --- | --- | --- |
-| `version` | `1`, `4`, `7` | `4` |
+| Parameter | Values        | Default |
+| --------- | ------------- | ------- |
+| `version` | `1`, `4`, `7` | `4`     |
