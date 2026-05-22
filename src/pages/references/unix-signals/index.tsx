@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
-import { GetStaticProps } from "next";
+import React, { useState, useMemo } from "react";
+import { type GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { SIGNAL_GROUPS } from "@/data/unix-signals";
@@ -14,56 +14,62 @@ export default function UnixSignalsPage({
   groups,
 }: {
   groups: typeof SIGNAL_GROUPS;
-}) {
+}): React.ReactNode {
   const branding = useBranding();
-  const [search, setSearch] = useState("");
-  const [activeAction, setActiveAction] = useState("all");
+  const [search, setSearch] = useState(() =>
+    typeof window === "undefined"
+      ? ""
+      : (new URLSearchParams(window.location.search).get("q") ?? ""),
+  );
+  const [activeAction, setActiveAction] = useState(() =>
+    typeof window === "undefined"
+      ? "all"
+      : (new URLSearchParams(window.location.search).get("action") ?? "all"),
+  );
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("q");
-    const action = params.get("action");
-    if (q) setSearch(q);
-    if (action) setActiveAction(action);
-  }, []);
-
-  function updateUrl(q: string, action: string) {
+  function updateUrl(q: string, action: string): void {
     const params = new URLSearchParams();
+
     if (q) params.set("q", q);
     if (action !== "all") params.set("action", action);
     const qs = params.toString();
+
     history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }
 
-  function handleSearch(value: string) {
+  function handleSearch(value: string): void {
     setSearch(value);
     updateUrl(value, activeAction);
   }
 
-  function handleActionToggle(action: string) {
+  function handleActionToggle(action: string): void {
     const next = activeAction === action ? "all" : action;
+
     setActiveAction(next);
     updateUrl(search, next);
   }
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
+
     return groups
       .map((group) => {
         const signals = group.signals.filter((s) => {
           if (activeAction !== "all" && activeAction !== group.action)
             return false;
           if (!q) return true;
+
           return (
             String(s.number).includes(q) ||
             s.name.toLowerCase().includes(q) ||
             s.description.toLowerCase().includes(q)
           );
         });
+
         return { ...group, signals };
       })
       .filter((g) => g.signals.length > 0);
-  }, [search, activeAction]);
+  }, [search, activeAction, groups]);
 
   return (
     <div className={styles.page}>
@@ -117,14 +123,18 @@ export default function UnixSignalsPage({
               type="text"
               placeholder="Search by number, name, or description..."
               value={search}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => {
+                handleSearch(e.target.value);
+              }}
               autoComplete="off"
               spellCheck={false}
             />
             {search && (
               <button
                 className={styles.clearBtn}
-                onClick={() => handleSearch("")}
+                onClick={() => {
+                  handleSearch("");
+                }}
                 aria-label="Clear search"
               >
                 ✕
@@ -135,7 +145,9 @@ export default function UnixSignalsPage({
           <div className={styles.classFilters}>
             <button
               className={`${styles.classBtn} ${activeAction === "all" ? styles.classBtnActive : ""}`}
-              onClick={() => handleActionToggle("all")}
+              onClick={() => {
+                handleActionToggle("all");
+              }}
             >
               All
             </button>
@@ -149,7 +161,9 @@ export default function UnixSignalsPage({
                     "--cls-subtle": group.subtle,
                   } as React.CSSProperties
                 }
-                onClick={() => handleActionToggle(group.action)}
+                onClick={() => {
+                  handleActionToggle(group.action);
+                }}
               >
                 {group.action}
                 <span className={styles.classBtnLabel}>{group.label}</span>

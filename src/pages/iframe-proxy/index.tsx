@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import styles from "../../styles/iframe-proxy.module.css";
@@ -10,27 +10,28 @@ import { useIsIframe } from "@/lib/useIsIframe";
 interface RelayedMessage {
   id: string;
   timestamp: number;
-  data: any;
+  data: unknown;
   direction: "parent-to-frame" | "frame-to-parent";
 }
 
-const PANEL_WIDTH = 320;
 const DEBUG_BAR_HEIGHT = 36;
 
 function validateIframeUrl(rawUrl: string | null): string | null {
   if (!rawUrl) return null;
   try {
     const parsed = new URL(rawUrl);
+
     if (parsed.protocol === "http:" || parsed.protocol === "https:") {
       return parsed.toString();
     }
   } catch {
     // Ignore invalid URLs and fall through to return null.
   }
+
   return null;
 }
 
-export default function IframeProxyPage() {
+export default function IframeProxyPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [url, setUrl] = useState<string | null>(null);
@@ -49,11 +50,13 @@ export default function IframeProxyPage() {
     const isDebug = params.get("debug") === "true";
     const rawUrl = params.get("url");
     const safeUrl = validateIframeUrl(rawUrl);
-    setUrl(safeUrl);
+
+    setUrl(safeUrl); // eslint-disable-line react-hooks/set-state-in-effect
     if (safeUrl) {
       setUrlFromParam(true);
       setInputUrl(safeUrl);
     }
+
     setFrameName(params.get("name") ?? "");
     setDebug(isDebug);
     setInWorkMode(params.has("workMode"));
@@ -61,7 +64,7 @@ export default function IframeProxyPage() {
   }, []);
 
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
+    const handleMessage = (event: MessageEvent): void => {
       if (event.source === window.parent) {
         iframeRef.current?.contentWindow?.postMessage(event.data, "*");
 
@@ -70,7 +73,7 @@ export default function IframeProxyPage() {
             {
               id: `${Date.now()}-${Math.random()}`,
               timestamp: Date.now(),
-              data: event.data,
+              data: event.data as unknown,
               direction: "parent-to-frame",
             },
             ...prev,
@@ -84,7 +87,7 @@ export default function IframeProxyPage() {
             {
               id: `${Date.now()}-${Math.random()}`,
               timestamp: Date.now(),
-              data: event.data,
+              data: event.data as unknown,
               direction: "frame-to-parent",
             },
             ...prev,
@@ -95,7 +98,9 @@ export default function IframeProxyPage() {
 
     window.addEventListener("message", handleMessage);
 
-    return () => window.removeEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
   }, [debug]);
 
   if (!mounted) {
@@ -111,12 +116,14 @@ export default function IframeProxyPage() {
     );
   }
 
-  const handleUrlSubmit = (raw: string) => {
+  const handleUrlSubmit = (raw: string): void => {
     const validated = validateIframeUrl(raw);
+
     if (!validated) return;
     setUrl(validated);
     setUrlFromParam(true);
     const params = new URLSearchParams(window.location.search);
+
     params.set("url", validated);
     history.replaceState(
       null,
@@ -148,7 +155,9 @@ export default function IframeProxyPage() {
               type="url"
               placeholder="https://example.com"
               value={inputUrl}
-              onChange={(e) => setInputUrl(e.target.value)}
+              onChange={(e) => {
+                setInputUrl(e.target.value);
+              }}
               autoFocus={!url}
               spellCheck={false}
             />
@@ -177,7 +186,9 @@ export default function IframeProxyPage() {
                 type="url"
                 placeholder="https://example.com"
                 value={inputUrl}
-                onChange={(e) => setInputUrl(e.target.value)}
+                onChange={(e) => {
+                  setInputUrl(e.target.value);
+                }}
                 autoFocus
               />
             </form>
@@ -203,7 +214,9 @@ export default function IframeProxyPage() {
           </span>
           <button
             className={styles.toggleBtn}
-            onClick={() => setPanelOpen((o) => !o)}
+            onClick={() => {
+              setPanelOpen((o) => !o);
+            }}
             aria-label={panelOpen ? "Close debug panel" : "Open debug panel"}
           >
             {panelOpen ? (
@@ -228,7 +241,12 @@ export default function IframeProxyPage() {
       )}
 
       {debug && panelOpen && (
-        <div className={styles.backdrop} onClick={() => setPanelOpen(false)} />
+        <div
+          className={styles.backdrop}
+          onClick={() => {
+            setPanelOpen(false);
+          }}
+        />
       )}
 
       {debug && (
@@ -265,7 +283,9 @@ export default function IframeProxyPage() {
                 type="text"
                 placeholder="(none)"
                 value={frameName}
-                onChange={(e) => setFrameName(e.target.value)}
+                onChange={(e) => {
+                  setFrameName(e.target.value);
+                }}
                 spellCheck={false}
               />
             </div>
@@ -280,6 +300,7 @@ export default function IframeProxyPage() {
               ) : (
                 messages.map((message, index) => {
                   const isDown = message.direction === "parent-to-frame";
+
                   return (
                     <div key={message.id} className={styles.messageCard}>
                       <div className={styles.messageCardHeader}>

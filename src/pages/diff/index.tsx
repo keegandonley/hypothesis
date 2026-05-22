@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/diff.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -16,13 +16,18 @@ const MODES: { value: Mode; label: string }[] = [
   { value: "chars", label: "Chars" },
 ];
 
-function computeDiff(original: string, modified: string, mode: Mode) {
+function computeDiff(
+  original: string,
+  modified: string,
+  mode: Mode,
+): ReturnType<typeof diffLines> {
   if (mode === "lines") return diffLines(original, modified);
   if (mode === "words") return diffWords(original, modified);
+
   return diffChars(original, modified);
 }
 
-export default function DiffPage() {
+export default function DiffPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [original, setOriginal] = useState("");
@@ -39,6 +44,7 @@ export default function DiffPage() {
     .reduce((n, c) => {
       if (mode === "lines")
         return n + c.value.split("\n").filter((l) => l.length > 0).length;
+
       return n + 1;
     }, 0);
   const removed = changes
@@ -46,18 +52,22 @@ export default function DiffPage() {
     .reduce((n, c) => {
       if (mode === "lines")
         return n + c.value.split("\n").filter((l) => l.length > 0).length;
+
       return n + 1;
     }, 0);
 
-  const buildUrl = (a: string, b: string, m: Mode) => {
+  const buildUrl = (a: string, b: string, m: Mode): string => {
     if (!a && !b) return `${window.location.origin}${window.location.pathname}`;
     const payload = JSON.stringify({ a, b, m });
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const encoded = btoa(unescape(encodeURIComponent(payload)));
+
     return `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(encoded)}`;
   };
 
-  const syncUrl = (a: string, b: string, m: Mode) => {
+  const syncUrl = (a: string, b: string, m: Mode): void => {
     const newUrl = buildUrl(a, b, m);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
@@ -65,10 +75,15 @@ export default function DiffPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const encoded = params.get("v");
+
     if (encoded) {
       try {
-        const payload = JSON.parse(decodeURIComponent(escape(atob(encoded))));
-        if (typeof payload.a === "string") setOriginal(payload.a);
+        const payload = JSON.parse(
+          // eslint-disable-next-line @typescript-eslint/no-deprecated
+          decodeURIComponent(escape(atob(encoded))),
+        ) as { a?: string; b?: string; m?: string };
+
+        if (typeof payload.a === "string") setOriginal(payload.a); // eslint-disable-line react-hooks/set-state-in-effect
         if (typeof payload.b === "string") setModified(payload.b);
         if (
           payload.m === "lines" ||
@@ -80,37 +95,41 @@ export default function DiffPage() {
         // invalid, ignore
       }
     }
+
     setUrl(window.location.href);
   }, []);
 
-  const handleOriginalChange = (v: string) => {
+  const handleOriginalChange = (v: string): void => {
     setOriginal(v);
     syncUrl(v, modified, mode);
   };
 
-  const handleModifiedChange = (v: string) => {
+  const handleModifiedChange = (v: string): void => {
     setModified(v);
     syncUrl(original, v, mode);
   };
 
-  const handleModeChange = (m: Mode) => {
+  const handleModeChange = (m: Mode): void => {
     setMode(m);
     syncUrl(original, modified, m);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setOriginal("");
     setModified("");
     setMode("lines");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
@@ -162,7 +181,9 @@ export default function DiffPage() {
           <textarea
             className={styles.textarea}
             value={original}
-            onChange={(e) => handleOriginalChange(e.target.value)}
+            onChange={(e) => {
+              handleOriginalChange(e.target.value);
+            }}
             placeholder="Paste original text here…"
             spellCheck={false}
           />
@@ -174,7 +195,9 @@ export default function DiffPage() {
           <textarea
             className={styles.textarea}
             value={modified}
-            onChange={(e) => handleModifiedChange(e.target.value)}
+            onChange={(e) => {
+              handleModifiedChange(e.target.value);
+            }}
             placeholder="Paste modified text here…"
             spellCheck={false}
           />
@@ -187,7 +210,9 @@ export default function DiffPage() {
             <button
               key={value}
               className={`${styles.modeBtn}${mode === value ? ` ${styles.modeBtnActive}` : ""}`}
-              onClick={() => handleModeChange(value)}
+              onClick={() => {
+                handleModeChange(value);
+              }}
             >
               {label}
             </button>

@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
-import { GetStaticProps } from "next";
+import React, { useState, useMemo } from "react";
+import { type GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { DNS_GROUPS } from "@/data/dns-record-types";
@@ -14,45 +14,50 @@ export default function DnsRecordTypesPage({
   groups,
 }: {
   groups: typeof DNS_GROUPS;
-}) {
+}): React.ReactNode {
   const branding = useBranding();
-  const [search, setSearch] = useState("");
-  const [activeGroup, setActiveGroup] = useState("all");
+  const [search, setSearch] = useState(() =>
+    typeof window === "undefined"
+      ? ""
+      : (new URLSearchParams(window.location.search).get("q") ?? ""),
+  );
+  const [activeGroup, setActiveGroup] = useState(() =>
+    typeof window === "undefined"
+      ? "all"
+      : (new URLSearchParams(window.location.search).get("grp") ?? "all"),
+  );
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("q");
-    const grp = params.get("grp");
-    if (q) setSearch(q);
-    if (grp) setActiveGroup(grp);
-  }, []);
-
-  function updateUrl(q: string, grp: string) {
+  function updateUrl(q: string, grp: string): void {
     const params = new URLSearchParams();
+
     if (q) params.set("q", q);
     if (grp !== "all") params.set("grp", grp);
     const qs = params.toString();
+
     history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }
 
-  function handleSearch(value: string) {
+  function handleSearch(value: string): void {
     setSearch(value);
     updateUrl(value, activeGroup);
   }
 
-  function handleGroupToggle(grp: string) {
+  function handleGroupToggle(grp: string): void {
     const next = activeGroup === grp ? "all" : grp;
+
     setActiveGroup(next);
     updateUrl(search, next);
   }
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
+
     return groups
       .map((group) => {
         const records = group.records.filter((r) => {
           if (activeGroup !== "all" && activeGroup !== group.id) return false;
           if (!q) return true;
+
           return (
             r.type.toLowerCase().includes(q) ||
             r.fullName.toLowerCase().includes(q) ||
@@ -60,10 +65,11 @@ export default function DnsRecordTypesPage({
             r.example.toLowerCase().includes(q)
           );
         });
+
         return { ...group, records };
       })
       .filter((g) => g.records.length > 0);
-  }, [search, activeGroup]);
+  }, [search, activeGroup, groups]);
 
   return (
     <div className={styles.page}>
@@ -117,14 +123,18 @@ export default function DnsRecordTypesPage({
               type="text"
               placeholder="Search by type, name, or description..."
               value={search}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => {
+                handleSearch(e.target.value);
+              }}
               autoComplete="off"
               spellCheck={false}
             />
             {search && (
               <button
                 className={styles.clearBtn}
-                onClick={() => handleSearch("")}
+                onClick={() => {
+                  handleSearch("");
+                }}
                 aria-label="Clear search"
               >
                 ✕
@@ -135,7 +145,9 @@ export default function DnsRecordTypesPage({
           <div className={styles.classFilters}>
             <button
               className={`${styles.classBtn} ${activeGroup === "all" ? styles.classBtnActive : ""}`}
-              onClick={() => handleGroupToggle("all")}
+              onClick={() => {
+                handleGroupToggle("all");
+              }}
             >
               All
             </button>
@@ -149,7 +161,9 @@ export default function DnsRecordTypesPage({
                     "--cls-subtle": group.subtle,
                   } as React.CSSProperties
                 }
-                onClick={() => handleGroupToggle(group.id)}
+                onClick={() => {
+                  handleGroupToggle(group.id);
+                }}
               >
                 {group.id}
                 <span className={styles.classBtnLabel}>{group.label}</span>

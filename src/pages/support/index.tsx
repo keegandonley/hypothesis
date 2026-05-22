@@ -4,7 +4,7 @@ import styles from "../../styles/docs.module.css";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 
-export default function SupportPage() {
+export default function SupportPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
 

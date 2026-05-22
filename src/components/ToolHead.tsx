@@ -1,3 +1,4 @@
+import React from "react";
 import Head from "next/head";
 
 interface ToolHeadProps {
@@ -12,7 +13,7 @@ export function ToolHead({
   description,
   path,
   brandName,
-}: ToolHeadProps) {
+}: ToolHeadProps): React.ReactNode {
   const brand = (brandName ?? "HYPOTHESIS").toUpperCase();
   const canonicalUrl = `https://hypothesis.sh${path}`;
   const ogImage = "https://hypothesis.sh/api/og?domain=hypothesis.sh";

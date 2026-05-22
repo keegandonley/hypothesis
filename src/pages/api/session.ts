@@ -10,9 +10,11 @@ import { incrementStat } from "@/lib/stats";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
+): Promise<void> {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "method not allowed" });
+    res.status(405).json({ error: "method not allowed" });
+
+    return;
   }
 
   // Prefer Vercel's trusted IP header (not client-appendable); fall back for local dev
@@ -23,9 +25,10 @@ export default async function handler(
     "0.0.0.0";
 
   let body: { sessionId?: string } = {};
-  const contentType = (req.headers["content-type"] as string) ?? "";
+  const contentType = req.headers["content-type"] ?? "";
+
   if (contentType.includes("application/json")) {
-    body = req.body ?? {};
+    body = (req.body as { sessionId?: string }) ?? {};
   }
 
   const ALLOWED_HOSTS = new Set([
@@ -39,52 +42,72 @@ export default async function handler(
 
   try {
     const host = req.headers.host ?? "";
+
     if (!ALLOWED_HOSTS.has(host) && !host.endsWith("k10y-team.vercel.app")) {
-      return res.status(400).json({ error: "invalid host" });
+      res.status(400).json({ error: "invalid host" });
+
+      return;
     }
+
     const protocol = (req.headers["x-forwarded-proto"] as string) ?? "http";
     const webhookBase = `${protocol}://${host}`;
 
     if (body.sessionId) {
       const session = await touchSession(body.sessionId);
+
       if (!session) {
-        return res.status(404).json({ error: "session not found" });
+        res.status(404).json({ error: "session not found" });
+
+        return;
       }
-      return res.json({
+
+      res.json({
         sessionId: session.id,
         webhookUrl: `${webhookBase}/api/webhook/${session.id}`,
         createdAt: session.createdAt,
         updatedAt: session.updatedAt,
       });
+
+      return;
     }
 
     if (ip !== "::1") {
       const recentCount = await countRecentSessionsByIp(ip);
+
       if (recentCount >= 3) {
-        return res.status(429).json({
+        res.status(429).json({
           error: "rate limit exceeded: max 3 sessions per IP per 10 minutes",
         });
+
+        return;
       }
     }
 
     const sessionId = crypto.randomUUID();
     const session = await createSession(sessionId, ip);
-    await incrementStat("webhook_sessions_web").catch((err) =>
-      console.error("[stats] failed to increment webhook_sessions_web", err),
-    );
+
+    await incrementStat("webhook_sessions_web").catch((err: unknown) => {
+      console.error("[stats] failed to increment webhook_sessions_web", err);
+    });
     try {
       await track("Session Created");
     } catch (err) {
       console.warn("[analytics] failed to track Session Created", err);
     }
-    return res.json({
+
+    res.json({
       sessionId: session.id,
       webhookUrl: `${webhookBase}/api/webhook/${session.id}`,
       createdAt: session.createdAt,
       updatedAt: session.updatedAt,
     });
+
+    return;
   } catch (err) {
     console.error("session error", err);
-    return res.status(500).json({ error: "internal server error" });
+
+    res.status(500).json({ error: "internal server error" });
+
+    return;
   }
 }

@@ -9,7 +9,7 @@ import { useIsIframe } from "@/lib/useIsIframe";
 
 const URL_LIMIT = 2000;
 
-export default function PrettyPrintPage() {
+export default function PrettyPrintPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
@@ -20,8 +20,9 @@ export default function PrettyPrintPage() {
   const [copied, setCopied] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const buildUrl = (encoded: string) => {
+  const buildUrl = (encoded: string): string => {
     if (!encoded) return `${window.location.origin}${window.location.pathname}`;
+
     return `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(encoded)}`;
   };
 
@@ -30,7 +31,8 @@ export default function PrettyPrintPage() {
   ): { output: string; valid: boolean | null } => {
     if (value.length === 0) return { output: "", valid: null };
     try {
-      const parsed = JSON.parse(value);
+      const parsed: unknown = JSON.parse(value);
+
       return { output: JSON.stringify(parsed, null, 2), valid: true };
     } catch {
       return { output: "", valid: false };
@@ -40,55 +42,66 @@ export default function PrettyPrintPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("v");
+
     if (v) {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         const decoded = decodeURIComponent(escape(atob(v)));
         const { output: fmt, valid } = formatJson(decoded);
-        setInput(decoded);
+
+        setInput(decoded); // eslint-disable-line react-hooks/set-state-in-effect
         setOutput(fmt);
         setJsonValid(valid);
       } catch {
         /* ignore bad param */
       }
     }
+
     const currentUrl = window.location.href;
+
     setUrl(currentUrl);
     setUrlTooLong(currentUrl.length > URL_LIMIT);
   }, []);
 
-  const handleInputChange = (value: string) => {
+  const handleInputChange = (value: string): void => {
     setInput(value);
     const { output: fmt, valid } = formatJson(value);
+
     setOutput(fmt);
     setJsonValid(valid);
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const encoded = value ? btoa(unescape(encodeURIComponent(value))) : "";
     const newUrl = buildUrl(encoded);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
     setUrlTooLong(newUrl.length > URL_LIMIT);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setInput("");
     setOutput("");
     setJsonValid(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
     setUrlTooLong(false);
   };
 
-  const handleCopy = () => {
+  const handleCopy = (): void => {
     if (urlTooLong) return;
-    copyToClipboard(url).then(() => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleCopyOutput = () => {
-    copyToClipboard(output);
+  const handleCopyOutput = (): void => {
+    void copyToClipboard(output);
   };
 
   return (
@@ -143,7 +156,9 @@ export default function PrettyPrintPage() {
             <textarea
               className={styles.textarea}
               value={input}
-              onChange={(e) => handleInputChange(e.target.value)}
+              onChange={(e) => {
+                handleInputChange(e.target.value);
+              }}
               placeholder="Paste JSON here..."
               spellCheck={false}
             />

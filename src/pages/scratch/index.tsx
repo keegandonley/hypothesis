@@ -8,7 +8,7 @@ import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 
-export default function ScratchPage() {
+export default function ScratchPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [text, setText] = useState("");
@@ -19,31 +19,36 @@ export default function ScratchPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const value = params.get("text");
-    if (value) setText(LZString.decompressFromEncodedURIComponent(value) ?? "");
+
+    if (value) setText(LZString.decompressFromEncodedURIComponent(value) ?? ""); // eslint-disable-line react-hooks/set-state-in-effect
     setUrl(window.location.href);
   }, []);
 
-  const handleChange = (value: string) => {
+  const handleChange = (value: string): void => {
     setText(value);
     const newUrl = value
       ? `${window.location.origin}${window.location.pathname}?text=${LZString.compressToEncodedURIComponent(value)}`
       : `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setText("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
@@ -87,7 +92,9 @@ export default function ScratchPage() {
         <textarea
           className={styles.textarea}
           value={text}
-          onChange={(e) => handleChange(e.target.value)}
+          onChange={(e) => {
+            handleChange(e.target.value);
+          }}
           placeholder="Start typing..."
           spellCheck={false}
           autoFocus

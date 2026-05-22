@@ -9,15 +9,19 @@ const UUID_RE =
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
+): Promise<void> {
   if (req.method !== "GET") {
-    return res.status(405).end();
+    res.status(405).end();
+
+    return;
   }
 
   const { deviceId } = req.query as { deviceId?: string };
 
   if (!deviceId || !UUID_RE.test(deviceId)) {
-    return res.status(400).json({ error: "deviceId must be a valid UUID" });
+    res.status(400).json({ error: "deviceId must be a valid UUID" });
+
+    return;
   }
 
   const deviceSecret = req.headers["x-device-secret"];
@@ -27,22 +31,30 @@ export default async function handler(
   );
 
   if (!authorized) {
-    return res.status(403).json({ error: "forbidden" });
+    res.status(403).json({ error: "forbidden" });
+
+    return;
   }
 
   try {
     const announcement = getLatestActiveAnnouncement();
 
     if (!announcement) {
-      return res.status(204).end();
+      res.status(204).end();
+
+      return;
     }
 
     res.setHeader("Cache-Control", "private, max-age=60");
 
-    return res.json(announcement);
+    res.json(announcement);
+
+    return;
   } catch (err) {
     console.error("native announcements error", err);
 
-    return res.status(500).json({ error: "internal server error" });
+    res.status(500).json({ error: "internal server error" });
+
+    return;
   }
 }

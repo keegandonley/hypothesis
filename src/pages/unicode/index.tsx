@@ -69,6 +69,7 @@ function getCategory(char: string): string {
   if (/\p{Cf}/u.test(char)) return "Other, Format (Cf)";
   if (/\p{Cs}/u.test(char)) return "Other, Surrogate (Cs)";
   if (/\p{Co}/u.test(char)) return "Other, Private Use (Co)";
+
   return "Other, Unassigned (Cn)";
 }
 
@@ -90,11 +91,13 @@ function getScript(char: string): string {
   if (/\p{Script=Armenian}/u.test(char)) return "Armenian";
   if (/\p{Script=Ethiopic}/u.test(char)) return "Ethiopic";
   if (/\p{Script=Common}/u.test(char)) return "Common";
+
   return "Unknown";
 }
 
 function getHtmlEntity(cp: number): string {
   if (cp in NAMED_ENTITIES) return NAMED_ENTITIES[cp];
+
   return `&#x${cp.toString(16).toUpperCase()};`;
 }
 
@@ -102,6 +105,7 @@ function getDisplayChar(char: string, cp: number): string {
   // Control characters and whitespace: show placeholder
   if (cp < 32 || (cp >= 127 && cp < 160)) return "␣";
   if (cp === 32) return "·";
+
   return char;
 }
 
@@ -119,12 +123,15 @@ interface CharInfo {
 }
 
 function analyzeText(text: string): { chars: CharInfo[]; truncated: boolean } {
+  // eslint-disable-next-line @typescript-eslint/no-misused-spread
   const codePoints = [...text];
   const truncated = codePoints.length > MAX_CODEPOINTS;
   const slice = truncated ? codePoints.slice(0, MAX_CODEPOINTS) : codePoints;
 
   const chars: CharInfo[] = slice.map((char) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const cp = char.codePointAt(0)!;
+
     return {
       char,
       cp,
@@ -142,7 +149,7 @@ function analyzeText(text: string): { chars: CharInfo[]; truncated: boolean } {
   return { chars, truncated };
 }
 
-export default function UnicodePage() {
+export default function UnicodePage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [text, setText] = useState("");
@@ -151,46 +158,55 @@ export default function UnicodePage() {
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { chars, truncated } = analyzeText(text);
+  // eslint-disable-next-line @typescript-eslint/no-misused-spread
   const cpCount = [...text].length;
 
-  const buildUrl = (txt: string) => {
+  const buildUrl = (txt: string): string => {
     if (!txt) return `${window.location.origin}${window.location.pathname}`;
     const encoded = btoa(encodeURIComponent(txt));
+
     return `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(encoded)}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const encoded = params.get("v");
+
     if (encoded) {
       try {
         const decoded = decodeURIComponent(atob(encoded));
-        setText(decoded);
+
+        setText(decoded); // eslint-disable-line react-hooks/set-state-in-effect
       } catch {
         // Invalid encoding, ignore
       }
     }
+
     setUrl(window.location.href);
   }, []);
 
-  const handleTextChange = (value: string) => {
+  const handleTextChange = (value: string): void => {
     setText(value);
     const newUrl = buildUrl(value);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setText("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
@@ -255,7 +271,9 @@ export default function UnicodePage() {
             <textarea
               className={styles.textarea}
               value={text}
-              onChange={(e) => handleTextChange(e.target.value)}
+              onChange={(e) => {
+                handleTextChange(e.target.value);
+              }}
               placeholder="Type or paste text to inspect..."
               spellCheck={false}
             />

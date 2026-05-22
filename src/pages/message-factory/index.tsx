@@ -25,9 +25,10 @@ const subExperiments = [
   },
 ];
 
-export default function MessageFactoryPage() {
+export default function MessageFactoryPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
+
   return (
     <div className={styles.page}>
       <ToolHead
@@ -85,8 +86,9 @@ function SubExperimentCard({
   description: string;
   href: string;
   docsHref: string;
-}) {
+}): React.ReactNode {
   const router = useRouter();
+
   return (
     <div className={styles.card} onClick={() => router.push(href)}>
       <div className={styles.cardMain}>
@@ -101,7 +103,9 @@ function SubExperimentCard({
         <Link
           href={docsHref}
           className={styles.docsLink}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
         >
           <DocIcon />
           docs

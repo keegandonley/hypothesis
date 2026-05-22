@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import styles from "../../styles/chmod.module.css";
@@ -20,23 +20,29 @@ const PRESETS: { label: string; mode: string }[] = [
 
 function parseNumeric(raw: string): Perms | null {
   const trimmed = raw.trim();
+
   if (!/^[0-7]{3}$/.test(trimmed)) return null;
+
   return trimmed.split("").map(Number) as Perms;
 }
 
 function parseSymbolic(raw: string): Perms | null {
   const trimmed = raw.trim().toLowerCase();
+
   if (!/^[rwx-]{9}$/.test(trimmed)) return null;
   const groups = [
     trimmed.slice(0, 3),
     trimmed.slice(3, 6),
     trimmed.slice(6, 9),
   ];
+
   return groups.map((g) => {
     let n = 0;
-    if (g[0] === "r") n += 4;
+
+    if (g.startsWith("r")) n += 4;
     if (g[1] === "w") n += 2;
     if (g[2] === "x") n += 1;
+
     return n;
   }) as Perms;
 }
@@ -47,6 +53,7 @@ function toSymbolic(perms: Perms): string {
       const r = d & 4 ? "r" : "-";
       const w = d & 2 ? "w" : "-";
       const x = d & 1 ? "x" : "-";
+
       return r + w + x;
     })
     .join("");
@@ -59,10 +66,11 @@ function toNumeric(perms: Perms): string {
 function detectInput(raw: string): "numeric" | "symbolic" | "unknown" {
   if (/^[0-7]{3}$/.test(raw.trim())) return "numeric";
   if (/^[rwx-]{9}$/i.test(raw.trim())) return "symbolic";
+
   return "unknown";
 }
 
-export default function ChmodPage() {
+export default function ChmodPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
@@ -78,86 +86,105 @@ export default function ChmodPage() {
     null,
   );
 
-  const buildUrl = (mode: string) => {
+  const buildUrl = (mode: string): string => {
     if (!mode) return `${window.location.origin}${window.location.pathname}`;
+
     return `${window.location.origin}${window.location.pathname}?mode=${encodeURIComponent(mode)}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const mode = params.get("mode");
+
     if (mode) {
-      setInput(mode);
+      setInput(mode); // eslint-disable-line react-hooks/set-state-in-effect
+
       const p = parseNumeric(mode) ?? parseSymbolic(mode);
+
       if (p) setPerms(p);
     }
+
     setUrl(window.location.href);
   }, []);
 
-  const handleChange = (raw: string) => {
+  const handleChange = (raw: string): void => {
     setInput(raw);
     const trimmed = raw.trim();
+
     if (!trimmed) {
       setPerms(null);
       setError(false);
       const newUrl = buildUrl("");
+
       history.replaceState(null, "", newUrl);
       setUrl(newUrl);
+
       return;
     }
+
     const kind = detectInput(trimmed);
+
     if (kind === "unknown") {
       setPerms(null);
       setError(trimmed.length >= 3);
+
       return;
     }
+
     const p =
       kind === "numeric" ? parseNumeric(trimmed) : parseSymbolic(trimmed);
+
     if (!p) {
       setPerms(null);
       setError(true);
+
       return;
     }
+
     setPerms(p);
     setError(false);
     const newUrl = buildUrl(trimmed);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handlePreset = (mode: string) => {
+  const handlePreset = (mode: string): void => {
     setInput(mode);
     handleChange(mode);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setInput("");
     setPerms(null);
     setError(false);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleCopyField = (field: "numeric" | "symbolic") => {
+  const handleCopyField = (field: "numeric" | "symbolic"): void => {
     if (!perms) return;
     const val = field === "numeric" ? toNumeric(perms) : toSymbolic(perms);
-    copyToClipboard(val).then(() => {
+
+    void copyToClipboard(val).then(() => {
       setCopiedField(field);
       if (copyFieldTimeoutRef.current)
         clearTimeout(copyFieldTimeoutRef.current);
-      copyFieldTimeoutRef.current = setTimeout(
-        () => setCopiedField(null),
-        1500,
-      );
+      copyFieldTimeoutRef.current = setTimeout(() => {
+        setCopiedField(null);
+      }, 1500);
     });
   };
 
@@ -216,7 +243,9 @@ export default function ChmodPage() {
         <input
           className={`${styles.input}${error ? ` ${styles.inputError}` : ""}`}
           value={input}
-          onChange={(e) => handleChange(e.target.value)}
+          onChange={(e) => {
+            handleChange(e.target.value);
+          }}
           placeholder="e.g. 755 or rwxr-xr-x"
           spellCheck={false}
           autoCapitalize="off"
@@ -230,7 +259,9 @@ export default function ChmodPage() {
           <button
             key={p.label}
             className={`${styles.presetBtn}${input === p.mode ? ` ${styles.presetActive}` : ""}`}
-            onClick={() => handlePreset(p.mode)}
+            onClick={() => {
+              handlePreset(p.mode);
+            }}
           >
             {p.label}
           </button>
@@ -246,7 +277,9 @@ export default function ChmodPage() {
                 {!isIframe && (
                   <button
                     className={`${styles.copyFieldBtn}${copiedField === "numeric" ? ` ${styles.copied}` : ""}`}
-                    onClick={() => handleCopyField("numeric")}
+                    onClick={() => {
+                      handleCopyField("numeric");
+                    }}
                   >
                     {copiedField === "numeric" ? "Copied!" : "Copy"}
                   </button>
@@ -261,7 +294,9 @@ export default function ChmodPage() {
                 {!isIframe && (
                   <button
                     className={`${styles.copyFieldBtn}${copiedField === "symbolic" ? ` ${styles.copied}` : ""}`}
-                    onClick={() => handleCopyField("symbolic")}
+                    onClick={() => {
+                      handleCopyField("symbolic");
+                    }}
                   >
                     {copiedField === "symbolic" ? "Copied!" : "Copy"}
                   </button>

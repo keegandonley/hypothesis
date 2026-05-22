@@ -2,11 +2,12 @@ import { pbkdf2, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 
 import { pool } from "./db";
+import type { QueryResult } from "pg";
 import { incrementStat, snapshotDeviceTotal } from "./stats";
 
 const pbkdf2Async = promisify(pbkdf2);
 
-export type PushToken = {
+export interface PushToken {
   id: string;
   deviceId: string;
   token: string | null;
@@ -14,7 +15,7 @@ export type PushToken = {
   sandbox: boolean;
   createdAt: string;
   updatedAt: string;
-};
+}
 
 async function hashSecret(secret: string): Promise<string> {
   const salt = randomBytes(16).toString("hex");
@@ -34,6 +35,7 @@ async function verifySecret(secret: string, stored: string): Promise<boolean> {
   const storedBuf = Buffer.from(hex, "hex");
 
   if (derived.length !== storedBuf.length) return false;
+
   return timingSafeEqual(derived, storedBuf);
 }
 
@@ -86,13 +88,15 @@ export async function upsertPushToken(
     );
 
     if (result.rows[0]?.is_new) {
-      await incrementStat("devices_registered").catch((err) =>
-        console.error("[stats] failed to increment devices_registered", err),
-      );
+      await incrementStat("devices_registered").catch((err: unknown) => {
+        console.error("[stats] failed to increment devices_registered", err);
+      });
     }
-    await snapshotDeviceTotal().catch((err) =>
-      console.error("[stats] failed to snapshot device total", err),
-    );
+
+    await snapshotDeviceTotal().catch((err: unknown) => {
+      console.error("[stats] failed to snapshot device total", err);
+    });
+
     return;
   }
 
@@ -137,25 +141,38 @@ export async function upsertPushToken(
     );
 
     if (result.rows[0]?.is_new) {
-      await incrementStat("devices_registered").catch((err) =>
-        console.error("[stats] failed to increment devices_registered", err),
-      );
+      await incrementStat("devices_registered").catch((err: unknown) => {
+        console.error("[stats] failed to increment devices_registered", err);
+      });
     }
   }
-  await snapshotDeviceTotal().catch((err) =>
-    console.error("[stats] failed to snapshot device total", err),
-  );
+
+  await snapshotDeviceTotal().catch((err: unknown) => {
+    console.error("[stats] failed to snapshot device total", err);
+  });
+}
+
+interface PushTokenRow {
+  id: string;
+  device_id: string;
+  token: string | null;
+  platform: string;
+  sandbox: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export async function getPushTokenByDeviceId(
   deviceId: string,
 ): Promise<PushToken | null> {
-  const result = await pool.query(
+  const result: QueryResult<PushTokenRow> = await pool.query(
     "SELECT id, device_id, token, platform, sandbox, created_at, updated_at FROM push_tokens WHERE device_id = $1",
     [deviceId],
   );
+
   if (result.rows.length === 0) return null;
   const row = result.rows[0];
+
   return {
     id: row.id,
     deviceId: row.device_id,
@@ -178,6 +195,7 @@ export async function registerDeviceWithoutToken(
     "SELECT device_id FROM push_tokens WHERE device_id = $1",
     [deviceId],
   );
+
   if (existing.rows.length > 0) return;
 
   const hashed = deviceSecret ? await hashSecret(deviceSecret) : null;
@@ -189,11 +207,11 @@ export async function registerDeviceWithoutToken(
   );
 
   if (result.rowCount && result.rowCount > 0) {
-    await incrementStat("devices_registered").catch((err) =>
-      console.error("[stats] failed to increment devices_registered", err),
-    );
-    await snapshotDeviceTotal().catch((err) =>
-      console.error("[stats] failed to snapshot device total", err),
-    );
+    await incrementStat("devices_registered").catch((err: unknown) => {
+      console.error("[stats] failed to increment devices_registered", err);
+    });
+    await snapshotDeviceTotal().catch((err: unknown) => {
+      console.error("[stats] failed to snapshot device total", err);
+    });
   }
 }

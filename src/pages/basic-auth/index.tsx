@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/basic-auth.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -11,7 +11,7 @@ function encodeBasicAuth(username: string, password: string): string {
   return btoa(`${username}:${password}`);
 }
 
-export default function BasicAuthPage() {
+export default function BasicAuthPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [username, setUsername] = useState("");
@@ -29,54 +29,65 @@ export default function BasicAuthPage() {
   const headerValue = `Basic ${encoded}`;
   const fullHeader = `Authorization: ${headerValue}`;
 
-  const buildUrl = (u: string) => {
+  const buildUrl = (u: string): string => {
     const params = new URLSearchParams({ username: u });
+
     return `${window.location.origin}${window.location.pathname}?${params}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const u = params.get("username") ?? "";
+
+    /* eslint-disable-next-line react-hooks/set-state-in-effect */
     setUsername(u);
     setUrl(buildUrl(u));
   }, []);
 
-  const handleUsernameChange = (u: string) => {
+  const handleUsernameChange = (u: string): void => {
     setUsername(u);
     const newUrl = buildUrl(u);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setUsername("");
     setPassword("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopyHeader = () => {
-    copyToClipboard(fullHeader).then(() => {
+  const handleCopyHeader = (): void => {
+    void copyToClipboard(fullHeader).then(() => {
       setCopiedHeader(true);
       if (headerTimeoutRef.current) clearTimeout(headerTimeoutRef.current);
-      headerTimeoutRef.current = setTimeout(() => setCopiedHeader(false), 1500);
+      headerTimeoutRef.current = setTimeout(() => {
+        setCopiedHeader(false);
+      }, 1500);
     });
   };
 
-  const handleCopyToken = () => {
-    copyToClipboard(encoded).then(() => {
+  const handleCopyToken = (): void => {
+    void copyToClipboard(encoded).then(() => {
       setCopiedToken(true);
       if (tokenTimeoutRef.current) clearTimeout(tokenTimeoutRef.current);
-      tokenTimeoutRef.current = setTimeout(() => setCopiedToken(false), 1500);
+      tokenTimeoutRef.current = setTimeout(() => {
+        setCopiedToken(false);
+      }, 1500);
     });
   };
 
@@ -129,7 +140,9 @@ export default function BasicAuthPage() {
               type="text"
               className={styles.input}
               value={username}
-              onChange={(e) => handleUsernameChange(e.target.value)}
+              onChange={(e) => {
+                handleUsernameChange(e.target.value);
+              }}
               placeholder="username"
               autoComplete="off"
               spellCheck={false}
@@ -145,14 +158,18 @@ export default function BasicAuthPage() {
                 type={showPassword ? "text" : "password"}
                 className={`${styles.input} ${styles.passwordInput}`}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
                 placeholder="password"
                 autoComplete="off"
                 spellCheck={false}
               />
               <button
                 className={styles.showHideBtn}
-                onClick={() => setShowPassword((v) => !v)}
+                onClick={() => {
+                  setShowPassword((v) => !v);
+                }}
                 type="button"
               >
                 {showPassword ? "hide" : "show"}

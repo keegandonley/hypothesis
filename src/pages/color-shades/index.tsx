@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/color-shades.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -9,12 +9,13 @@ import { useIsIframe } from "@/lib/useIsIframe";
 
 function hexToOklch(hex: string): [number, number, number] | null {
   const clean = hex.replace("#", "");
+
   if (clean.length !== 6) return null;
   const r = parseInt(clean.slice(0, 2), 16) / 255;
   const g = parseInt(clean.slice(2, 4), 16) / 255;
   const b = parseInt(clean.slice(4, 6), 16) / 255;
 
-  const toLinear = (c: number) =>
+  const toLinear = (c: number): number =>
     c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
   const lr = toLinear(r),
     lg = toLinear(g),
@@ -55,17 +56,19 @@ function oklchToHex(L: number, C: number, H: number): string {
   const g = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
   const bOut = -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s;
 
-  const toSrgb = (c: number) => {
+  const toSrgb = (c: number): number => {
     const clipped = Math.max(0, Math.min(1, c));
+
     return clipped <= 0.0031308
       ? 12.92 * clipped
       : 1.055 * Math.pow(clipped, 1 / 2.4) - 0.055;
   };
 
-  const toHex = (c: number) =>
+  const toHex = (c: number): string =>
     Math.round(toSrgb(c) * 255)
       .toString(16)
       .padStart(2, "0");
+
   return `#${toHex(r)}${toHex(g)}${toHex(bOut)}`;
 }
 
@@ -74,12 +77,12 @@ const LIGHTNESS = [
   0.97, 0.94, 0.88, 0.8, 0.7, 0.57, 0.46, 0.37, 0.28, 0.2, 0.14,
 ];
 
-function generateShades(
-  hex: string,
-): Array<{ step: number; hex: string }> | null {
+function generateShades(hex: string): { step: number; hex: string }[] | null {
   const lch = hexToOklch(hex);
+
   if (!lch) return null;
   const [, C, H] = lch;
+
   return STEPS.map((step, i) => ({
     step,
     hex: oklchToHex(LIGHTNESS[i], C * 0.85, H),
@@ -88,10 +91,11 @@ function generateShades(
 
 function isDark(hex: string): boolean {
   const lch = hexToOklch(hex);
+
   return lch ? lch[0] < 0.5 : false;
 }
 
-export default function ColorShadesPage() {
+export default function ColorShadesPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [color, setColor] = useState("#3b82f6");
@@ -103,65 +107,76 @@ export default function ColorShadesPage() {
 
   const shades = generateShades(color);
 
-  const buildUrl = (c: string) =>
+  const buildUrl = (c: string): string =>
     `${window.location.origin}${window.location.pathname}?c=${encodeURIComponent(c)}`;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const c = params.get("c");
-    if (c && /^#[0-9a-fA-F]{6}$/.test(c)) setColor(c);
+
+    if (c && /^#[0-9a-fA-F]{6}$/.test(c)) setColor(c); // eslint-disable-line react-hooks/set-state-in-effect
     setPageUrl(window.location.href);
   }, []);
 
-  const handleColorInput = (val: string) => {
+  const handleColorInput = (val: string): void => {
     setColor(val);
     if (/^#[0-9a-fA-F]{6}$/.test(val)) {
       const newUrl = buildUrl(val);
+
       history.replaceState(null, "", newUrl);
       setPageUrl(newUrl);
     }
   };
 
-  const handlePickerChange = (val: string) => {
+  const handlePickerChange = (val: string): void => {
     setColor(val);
     const newUrl = buildUrl(val);
+
     history.replaceState(null, "", newUrl);
     setPageUrl(newUrl);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(pageUrl).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(pageUrl).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setColor("#3b82f6");
     const newUrl = buildUrl("#3b82f6");
+
     history.replaceState(null, "", newUrl);
     setPageUrl(newUrl);
   };
 
-  const handleCopyShade = (hex: string, i: number) => {
-    copyToClipboard(hex).then(() => {
+  const handleCopyShade = (hex: string, i: number): void => {
+    void copyToClipboard(hex).then(() => {
       setCopiedIndex(i);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopiedIndex(null), 1200);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopiedIndex(null);
+      }, 1200);
     });
   };
 
-  const handleCopyAll = () => {
+  const handleCopyAll = (): void => {
     if (!shades) return;
     const tailwindPalette = shades
       .map(({ step, hex }) => `  ${step}: "${hex}"`)
       .join(",\n");
     const text = `{\n${tailwindPalette}\n}`;
-    copyToClipboard(text).then(() => {
+
+    void copyToClipboard(text).then(() => {
       setCopiedAll(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopiedAll(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopiedAll(false);
+      }, 1500);
     });
   };
 
@@ -209,13 +224,17 @@ export default function ColorShadesPage() {
               type="color"
               className={styles.colorPicker}
               value={/^#[0-9a-fA-F]{6}$/.test(color) ? color : "#000000"}
-              onChange={(e) => handlePickerChange(e.target.value)}
+              onChange={(e) => {
+                handlePickerChange(e.target.value);
+              }}
             />
             <input
               type="text"
               className={styles.hexInput}
               value={color}
-              onChange={(e) => handleColorInput(e.target.value)}
+              onChange={(e) => {
+                handleColorInput(e.target.value);
+              }}
               placeholder="#3b82f6"
               spellCheck={false}
               maxLength={7}
@@ -239,7 +258,9 @@ export default function ColorShadesPage() {
                 key={step}
                 className={styles.shade}
                 style={{ backgroundColor: hex }}
-                onClick={() => !isIframe && handleCopyShade(hex, i)}
+                onClick={() => {
+                  if (!isIframe) handleCopyShade(hex, i);
+                }}
                 title={copiedIndex === i ? "Copied!" : hex}
               >
                 <span

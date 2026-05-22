@@ -20,7 +20,9 @@ function formatValue(v: unknown): string {
   if (v === null) return "null";
   if (typeof v === "string") return JSON.stringify(v);
   if (typeof v === "object") return JSON.stringify(v);
-  return String(v);
+  if (typeof v === "number" || typeof v === "boolean") return String(v);
+
+  return "";
 }
 
 function jsonDiff(a: unknown, b: unknown, path = ""): DiffEntry[] {
@@ -39,6 +41,7 @@ function jsonDiff(a: unknown, b: unknown, path = ""): DiffEntry[] {
       oldValue: a,
       newValue: b,
     });
+
     return entries;
   }
 
@@ -46,8 +49,10 @@ function jsonDiff(a: unknown, b: unknown, path = ""): DiffEntry[] {
     const aArr = a as unknown[];
     const bArr = b as unknown[];
     const len = Math.max(aArr.length, bArr.length);
+
     for (let i = 0; i < len; i++) {
       const childPath = `${path}[${i}]`;
+
       if (i >= aArr.length) {
         entries.push({ path: childPath, type: "added", newValue: bArr[i] });
       } else if (i >= bArr.length) {
@@ -56,6 +61,7 @@ function jsonDiff(a: unknown, b: unknown, path = ""): DiffEntry[] {
         entries.push(...jsonDiff(aArr[i], bArr[i], childPath));
       }
     }
+
     return entries;
   }
 
@@ -63,8 +69,10 @@ function jsonDiff(a: unknown, b: unknown, path = ""): DiffEntry[] {
     const aObj = a as Record<string, unknown>;
     const bObj = b as Record<string, unknown>;
     const keys = new Set([...Object.keys(aObj), ...Object.keys(bObj)]);
+
     for (const key of keys) {
       const childPath = path ? `${path}.${key}` : key;
+
       if (!(key in aObj)) {
         entries.push({ path: childPath, type: "added", newValue: bObj[key] });
       } else if (!(key in bObj)) {
@@ -73,12 +81,14 @@ function jsonDiff(a: unknown, b: unknown, path = ""): DiffEntry[] {
         entries.push(...jsonDiff(aObj[key], bObj[key], childPath));
       }
     }
+
     return entries;
   }
 
   if (a !== b) {
     entries.push({ path: label, type: "changed", oldValue: a, newValue: b });
   }
+
   return entries;
 }
 
@@ -89,7 +99,7 @@ const DIFF_LABELS: Record<DiffType, string> = {
   "type-changed": "! type",
 };
 
-export default function JsonDiffPage() {
+export default function JsonDiffPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [left, setLeft] = useState("");
@@ -115,6 +125,7 @@ export default function JsonDiffPage() {
       leftOk = false;
     }
   }
+
   if (right) {
     try {
       rightParsed = JSON.parse(right);
@@ -135,36 +146,45 @@ export default function JsonDiffPage() {
     ).length,
   };
 
-  const buildUrl = (l: string, r: string) => {
+  const buildUrl = (l: string, r: string): string => {
     if (!l && !r) return `${window.location.origin}${window.location.pathname}`;
     const encoded = btoa(
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       unescape(encodeURIComponent(JSON.stringify({ l, r }))),
     );
+
     return `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(encoded)}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("v");
+
     if (v) {
       try {
-        const payload = JSON.parse(decodeURIComponent(escape(atob(v))));
-        if (typeof payload.l === "string") setLeft(payload.l);
+        const payload = JSON.parse(
+          // eslint-disable-next-line @typescript-eslint/no-deprecated
+          decodeURIComponent(escape(atob(v))),
+        ) as Record<string, unknown>;
+
+        if (typeof payload.l === "string") setLeft(payload.l); // eslint-disable-line react-hooks/set-state-in-effect
         if (typeof payload.r === "string") setRight(payload.r);
       } catch {
         // ignore
       }
     }
+
     setUrl(window.location.href);
   }, []);
 
-  const syncUrl = (l: string, r: string) => {
+  const syncUrl = (l: string, r: string): void => {
     const newUrl = buildUrl(l, r);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleLeft = (v: string) => {
+  const handleLeft = (v: string): void => {
     setLeft(v);
     if (v) {
       try {
@@ -176,10 +196,11 @@ export default function JsonDiffPage() {
     } else {
       setLeftError("");
     }
+
     syncUrl(v, right);
   };
 
-  const handleRight = (v: string) => {
+  const handleRight = (v: string): void => {
     setRight(v);
     if (v) {
       try {
@@ -191,23 +212,27 @@ export default function JsonDiffPage() {
     } else {
       setRightError("");
     }
+
     syncUrl(left, v);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setLeft("");
     setRight("");
     setLeftError("");
     setRightError("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
@@ -259,7 +284,9 @@ export default function JsonDiffPage() {
             <textarea
               className={styles.textarea}
               value={left}
-              onChange={(e) => handleLeft(e.target.value)}
+              onChange={(e) => {
+                handleLeft(e.target.value);
+              }}
               placeholder={'{\n  "name": "Alice",\n  "age": 30\n}'}
               spellCheck={false}
             />
@@ -272,7 +299,9 @@ export default function JsonDiffPage() {
             <textarea
               className={styles.textarea}
               value={right}
-              onChange={(e) => handleRight(e.target.value)}
+              onChange={(e) => {
+                handleRight(e.target.value);
+              }}
               placeholder={
                 '{\n  "name": "Alice",\n  "age": 31,\n  "city": "NYC"\n}'
               }

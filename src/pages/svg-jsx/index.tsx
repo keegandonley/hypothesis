@@ -62,6 +62,7 @@ function toJsx(svg: string): string {
       `\\b${html.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}=`,
       "g",
     );
+
     result = result.replace(re, `${jsx}=`);
   }
 
@@ -83,9 +84,11 @@ function toJsx(svg: string): string {
           !value.includes("em")
             ? value
             : `"${value}"`;
+
         return `${camel}: ${jsValue}`;
       })
       .join(", ");
+
     return `style={{ ${props} }}`;
   });
 
@@ -102,7 +105,7 @@ function toJsx(svg: string): string {
   return `export default function Icon(props) {\n  return (\n${componentBody}\n  );\n}`;
 }
 
-export default function SvgJsxPage() {
+export default function SvgJsxPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
@@ -114,51 +117,65 @@ export default function SvgJsxPage() {
 
   const jsx = input ? toJsx(input) : "";
 
-  const buildUrl = (text: string) => {
+  const buildUrl = (text: string): string => {
     if (!text) return `${window.location.origin}${window.location.pathname}`;
+
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     return `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(btoa(unescape(encodeURIComponent(text))))}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("v");
+
     if (v) {
       try {
-        setInput(decodeURIComponent(escape(atob(v))));
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setInput(
+          // eslint-disable-next-line @typescript-eslint/no-deprecated
+          decodeURIComponent(escape(atob(v))),
+        );
       } catch {
         /* ignore */
       }
     }
+
     setUrl(window.location.href);
   }, []);
 
-  const handleChange = (text: string) => {
+  const handleChange = (text: string): void => {
     setInput(text);
     const newUrl = buildUrl(text);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setInput("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopyJsx = () => {
-    copyToClipboard(jsx).then(() => {
+  const handleCopyJsx = (): void => {
+    void copyToClipboard(jsx).then(() => {
       setCopiedJsx(true);
       if (jsxCopyTimeoutRef.current) clearTimeout(jsxCopyTimeoutRef.current);
-      jsxCopyTimeoutRef.current = setTimeout(() => setCopiedJsx(false), 1500);
+      jsxCopyTimeoutRef.current = setTimeout(() => {
+        setCopiedJsx(false);
+      }, 1500);
     });
   };
 
@@ -205,7 +222,9 @@ export default function SvgJsxPage() {
           <textarea
             className={styles.textarea}
             value={input}
-            onChange={(e) => handleChange(e.target.value)}
+            onChange={(e) => {
+              handleChange(e.target.value);
+            }}
             placeholder={PLACEHOLDER}
             spellCheck={false}
           />

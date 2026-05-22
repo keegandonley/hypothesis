@@ -18,7 +18,7 @@ const EC_DESCRIPTIONS: Record<ECLevel, string> = {
   H: "~30% correction",
 };
 
-export default function QrPage() {
+export default function QrPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [value, setValue] = useState("https://hypothesis.sh");
@@ -33,19 +33,23 @@ export default function QrPage() {
     null,
   );
 
-  const buildUrl = (v: string, ec: ECLevel) => {
+  const buildUrl = (v: string, ec: ECLevel): string => {
     const params = new URLSearchParams();
+
     if (v) params.set("value", v);
     params.set("ecl", ec);
+
     return `${window.location.origin}${window.location.pathname}?${params}`;
   };
 
-  const generateQR = async (text: string, ec: ECLevel) => {
+  const generateQR = async (text: string, ec: ECLevel): Promise<void> => {
     if (!text.trim()) {
       setSvgContent("");
       setError("");
+
       return;
     }
+
     try {
       const svg = await QRCode.toString(text, {
         type: "svg",
@@ -53,6 +57,7 @@ export default function QrPage() {
         margin: 2,
         color: { dark: "#f0ede8", light: "#13131a" },
       });
+
       setSvgContent(svg);
       setError("");
     } catch (e) {
@@ -66,66 +71,71 @@ export default function QrPage() {
     const v = params.get("value") ?? "https://hypothesis.sh";
     const ecParam = params.get("ecl") as ECLevel | null;
     const ec: ECLevel = ecParam && EC_LEVELS.includes(ecParam) ? ecParam : "M";
-    setValue(v);
+
+    setValue(v); // eslint-disable-line react-hooks/set-state-in-effect
     setEcLevel(ec);
-    generateQR(v, ec);
+    void generateQR(v, ec);
     const initialUrl = buildUrl(v, ec);
+
     history.replaceState(null, "", initialUrl);
     setPageUrl(initialUrl);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleValueChange = (v: string) => {
+  const handleValueChange = (v: string): void => {
     setValue(v);
-    generateQR(v, ecLevel);
+    void generateQR(v, ecLevel);
     const newUrl = buildUrl(v, ecLevel);
+
     history.replaceState(null, "", newUrl);
     setPageUrl(newUrl);
   };
 
-  const handleEcChange = (ec: ECLevel) => {
+  const handleEcChange = (ec: ECLevel): void => {
     setEcLevel(ec);
-    generateQR(value, ec);
+    void generateQR(value, ec);
     const newUrl = buildUrl(value, ec);
+
     history.replaceState(null, "", newUrl);
     setPageUrl(newUrl);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setValue("");
     setSvgContent("");
     setError("");
     const newUrl = `${window.location.origin}${window.location.pathname}?ecl=${ecLevel}`;
+
     history.replaceState(null, "", newUrl);
     setPageUrl(newUrl);
   };
 
-  const handleCopyPermalink = () => {
-    copyToClipboard(pageUrl).then(() => {
+  const handleCopyPermalink = (): void => {
+    void copyToClipboard(pageUrl).then(() => {
       setPermalinkCopied(true);
       if (permalinkTimeoutRef.current)
         clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(
-        () => setPermalinkCopied(false),
-        1500,
-      );
+      permalinkTimeoutRef.current = setTimeout(() => {
+        setPermalinkCopied(false);
+      }, 1500);
     });
   };
 
-  const handleDownloadSvg = () => {
+  const handleDownloadSvg = (): void => {
     if (!svgContent) return;
     const blob = new Blob([svgContent], { type: "image/svg+xml" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
+
     a.href = url;
     a.download = "qrcode.svg";
     a.click();
     URL.revokeObjectURL(url);
   };
 
-  const handleDownloadPng = async () => {
+  const handleDownloadPng = async (): Promise<void> => {
     if (!value.trim()) return;
     const canvas = document.createElement("canvas");
+
     await QRCode.toCanvas(canvas, value, {
       errorCorrectionLevel: ecLevel,
       margin: 2,
@@ -134,17 +144,20 @@ export default function QrPage() {
     });
     const url = canvas.toDataURL("image/png");
     const a = document.createElement("a");
+
     a.href = url;
     a.download = "qrcode.png";
     a.click();
   };
 
-  const handleCopySvg = () => {
+  const handleCopySvg = (): void => {
     if (!svgContent) return;
-    copyToClipboard(svgContent).then(() => {
+    void copyToClipboard(svgContent).then(() => {
       setCopiedSvg(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopiedSvg(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopiedSvg(false);
+      }, 1500);
     });
   };
 
@@ -194,7 +207,9 @@ export default function QrPage() {
             <textarea
               className={styles.textarea}
               value={value}
-              onChange={(e) => handleValueChange(e.target.value)}
+              onChange={(e) => {
+                handleValueChange(e.target.value);
+              }}
               placeholder="Enter text or URL..."
               spellCheck={false}
             />
@@ -207,7 +222,9 @@ export default function QrPage() {
                 <button
                   key={ec}
                   className={`${styles.toggleBtn}${ecLevel === ec ? ` ${styles.active}` : ""}`}
-                  onClick={() => handleEcChange(ec)}
+                  onClick={() => {
+                    handleEcChange(ec);
+                  }}
                   title={EC_DESCRIPTIONS[ec]}
                 >
                   {ec}

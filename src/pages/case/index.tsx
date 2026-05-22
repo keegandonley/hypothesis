@@ -1,6 +1,6 @@
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "@/styles/case.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
@@ -75,7 +75,7 @@ const CASES: { label: string; fn: (w: string[]) => string }[] = [
   { label: "dot.case", fn: toDot },
 ];
 
-export default function CasePage() {
+export default function CasePage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
@@ -90,27 +90,32 @@ export default function CasePage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("input");
-    if (v) setInput(v);
+
+    if (v) setInput(v); // eslint-disable-line react-hooks/set-state-in-effect
     setUrl(window.location.href);
   }, []);
 
-  function handleInput(value: string) {
+  function handleInput(value: string): void {
     setInput(value);
     const params = new URLSearchParams();
+
     if (value) params.set("input", value);
     const qs = params.toString();
+
     history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
     setUrl(window.location.href);
   }
 
-  function handleCopy(value: string, idx: number) {
-    copyToClipboard(value);
+  function handleCopy(value: string, idx: number): void {
+    void copyToClipboard(value);
     setCopiedIdx(idx);
     const prev = copyTimeouts.current.get(idx);
+
     if (prev) clearTimeout(prev);
     const t = setTimeout(() => {
       setCopiedIdx((c) => (c === idx ? null : c));
     }, 1500);
+
     copyTimeouts.current.set(idx, t);
   }
 
@@ -161,7 +166,9 @@ export default function CasePage() {
         <textarea
           className={styles.textarea}
           value={input}
-          onChange={(e) => handleInput(e.target.value)}
+          onChange={(e) => {
+            handleInput(e.target.value);
+          }}
           placeholder="Type or paste any text..."
           autoComplete="off"
           spellCheck={false}
@@ -171,6 +178,7 @@ export default function CasePage() {
       <div className={styles.results}>
         {CASES.map((c, idx) => {
           const value = hasInput ? c.fn(words) : "";
+
           return (
             <div key={c.label} className={styles.resultRow}>
               <span className={styles.resultLabel}>{c.label}</span>
@@ -182,7 +190,9 @@ export default function CasePage() {
               {!isIframe && value && (
                 <button
                   className={`${styles.copyBtn} ${copiedIdx === idx ? styles.copied : ""}`}
-                  onClick={() => handleCopy(value, idx)}
+                  onClick={() => {
+                    handleCopy(value, idx);
+                  }}
                 >
                   {copiedIdx === idx ? "Copied!" : "Copy"}
                 </button>
@@ -201,20 +211,24 @@ export default function CasePage() {
           <button
             className={`${styles.copyBtn}${copiedUrl ? ` ${styles.copied}` : ""}`}
             onClick={() => {
-              copyToClipboard(url);
+              void copyToClipboard(url);
               setCopiedUrl(true);
               if (copiedUrlTimeout.current)
                 clearTimeout(copiedUrlTimeout.current);
-              copiedUrlTimeout.current = setTimeout(
-                () => setCopiedUrl(false),
-                1500,
-              );
+              copiedUrlTimeout.current = setTimeout(() => {
+                setCopiedUrl(false);
+              }, 1500);
             }}
           >
             {copiedUrl ? "Copied!" : "Copy"}
           </button>
         )}
-        <button className={styles.resetBtn} onClick={() => handleInput("")}>
+        <button
+          className={styles.resetBtn}
+          onClick={() => {
+            handleInput("");
+          }}
+        >
           Reset
         </button>
       </div>

@@ -8,6 +8,7 @@ export async function sendWebhookPushNotification(
   eventId: string,
 ): Promise<void> {
   const device = await getPushTokenByDeviceId(deviceId);
+
   if (!device?.token) return;
 
   const title = "Webhook";
@@ -30,7 +31,7 @@ export async function sendWebhookPushNotification(
     data,
     apnsId: result.apnsId ?? null,
     success: result.ok,
-  }).catch((err) =>
-    console.error("[webhook-push] failed to record notification", err),
-  );
+  }).catch((err: unknown) => {
+    console.error("[webhook-push] failed to record notification", err);
+  });
 }

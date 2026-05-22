@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
-import { GetStaticProps } from "next";
+import React, { useState, useMemo } from "react";
+import { type GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { STATUS_CODES, STATUS_CLASSES } from "@/data/http-status-codes";
@@ -16,56 +16,61 @@ export default function HttpStatusCodesPage({
 }: {
   statusCodes: typeof STATUS_CODES;
   statusClasses: typeof STATUS_CLASSES;
-}) {
+}): React.ReactNode {
   const branding = useBranding();
-  const [search, setSearch] = useState("");
-  const [activeClass, setActiveClass] = useState("all");
+  const [search, setSearch] = useState(() =>
+    typeof window === "undefined"
+      ? ""
+      : (new URLSearchParams(window.location.search).get("q") ?? ""),
+  );
+  const [activeClass, setActiveClass] = useState(() =>
+    typeof window === "undefined"
+      ? "all"
+      : (new URLSearchParams(window.location.search).get("class") ?? "all"),
+  );
 
-  // Restore state from URL on mount
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("q");
-    const cls = params.get("class");
-    if (q) setSearch(q);
-    if (cls) setActiveClass(cls);
-  }, []);
-
-  function updateUrl(q: string, cls: string) {
+  function updateUrl(q: string, cls: string): void {
     const params = new URLSearchParams();
+
     if (q) params.set("q", q);
     if (cls !== "all") params.set("class", cls);
     const qs = params.toString();
+
     history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }
 
-  function handleSearch(value: string) {
+  function handleSearch(value: string): void {
     setSearch(value);
     updateUrl(value, activeClass);
   }
 
-  function handleClassToggle(cls: string) {
+  function handleClassToggle(cls: string): void {
     const next = activeClass === cls ? "all" : cls;
+
     setActiveClass(next);
     updateUrl(search, next);
   }
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
+
     return statusClasses
       .map((cls) => {
         const codes = statusCodes[cls.class].filter((code) => {
           if (activeClass !== "all" && activeClass !== cls.class) return false;
           if (!q) return true;
+
           return (
             String(code.code).includes(q) ||
             code.name.toLowerCase().includes(q) ||
             code.description.toLowerCase().includes(q)
           );
         });
+
         return { ...cls, codes };
       })
       .filter((s) => s.codes.length > 0);
-  }, [search, activeClass]);
+  }, [search, activeClass, statusClasses, statusCodes]);
 
   return (
     <div className={styles.page}>
@@ -118,14 +123,18 @@ export default function HttpStatusCodesPage({
               type="text"
               placeholder="Search by code, name, or description..."
               value={search}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => {
+                handleSearch(e.target.value);
+              }}
               autoComplete="off"
               spellCheck={false}
             />
             {search && (
               <button
                 className={styles.clearBtn}
-                onClick={() => handleSearch("")}
+                onClick={() => {
+                  handleSearch("");
+                }}
                 aria-label="Clear search"
               >
                 ✕
@@ -136,7 +145,9 @@ export default function HttpStatusCodesPage({
           <div className={styles.classFilters}>
             <button
               className={`${styles.classBtn} ${activeClass === "all" ? styles.classBtnActive : ""}`}
-              onClick={() => handleClassToggle("all")}
+              onClick={() => {
+                handleClassToggle("all");
+              }}
             >
               All
             </button>
@@ -150,7 +161,9 @@ export default function HttpStatusCodesPage({
                     "--cls-subtle": cls.subtle,
                   } as React.CSSProperties
                 }
-                onClick={() => handleClassToggle(cls.class)}
+                onClick={() => {
+                  handleClassToggle(cls.class);
+                }}
               >
                 {cls.class}
                 <span className={styles.classBtnLabel}>{cls.label}</span>

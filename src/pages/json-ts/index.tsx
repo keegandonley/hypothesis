@@ -16,7 +16,7 @@ type JsonValue =
   | { [k: string]: JsonValue };
 
 function jsonToTs(input: string, rootName: string, optional: boolean): string {
-  const parsed: JsonValue = JSON.parse(input);
+  const parsed = JSON.parse(input) as JsonValue;
   const interfaces: string[] = [];
   const usedNames = new Set<string>();
 
@@ -31,13 +31,18 @@ function jsonToTs(input: string, rootName: string, optional: boolean): string {
 
   function uniqueName(base: string): string {
     const name = toPascal(base);
+
     if (!usedNames.has(name)) {
       usedNames.add(name);
+
       return name;
     }
+
     let i = 2;
+
     while (usedNames.has(`${name}${i}`)) i++;
     usedNames.add(`${name}${i}`);
+
     return `${name}${i}`;
   }
 
@@ -55,13 +60,17 @@ function jsonToTs(input: string, rootName: string, optional: boolean): string {
       const seen = new Set<string>();
       const seenStructures = new Map<string, string>();
       const elHint = hint.replace(/s$/i, "");
+
       value.forEach((el) => {
         if (el !== null && typeof el === "object" && !Array.isArray(el)) {
           const fingerprint = JSON.stringify(Object.keys(el).sort());
+
           if (seenStructures.has(fingerprint)) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             seen.add(seenStructures.get(fingerprint)!);
           } else {
             const typeName = getType(el, elHint);
+
             seenStructures.set(fingerprint, typeName);
             seen.add(typeName);
           }
@@ -70,24 +79,31 @@ function jsonToTs(input: string, rootName: string, optional: boolean): string {
         }
       });
       const union = [...seen].join(" | ");
+
       return seen.size > 1 ? `(${union})[]` : `${union}[]`;
     }
+
     const name = uniqueName(hint);
     const fields = Object.entries(value)
       .map(([k, v]) => {
         const quotedKey = needsQuoting(k) ? `"${k}"` : k;
+
         return `  ${quotedKey}${optional ? "?" : ""}: ${getType(v, k)};`;
       })
       .join("\n");
+
     interfaces.push(`interface ${name} {\n${fields}\n}`);
+
     return name;
   }
 
   const rootIsArray = Array.isArray(parsed);
 
   let elementHint = rootName;
+
   if (rootIsArray) {
     const singularised = rootName.replace(/s$/i, "");
+
     elementHint = singularised !== rootName ? singularised : rootName + "Item";
   }
 
@@ -106,7 +122,7 @@ function jsonToTs(input: string, rootName: string, optional: boolean): string {
   return body;
 }
 
-export default function JsonTsPage() {
+export default function JsonTsPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [jsonInput, setJsonInput] = useState("");
@@ -122,22 +138,27 @@ export default function JsonTsPage() {
     null,
   );
 
-  const buildUrl = (j: string, n: string, o: boolean) => {
+  const buildUrl = (j: string, n: string, o: boolean): string => {
     if (!j) return `${window.location.origin}${window.location.pathname}`;
     const payload = btoa(
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       unescape(encodeURIComponent(JSON.stringify({ j, n, o }))),
     );
+
     return `${window.location.origin}${window.location.pathname}?v=${payload}`;
   };
 
-  const compute = (j: string, n: string, o: boolean) => {
+  const compute = (j: string, n: string, o: boolean): void => {
     if (!j.trim()) {
       setTsOutput("");
       setJsonValid(null);
+
       return;
     }
+
     try {
       const result = jsonToTs(j, n || "Root", o);
+
       setTsOutput(result);
       setJsonValid(true);
     } catch {
@@ -149,13 +170,18 @@ export default function JsonTsPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("v");
+
     if (v) {
       try {
-        const decoded = JSON.parse(decodeURIComponent(escape(atob(v))));
-        const j = decoded.j ?? "";
-        const n = decoded.n ?? "Root";
-        const o = decoded.o ?? false;
-        setJsonInput(j);
+        const decoded = JSON.parse(
+          // eslint-disable-next-line @typescript-eslint/no-deprecated
+          decodeURIComponent(escape(atob(v))),
+        ) as Record<string, unknown>;
+        const j = typeof decoded.j === "string" ? decoded.j : "";
+        const n = typeof decoded.n === "string" ? decoded.n : "Root";
+        const o = typeof decoded.o === "boolean" ? decoded.o : false;
+
+        setJsonInput(j); // eslint-disable-line react-hooks/set-state-in-effect
         setRootName(n);
         setOptional(o);
         compute(j, n, o);
@@ -163,62 +189,69 @@ export default function JsonTsPage() {
         /* no-op */
       }
     }
+
     setUrl(window.location.href);
   }, []);
 
-  const handleJsonChange = (value: string) => {
+  const handleJsonChange = (value: string): void => {
     setJsonInput(value);
     compute(value, rootName, optional);
     const newUrl = buildUrl(value, rootName, optional);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleRootNameChange = (value: string) => {
+  const handleRootNameChange = (value: string): void => {
     setRootName(value);
     compute(jsonInput, value, optional);
     const newUrl = buildUrl(jsonInput, value, optional);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleOptionalToggle = () => {
+  const handleOptionalToggle = (): void => {
     const next = !optional;
+
     setOptional(next);
     compute(jsonInput, rootName, next);
     const newUrl = buildUrl(jsonInput, rootName, next);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setJsonInput("");
     setTsOutput("");
     setRootName("Root");
     setOptional(false);
     setJsonValid(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleCopyOutput = () => {
-    copyToClipboard(tsOutput).then(() => {
+  const handleCopyOutput = (): void => {
+    void copyToClipboard(tsOutput).then(() => {
       setCopiedOutput(true);
       if (copyOutputTimeoutRef.current)
         clearTimeout(copyOutputTimeoutRef.current);
-      copyOutputTimeoutRef.current = setTimeout(
-        () => setCopiedOutput(false),
-        1500,
-      );
+      copyOutputTimeoutRef.current = setTimeout(() => {
+        setCopiedOutput(false);
+      }, 1500);
     });
   };
 
@@ -277,7 +310,9 @@ export default function JsonTsPage() {
             <textarea
               className={styles.textarea}
               value={jsonInput}
-              onChange={(e) => handleJsonChange(e.target.value)}
+              onChange={(e) => {
+                handleJsonChange(e.target.value);
+              }}
               placeholder="Paste JSON here..."
               spellCheck={false}
             />
@@ -317,7 +352,9 @@ export default function JsonTsPage() {
             className={styles.nameInput}
             type="text"
             value={rootName}
-            onChange={(e) => handleRootNameChange(e.target.value)}
+            onChange={(e) => {
+              handleRootNameChange(e.target.value);
+            }}
             placeholder="Root"
             spellCheck={false}
           />

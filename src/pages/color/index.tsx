@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/color.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -20,42 +20,46 @@ type ColorFormat = "hex6" | "hex8" | "rgb" | "rgba" | "hsl" | "oklch";
 
 // ─── Color Math ───────────────────────────────────────────────────────────────
 
-function clamp(v: number, lo: number, hi: number) {
+function clamp(v: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, v));
 }
 
 function parseHex(s: string): RGBA | null {
-  const m = s.trim().match(/^#?([0-9a-f]{6}([0-9a-f]{2})?)$/i);
+  const m = /^#?([0-9a-f]{6}([0-9a-f]{2})?)$/i.exec(s.trim());
+
   if (!m) return null;
   const hex = m[1];
   const r = parseInt(hex.slice(0, 2), 16);
   const g = parseInt(hex.slice(2, 4), 16);
   const b = parseInt(hex.slice(4, 6), 16);
   const a = hex.length === 8 ? parseInt(hex.slice(6, 8), 16) / 255 : 1;
+
   return { r, g, b, a };
 }
 
 function parseRGB(s: string): RGBA | null {
-  const m = s
-    .trim()
-    .match(
-      /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)$/i,
+  const m =
+    /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)$/i.exec(
+      s.trim(),
     );
+
   if (!m) return null;
   const r = clamp(Math.round(parseFloat(m[1])), 0, 255);
   const g = clamp(Math.round(parseFloat(m[2])), 0, 255);
   const b = clamp(Math.round(parseFloat(m[3])), 0, 255);
   const a = m[4] !== undefined ? clamp(parseFloat(m[4]), 0, 1) : 1;
+
   return { r, g, b, a };
 }
 
 function hslToRgb(h: number, s: number, l: number): [number, number, number] {
   s /= 100;
   l /= 100;
-  const k = (n: number) => (n + h / 30) % 12;
+  const k = (n: number): number => (n + h / 30) % 12;
   const a = s * Math.min(l, 1 - l);
-  const f = (n: number) =>
+  const f = (n: number): number =>
     l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+
   return [
     Math.round(f(0) * 255),
     Math.round(f(8) * 255),
@@ -64,28 +68,31 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
 }
 
 function parseHSL(s: string): RGBA | null {
-  const m = s
-    .trim()
-    .match(
-      /^hsla?\(\s*([\d.]+)(?:deg)?\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%(?:\s*,\s*([\d.]+))?\s*\)$/i,
+  const m =
+    /^hsla?\(\s*([\d.]+)(?:deg)?\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%(?:\s*,\s*([\d.]+))?\s*\)$/i.exec(
+      s.trim(),
     );
+
   if (!m) return null;
   const h = parseFloat(m[1]) % 360;
   const sl = clamp(parseFloat(m[2]), 0, 100);
   const l = clamp(parseFloat(m[3]), 0, 100);
   const a = m[4] !== undefined ? clamp(parseFloat(m[4]), 0, 1) : 1;
   const [r, g, b] = hslToRgb(h, sl, l);
+
   return { r: clamp(r, 0, 255), g: clamp(g, 0, 255), b: clamp(b, 0, 255), a };
 }
 
 // OKLCH pipeline
 function linearize(c: number): number {
   const cn = c / 255;
+
   return cn <= 0.04045 ? cn / 12.92 : Math.pow((cn + 0.055) / 1.055, 2.4);
 }
 
 function delinearize(c: number): number {
   const clamped = clamp(c, 0, 1);
+
   return Math.round(
     (clamped <= 0.0031308
       ? clamped * 12.92
@@ -102,6 +109,7 @@ function linearRgbToXyz(
   const x = 0.4123908 * r + 0.3575843 * g + 0.1804808 * b;
   const y = 0.212639 * r + 0.7151687 * g + 0.0721923 * b;
   const z = 0.0193308 * r + 0.1191948 * g + 0.9505321 * b;
+
   return [x, y, z];
 }
 
@@ -114,6 +122,7 @@ function xyzToLinearRgb(
   const r = 3.2409699 * x - 1.5373832 * y - 0.4986108 * z;
   const g = -0.9692436 * x + 1.8759675 * y + 0.0415551 * z;
   const b = 0.0556301 * x - 0.203977 * y + 1.0569715 * z;
+
   return [r, g, b];
 }
 
@@ -136,6 +145,7 @@ function xyzToOklab(x: number, y: number, z: number): [number, number, number] {
   const L = M2[0][0] * lms[0] + M2[0][1] * lms[1] + M2[0][2] * lms[2];
   const a = M2[1][0] * lms[0] + M2[1][1] * lms[1] + M2[1][2] * lms[2];
   const b = M2[2][0] * lms[0] + M2[2][1] * lms[1] + M2[2][2] * lms[2];
+
   return [L, a, b];
 }
 
@@ -159,6 +169,7 @@ function oklabToXyz(L: number, a: number, b: number): [number, number, number] {
     M1_INV[1][0] * lms[0] + M1_INV[1][1] * lms[1] + M1_INV[1][2] * lms[2];
   const z =
     M1_INV[2][0] * lms[0] + M1_INV[2][1] * lms[1] + M1_INV[2][2] * lms[2];
+
   return [x, y, z];
 }
 
@@ -170,22 +181,26 @@ function rgbaToOklch(rgba: RGBA): [number, number, number] {
   const [L, a, b] = xyzToOklab(x, y, z);
   const C = Math.sqrt(a * a + b * b);
   let H = (Math.atan2(b, a) * 180) / Math.PI;
+
   if (H < 0) H += 360;
+
   return [L, C, H];
 }
 
 function parseOKLCH(s: string): RGBA | null {
-  const m = s
-    .trim()
-    .match(
-      /^oklch\(\s*([\d.]+)(?:%?)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+))?\s*\)$/i,
+  const m =
+    /^oklch\(\s*([\d.]+)(?:%?)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+))?\s*\)$/i.exec(
+      s.trim(),
     );
+
   if (!m) return null;
   let L = parseFloat(m[1]);
+
   // Handle percentage L
   if (m[1].includes("%") || (L > 1 && L <= 100 && s.includes("%"))) {
     L = L / 100;
   }
+
   const C = parseFloat(m[2]);
   const H = parseFloat(m[3]);
   const a_alpha = m[4] !== undefined ? clamp(parseFloat(m[4]), 0, 1) : 1;
@@ -194,6 +209,7 @@ function parseOKLCH(s: string): RGBA | null {
   const bOk = C * Math.sin((H * Math.PI) / 180);
   const [x, y, z] = oklabToXyz(L, aOk, bOk);
   const [rl, gl, bl] = xyzToLinearRgb(x, y, z);
+
   return {
     r: clamp(delinearize(rl), 0, 255),
     g: clamp(delinearize(gl), 0, 255),
@@ -204,6 +220,7 @@ function parseOKLCH(s: string): RGBA | null {
 
 function parseColor(s: string): RGBA | null {
   if (!s.trim()) return null;
+
   return parseHex(s) ?? parseRGB(s) ?? parseHSL(s) ?? parseOKLCH(s) ?? null;
 }
 
@@ -213,6 +230,7 @@ function toHex6(c: RGBA): string {
   const r = c.r.toString(16).padStart(2, "0");
   const g = c.g.toString(16).padStart(2, "0");
   const b = c.b.toString(16).padStart(2, "0");
+
   return `#${r}${g}${b}`;
 }
 
@@ -220,6 +238,7 @@ function toHex8(c: RGBA): string {
   const alpha = Math.round(c.a * 255)
     .toString(16)
     .padStart(2, "0");
+
   return `${toHex6(c)}${alpha}`;
 }
 
@@ -238,25 +257,31 @@ function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
   const max = Math.max(rn, gn, bn),
     min = Math.min(rn, gn, bn);
   const l = (max + min) / 2;
+
   if (max === min) return [0, 0, Math.round(l * 100)];
   const d = max - min;
   const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
   let h = 0;
+
   if (max === rn) h = ((gn - bn) / d + (gn < bn ? 6 : 0)) / 6;
   else if (max === gn) h = ((bn - rn) / d + 2) / 6;
   else h = ((rn - gn) / d + 4) / 6;
+
   return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
 }
 
 function toHSL(c: RGBA): string {
   const [h, s, l] = rgbToHsl(c.r, c.g, c.b);
+
   if (c.a < 1) return `hsla(${h}, ${s}%, ${l}%, ${c.a})`;
+
   return `hsl(${h}, ${s}%, ${l}%)`;
 }
 
 function toOKLCH(c: RGBA): string {
   const [L, C, H] = rgbaToOklch(c);
   const suffix = c.a < 1 ? ` / ${c.a}` : "";
+
   return `oklch(${L.toFixed(4)} ${C.toFixed(4)} ${H.toFixed(2)}${suffix})`;
 }
 
@@ -288,7 +313,7 @@ function formatColor(color: RGBA, fmt: ColorFormat): string {
   }
 }
 
-export default function ColorPage() {
+export default function ColorPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
@@ -302,18 +327,21 @@ export default function ColorPage() {
   );
   const colorPickerRef = useRef<HTMLInputElement>(null);
 
-  const buildUrl = (val: string) => {
+  const buildUrl = (val: string): string => {
     if (!val) return `${window.location.origin}${window.location.pathname}`;
+
     return `${window.location.origin}${window.location.pathname}?color=${encodeURIComponent(val)}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("color");
+
     if (v) {
-      setInput(v);
+      setInput(v); // eslint-disable-line react-hooks/set-state-in-effect
       setColor(parseColor(v));
     }
+
     setUrl(window.location.href);
   }, []);
 
@@ -322,42 +350,47 @@ export default function ColorPage() {
     colorPickerRef.current.value = color ? toHex6(color) : "#000000";
   }, [color]);
 
-  const handleInputChange = (value: string) => {
+  const handleInputChange = (value: string): void => {
     setInput(value);
     const parsed = parseColor(value);
+
     setColor(parsed);
     const newUrl = buildUrl(value.trim());
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setInput("");
     setColor(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopyFormat = (id: ColorFormat) => {
+  const handleCopyFormat = (id: ColorFormat): void => {
     if (!color) return;
     const value = formatColor(color, id);
-    copyToClipboard(value).then(() => {
+
+    void copyToClipboard(value).then(() => {
       setCopiedId(id);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopiedId(null), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopiedId(null);
+      }, 1500);
     });
   };
 
-  const handleCopyPermalink = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopyPermalink = (): void => {
+    void copyToClipboard(url).then(() => {
       setPermalinkCopied(true);
       if (permalinkTimeoutRef.current)
         clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(
-        () => setPermalinkCopied(false),
-        1500,
-      );
+      permalinkTimeoutRef.current = setTimeout(() => {
+        setPermalinkCopied(false);
+      }, 1500);
     });
   };
 
@@ -438,6 +471,7 @@ export default function ColorPage() {
             type="color"
             onChange={(e) => {
               const parsed = parseHex(e.target.value);
+
               if (parsed) handleInputChange(toRGB(parsed));
             }}
           />
@@ -451,6 +485,7 @@ export default function ColorPage() {
           value={color ? toHex6(color) : "#000000"}
           onChange={(e) => {
             const parsed = parseHex(e.target.value);
+
             if (parsed) handleInputChange(toRGB(parsed));
           }}
         />
@@ -458,7 +493,9 @@ export default function ColorPage() {
           className={`${styles.input}${hasError ? ` ${styles.inputError}` : ""}`}
           type="text"
           value={input}
-          onChange={(e) => handleInputChange(e.target.value)}
+          onChange={(e) => {
+            handleInputChange(e.target.value);
+          }}
           placeholder="#7ee8a2, rgb(126, 232, 162), oklch(0.84 0.12 152), etc."
           spellCheck={false}
         />
@@ -471,6 +508,7 @@ export default function ColorPage() {
         {FORMAT_LABELS.map(({ id, label }) => {
           const value = color ? formatColor(color, id) : "";
           const isCopied = copiedId === id;
+
           return (
             <div key={id} className={styles.outputCard}>
               <div className={styles.cardSwatch}>
@@ -487,7 +525,9 @@ export default function ColorPage() {
                   <span className={styles.cardValue}>{value}</span>
                   <button
                     className={`${styles.copyBtn}${isCopied ? ` ${styles.copied}` : ""}`}
-                    onClick={() => handleCopyFormat(id)}
+                    onClick={() => {
+                      handleCopyFormat(id);
+                    }}
                     disabled={!color}
                   >
                     {isCopied ? "Copied!" : "Copy"}

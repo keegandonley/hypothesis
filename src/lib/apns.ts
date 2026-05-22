@@ -9,9 +9,11 @@ function host(sandbox: boolean): string {
 }
 
 function generateJwt(): string {
+  /* eslint-disable @typescript-eslint/no-non-null-assertion -- env vars validated by deployment */
   const keyId = process.env.APNS_KEY_ID!;
   const teamId = process.env.APNS_TEAM_ID!;
   const privateKey = process.env.APNS_KEY_P8!.replace(/\\n/g, "\n");
+  /* eslint-enable @typescript-eslint/no-non-null-assertion */
 
   const header = Buffer.from(
     JSON.stringify({ alg: "ES256", kid: keyId }),
@@ -22,6 +24,7 @@ function generateJwt(): string {
   const signingInput = `${header}.${payload}`;
 
   const sign = createSign("SHA256");
+
   sign.update(signingInput);
   sign.end();
   const signature = sign.sign(
@@ -32,18 +35,18 @@ function generateJwt(): string {
   return `${signingInput}.${signature}`;
 }
 
-export type ApnsResult = {
+export interface ApnsResult {
   ok: boolean;
   apnsId?: string;
   statusCode: number;
   error?: string;
-};
+}
 
-export type ApnsOptions = {
+export interface ApnsOptions {
   subtitle?: string;
   sound?: string | null;
   badge?: number;
-};
+}
 
 export function sendApnsNotification(
   deviceToken: string,
@@ -53,12 +56,15 @@ export function sendApnsNotification(
   options?: ApnsOptions,
   sandbox: boolean = process.env.APNS_PRODUCTION !== "true",
 ): Promise<ApnsResult> {
+  /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- validated by deployment */
   const bundleId = process.env.APNS_BUNDLE_ID!;
 
   const alert: Record<string, string> = { title, body };
+
   if (options?.subtitle) alert.subtitle = options.subtitle;
 
   const aps: Record<string, unknown> = { alert };
+
   if (options?.sound !== null) aps.sound = options?.sound ?? "default";
   if (options?.badge !== undefined) aps.badge = options.badge;
 
@@ -71,7 +77,7 @@ export function sendApnsNotification(
 
   console.log("[apns] sending notification", {
     deviceToken: `${deviceToken.slice(0, 8)}…`,
-    payload: JSON.parse(payloadStr),
+    payload: JSON.parse(payloadStr) as Record<string, unknown>,
   });
 
   return new Promise((resolve, reject) => {
@@ -95,11 +101,12 @@ export function sendApnsNotification(
     req.write(payloadStr);
     req.end();
 
-    req.on("response", (headers) => {
-      const statusCode = headers[":status"] as number;
-      const apnsId = headers["apns-id"] as string | undefined;
+    req.on("response", (headers: Record<string, string | undefined>) => {
+      const statusCode = Number(headers[":status"]) || 0;
+      const apnsId = headers["apns-id"];
 
       let responseBody = "";
+
       req.setEncoding("utf8");
       req.on("data", (chunk: string) => {
         responseBody += chunk;
@@ -110,11 +117,13 @@ export function sendApnsNotification(
           resolve({ ok: true, apnsId, statusCode });
         } else {
           let error: string | undefined;
+
           try {
             error = (JSON.parse(responseBody) as { reason?: string }).reason;
           } catch {
             error = responseBody || `APNs error ${statusCode}`;
           }
+
           resolve({ ok: false, statusCode, error, apnsId });
         }
       });

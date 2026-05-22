@@ -4,17 +4,23 @@ import { pool } from "@/lib/db";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
+): Promise<void> {
   if (req.method !== "GET") {
-    return res.status(405).end();
+    res.status(405).end();
+
+    return;
   }
 
   const authHeader = req.headers.authorization;
+
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return res.status(401).json({ error: "unauthorized" });
+    res.status(401).json({ error: "unauthorized" });
+
+    return;
   }
 
   const client = await pool.connect();
+
   try {
     await client.query("BEGIN");
 
@@ -27,14 +33,19 @@ export default async function handler(
 
     await client.query("COMMIT");
 
-    return res.json({
+    res.json({
       sessionsDeleted: sessionsResult.rowCount,
       eventsDeleted: eventsResult.rowCount,
     });
+
+    return;
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("cleanup error", err);
-    return res.status(500).json({ error: "internal server error" });
+
+    res.status(500).json({ error: "internal server error" });
+
+    return;
   } finally {
     client.release();
   }

@@ -2,15 +2,17 @@ import fs from "fs";
 import path from "path";
 import Head from "next/head";
 import Link from "next/link";
-import { GetStaticPaths, GetStaticProps } from "next";
+import { type GetStaticPaths, type GetStaticProps } from "next";
 import styles from "../../styles/release-notes.module.css";
 import { useBranding } from "@/lib/branding";
+import React from "react";
 import { TAG_COLORS, type Tag } from "@/lib/tools";
 
 const RELEASES_DIR = path.join(process.cwd(), "src/content/releases");
 
 function parseTags(value?: string): string[] {
   if (!value) return [];
+
   return value
     .split(",")
     .map((t) => t.trim())
@@ -23,19 +25,24 @@ function parseFrontmatter(raw: string): {
 } {
   if (!raw.startsWith("---")) return { meta: {}, body: raw };
   const end = raw.indexOf("---", 3);
+
   if (end === -1) return { meta: {}, body: raw };
   const block = raw.slice(3, end).trim();
   const meta: Record<string, string> = {};
+
   for (const line of block.split("\n")) {
     const colon = line.indexOf(":");
+
     if (colon > -1)
       meta[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
   }
+
   return { meta, body: raw.slice(end + 3).trim() };
 }
 
 function formatDate(slug: string): string {
   const parts = slug.split("-");
+
   if (parts.length !== 3) return slug;
   const months = [
     "January",
@@ -52,14 +59,16 @@ function formatDate(slug: string): string {
     "December",
   ];
   const month = parseInt(parts[1], 10);
+
   return `${months[month - 1]} ${parseInt(parts[2], 10)}, ${parts[0]}`;
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
+export const getStaticPaths: GetStaticPaths = () => {
   const files = fs.readdirSync(RELEASES_DIR);
   const paths = files
     .filter((f) => f.endsWith(".md"))
     .map((f) => ({ params: { version: f.replace(/\.md$/, "") } }));
+
   return { paths, fallback: false };
 };
 
@@ -71,7 +80,7 @@ type BlogPost = {
 } | null;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const version = params!.version as string;
+  const version = (params?.version as string) ?? "";
   const raw = fs.readFileSync(
     path.join(RELEASES_DIR, `${version}.md`),
     "utf-8",
@@ -84,13 +93,21 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const tags = parseTags(meta.tags);
 
   let blogPost: BlogPost = null;
+
   if (meta.blog) {
     try {
       const res = await fetch(
         `https://keegan.codes/api/posts/single?slug=${meta.blog}`,
       );
+
       if (res.ok) {
-        const data = await res.json();
+        const data = (await res.json()) as {
+          title: string;
+          description: string;
+          cover: string;
+          url: string;
+        };
+
         blogPost = {
           title: data.title,
           description: data.description,
@@ -129,54 +146,67 @@ function parseMarkdown(md: string): Node[] {
   const lines = md.split("\n");
   const nodes: Node[] = [];
   let i = 0;
+
   while (i < lines.length) {
     const line = lines[i];
+
     if (line.startsWith("```")) {
       const lang = line.slice(3).trim();
       const codeLines: string[] = [];
+
       i++;
       while (i < lines.length && !lines[i].startsWith("```")) {
         codeLines.push(lines[i]);
         i++;
       }
+
       nodes.push({ type: "pre", lang, code: codeLines.join("\n") });
       i++;
       continue;
     }
+
     if (line.startsWith("### ")) {
       nodes.push({ type: "h3", text: line.slice(4) });
       i++;
       continue;
     }
+
     if (line.startsWith("## ")) {
       nodes.push({ type: "h2", text: line.slice(3) });
       i++;
       continue;
     }
+
     if (line.startsWith("# ")) {
       nodes.push({ type: "h1", text: line.slice(2) });
       i++;
       continue;
     }
+
     if (line.startsWith("|")) {
-      const parseRow = (l: string) =>
+      const parseRow = (l: string): string[] =>
         l
           .split("|")
           .slice(1, -1)
           .map((c) => c.trim());
       const headers = parseRow(line);
+
       i++;
       if (i < lines.length && lines[i].startsWith("|")) i++;
       const rows: string[][] = [];
+
       while (i < lines.length && lines[i].startsWith("|")) {
         rows.push(parseRow(lines[i]));
         i++;
       }
+
       nodes.push({ type: "table", headers, rows });
       continue;
     }
+
     if (line.startsWith("- ") || line.startsWith("* ")) {
       const items: string[] = [];
+
       while (
         i < lines.length &&
         (lines[i].startsWith("- ") || lines[i].startsWith("* "))
@@ -184,23 +214,30 @@ function parseMarkdown(md: string): Node[] {
         items.push(lines[i].slice(2));
         i++;
       }
+
       nodes.push({ type: "ul", items });
       continue;
     }
+
     if (/^\d+\.\s/.test(line)) {
       const items: string[] = [];
+
       while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
         items.push(lines[i].replace(/^\d+\.\s/, ""));
         i++;
       }
+
       nodes.push({ type: "ol", items });
       continue;
     }
+
     if (line.trim() === "") {
       i++;
       continue;
     }
+
     const paraLines: string[] = [];
+
     while (
       i < lines.length &&
       lines[i].trim() !== "" &&
@@ -214,16 +251,19 @@ function parseMarkdown(md: string): Node[] {
       paraLines.push(lines[i]);
       i++;
     }
+
     if (paraLines.length > 0)
       nodes.push({ type: "p", text: paraLines.join(" ") });
   }
+
   return nodes;
 }
 
-function Inline({ text }: { text: string }) {
+function Inline({ text }: { text: string }): React.ReactNode {
   const parts = text.split(
     /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g,
   );
+
   return (
     <>
       {parts.map((part, i) => {
@@ -233,9 +273,11 @@ function Inline({ text }: { text: string }) {
           return <em key={i}>{part.slice(1, -1)}</em>;
         if (part.startsWith("`") && part.endsWith("`"))
           return <code key={i}>{part.slice(1, -1)}</code>;
-        const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+        const linkMatch = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
+
         if (linkMatch) {
           const isExternal = /^https?:\/\//.test(linkMatch[2]);
+
           return (
             <a
               key={i}
@@ -248,14 +290,16 @@ function Inline({ text }: { text: string }) {
             </a>
           );
         }
+
         return part;
       })}
     </>
   );
 }
 
-function MarkdownContent({ content }: { content: string }) {
+function MarkdownContent({ content }: { content: string }): React.ReactNode {
   const nodes = parseMarkdown(content);
+
   return (
     <div className={styles.content}>
       {nodes.map((node, i) => {
@@ -373,8 +417,9 @@ export default function ReleaseNotePage({
   ogImageUrl: string;
   tags: string[];
   blogPost: BlogPost;
-}) {
+}): React.ReactNode {
   const branding = useBranding();
+
   return (
     <div className={styles.page}>
       <Head>

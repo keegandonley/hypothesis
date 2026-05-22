@@ -40,9 +40,12 @@ ${urls
 </urlset>`;
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+): void {
   const host = req.headers.host ?? "hypothesis.sh";
-  const protocol = req.headers["x-forwarded-proto"] ?? "https";
+  const protocol = (req.headers["x-forwarded-proto"] as string) ?? "https";
   const baseUrl = `${protocol}://${host}`;
 
   const docSlugs = fs

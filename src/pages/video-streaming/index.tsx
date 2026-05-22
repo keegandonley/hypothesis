@@ -143,8 +143,10 @@ const ERROR_CODES: Record<number, string> = {
 
 function extractRanges(r: TimeRanges): BarSegment[] {
   const segs: BarSegment[] = [];
+
   for (let i = 0; i < r.length; i++)
     segs.push({ start: r.start(i), end: r.end(i) });
+
   return segs;
 }
 
@@ -173,6 +175,7 @@ function snapshotVideo(v: HTMLVideoElement): VideoSnapshot {
 
 function settingsToParams(s: Settings): string {
   const p = new URLSearchParams();
+
   if (s.src) p.set("src", s.src);
   if (s.poster) p.set("poster", s.poster);
   if (s.autoplay) p.set("autoplay", "1");
@@ -194,15 +197,17 @@ function settingsToParams(s: Settings): string {
     p.set("dRate", String(s.defaultPlaybackRate));
   if (s.volume !== 1) p.set("volume", String(s.volume));
   const qs = p.toString();
+
   return qs ? `?${qs}` : "";
 }
 
 function paramsToSettings(search: string): Settings {
   const p = new URLSearchParams(search);
-  const bool = (key: string, def: boolean) =>
+  const bool = (key: string, def: boolean): boolean =>
     p.has(key) ? p.get(key) !== "0" : def;
-  const num = (key: string, def: number) =>
-    p.has(key) ? parseFloat(p.get(key)!) || def : def;
+  const num = (key: string, def: number): number =>
+    p.has(key) ? parseFloat(p.get(key) ?? "") || def : def;
+
   return {
     src: p.get("src") ?? "",
     poster: p.get("poster") ?? "",
@@ -245,11 +250,12 @@ function RangeBar({
   duration: number;
   currentTime: number;
   variant: "buffered" | "seekable" | "played";
-}) {
+}): React.ReactNode {
   const valid = isFinite(duration) && duration > 0;
   const pct = valid
     ? Math.min(100, Math.max(0, (100 * currentTime) / duration))
     : 0;
+
   return (
     <div className={styles.bar}>
       {valid &&
@@ -278,18 +284,17 @@ function logEntryClass(event: string): string {
   )
     return styles.logGood;
   if (["play", "playing"].includes(event)) return styles.logAccent;
+
   return "";
 }
 
-export default function VideoStreamingPage() {
+export default function VideoStreamingPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
 
   const [settings, setSettings] = useState<Settings>(DEFAULTS);
   const [initialized, setInitialized] = useState(false);
   const settingsRef = useRef<Settings>(DEFAULTS);
-  settingsRef.current = settings;
-
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -299,9 +304,7 @@ export default function VideoStreamingPage() {
   const [logQuiet, setLogQuiet] = useState(true);
   const [logAutoscroll, setLogAutoscroll] = useState(true);
   const logQuietRef = useRef(true);
-  logQuietRef.current = logQuiet;
   const logAutoscrollRef = useRef(true);
-  logAutoscrollRef.current = logAutoscroll;
   const logRef = useRef<HTMLDivElement>(null);
   const logEntryIdRef = useRef(0);
   const lastTimeUpdateRef = useRef(0);
@@ -309,10 +312,24 @@ export default function VideoStreamingPage() {
   const [seekPct, setSeekPct] = useState(50);
   const [exportCopied, setExportCopied] = useState(false);
 
+  // ── Keep refs in sync with state ─────────────────────────────────────────
+
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
+
+  useEffect(() => {
+    logQuietRef.current = logQuiet;
+  }, [logQuiet]);
+
+  useEffect(() => {
+    logAutoscrollRef.current = logAutoscroll;
+  }, [logAutoscroll]);
+
   // ── Load settings from URL on mount ───────────────────────────────────────
 
   useEffect(() => {
-    setSettings(paramsToSettings(window.location.search));
+    setSettings(paramsToSettings(window.location.search)); // eslint-disable-line react-hooks/set-state-in-effect
     setInitialized(true);
   }, []);
 
@@ -333,20 +350,24 @@ export default function VideoStreamingPage() {
     if (logQuietRef.current && NOISY_EVENTS.has(event as VideoEventName)) {
       if (event === "timeupdate") {
         const now = performance.now();
+
         if (now - lastTimeUpdateRef.current < 500) return;
         lastTimeUpdateRef.current = now;
       } else {
         return;
       }
     }
+
     const t = new Date();
     const ts =
       t.toLocaleTimeString("en-US", { hour12: false }) +
       "." +
       String(t.getMilliseconds()).padStart(3, "0");
     const entry: LogEntry = { id: ++logEntryIdRef.current, ts, event, detail };
+
     setLogEntries((prev) => {
       const next = [...prev, entry];
+
       return next.length > LOG_CAP ? next.slice(next.length - LOG_CAP) : next;
     });
     if (logAutoscrollRef.current) {
@@ -362,23 +383,29 @@ export default function VideoStreamingPage() {
   const buildVideo = useCallback(() => {
     const s = settingsRef.current;
     const container = containerRef.current;
+
     if (!container) return;
 
     const old = videoRef.current;
+
     if (old) {
       try {
         old.pause();
       } catch {}
+
       old.removeAttribute("src");
       try {
         old.load();
       } catch {}
+
       old.remove();
       videoRef.current = null;
     }
+
     setErrorMsg("");
 
     const v = document.createElement("video");
+
     v.preload = s.preload;
     if (s.crossorigin) v.crossOrigin = s.crossorigin;
     else v.removeAttribute("crossorigin");
@@ -393,9 +420,11 @@ export default function VideoStreamingPage() {
     else v.removeAttribute("playsinline");
     v.disablePictureInPicture = s.disablePictureInPicture;
     const vx = v as VideoWithExtras;
+
     if ("disableRemotePlayback" in v)
       vx.disableRemotePlayback = s.disableRemotePlayback;
     const clTokens: string[] = [];
+
     if (s.clNodownload) clTokens.push("nodownload");
     if (s.clNofullscreen) clTokens.push("nofullscreen");
     if (s.clNoremoteplayback) clTokens.push("noremoteplayback");
@@ -407,8 +436,10 @@ export default function VideoStreamingPage() {
     for (const ev of VIDEO_EVENTS) {
       v.addEventListener(ev, () => {
         let d = "";
+
         if (ev === "error") {
           const code = v.error?.code;
+
           d =
             code != null
               ? `code=${code} (${ERROR_CODES[code] ?? "?"}) ${v.error?.message ?? ""}`
@@ -419,6 +450,7 @@ export default function VideoStreamingPage() {
         } else if (ev === "loadedmetadata") {
           d = `duration=${v.duration} ${v.videoWidth}×${v.videoHeight}`;
           const t0 = settingsRef.current.initialCurrentTime;
+
           if (t0 > 0 && isFinite(v.duration) && t0 < v.duration) {
             try {
               v.currentTime = t0;
@@ -426,6 +458,7 @@ export default function VideoStreamingPage() {
           }
         } else if (ev === "progress") {
           const ranges: string[] = [];
+
           for (let i = 0; i < v.buffered.length; i++)
             ranges.push(
               `${v.buffered.start(i).toFixed(2)}–${v.buffered.end(i).toFixed(2)}`,
@@ -438,6 +471,7 @@ export default function VideoStreamingPage() {
         } else if (ev === "seeking" || ev === "seeked") {
           d = `t=${v.currentTime.toFixed(3)}`;
         }
+
         addLog(ev, d);
         setSnap(snapshotVideo(v));
       });
@@ -453,6 +487,7 @@ export default function VideoStreamingPage() {
 
   useEffect(() => {
     const v = videoRef.current;
+
     if (!v || !initialized) return;
     v.loop = settings.loop;
     v.muted = settings.muted;
@@ -460,6 +495,7 @@ export default function VideoStreamingPage() {
     if (settings.poster !== undefined) v.poster = settings.poster;
     v.disablePictureInPicture = settings.disablePictureInPicture;
     const vx = v as VideoWithExtras;
+
     if ("disableRemotePlayback" in v)
       vx.disableRemotePlayback = settings.disableRemotePlayback;
     v.playbackRate = settings.playbackRate || 1;
@@ -473,6 +509,7 @@ export default function VideoStreamingPage() {
       if (settings.clNoremoteplayback) vx.controlsList.add("noremoteplayback");
       else vx.controlsList.remove("noremoteplayback");
     }
+
     setSnap(snapshotVideo(v));
   }, [
     settings.loop,
@@ -498,8 +535,10 @@ export default function VideoStreamingPage() {
       buildVideo();
     } else {
       const container = containerRef.current;
+
       if (container) {
         const v = document.createElement("video");
+
         v.controls = settingsRef.current.controls;
         container.appendChild(v);
         videoRef.current = v;
@@ -514,10 +553,12 @@ export default function VideoStreamingPage() {
   useEffect(() => {
     return () => {
       const v = videoRef.current;
+
       if (v) {
         try {
           v.pause();
         } catch {}
+
         v.removeAttribute("src");
         videoRef.current = null;
       }
@@ -528,21 +569,27 @@ export default function VideoStreamingPage() {
 
   useEffect(() => {
     let rafId: number;
-    function tick() {
+
+    function tick(): void {
       const v = videoRef.current;
+
       if (v && !v.paused && !v.ended) setSnap(snapshotVideo(v));
       rafId = requestAnimationFrame(tick);
     }
+
     rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
   // ── Player controls ───────────────────────────────────────────────────────
 
   const handlePlay = useCallback(() => {
-    videoRef.current
-      ?.play()
-      .catch((e: unknown) => addLog("play-rejected", String(e)));
+    videoRef.current?.play().catch((e: unknown) => {
+      addLog("play-rejected", String(e));
+    });
   }, [addLog]);
 
   const handlePause = useCallback(() => {
@@ -554,25 +601,31 @@ export default function VideoStreamingPage() {
 
   const handleFrameBack = useCallback(() => {
     const v = videoRef.current;
+
     if (v) v.currentTime = Math.max(0, v.currentTime - 1 / 30);
   }, []);
 
   const handleFrameFwd = useCallback(() => {
     const v = videoRef.current;
+
     if (v && isFinite(v.duration))
       v.currentTime = Math.min(v.duration, v.currentTime + 1 / 30);
   }, []);
 
   const handleSeek = useCallback(() => {
     const v = videoRef.current;
+
     if (!v || !isFinite(v.duration)) return;
     v.currentTime = (v.duration * Math.max(0, Math.min(100, seekPct))) / 100;
   }, [seekPct]);
 
-  const handleExport = useCallback(async () => {
-    await copyToClipboard(window.location.href);
-    setExportCopied(true);
-    setTimeout(() => setExportCopied(false), 1500);
+  const handleExport = useCallback((): void => {
+    void copyToClipboard(window.location.href).then(() => {
+      setExportCopied(true);
+      setTimeout(() => {
+        setExportCopied(false);
+      }, 1500);
+    });
   }, []);
 
   const handleReset = useCallback(() => {
@@ -581,8 +634,9 @@ export default function VideoStreamingPage() {
     setSettings(DEFAULTS);
   }, []);
 
-  const upd = <K extends keyof Settings>(key: K, value: Settings[K]) =>
+  const upd = <K extends keyof Settings>(key: K, value: Settings[K]): void => {
     setSettings((prev) => ({ ...prev, [key]: value }));
+  };
 
   const dur = snap?.duration ?? NaN;
 
@@ -674,7 +728,9 @@ export default function VideoStreamingPage() {
               autoComplete="off"
               spellCheck={false}
               value={settings.src}
-              onChange={(e) => upd("src", e.target.value)}
+              onChange={(e) => {
+                upd("src", e.target.value);
+              }}
             />
             <div className={styles.btnRow} style={{ marginTop: 8 }}>
               <button
@@ -707,7 +763,9 @@ export default function VideoStreamingPage() {
                 <input
                   type="checkbox"
                   checked={settings.autoplay}
-                  onChange={(e) => upd("autoplay", e.target.checked)}
+                  onChange={(e) => {
+                    upd("autoplay", e.target.checked);
+                  }}
                 />
                 autoplay{" "}
                 <span
@@ -721,7 +779,9 @@ export default function VideoStreamingPage() {
                 <input
                   type="checkbox"
                   checked={settings.loop}
-                  onChange={(e) => upd("loop", e.target.checked)}
+                  onChange={(e) => {
+                    upd("loop", e.target.checked);
+                  }}
                 />
                 loop
               </label>
@@ -729,7 +789,9 @@ export default function VideoStreamingPage() {
                 <input
                   type="checkbox"
                   checked={settings.muted}
-                  onChange={(e) => upd("muted", e.target.checked)}
+                  onChange={(e) => {
+                    upd("muted", e.target.checked);
+                  }}
                 />
                 muted
               </label>
@@ -737,7 +799,9 @@ export default function VideoStreamingPage() {
                 <input
                   type="checkbox"
                   checked={settings.controls}
-                  onChange={(e) => upd("controls", e.target.checked)}
+                  onChange={(e) => {
+                    upd("controls", e.target.checked);
+                  }}
                 />
                 controls
               </label>
@@ -745,7 +809,9 @@ export default function VideoStreamingPage() {
                 <input
                   type="checkbox"
                   checked={settings.playsinline}
-                  onChange={(e) => upd("playsinline", e.target.checked)}
+                  onChange={(e) => {
+                    upd("playsinline", e.target.checked);
+                  }}
                 />
                 playsinline
               </label>
@@ -753,9 +819,9 @@ export default function VideoStreamingPage() {
                 <input
                   type="checkbox"
                   checked={settings.disablePictureInPicture}
-                  onChange={(e) =>
-                    upd("disablePictureInPicture", e.target.checked)
-                  }
+                  onChange={(e) => {
+                    upd("disablePictureInPicture", e.target.checked);
+                  }}
                 />
                 disable PiP
               </label>
@@ -763,9 +829,9 @@ export default function VideoStreamingPage() {
                 <input
                   type="checkbox"
                   checked={settings.disableRemotePlayback}
-                  onChange={(e) =>
-                    upd("disableRemotePlayback", e.target.checked)
-                  }
+                  onChange={(e) => {
+                    upd("disableRemotePlayback", e.target.checked);
+                  }}
                 />
                 disable remote playback
               </label>
@@ -790,9 +856,9 @@ export default function VideoStreamingPage() {
               id="vs-preload"
               className={styles.select}
               value={settings.preload}
-              onChange={(e) =>
-                upd("preload", e.target.value as Settings["preload"])
-              }
+              onChange={(e) => {
+                upd("preload", e.target.value as Settings["preload"]);
+              }}
             >
               <option value="none">none</option>
               <option value="metadata">metadata</option>
@@ -809,9 +875,9 @@ export default function VideoStreamingPage() {
               id="vs-crossorigin"
               className={styles.select}
               value={settings.crossorigin}
-              onChange={(e) =>
-                upd("crossorigin", e.target.value as Settings["crossorigin"])
-              }
+              onChange={(e) => {
+                upd("crossorigin", e.target.value as Settings["crossorigin"]);
+              }}
             >
               <option value="">(unset)</option>
               <option value="anonymous">anonymous</option>
@@ -831,7 +897,9 @@ export default function VideoStreamingPage() {
               placeholder="https://example.com/poster.jpg"
               autoComplete="off"
               value={settings.poster}
-              onChange={(e) => upd("poster", e.target.value)}
+              onChange={(e) => {
+                upd("poster", e.target.value);
+              }}
             />
           </div>
 
@@ -845,7 +913,9 @@ export default function VideoStreamingPage() {
                 <input
                   type="checkbox"
                   checked={settings.clNodownload}
-                  onChange={(e) => upd("clNodownload", e.target.checked)}
+                  onChange={(e) => {
+                    upd("clNodownload", e.target.checked);
+                  }}
                 />
                 nodownload
               </label>
@@ -853,7 +923,9 @@ export default function VideoStreamingPage() {
                 <input
                   type="checkbox"
                   checked={settings.clNofullscreen}
-                  onChange={(e) => upd("clNofullscreen", e.target.checked)}
+                  onChange={(e) => {
+                    upd("clNofullscreen", e.target.checked);
+                  }}
                 />
                 nofullscreen
               </label>
@@ -861,7 +933,9 @@ export default function VideoStreamingPage() {
                 <input
                   type="checkbox"
                   checked={settings.clNoremoteplayback}
-                  onChange={(e) => upd("clNoremoteplayback", e.target.checked)}
+                  onChange={(e) => {
+                    upd("clNoremoteplayback", e.target.checked);
+                  }}
                 />
                 noremoteplayback
               </label>
@@ -885,9 +959,9 @@ export default function VideoStreamingPage() {
                   min={0}
                   step={0.1}
                   value={settings.initialCurrentTime}
-                  onChange={(e) =>
-                    upd("initialCurrentTime", parseFloat(e.target.value) || 0)
-                  }
+                  onChange={(e) => {
+                    upd("initialCurrentTime", parseFloat(e.target.value) || 0);
+                  }}
                 />
               </div>
               <div>
@@ -902,9 +976,9 @@ export default function VideoStreamingPage() {
                   max={4}
                   step={0.25}
                   value={settings.playbackRate}
-                  onChange={(e) =>
-                    upd("playbackRate", parseFloat(e.target.value) || 1)
-                  }
+                  onChange={(e) => {
+                    upd("playbackRate", parseFloat(e.target.value) || 1);
+                  }}
                 />
               </div>
               <div>
@@ -919,9 +993,9 @@ export default function VideoStreamingPage() {
                   max={4}
                   step={0.25}
                   value={settings.defaultPlaybackRate}
-                  onChange={(e) =>
-                    upd("defaultPlaybackRate", parseFloat(e.target.value) || 1)
-                  }
+                  onChange={(e) => {
+                    upd("defaultPlaybackRate", parseFloat(e.target.value) || 1);
+                  }}
                 />
               </div>
               <div>
@@ -939,7 +1013,9 @@ export default function VideoStreamingPage() {
                   max={1}
                   step={0.01}
                   value={settings.volume}
-                  onChange={(e) => upd("volume", parseFloat(e.target.value))}
+                  onChange={(e) => {
+                    upd("volume", parseFloat(e.target.value));
+                  }}
                 />
               </div>
             </div>
@@ -1030,7 +1106,9 @@ export default function VideoStreamingPage() {
                 max={100}
                 step={1}
                 value={seekPct}
-                onChange={(e) => setSeekPct(Number(e.target.value))}
+                onChange={(e) => {
+                  setSeekPct(Number(e.target.value));
+                }}
               />
             </label>
             <button className={styles.btn} onClick={handleSeek}>
@@ -1129,7 +1207,9 @@ export default function VideoStreamingPage() {
                 <input
                   type="checkbox"
                   checked={logQuiet}
-                  onChange={(e) => setLogQuiet(e.target.checked)}
+                  onChange={(e) => {
+                    setLogQuiet(e.target.checked);
+                  }}
                 />
                 quiet
               </label>
@@ -1137,14 +1217,18 @@ export default function VideoStreamingPage() {
                 <input
                   type="checkbox"
                   checked={logAutoscroll}
-                  onChange={(e) => setLogAutoscroll(e.target.checked)}
+                  onChange={(e) => {
+                    setLogAutoscroll(e.target.checked);
+                  }}
                 />
                 autoscroll
               </label>
               <button
                 className={`${styles.btn} ${styles.btnGhost}`}
                 style={{ padding: "2px 6px" }}
-                onClick={() => setLogEntries([])}
+                onClick={() => {
+                  setLogEntries([]);
+                }}
               >
                 clear
               </button>

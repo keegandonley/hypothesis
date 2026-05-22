@@ -674,12 +674,14 @@ const LOGOS = [
 
 // Deduplicate: some icons appear in multiple categories above — pick the first
 const seen = new Set<string>();
+
 export const IONICON_CATEGORIES: IoniconCategory[] = [
   ...Object.entries(RAW)
     .map(([label, icons]) => {
       const deduped = icons.filter((ic) => {
         if (seen.has(ic)) return false;
         seen.add(ic);
+
         return true;
       });
       const style = CATEGORY_STYLES[label] ?? {
@@ -687,6 +689,7 @@ export const IONICON_CATEGORIES: IoniconCategory[] = [
         subtle: "#a1a1aa14",
         border: "#a1a1aa30",
       };
+
       return { label, ...style, icons: deduped };
     })
     .filter((c) => c.icons.length > 0),
@@ -712,6 +715,7 @@ export const IONICON_GROUPS = IONICON_CATEGORIES.map((cat) => ({
   border: cat.border,
   items: cat.icons.map((name) => {
     const isLogo = cat.label === "Logos & Brands";
+
     return {
       name,
       outline: isLogo ? undefined : `${name}-outline`,

@@ -8,13 +8,15 @@ import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { v1, v4, v7 } from "uuid";
 
-const generators = { 1: v1, 4: v4, 7: v7 } as const;
-
 function generate(ver: 1 | 4 | 7): string {
-  return (generators[ver] as () => string)();
+  if (ver === 1) return v1();
+
+  if (ver === 4) return v4();
+
+  return v7();
 }
 
-export default function UuidPage() {
+export default function UuidPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [uuid, setUuid] = useState("");
@@ -22,8 +24,9 @@ export default function UuidPage() {
   const [copied, setCopied] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const buildUrl = (ver: number) => {
+  const buildUrl = (ver: number): string => {
     const params = new URLSearchParams({ version: String(ver) });
+
     return `${window.location.origin}${window.location.pathname}?${params}`;
   };
 
@@ -33,26 +36,29 @@ export default function UuidPage() {
     const ver = (
       verParam === "1" || verParam === "7" ? Number(verParam) : 4
     ) as 1 | 4 | 7;
-    setVersion(ver);
+
+    setVersion(ver); // eslint-disable-line react-hooks/set-state-in-effect
     setUuid(generate(ver));
     history.replaceState(null, "", buildUrl(ver));
   }, []);
 
-  const handleRegenerate = () => {
+  const handleRegenerate = (): void => {
     setUuid(generate(version));
   };
 
-  const handleVersionChange = (ver: 1 | 4 | 7) => {
+  const handleVersionChange = (ver: 1 | 4 | 7): void => {
     setVersion(ver);
     setUuid(generate(ver));
     history.replaceState(null, "", buildUrl(ver));
   };
 
-  const handleCopy = () => {
-    copyToClipboard(uuid).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(uuid).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
@@ -101,7 +107,9 @@ export default function UuidPage() {
                 <button
                   key={ver}
                   className={`${styles.toggleBtn}${version === ver ? ` ${styles.active}` : ""}`}
-                  onClick={() => handleVersionChange(ver)}
+                  onClick={() => {
+                    handleVersionChange(ver);
+                  }}
                 >
                   v{ver}
                 </button>

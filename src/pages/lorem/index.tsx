@@ -152,7 +152,9 @@ function generateSentences(count: number): string {
   return Array.from({ length: count }, () => {
     const len = 8 + Math.floor(Math.random() * 8);
     const words = Array.from({ length: len }, () => pick(WORDS));
+
     words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+
     return words.join(" ") + ".";
   }).join(" ");
 }
@@ -160,6 +162,7 @@ function generateSentences(count: number): string {
 function generateParagraphs(count: number): string {
   return Array.from({ length: count }, () => {
     const sentenceCount = 3 + Math.floor(Math.random() * 4);
+
     return generateSentences(sentenceCount);
   }).join("\n\n");
 }
@@ -177,7 +180,7 @@ function generate(type: UnitType, count: number): string {
   }
 }
 
-export default function LoremPage() {
+export default function LoremPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [type, setType] = useState<UnitType>("paragraphs");
@@ -195,8 +198,9 @@ export default function LoremPage() {
     setOutput(generate(t, c));
   }, []);
 
-  const buildUrl = (t: UnitType, c: number) => {
+  const buildUrl = (t: UnitType, c: number): string => {
     const params = new URLSearchParams({ type: t, count: String(c) });
+
     return `${window.location.origin}${window.location.pathname}?${params}`;
   };
 
@@ -211,64 +215,71 @@ export default function LoremPage() {
     const c = countParam
       ? Math.max(1, Math.min(100, parseInt(countParam, 10) || 3))
       : 3;
-    setType(t);
+
+    setType(t); // eslint-disable-line react-hooks/set-state-in-effect
     setCount(c);
     setOutput(generate(t, c));
     const initialUrl = buildUrl(t, c);
+
     history.replaceState(null, "", initialUrl);
     setUrl(initialUrl);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleTypeChange = (t: UnitType) => {
+  const handleTypeChange = (t: UnitType): void => {
     setType(t);
     setOutput(generate(t, count));
     const newUrl = buildUrl(t, count);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCountChange = (c: number) => {
+  const handleCountChange = (c: number): void => {
     const clamped = Math.max(1, Math.min(100, c));
+
     setCount(clamped);
     setOutput(generate(type, clamped));
     const newUrl = buildUrl(type, clamped);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     const t: UnitType = "paragraphs";
     const c = 3;
+
     setType(t);
     setCount(c);
     setOutput(generate(t, c));
     const newUrl = buildUrl(t, c);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopyPermalink = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopyPermalink = (): void => {
+    void copyToClipboard(url).then(() => {
       setPermalinkCopied(true);
       if (permalinkTimeoutRef.current)
         clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(
-        () => setPermalinkCopied(false),
-        1500,
-      );
+      permalinkTimeoutRef.current = setTimeout(() => {
+        setPermalinkCopied(false);
+      }, 1500);
     });
   };
 
-  const handleRegenerate = () => {
+  const handleRegenerate = (): void => {
     regenerate(type, count);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(output).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(output).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
@@ -319,7 +330,9 @@ export default function LoremPage() {
               <button
                 key={t}
                 className={`${styles.toggleBtn}${type === t ? ` ${styles.active}` : ""}`}
-                onClick={() => handleTypeChange(t)}
+                onClick={() => {
+                  handleTypeChange(t);
+                }}
               >
                 {t}
               </button>
@@ -336,6 +349,7 @@ export default function LoremPage() {
             value={count}
             onChange={(e) => {
               const v = parseInt(e.target.value, 10);
+
               if (!isNaN(v)) handleCountChange(v);
             }}
           />
@@ -345,7 +359,9 @@ export default function LoremPage() {
             min={1}
             max={100}
             value={count}
-            onChange={(e) => handleCountChange(parseInt(e.target.value, 10))}
+            onChange={(e) => {
+              handleCountChange(parseInt(e.target.value, 10));
+            }}
           />
         </div>
       </div>

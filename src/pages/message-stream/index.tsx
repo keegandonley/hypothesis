@@ -9,20 +9,21 @@ import { useIsIframe } from "@/lib/useIsIframe";
 interface Message {
   id: string;
   timestamp: number;
-  data: any;
+  data: unknown;
   origin: string;
   direction: "sent" | "received";
 }
 
-export default function MessagesPage() {
+export default function MessagesPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [messages, setMessages] = useState<Message[]>([]);
   const [context, setContext] = useState<Record<string, unknown> | null>(null);
   const [sendInput, setSendInput] = useState("");
 
-  const handleSend = () => {
+  const handleSend = (): void => {
     const data = { action: branding.actionType, content: sendInput };
+
     window.parent.postMessage(data, "*");
     setMessages((prev) => [
       {
@@ -38,7 +39,9 @@ export default function MessagesPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+
     if (params.get("seed") === "true") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMessages([
         {
           id: "seed-1",
@@ -66,13 +69,14 @@ export default function MessagesPage() {
     if (context) {
       try {
         const decodedContext = atob(context);
-        setContext(JSON.parse(decodedContext));
+
+        setContext(JSON.parse(decodedContext) as Record<string, unknown>);
       } catch (ex) {
         console.error("Context could not be decoded", ex);
       }
     }
 
-    const handleMessage = (event: MessageEvent) => {
+    const handleMessage = (event: MessageEvent): void => {
       console.log(event);
       const newMessage: Message = {
         id: `${Date.now()}-${Math.random()}`,
@@ -137,8 +141,12 @@ export default function MessagesPage() {
           type="text"
           className={styles.sendInput}
           value={sendInput}
-          onChange={(e) => setSendInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          onChange={(e) => {
+            setSendInput(e.target.value);
+          }}
+          onKeyDown={(e: React.KeyboardEvent) => {
+            if (e.key === "Enter") handleSend();
+          }}
           placeholder="Enter message content..."
         />
         <button className={styles.sendBtn} onClick={handleSend}>

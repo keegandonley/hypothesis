@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/hash.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -26,9 +26,11 @@ function md5(bytes: Uint8Array): string {
   const msgLen = bytes.length;
   const padLen = msgLen % 64 < 56 ? 56 - (msgLen % 64) : 120 - (msgLen % 64);
   const padded = new Uint8Array(msgLen + padLen + 8);
+
   padded.set(bytes);
   padded[msgLen] = 0x80;
   const dv = new DataView(padded.buffer);
+
   dv.setUint32(msgLen + padLen, (msgLen * 8) >>> 0, true);
   dv.setUint32(msgLen + padLen + 4, Math.floor(msgLen / 0x20000000), true);
 
@@ -45,8 +47,10 @@ function md5(bytes: Uint8Array): string {
       b = b0,
       c = c0,
       d = d0;
+
     for (let i = 0; i < 64; i++) {
       let f: number, g: number;
+
       if (i < 16) {
         f = (b & c) | (~b & d);
         g = i;
@@ -60,12 +64,14 @@ function md5(bytes: Uint8Array): string {
         f = c ^ (b | ~d);
         g = (7 * i) % 16;
       }
+
       f = (f + a + T[i] + M[g]) >>> 0;
       a = d;
       d = c;
       c = b;
       b = (b + ((f << S[i]) | (f >>> (32 - S[i])))) >>> 0;
     }
+
     a0 = (a0 + a) >>> 0;
     b0 = (b0 + b) >>> 0;
     c0 = (c0 + c) >>> 0;
@@ -74,10 +80,12 @@ function md5(bytes: Uint8Array): string {
 
   const out = new Uint8Array(16);
   const odv = new DataView(out.buffer);
+
   odv.setUint32(0, a0, true);
   odv.setUint32(4, b0, true);
   odv.setUint32(8, c0, true);
   odv.setUint32(12, d0, true);
+
   return Array.from(out)
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
@@ -86,17 +94,20 @@ function md5(bytes: Uint8Array): string {
 async function hashText(text: string): Promise<Record<string, string>> {
   const encoded = new TextEncoder().encode(text);
   const results: Record<string, string> = {};
-  results["MD5"] = md5(encoded);
+
+  results.MD5 = md5(encoded);
   for (const algo of SHA_ALGOS) {
     const buf = await crypto.subtle.digest(algo, encoded);
+
     results[algo] = Array.from(new Uint8Array(buf))
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
   }
+
   return results;
 }
 
-export default function HashPage() {
+export default function HashPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
@@ -109,63 +120,72 @@ export default function HashPage() {
     null,
   );
 
-  const buildUrl = (val: string) => {
+  const buildUrl = (val: string): string => {
     if (!val) return `${window.location.origin}${window.location.pathname}`;
+
     return `${window.location.origin}${window.location.pathname}?value=${encodeURIComponent(val)}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("value");
+
     if (v) {
-      setInput(v);
-      hashText(v).then(setHashes);
+      setInput(v); // eslint-disable-line react-hooks/set-state-in-effect
+      void hashText(v).then(setHashes);
     }
+
     setUrl(window.location.href);
   }, []);
 
   useEffect(() => {
     if (!input) {
-      setHashes({});
+      setHashes({}); // eslint-disable-line react-hooks/set-state-in-effect
+
       return;
     }
-    hashText(input).then(setHashes);
+
+    void hashText(input).then(setHashes);
   }, [input]);
 
-  const handleInputChange = (value: string) => {
+  const handleInputChange = (value: string): void => {
     setInput(value);
     const newUrl = buildUrl(value);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setInput("");
     setHashes({});
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopyHash = (algo: string) => {
+  const handleCopyHash = (algo: string): void => {
     const value = hashes[algo];
+
     if (!value) return;
-    copyToClipboard(value).then(() => {
+    void copyToClipboard(value).then(() => {
       setCopiedAlgo(algo);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopiedAlgo(null), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopiedAlgo(null);
+      }, 1500);
     });
   };
 
-  const handleCopyPermalink = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopyPermalink = (): void => {
+    void copyToClipboard(url).then(() => {
       setPermalinkCopied(true);
       if (permalinkTimeoutRef.current)
         clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(
-        () => setPermalinkCopied(false),
-        1500,
-      );
+      permalinkTimeoutRef.current = setTimeout(() => {
+        setPermalinkCopied(false);
+      }, 1500);
     });
   };
 
@@ -214,7 +234,9 @@ export default function HashPage() {
         <textarea
           className={styles.textarea}
           value={input}
-          onChange={(e) => handleInputChange(e.target.value)}
+          onChange={(e) => {
+            handleInputChange(e.target.value);
+          }}
           placeholder="Enter text to hash..."
           spellCheck={false}
         />
@@ -224,6 +246,7 @@ export default function HashPage() {
         {ALGOS.map((algo) => {
           const value = hashes[algo] ?? "";
           const isCopied = copiedAlgo === algo;
+
           return (
             <div key={algo} className={styles.hashRow}>
               <span className={styles.algoLabel}>{algo}</span>
@@ -234,7 +257,9 @@ export default function HashPage() {
               </span>
               <button
                 className={`${styles.copyBtn}${isCopied ? ` ${styles.copied}` : ""}`}
-                onClick={() => handleCopyHash(algo)}
+                onClick={() => {
+                  handleCopyHash(algo);
+                }}
                 disabled={!value}
               >
                 {isCopied ? "Copied!" : "Copy"}

@@ -9,6 +9,7 @@ import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 const FLAGS = ["g", "i", "m", "s", "u"] as const;
+
 type Flag = (typeof FLAGS)[number];
 
 interface ResultRow {
@@ -32,13 +33,15 @@ function computeResults(
 
   const globalFlags = flagStr.includes("g") ? flagStr : flagStr + "g";
   const lines = testInput.split("\n");
+
   return lines.map((line) => {
     const matches = Array.from(line.matchAll(new RegExp(pattern, globalFlags)));
+
     return {
       input: line,
       matched: matches.length > 0,
       matchCount: matches.length,
-      groups: matches.flatMap((m) => m.slice(1).filter(Boolean) as string[]),
+      groups: matches.flatMap((m) => m.slice(1).filter(Boolean)),
     };
   });
 }
@@ -53,15 +56,19 @@ function getPatternStatus(
     new RegExp(pattern, flagStr);
   } catch (e) {
     const msg = e instanceof Error ? e.message : "invalid";
+
     return { label: `error: ${msg}`, type: "badgeError" };
   }
+
   const matchCount = results.filter((r) => r.matched).length;
   const total = results.filter((r) => r.input !== "").length;
+
   if (total === 0) return { label: "valid", type: "badge" };
+
   return { label: `${matchCount}/${total} match`, type: "badge" };
 }
 
-export default function RegexPage() {
+export default function RegexPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [pattern, setPattern] = useState("");
@@ -79,23 +86,33 @@ export default function RegexPage() {
 
   const flagStr = FLAGS.filter((f) => flags[f]).join("");
 
-  const buildUrl = (p: string, f: string, s: string) => {
+  const buildUrl = (p: string, f: string, s: string): string => {
     if (!p && !s) return `${window.location.origin}${window.location.pathname}`;
     const payload = btoa(
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       unescape(encodeURIComponent(JSON.stringify({ p, f, s }))),
     );
+
     return `${window.location.origin}${window.location.pathname}?v=${payload}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const raw = params.get("v");
+
     if (raw) {
       try {
-        const { p, f, s } = JSON.parse(decodeURIComponent(escape(atob(raw))));
-        if (typeof p === "string") setPattern(p);
-        if (typeof s === "string") setTestInput(s);
-        if (typeof f === "string") {
+        const parsed = JSON.parse(
+          // eslint-disable-next-line @typescript-eslint/no-deprecated
+          decodeURIComponent(escape(atob(raw))),
+        ) as Record<string, unknown>;
+        const p = typeof parsed.p === "string" ? parsed.p : "";
+        const s = typeof parsed.s === "string" ? parsed.s : "";
+        const f = typeof parsed.f === "string" ? parsed.f : "";
+
+        if (p) setPattern(p); // eslint-disable-line react-hooks/set-state-in-effect
+        if (s) setTestInput(s);
+        if (f) {
           setFlags({
             g: f.includes("g"),
             i: f.includes("i"),
@@ -108,46 +125,53 @@ export default function RegexPage() {
         /* ignore */
       }
     }
+
     setUrl(window.location.href);
   }, []);
 
-  const updateUrl = (p: string, f: string, s: string) => {
+  const updateUrl = (p: string, f: string, s: string): void => {
     const newUrl = buildUrl(p, f, s);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handlePatternChange = (value: string) => {
+  const handlePatternChange = (value: string): void => {
     setPattern(value);
     updateUrl(value, flagStr, testInput);
   };
 
-  const handleFlagToggle = (flag: Flag) => {
+  const handleFlagToggle = (flag: Flag): void => {
     const newFlags = { ...flags, [flag]: !flags[flag] };
+
     setFlags(newFlags);
     const newFlagStr = FLAGS.filter((f) => newFlags[f]).join("");
+
     updateUrl(pattern, newFlagStr, testInput);
   };
 
-  const handleTestInputChange = (value: string) => {
+  const handleTestInputChange = (value: string): void => {
     setTestInput(value);
     updateUrl(pattern, flagStr, value);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setPattern("");
     setFlags({ g: true, i: false, m: false, s: false, u: false });
     setTestInput("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
@@ -210,7 +234,9 @@ export default function RegexPage() {
             type="text"
             className={styles.patternInput}
             value={pattern}
-            onChange={(e) => handlePatternChange(e.target.value)}
+            onChange={(e) => {
+              handlePatternChange(e.target.value);
+            }}
             placeholder="pattern"
             spellCheck={false}
             autoComplete="off"
@@ -221,7 +247,9 @@ export default function RegexPage() {
               <button
                 key={flag}
                 className={`${styles.flagBtn}${flags[flag] ? ` ${styles.flagActive}` : ""}`}
-                onClick={() => handleFlagToggle(flag)}
+                onClick={() => {
+                  handleFlagToggle(flag);
+                }}
                 title={flagTitle(flag)}
               >
                 {flag}
@@ -244,7 +272,9 @@ export default function RegexPage() {
             <textarea
               className={styles.textarea}
               value={testInput}
-              onChange={(e) => handleTestInputChange(e.target.value)}
+              onChange={(e) => {
+                handleTestInputChange(e.target.value);
+              }}
               placeholder={"Enter test strings, one per line..."}
               spellCheck={false}
             />

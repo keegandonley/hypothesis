@@ -26,7 +26,7 @@ const LOCATION_NAMES: Record<number, string> = {
   3: "Numpad",
 };
 
-export default function KeycodePage() {
+export default function KeycodePage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(null);
@@ -35,13 +35,13 @@ export default function KeycodePage() {
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    setUrl(window.location.href);
-    const handleKeyDown = (e: KeyboardEvent) => {
+    setUrl(window.location.href); // eslint-disable-line react-hooks/set-state-in-effect
+    const handleKeyDown = (e: KeyboardEvent): void => {
       setKeyInfo({
         key: e.key,
         code: e.code,
-        keyCode: e.keyCode,
-        which: e.which,
+        keyCode: e.keyCode, // eslint-disable-line @typescript-eslint/no-deprecated
+        which: e.which, // eslint-disable-line @typescript-eslint/no-deprecated
         location: e.location,
         shiftKey: e.shiftKey,
         ctrlKey: e.ctrlKey,
@@ -49,8 +49,12 @@ export default function KeycodePage() {
         metaKey: e.metaKey,
       });
     };
+
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   const modifiers = keyInfo
@@ -69,11 +73,13 @@ export default function KeycodePage() {
       : keyInfo.key
     : null;
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 

@@ -10,14 +10,18 @@ function parseFrontmatter(raw: string): {
 } {
   if (!raw.startsWith("---")) return { meta: {}, body: raw };
   const end = raw.indexOf("---", 3);
+
   if (end === -1) return { meta: {}, body: raw };
   const block = raw.slice(3, end).trim();
   const meta: Record<string, string> = {};
+
   for (const line of block.split("\n")) {
     const colon = line.indexOf(":");
+
     if (colon > -1)
       meta[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
   }
+
   return { meta, body: raw.slice(end + 3).trim() };
 }
 
@@ -30,9 +34,12 @@ function escapeXml(str: string): string {
     .replace(/'/g, "&apos;");
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+): void {
   const host = req.headers.host ?? "hypothesis.sh";
-  const protocol = req.headers["x-forwarded-proto"] ?? "https";
+  const protocol = (req.headers["x-forwarded-proto"] as string) ?? "https";
   const baseUrl = `${protocol}://${host}`;
 
   const releases = fs
@@ -42,6 +49,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       const slug = file.replace(/\.md$/, "");
       const raw = fs.readFileSync(path.join(RELEASES_DIR, file), "utf-8");
       const { meta, body } = parseFrontmatter(raw);
+
       return { slug, meta, body };
     })
     .sort((a, b) => b.slug.localeCompare(a.slug));
@@ -54,6 +62,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       );
       const link = `${baseUrl}/release-notes/${slug}`;
       const pubDate = new Date(slug).toUTCString();
+
       return `    <item>
       <title>${title}</title>
       <link>${link}</link>

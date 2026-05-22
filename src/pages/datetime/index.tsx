@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/datetime.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -13,7 +13,7 @@ interface FormatRow {
   format: (d: Date) => string;
 }
 
-function pad(n: number, digits = 2) {
+function pad(n: number, digits = 2): string {
   return String(n).padStart(digits, "0");
 }
 
@@ -71,6 +71,7 @@ function formatRfc2822(d: Date): string {
     "Nov",
     "Dec",
   ];
+
   return `${days[d.getUTCDay()]}, ${pad(d.getUTCDate())} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())} +0000`;
 }
 
@@ -123,23 +124,27 @@ function parseInput(value: string): Date | null {
   // Pure integer: try unix ms or unix seconds
   if (/^\d+$/.test(value.trim())) {
     const n = parseInt(value.trim(), 10);
+
     if (value.trim().length >= 13) {
       const d = new Date(n);
+
       if (!isNaN(d.getTime())) return d;
     } else {
       const d = new Date(n * 1000);
+
       if (!isNaN(d.getTime())) return d;
     }
   }
 
   // General string parse
   const d = new Date(value);
+
   if (!isNaN(d.getTime())) return d;
 
   return null;
 }
 
-export default function DateTimePage() {
+export default function DateTimePage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
@@ -160,116 +165,135 @@ export default function DateTimePage() {
     null,
   );
 
-  const buildUrl = (val: string, live: boolean) => {
+  const buildUrl = (val: string, live: boolean): string => {
     const params = new URLSearchParams();
+
     if (val) params.set("value", val);
     if (live) params.set("live", "true");
     const qs = params.toString();
+
     return `${window.location.origin}${window.location.pathname}${qs ? `?${qs}` : ""}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const value = params.get("value");
+
     if (value) {
-      setInput(value);
+      setInput(value); // eslint-disable-line react-hooks/set-state-in-effect
       setParsedDate(parseInput(value));
     }
+
     const live = params.get("live") === "true";
+
     if (live) setLiveMode(true);
     setUrl(window.location.href);
   }, []);
 
   useEffect(() => {
     if (liveMode) {
-      setLiveDate(new Date());
-      liveIntervalRef.current = setInterval(() => setLiveDate(new Date()), 200);
+      setLiveDate(new Date()); // eslint-disable-line react-hooks/set-state-in-effect
+      liveIntervalRef.current = setInterval(() => {
+        setLiveDate(new Date());
+      }, 200);
     } else {
       if (liveIntervalRef.current) {
         clearInterval(liveIntervalRef.current);
         liveIntervalRef.current = null;
       }
+
       setLiveDate(null);
     }
+
     return () => {
       if (liveIntervalRef.current) clearInterval(liveIntervalRef.current);
     };
   }, [liveMode]);
 
-  const handleInputChange = (value: string) => {
+  const handleInputChange = (value: string): void => {
     setInput(value);
     setParsedDate(parseInput(value));
     const newUrl = buildUrl(value, liveMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleNow = () => {
+  const handleNow = (): void => {
     const now = String(Date.now());
+
     setInput(now);
     setParsedDate(new Date(parseInt(now, 10)));
     const newUrl = buildUrl(now, liveMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleRowCopy = (id: string, text: string) => {
-    copyToClipboard(text).then(() => {
+  const handleRowCopy = (id: string, text: string): void => {
+    void copyToClipboard(text).then(() => {
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
       setCopied(id);
-      copyTimeoutRef.current = setTimeout(() => setCopied(null), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(null);
+      }, 1500);
     });
   };
 
-  const handlePermalinkCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handlePermalinkCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       if (permalinkCopyTimeoutRef.current)
         clearTimeout(permalinkCopyTimeoutRef.current);
       setPermalinkCopied(true);
-      permalinkCopyTimeoutRef.current = setTimeout(
-        () => setPermalinkCopied(false),
-        1500,
-      );
+      permalinkCopyTimeoutRef.current = setTimeout(() => {
+        setPermalinkCopied(false);
+      }, 1500);
     });
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setInput("");
     setParsedDate(null);
     setCopied(null);
     const newUrl = buildUrl("", liveMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
   useEffect(() => {
     if (relativeLive && !liveMode) {
-      relativeIntervalRef.current = setInterval(
-        () => setRelativeTick((t) => t + 1),
-        1000,
-      );
+      relativeIntervalRef.current = setInterval(() => {
+        setRelativeTick((t) => t + 1);
+      }, 1000);
     } else {
       if (relativeIntervalRef.current) {
         clearInterval(relativeIntervalRef.current);
         relativeIntervalRef.current = null;
       }
     }
+
     return () => {
       if (relativeIntervalRef.current)
         clearInterval(relativeIntervalRef.current);
     };
   }, [relativeLive, liveMode]);
 
-  const handleLiveToggle = () => {
+  const handleLiveToggle = (): void => {
     setLiveMode((prev) => {
       const next = !prev;
       const newUrl = buildUrl(next ? "" : input, next);
+
       history.replaceState(null, "", newUrl);
       setUrl(newUrl);
+
       return next;
     });
   };
-  const handleRelativeLiveToggle = () => setRelativeLive((prev) => !prev);
+
+  const handleRelativeLiveToggle = (): void => {
+    setRelativeLive((prev) => !prev);
+  };
 
   const displayDate = liveMode ? liveDate : parsedDate;
   const hasInput = input.trim().length > 0;
@@ -316,7 +340,9 @@ export default function DateTimePage() {
           className={styles.inputField}
           type="text"
           value={liveMode ? "" : input}
-          onChange={(e) => handleInputChange(e.target.value)}
+          onChange={(e) => {
+            handleInputChange(e.target.value);
+          }}
           placeholder={
             liveMode
               ? "Live mode active..."
@@ -357,6 +383,7 @@ export default function DateTimePage() {
           const value = displayDate ? row.format(displayDate) : null;
           const isCopied = copied === row.id;
           const isRelativeRow = row.id === "relative";
+
           return (
             <div key={row.id} className={styles.conversionRow}>
               <span className={styles.conversionLabel}>{row.label}</span>
@@ -381,7 +408,9 @@ export default function DateTimePage() {
                   (value !== null ? (
                     <button
                       className={`${styles.copyRowBtn}${isCopied ? ` ${styles.copied}` : ""}`}
-                      onClick={() => handleRowCopy(row.id, value)}
+                      onClick={() => {
+                        handleRowCopy(row.id, value);
+                      }}
                     >
                       {isCopied ? "Copied!" : "Copy"}
                     </button>

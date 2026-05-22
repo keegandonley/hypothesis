@@ -1,10 +1,10 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
-import { GetStaticProps } from "next";
+import React, { useState, useMemo } from "react";
+import { type GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
-import { HEADER_CATEGORIES, HeaderDirection } from "@/data/http-headers";
+import { HEADER_CATEGORIES, type HeaderDirection } from "@/data/http-headers";
 
 export const getStaticProps: GetStaticProps = () => ({
   props: { groups: HEADER_CATEGORIES },
@@ -38,56 +38,62 @@ export default function HttpHeadersPage({
   groups,
 }: {
   groups: typeof HEADER_CATEGORIES;
-}) {
+}): React.ReactNode {
   const branding = useBranding();
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [search, setSearch] = useState(() =>
+    typeof window === "undefined"
+      ? ""
+      : (new URLSearchParams(window.location.search).get("q") ?? ""),
+  );
+  const [activeCategory, setActiveCategory] = useState(() =>
+    typeof window === "undefined"
+      ? "all"
+      : (new URLSearchParams(window.location.search).get("cat") ?? "all"),
+  );
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("q");
-    const cat = params.get("cat");
-    if (q) setSearch(q);
-    if (cat) setActiveCategory(cat);
-  }, []);
-
-  function updateUrl(q: string, cat: string) {
+  function updateUrl(q: string, cat: string): void {
     const params = new URLSearchParams();
+
     if (q) params.set("q", q);
     if (cat !== "all") params.set("cat", cat);
     const qs = params.toString();
+
     history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }
 
-  function handleSearch(value: string) {
+  function handleSearch(value: string): void {
     setSearch(value);
     updateUrl(value, activeCategory);
   }
 
-  function handleCategoryToggle(cat: string) {
+  function handleCategoryToggle(cat: string): void {
     const next = activeCategory === cat ? "all" : cat;
+
     setActiveCategory(next);
     updateUrl(search, next);
   }
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
+
     return groups
       .map((cat) => {
         const headers = cat.headers.filter((h) => {
           if (activeCategory !== "all" && activeCategory !== cat.id)
             return false;
           if (!q) return true;
+
           return (
             h.name.toLowerCase().includes(q) ||
             h.description.toLowerCase().includes(q) ||
             h.direction.includes(q)
           );
         });
+
         return { ...cat, headers };
       })
       .filter((s) => s.headers.length > 0);
-  }, [search, activeCategory]);
+  }, [search, activeCategory, groups]);
 
   return (
     <div className={styles.page}>
@@ -141,14 +147,18 @@ export default function HttpHeadersPage({
               type="text"
               placeholder="Search by name or description..."
               value={search}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => {
+                handleSearch(e.target.value);
+              }}
               autoComplete="off"
               spellCheck={false}
             />
             {search && (
               <button
                 className={styles.clearBtn}
-                onClick={() => handleSearch("")}
+                onClick={() => {
+                  handleSearch("");
+                }}
                 aria-label="Clear search"
               >
                 ✕
@@ -159,7 +169,9 @@ export default function HttpHeadersPage({
           <div className={styles.classFilters}>
             <button
               className={`${styles.classBtn} ${activeCategory === "all" ? styles.classBtnActive : ""}`}
-              onClick={() => handleCategoryToggle("all")}
+              onClick={() => {
+                handleCategoryToggle("all");
+              }}
             >
               All
             </button>
@@ -173,7 +185,9 @@ export default function HttpHeadersPage({
                     "--cls-subtle": cat.subtle,
                   } as React.CSSProperties
                 }
-                onClick={() => handleCategoryToggle(cat.id)}
+                onClick={() => {
+                  handleCategoryToggle(cat.id);
+                }}
               >
                 {cat.badge}
                 {cat.badge !== cat.label && (
@@ -231,13 +245,11 @@ export default function HttpHeadersPage({
                         <div className={styles.flagRow}>
                           <span
                             className={styles.flagBadge}
-                            style={
-                              {
-                                color: DIR_COLOR[h.direction],
-                                backgroundColor: DIR_SUBTLE[h.direction],
-                                borderColor: DIR_BORDER[h.direction],
-                              } as React.CSSProperties
-                            }
+                            style={{
+                              color: DIR_COLOR[h.direction],
+                              backgroundColor: DIR_SUBTLE[h.direction],
+                              borderColor: DIR_BORDER[h.direction],
+                            }}
                           >
                             {DIR_LABEL[h.direction]}
                           </span>
@@ -247,13 +259,11 @@ export default function HttpHeadersPage({
                           {h.experimental && (
                             <span
                               className={styles.flagBadge}
-                              style={
-                                {
-                                  color: "#fbbf24",
-                                  backgroundColor: "#fbbf2418",
-                                  borderColor: "#fbbf2433",
-                                } as React.CSSProperties
-                              }
+                              style={{
+                                color: "#fbbf24",
+                                backgroundColor: "#fbbf2418",
+                                borderColor: "#fbbf2433",
+                              }}
                             >
                               experimental
                             </span>

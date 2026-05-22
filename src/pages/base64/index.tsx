@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/base64.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -7,7 +7,7 @@ import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 
-export default function Base64Page() {
+export default function Base64Page(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [plain, setPlain] = useState("");
@@ -19,10 +19,12 @@ export default function Base64Page() {
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const plainRef = useRef<HTMLTextAreaElement>(null);
 
-  const buildUrl = (enc: string, json: boolean) => {
+  const buildUrl = (enc: string, json: boolean): string => {
     if (!enc) return `${window.location.origin}${window.location.pathname}`;
     const params = new URLSearchParams({ value: enc });
+
     if (json) params.set("json", "1");
+
     return `${window.location.origin}${window.location.pathname}?${params}`;
   };
 
@@ -32,9 +34,12 @@ export default function Base64Page() {
     const jsonParam = params.get("json") === "1";
 
     if (value) {
+      /* eslint-disable-next-line react-hooks/set-state-in-effect */
       setEncoded(value);
       try {
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         const decoded = decodeURIComponent(escape(atob(value)));
+
         setPlain(decoded);
         if (jsonParam) {
           try {
@@ -48,15 +53,18 @@ export default function Base64Page() {
         setPlain("");
       }
     }
+
     if (jsonParam) setJsonMode(true);
     setUrl(window.location.href);
   }, []);
 
-  const validateJson = (value: string) => {
+  const validateJson = (value: string): void => {
     if (value.length === 0) {
       setJsonValid(null);
+
       return;
     }
+
     try {
       JSON.parse(value);
       setJsonValid(true);
@@ -65,51 +73,63 @@ export default function Base64Page() {
     }
   };
 
-  const handlePlainChange = (value: string) => {
+  const handlePlainChange = (value: string): void => {
     setPlain(value);
     if (jsonMode) validateJson(value);
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const enc = btoa(unescape(encodeURIComponent(value)));
+
     setEncoded(enc);
     const newUrl = buildUrl(enc, jsonMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleEncodedChange = (value: string) => {
+  const handleEncodedChange = (value: string): void => {
     setEncoded(value);
     let decoded = "";
+
     try {
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       decoded = decodeURIComponent(escape(atob(value)));
       setPlain(decoded);
     } catch {
       setPlain("");
     }
+
     if (jsonMode) validateJson(decoded);
     const newUrl = buildUrl(value, jsonMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleFormat = () => {
+  const handleFormat = (): void => {
     try {
       const formatted = JSON.stringify(JSON.parse(plain), null, 2);
+
       handlePlainChange(formatted);
     } catch {
       /* no-op */
     }
   };
 
-  const handleJsonToggle = () => {
+  const handleJsonToggle = (): void => {
     const next = !jsonMode;
+
     setJsonMode(next);
     if (next) validateJson(plain);
     else setJsonValid(null);
     const newUrl = buildUrl(encoded, next);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handlePlainKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handlePlainKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+  ): void => {
     if (!jsonMode || e.key !== "Tab") return;
     e.preventDefault();
 
@@ -120,6 +140,7 @@ export default function Base64Page() {
 
     if (!e.shiftKey) {
       const newVal = val.slice(0, start) + "  " + val.slice(end);
+
       handlePlainChange(newVal);
       requestAnimationFrame(() => {
         if (plainRef.current) {
@@ -129,14 +150,17 @@ export default function Base64Page() {
       });
     } else {
       const lineStart = val.lastIndexOf("\n", start - 1) + 1;
-      const stripped = val.slice(lineStart).match(/^ {1,2}/)?.[0] ?? "";
+      const stripped = /^ {1,2}/.exec(val.slice(lineStart))?.[0] ?? "";
+
       if (stripped.length > 0) {
         const newVal =
           val.slice(0, lineStart) + val.slice(lineStart + stripped.length);
+
         handlePlainChange(newVal);
         requestAnimationFrame(() => {
           if (plainRef.current) {
             const pos = Math.max(lineStart, start - stripped.length);
+
             plainRef.current.selectionStart = plainRef.current.selectionEnd =
               pos;
           }
@@ -145,21 +169,24 @@ export default function Base64Page() {
     }
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setPlain("");
     setEncoded("");
     setJsonMode(false);
     setJsonValid(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
@@ -227,7 +254,9 @@ export default function Base64Page() {
               ref={plainRef}
               className={styles.textarea}
               value={plain}
-              onChange={(e) => handlePlainChange(e.target.value)}
+              onChange={(e) => {
+                handlePlainChange(e.target.value);
+              }}
               onKeyDown={handlePlainKeyDown}
               placeholder={`Type or paste ${jsonMode ? "JSON" : "plain text"} here...`}
               spellCheck={false}
@@ -253,7 +282,9 @@ export default function Base64Page() {
             <textarea
               className={styles.textarea}
               value={encoded}
-              onChange={(e) => handleEncodedChange(e.target.value)}
+              onChange={(e) => {
+                handleEncodedChange(e.target.value);
+              }}
               placeholder="Paste base64 here..."
               spellCheck={false}
             />

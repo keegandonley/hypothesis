@@ -41,13 +41,15 @@ const TWITTER_CARDS = ["summary", "summary_large_image", "app", "player"];
 
 function buildTags(d: OgData): string {
   const lines: string[] = [];
-  const add = (prop: string, val: string, isName = false) => {
+  const add = (prop: string, val: string, isName = false): void => {
     if (!val.trim()) return;
     const attr = isName ? `name` : `property`;
+
     lines.push(
       `<meta ${attr}="${prop}" content="${val.replace(/"/g, "&quot;")}" />`,
     );
   };
+
   add("og:title", d.title);
   add("og:description", d.description);
   add("og:image", d.image);
@@ -59,10 +61,11 @@ function buildTags(d: OgData): string {
   add("twitter:description", d.description, true);
   add("twitter:image", d.image, true);
   if (d.twitterSite) add("twitter:site", d.twitterSite, true);
+
   return lines.join("\n");
 }
 
-export default function OgPage() {
+export default function OgPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [data, setData] = useState<OgData>(DEFAULT);
@@ -75,53 +78,68 @@ export default function OgPage() {
   const tags = buildTags(data);
   const hasImage = data.image.trim().length > 0;
 
-  const buildUrl = (d: OgData) => {
+  const buildUrl = (d: OgData): string => {
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(d))));
+
     return `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(encoded)}`;
   };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("v");
+
     if (v) {
       try {
-        const parsed = JSON.parse(decodeURIComponent(escape(atob(v))));
-        setData((prev) => ({ ...prev, ...parsed }));
+        const parsed = JSON.parse(
+          // eslint-disable-next-line @typescript-eslint/no-deprecated
+          decodeURIComponent(escape(atob(v))),
+        ) as Record<string, unknown>;
+
+        setData((prev) => ({ ...prev, ...parsed })); // eslint-disable-line react-hooks/set-state-in-effect
       } catch {
         /* ignore */
       }
     }
+
     setPageUrl(window.location.href);
   }, []);
 
-  const update = (field: keyof OgData, value: string) => {
+  const update = (field: keyof OgData, value: string): void => {
     const next = { ...data, [field]: value };
+
     setData(next);
     const newUrl = buildUrl(next);
+
     history.replaceState(null, "", newUrl);
     setPageUrl(newUrl);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(pageUrl).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(pageUrl).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setData(DEFAULT);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setPageUrl(newUrl);
   };
 
-  const handleCopyTags = () => {
-    copyToClipboard(tags).then(() => {
+  const handleCopyTags = (): void => {
+    void copyToClipboard(tags).then(() => {
       setCopiedTags(true);
       if (tagsCopyTimeoutRef.current) clearTimeout(tagsCopyTimeoutRef.current);
-      tagsCopyTimeoutRef.current = setTimeout(() => setCopiedTags(false), 1500);
+      tagsCopyTimeoutRef.current = setTimeout(() => {
+        setCopiedTags(false);
+      }, 1500);
     });
   };
 
@@ -169,7 +187,9 @@ export default function OgPage() {
             <input
               className={styles.input}
               value={data.title}
-              onChange={(e) => update("title", e.target.value)}
+              onChange={(e) => {
+                update("title", e.target.value);
+              }}
               placeholder="My Page Title"
               autoComplete="off"
             />
@@ -179,7 +199,9 @@ export default function OgPage() {
             <textarea
               className={styles.inputArea}
               value={data.description}
-              onChange={(e) => update("description", e.target.value)}
+              onChange={(e) => {
+                update("description", e.target.value);
+              }}
               placeholder="A brief description of this page."
               rows={2}
             />
@@ -189,7 +211,9 @@ export default function OgPage() {
             <input
               className={styles.input}
               value={data.image}
-              onChange={(e) => update("image", e.target.value)}
+              onChange={(e) => {
+                update("image", e.target.value);
+              }}
               placeholder="https://example.com/og-image.png"
               autoComplete="off"
             />
@@ -199,7 +223,9 @@ export default function OgPage() {
             <input
               className={styles.input}
               value={data.url}
-              onChange={(e) => update("url", e.target.value)}
+              onChange={(e) => {
+                update("url", e.target.value);
+              }}
               placeholder="https://example.com/page"
               autoComplete="off"
             />
@@ -210,7 +236,9 @@ export default function OgPage() {
               <input
                 className={styles.input}
                 value={data.siteName}
-                onChange={(e) => update("siteName", e.target.value)}
+                onChange={(e) => {
+                  update("siteName", e.target.value);
+                }}
                 placeholder="My Site"
                 autoComplete="off"
               />
@@ -220,7 +248,9 @@ export default function OgPage() {
               <input
                 className={styles.input}
                 value={data.twitterSite}
-                onChange={(e) => update("twitterSite", e.target.value)}
+                onChange={(e) => {
+                  update("twitterSite", e.target.value);
+                }}
                 placeholder="@myhandle"
                 autoComplete="off"
               />
@@ -232,7 +262,9 @@ export default function OgPage() {
               <select
                 className={styles.select}
                 value={data.type}
-                onChange={(e) => update("type", e.target.value)}
+                onChange={(e) => {
+                  update("type", e.target.value);
+                }}
               >
                 {OG_TYPES.map((t) => (
                   <option key={t} value={t}>
@@ -246,7 +278,9 @@ export default function OgPage() {
               <select
                 className={styles.select}
                 value={data.twitterCard}
-                onChange={(e) => update("twitterCard", e.target.value)}
+                onChange={(e) => {
+                  update("twitterCard", e.target.value);
+                }}
               >
                 {TWITTER_CARDS.map((c) => (
                   <option key={c} value={c}>

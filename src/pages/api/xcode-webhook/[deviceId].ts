@@ -12,21 +12,26 @@ function readBody(req: NextApiRequest): Promise<string> {
   return new Promise((resolve, reject) => {
     let data = "";
     let byteLength = 0;
+
     req.on("data", (chunk: Buffer) => {
       byteLength += chunk.byteLength;
       if (byteLength > MAX_BODY_BYTES) {
         req.destroy();
         reject(new Error("PAYLOAD_TOO_LARGE"));
+
         return;
       }
-      data += chunk;
+
+      data += chunk.toString();
     });
-    req.on("end", () => resolve(data));
+    req.on("end", () => {
+      resolve(data);
+    });
     req.on("error", reject);
   });
 }
 
-type XcodeCloudEvent = {
+interface XcodeCloudEvent {
   metadata?: {
     attributes?: {
       eventType?: string;
@@ -58,7 +63,7 @@ type XcodeCloudEvent = {
       kind?: string;
     };
   };
-};
+}
 
 function formatNotification(event: XcodeCloudEvent): {
   title: string;
@@ -68,7 +73,7 @@ function formatNotification(event: XcodeCloudEvent): {
   const productName = event.ciProduct?.attributes?.name ?? "Unknown App";
   const buildNumber = event.ciBuildRun?.attributes?.number;
   const branch = event.scmGitReference?.attributes?.name;
-  const eventType = event.metadata?.attributes?.eventType;
+  const eventType = event.metadata?.attributes?.eventType ?? "";
 
   const detail = [
     branch ?? null,
@@ -78,6 +83,7 @@ function formatNotification(event: XcodeCloudEvent): {
     .join(" · ");
 
   let title: string;
+
   switch (eventType) {
     case "BUILD_CREATED":
       title = "Build created";
@@ -111,30 +117,51 @@ function formatNotification(event: XcodeCloudEvent): {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
-  if (req.method !== "POST") return res.status(405).end();
+): Promise<void> {
+  if (req.method !== "POST") {
+    res.status(405).end();
+
+    return;
+  }
 
   const { deviceId } = req.query as { deviceId: string };
 
   let rawBody: string;
+
   try {
     rawBody = await readBody(req);
   } catch (e) {
     if ((e as Error).message === "PAYLOAD_TOO_LARGE") {
-      return res.status(413).json({ error: "payload too large" });
+      res.status(413).json({ error: "payload too large" });
+
+      return;
     }
+
     throw e;
   }
 
   const device = await getPushTokenByDeviceId(deviceId);
-  if (!device) return res.status(404).json({ error: "device not found" });
-  if (!device.token) return res.status(200).end();
+
+  if (!device) {
+    res.status(404).json({ error: "device not found" });
+
+    return;
+  }
+
+  if (!device.token) {
+    res.status(200).end();
+
+    return;
+  }
 
   let event: XcodeCloudEvent;
+
   try {
     event = JSON.parse(rawBody) as XcodeCloudEvent;
   } catch {
-    return res.status(400).json({ error: "invalid JSON" });
+    res.status(400).json({ error: "invalid JSON" });
+
+    return;
   }
 
   const eventType = event.metadata?.attributes?.eventType;
@@ -163,9 +190,9 @@ export default async function handler(
     data,
     apnsId: result.apnsId ?? null,
     success: result.ok,
-  }).catch((err) =>
-    console.error("[xcode-webhook] failed to record notification", err),
-  );
+  }).catch((err: unknown) => {
+    console.error("[xcode-webhook] failed to record notification", err);
+  });
 
   try {
     await track("Xcode Cloud Webhook Received", {
@@ -186,5 +213,5 @@ export default async function handler(
     );
   }
 
-  return res.status(200).json({ ok: true });
+  res.status(200).json({ ok: true });
 }

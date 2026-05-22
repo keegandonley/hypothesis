@@ -1,7 +1,8 @@
 import { pool } from "./db";
+import type { QueryResult } from "pg";
 import { incrementStat } from "./stats";
 
-export type PushNotification = {
+export interface PushNotification {
   id: string;
   deviceId: string;
   title: string;
@@ -11,7 +12,7 @@ export type PushNotification = {
   apnsId: string | null;
   success: boolean;
   sentAt: string;
-};
+}
 
 export async function insertPushNotification(params: {
   deviceId: string;
@@ -36,9 +37,21 @@ export async function insertPushNotification(params: {
       params.success,
     ],
   );
-  await incrementStat("push_events_sent").catch((err) =>
-    console.error("[stats] failed to increment push_events_sent", err),
-  );
+  await incrementStat("push_events_sent").catch((err: unknown) => {
+    console.error("[stats] failed to increment push_events_sent", err);
+  });
+}
+
+interface PushNotificationRow {
+  id: string;
+  device_id: string;
+  title: string;
+  body: string;
+  subtitle: string | null;
+  data: object | null;
+  apns_id: string | null;
+  success: boolean;
+  sent_at: string;
 }
 
 export async function getPushNotifications(params: {
@@ -46,18 +59,15 @@ export async function getPushNotifications(params: {
   after?: string;
   limit: number;
 }): Promise<PushNotification[]> {
-  let result;
-  if (params.after) {
-    result = await pool.query(
-      "SELECT id, device_id, title, body, subtitle, data, apns_id, success, sent_at FROM push_notifications WHERE device_id = $1 AND sent_at > $2 ORDER BY sent_at DESC LIMIT $3",
-      [params.deviceId, params.after, params.limit],
-    );
-  } else {
-    result = await pool.query(
-      "SELECT id, device_id, title, body, subtitle, data, apns_id, success, sent_at FROM push_notifications WHERE device_id = $1 ORDER BY sent_at DESC LIMIT $2",
-      [params.deviceId, params.limit],
-    );
-  }
+  const result: QueryResult<PushNotificationRow> = params.after
+    ? await pool.query(
+        "SELECT id, device_id, title, body, subtitle, data, apns_id, success, sent_at FROM push_notifications WHERE device_id = $1 AND sent_at > $2 ORDER BY sent_at DESC LIMIT $3",
+        [params.deviceId, params.after, params.limit],
+      )
+    : await pool.query(
+        "SELECT id, device_id, title, body, subtitle, data, apns_id, success, sent_at FROM push_notifications WHERE device_id = $1 ORDER BY sent_at DESC LIMIT $2",
+        [params.deviceId, params.limit],
+      );
 
   return result.rows.map((row) => ({
     id: row.id,
@@ -65,7 +75,7 @@ export async function getPushNotifications(params: {
     title: row.title,
     body: row.body,
     subtitle: row.subtitle ?? null,
-    data: row.data ?? null,
+    data: (row.data as Record<string, unknown>) ?? null,
     apnsId: row.apns_id ?? null,
     success: row.success,
     sentAt: new Date(row.sent_at).toISOString(),

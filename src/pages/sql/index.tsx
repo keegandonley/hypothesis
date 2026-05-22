@@ -18,7 +18,7 @@ const DIALECTS: { value: SqlLanguage; label: string }[] = [
 
 const PLACEHOLDER = `SELECT u.id, u.name, COUNT(o.id) AS order_count FROM users u LEFT JOIN orders o ON o.user_id = u.id WHERE u.created_at > '2024-01-01' GROUP BY u.id, u.name HAVING COUNT(o.id) > 0 ORDER BY order_count DESC LIMIT 25;`;
 
-export default function SqlPage() {
+export default function SqlPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
@@ -31,6 +31,7 @@ export default function SqlPage() {
 
   let formatted = "";
   let error = "";
+
   if (input) {
     try {
       formatted = format(input, {
@@ -43,9 +44,13 @@ export default function SqlPage() {
     }
   }
 
-  const buildUrl = (text: string, d: SqlLanguage) => {
+  const buildUrl = (text: string, d: SqlLanguage): string => {
     const params = new URLSearchParams({ d });
-    if (text) params.set("v", btoa(unescape(encodeURIComponent(text))));
+
+    if (text)
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      params.set("v", btoa(unescape(encodeURIComponent(text))));
+
     return `${window.location.origin}${window.location.pathname}?${params}`;
   };
 
@@ -53,52 +58,65 @@ export default function SqlPage() {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("v");
     const d = params.get("d") as SqlLanguage | null;
+
     if (v) {
       try {
-        setInput(decodeURIComponent(escape(atob(v))));
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setInput(
+          // eslint-disable-next-line @typescript-eslint/no-deprecated
+          decodeURIComponent(escape(atob(v))),
+        );
       } catch {
         /* ignore */
       }
     }
+
     if (d && DIALECTS.some((x) => x.value === d)) setDialect(d);
     setUrl(window.location.href);
   }, []);
 
-  const handleChange = (text: string) => {
+  const handleChange = (text: string): void => {
     setInput(text);
     const newUrl = buildUrl(text, dialect);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleDialect = (d: SqlLanguage) => {
+  const handleDialect = (d: SqlLanguage): void => {
     setDialect(d);
     const newUrl = buildUrl(input, d);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setInput("");
     setDialect("sql");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleCopySql = () => {
-    copyToClipboard(formatted).then(() => {
+  const handleCopySql = (): void => {
+    void copyToClipboard(formatted).then(() => {
       setCopiedSql(true);
       if (sqlCopyTimeoutRef.current) clearTimeout(sqlCopyTimeoutRef.current);
-      sqlCopyTimeoutRef.current = setTimeout(() => setCopiedSql(false), 1500);
+      sqlCopyTimeoutRef.current = setTimeout(() => {
+        setCopiedSql(false);
+      }, 1500);
     });
   };
 
@@ -147,7 +165,9 @@ export default function SqlPage() {
           <textarea
             className={styles.textarea}
             value={input}
-            onChange={(e) => handleChange(e.target.value)}
+            onChange={(e) => {
+              handleChange(e.target.value);
+            }}
             placeholder={PLACEHOLDER}
             spellCheck={false}
           />
@@ -161,7 +181,9 @@ export default function SqlPage() {
                 <button
                   key={d.value}
                   className={`${styles.toggleBtn}${dialect === d.value ? ` ${styles.active}` : ""}`}
-                  onClick={() => handleDialect(d.value)}
+                  onClick={() => {
+                    handleDialect(d.value);
+                  }}
                 >
                   {d.label}
                 </button>

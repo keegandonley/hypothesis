@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-confusing-void-expression, padding-line-between-statements, react-hooks/refs, react-hooks/set-state-in-effect */
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
@@ -181,7 +182,7 @@ function paramsToSettings(search: string): Settings {
   const bool = (key: string, def: boolean) =>
     p.has(key) ? p.get(key) !== "0" : def;
   const num = (key: string, def: number) =>
-    p.has(key) ? parseFloat(p.get(key)!) || def : def;
+    p.has(key) ? parseFloat(p.get(key) ?? "") || def : def;
   return {
     src: p.get("src") ?? "",
     autoplay: bool("autoplay", DEFAULTS.autoplay),

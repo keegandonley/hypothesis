@@ -8,9 +8,11 @@ const UUID_RE =
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
+): Promise<void> {
   if (req.method !== "GET") {
-    return res.status(405).end();
+    res.status(405).end();
+
+    return;
   }
 
   const {
@@ -24,15 +26,20 @@ export default async function handler(
   };
 
   if (!deviceId || !UUID_RE.test(deviceId)) {
-    return res.status(400).json({ error: "deviceId must be a valid UUID" });
+    res.status(400).json({ error: "deviceId must be a valid UUID" });
+
+    return;
   }
 
   if (afterParam) {
     const ts = Date.parse(afterParam);
+
     if (isNaN(ts)) {
-      return res
+      res
         .status(400)
         .json({ error: "invalid 'after' parameter — expected ISO 8601 date" });
+
+      return;
     }
   }
 
@@ -44,7 +51,9 @@ export default async function handler(
   );
 
   if (!authorized) {
-    return res.status(403).json({ error: "forbidden" });
+    res.status(403).json({ error: "forbidden" });
+
+    return;
   }
 
   try {
@@ -53,9 +62,15 @@ export default async function handler(
       after: afterParam,
       limit,
     });
-    return res.json({ notifications, count: notifications.length });
+
+    res.json({ notifications, count: notifications.length });
+
+    return;
   } catch (err) {
     console.error("native notifications error", err);
-    return res.status(500).json({ error: "internal server error" });
+
+    res.status(500).json({ error: "internal server error" });
+
+    return;
   }
 }

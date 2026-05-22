@@ -43,12 +43,22 @@ const REFERENCE_DATA: Record<string, unknown> = {
   "macos-shortcuts": MACOS_SHORTCUT_GROUPS,
 };
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "GET") return res.status(405).end();
+export default function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+): void {
+  if (req.method !== "GET") {
+    res.status(405).end();
+
+    return;
+  }
 
   const { slug } = req.query;
+
   if (typeof slug !== "string" || !(slug in REFERENCE_DATA)) {
-    return res.status(404).json({ error: "Reference not found" });
+    res.status(404).json({ error: "Reference not found" });
+
+    return;
   }
 
   res.setHeader(

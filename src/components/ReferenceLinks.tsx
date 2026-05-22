@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link";
 import styles from "@/styles/referenceLinks.module.css";
 
@@ -6,7 +7,7 @@ interface Ref {
   slug: string;
 }
 
-export function ReferenceLinks({ refs }: { refs: Ref[] }) {
+export function ReferenceLinks({ refs }: { refs: Ref[] }): React.ReactNode {
   return (
     <div className={styles.row}>
       <span className={styles.label}>ref:</span>

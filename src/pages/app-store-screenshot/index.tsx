@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import styles from "../../styles/app-store-screenshot.module.css";
@@ -43,8 +43,9 @@ function buildUrl(
   grad: boolean,
   bg2: string,
   angle: number,
-) {
+): string {
   const params = new URLSearchParams();
+
   params.set("dim", dim);
   params.set("bg", bg.replace("#", ""));
   params.set("scale", String(scale));
@@ -55,12 +56,14 @@ function buildUrl(
     params.set("bg2", bg2.replace("#", ""));
     params.set("angle", String(angle));
   }
+
   return `${window.location.origin}${window.location.pathname}?${params}`;
 }
 
-function gradientCoords(w: number, h: number, angleDeg: number) {
+function gradientCoords(w: number, h: number, angleDeg: number): number[] {
   const rad = (angleDeg * Math.PI) / 180;
   const len = Math.abs(w * Math.sin(rad)) + Math.abs(h * Math.cos(rad));
+
   return [
     w / 2 - (len / 2) * Math.sin(rad),
     h / 2 - (len / 2) * Math.cos(rad),
@@ -69,45 +72,73 @@ function gradientCoords(w: number, h: number, angleDeg: number) {
   ];
 }
 
-export default function AppStoreScreenshot() {
+export default function AppStoreScreenshot(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
 
-  const [dim, setDim] = useState<Dimension>("1242x2688");
-  const [bgColor, setBgColor] = useState("#1a1a2e");
+  const [dim, setDim] = useState<Dimension>(() => {
+    if (typeof window === "undefined") return "1242x2688";
+    const d = new URLSearchParams(window.location.search).get(
+      "dim",
+    ) as Dimension | null;
+
+    return d && DIM_KEYS.includes(d) ? d : "1242x2688";
+  });
+
+  const [bgColor, setBgColor] = useState(() => {
+    if (typeof window === "undefined") return "#1a1a2e";
+    const bg = new URLSearchParams(window.location.search).get("bg");
+
+    return bg ? `#${bg}` : "#1a1a2e";
+  });
+
   const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [scale, setScale] = useState(85);
-  const [borderRadius, setBorderRadius] = useState(0);
-  const [shadowBlur, setShadowBlur] = useState(0);
-  const [gradientEnabled, setGradientEnabled] = useState(false);
-  const [bgColor2, setBgColor2] = useState("#4a1a8e");
-  const [gradientAngle, setGradientAngle] = useState(145);
+
+  const [scale, setScale] = useState(() => {
+    if (typeof window === "undefined") return 85;
+    const sc = new URLSearchParams(window.location.search).get("scale");
+
+    return sc ? Number(sc) : 85;
+  });
+
+  const [borderRadius, setBorderRadius] = useState(() => {
+    if (typeof window === "undefined") return 0;
+    const r = new URLSearchParams(window.location.search).get("radius");
+
+    return r ? Number(r) : 0;
+  });
+
+  const [shadowBlur, setShadowBlur] = useState(() => {
+    if (typeof window === "undefined") return 0;
+    const sh = new URLSearchParams(window.location.search).get("shadow");
+
+    return sh ? Number(sh) : 0;
+  });
+
+  const [gradientEnabled, setGradientEnabled] = useState(() => {
+    if (typeof window === "undefined") return false;
+
+    return new URLSearchParams(window.location.search).get("grad") === "1";
+  });
+
+  const [bgColor2, setBgColor2] = useState(() => {
+    if (typeof window === "undefined") return "#4a1a8e";
+    const bg2 = new URLSearchParams(window.location.search).get("bg2");
+
+    return bg2 ? `#${bg2}` : "#4a1a8e";
+  });
+
+  const [gradientAngle, setGradientAngle] = useState(() => {
+    if (typeof window === "undefined") return 145;
+    const ang = new URLSearchParams(window.location.search).get("angle");
+
+    return ang ? Number(ang) : 145;
+  });
+
   const [dragging, setDragging] = useState(false);
-  const [pageUrl, setPageUrl] = useState("");
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Restore from URL on mount
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const d = params.get("dim") as Dimension | null;
-    const bg = params.get("bg");
-    const sc = params.get("scale");
-    const r = params.get("radius");
-    const sh = params.get("shadow");
-    const grad = params.get("grad");
-    const bg2 = params.get("bg2");
-    const ang = params.get("angle");
-    if (d && DIM_KEYS.includes(d)) setDim(d);
-    if (bg) setBgColor(`#${bg}`);
-    if (sc) setScale(Number(sc));
-    if (r) setBorderRadius(Number(r));
-    if (sh) setShadowBlur(Number(sh));
-    if (grad === "1") setGradientEnabled(true);
-    if (bg2) setBgColor2(`#${bg2}`);
-    if (ang) setGradientAngle(Number(ang));
-  }, []);
 
   // Sync URL on state change
   useEffect(() => {
@@ -121,8 +152,8 @@ export default function AppStoreScreenshot() {
       bgColor2,
       gradientAngle,
     );
+
     history.replaceState(null, "", url);
-    setPageUrl(url);
   }, [
     dim,
     bgColor,
@@ -137,24 +168,30 @@ export default function AppStoreScreenshot() {
   // Redraw canvas on any relevant state change
   useEffect(() => {
     const canvas = canvasRef.current;
+
     if (!canvas) return;
     const { w, h } = DIMS[dim];
+
     canvas.width = w;
     canvas.height = h;
     const ctx = canvas.getContext("2d");
+
     if (!ctx) return;
     if (gradientEnabled) {
       const [x0, y0, x1, y1] = gradientCoords(w, h, gradientAngle);
       const grad = ctx.createLinearGradient(x0, y0, x1, y1);
+
       grad.addColorStop(0, bgColor);
       grad.addColorStop(1, bgColor2);
       ctx.fillStyle = grad;
     } else {
       ctx.fillStyle = bgColor;
     }
+
     ctx.fillRect(0, 0, w, h);
     if (!imageSrc) return;
     const img = new Image();
+
     img.onload = () => {
       const maxW = w * (scale / 100);
       const maxH = h * (scale / 100);
@@ -187,6 +224,7 @@ export default function AppStoreScreenshot() {
 
       ctx.restore();
     };
+
     img.src = imageSrc;
   }, [
     dim,
@@ -200,46 +238,60 @@ export default function AppStoreScreenshot() {
     gradientAngle,
   ]);
 
-  const handleFile = (file: File) => {
+  const handleFile = (file: File): void => {
     if (!file.type.startsWith("image/")) return;
     const reader = new FileReader();
+
     reader.onload = (e) => {
-      setImageSrc(e.target!.result as string);
+      const target = e.target;
+
+      if (target && target instanceof FileReader) {
+        const result = target.result;
+
+        if (typeof result === "string") setImageSrc(result);
+      }
     };
+
     reader.readAsDataURL(file);
   };
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
+
     if (file) handleFile(file);
     e.target.value = "";
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: React.DragEvent): void => {
     e.preventDefault();
     setDragging(false);
     const file = e.dataTransfer.files[0];
+
     if (file) handleFile(file);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent): void => {
     e.preventDefault();
     setDragging(true);
   };
 
-  const handleDragLeave = () => setDragging(false);
+  const handleDragLeave = (): void => {
+    setDragging(false);
+  };
 
-  const handleDownload = () => {
+  const handleDownload = (): void => {
     const canvas = canvasRef.current;
+
     if (!canvas) return;
     const url = canvas.toDataURL("image/png");
     const a = document.createElement("a");
+
     a.href = url;
     a.download = `appstore-${dim}.png`;
     a.click();
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setImageSrc(null);
     setDim("1242x2688");
     setBgColor("#1a1a2e");
@@ -304,7 +356,9 @@ export default function AppStoreScreenshot() {
                     <button
                       key={d}
                       className={`${styles.toggleBtn}${dim === d ? ` ${styles.active}` : ""}`}
-                      onClick={() => setDim(d)}
+                      onClick={() => {
+                        setDim(d);
+                      }}
                     >
                       {DIMS[d].label}
                       <span className={styles.dimPx}>
@@ -324,14 +378,18 @@ export default function AppStoreScreenshot() {
                 <input
                   type="color"
                   value={bgColor}
-                  onChange={(e) => setBgColor(e.target.value)}
+                  onChange={(e) => {
+                    setBgColor(e.target.value);
+                  }}
                   className={styles.colorInput}
                 />
                 <span className={styles.colorHex}>{bgColor.toUpperCase()}</span>
               </label>
               <button
                 className={`${styles.gradientToggle}${gradientEnabled ? ` ${styles.active}` : ""}`}
-                onClick={() => setGradientEnabled((v) => !v)}
+                onClick={() => {
+                  setGradientEnabled((v) => !v);
+                }}
               >
                 Gradient
               </button>
@@ -345,7 +403,9 @@ export default function AppStoreScreenshot() {
                     <input
                       type="color"
                       value={bgColor2}
-                      onChange={(e) => setBgColor2(e.target.value)}
+                      onChange={(e) => {
+                        setBgColor2(e.target.value);
+                      }}
                       className={styles.colorInput}
                     />
                     <span className={styles.colorHex}>
@@ -360,7 +420,9 @@ export default function AppStoreScreenshot() {
                     min={0}
                     max={360}
                     value={gradientAngle}
-                    onChange={(e) => setGradientAngle(Number(e.target.value))}
+                    onChange={(e) => {
+                      setGradientAngle(Number(e.target.value));
+                    }}
                     className={styles.slider}
                   />
                   <span className={styles.sliderValue}>{gradientAngle}°</span>
@@ -377,7 +439,9 @@ export default function AppStoreScreenshot() {
                 min={40}
                 max={100}
                 value={scale}
-                onChange={(e) => setScale(Number(e.target.value))}
+                onChange={(e) => {
+                  setScale(Number(e.target.value));
+                }}
                 className={styles.slider}
               />
               <span className={styles.sliderValue}>{scale}%</span>
@@ -392,7 +456,9 @@ export default function AppStoreScreenshot() {
                 min={0}
                 max={200}
                 value={borderRadius}
-                onChange={(e) => setBorderRadius(Number(e.target.value))}
+                onChange={(e) => {
+                  setBorderRadius(Number(e.target.value));
+                }}
                 className={styles.slider}
               />
               <span className={styles.sliderValue}>{borderRadius}px</span>
@@ -405,7 +471,9 @@ export default function AppStoreScreenshot() {
                 min={0}
                 max={150}
                 value={shadowBlur}
-                onChange={(e) => setShadowBlur(Number(e.target.value))}
+                onChange={(e) => {
+                  setShadowBlur(Number(e.target.value));
+                }}
                 className={styles.slider}
               />
               <span className={styles.sliderValue}>{shadowBlur}px</span>

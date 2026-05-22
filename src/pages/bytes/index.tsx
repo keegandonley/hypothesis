@@ -1,6 +1,6 @@
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "@/styles/bytes.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
@@ -29,13 +29,15 @@ const DECIMAL_UNITS = [
 
 function formatValue(bytes: number, factor: number): string {
   const n = bytes / factor;
+
   if (n === 0) return "0";
+
   return parseFloat(n.toPrecision(10)).toLocaleString(undefined, {
     maximumSignificantDigits: 10,
   });
 }
 
-export default function BytesPage() {
+export default function BytesPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [rawValue, setRawValue] = useState("");
@@ -53,51 +55,56 @@ export default function BytesPage() {
     const v = params.get("value");
     const u = params.get("unit");
     const m = params.get("mode");
-    if (v) setRawValue(v);
+
+    if (v) setRawValue(v); // eslint-disable-line react-hooks/set-state-in-effect
     if (u) setSelectedUnit(u);
     if (m === "decimal" || m === "binary") setMode(m);
     setUrl(window.location.href);
   }, []);
 
-  function updateUrl(v: string, u: string, m: Mode) {
+  function updateUrl(v: string, u: string, m: Mode): void {
     const params = new URLSearchParams();
+
     if (v) params.set("value", v);
     if (u !== "B") params.set("unit", u);
     if (m !== "binary") params.set("mode", m);
     const qs = params.toString();
+
     history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
     setUrl(window.location.href);
   }
 
-  function handleValue(v: string) {
+  function handleValue(v: string): void {
     setRawValue(v);
     updateUrl(v, selectedUnit, mode);
   }
 
-  function handleUnit(u: string) {
+  function handleUnit(u: string): void {
     setSelectedUnit(u);
     updateUrl(rawValue, u, mode);
   }
 
-  function handleMode(m: Mode) {
+  function handleMode(m: Mode): void {
     // When switching modes, try to keep the unit name or fall back to B
     const units = m === "binary" ? BINARY_UNITS : DECIMAL_UNITS;
     const match = units.find((u) => u.unit === selectedUnit);
     const newUnit = match ? selectedUnit : "B";
+
     setMode(m);
     setSelectedUnit(newUnit);
     updateUrl(rawValue, newUnit, m);
   }
 
-  function handleCopy(value: string, idx: number) {
-    copyToClipboard(value);
+  function handleCopy(value: string, idx: number): void {
+    void copyToClipboard(value);
     setCopiedIdx(idx);
     const prev = copyTimeouts.current.get(idx);
+
     if (prev) clearTimeout(prev);
-    const t = setTimeout(
-      () => setCopiedIdx((c) => (c === idx ? null : c)),
-      1500,
-    );
+    const t = setTimeout(() => {
+      setCopiedIdx((c) => (c === idx ? null : c));
+    }, 1500);
+
     copyTimeouts.current.set(idx, t);
   }
 
@@ -107,6 +114,7 @@ export default function BytesPage() {
   // Parse input to bytes
   let bytes: number | null = null;
   const numVal = parseFloat(rawValue);
+
   if (rawValue !== "" && !isNaN(numVal) && numVal >= 0) {
     bytes = numVal * inputUnit.factor;
   }
@@ -152,7 +160,9 @@ export default function BytesPage() {
         <select
           className={styles.unitSelect}
           value={selectedUnit}
-          onChange={(e) => handleUnit(e.target.value)}
+          onChange={(e) => {
+            handleUnit(e.target.value);
+          }}
         >
           {units.map((u) => (
             <option key={u.unit} value={u.unit}>
@@ -165,7 +175,9 @@ export default function BytesPage() {
           type="number"
           min="0"
           value={rawValue}
-          onChange={(e) => handleValue(e.target.value)}
+          onChange={(e) => {
+            handleValue(e.target.value);
+          }}
           placeholder="Enter a value..."
           autoComplete="off"
         />
@@ -175,13 +187,17 @@ export default function BytesPage() {
         <span className={styles.modeLabel}>Base</span>
         <button
           className={`${styles.modeBtn} ${mode === "binary" ? styles.modeBtnActive : ""}`}
-          onClick={() => handleMode("binary")}
+          onClick={() => {
+            handleMode("binary");
+          }}
         >
           Binary (1024)
         </button>
         <button
           className={`${styles.modeBtn} ${mode === "decimal" ? styles.modeBtnActive : ""}`}
-          onClick={() => handleMode("decimal")}
+          onClick={() => {
+            handleMode("decimal");
+          }}
         >
           Decimal (1000)
         </button>
@@ -191,6 +207,7 @@ export default function BytesPage() {
         {units.map((u, idx) => {
           const display = bytes !== null ? formatValue(bytes, u.factor) : "—";
           const isActive = u.unit === selectedUnit;
+
           return (
             <div
               key={u.unit}
@@ -210,7 +227,9 @@ export default function BytesPage() {
               {!isIframe && bytes !== null && (
                 <button
                   className={`${styles.copyBtn} ${copiedIdx === idx ? styles.copied : ""}`}
-                  onClick={() => handleCopy(display.replace(/,/g, ""), idx)}
+                  onClick={() => {
+                    handleCopy(display.replace(/,/g, ""), idx);
+                  }}
                 >
                   {copiedIdx === idx ? "Copied!" : "Copy"}
                 </button>
@@ -229,9 +248,11 @@ export default function BytesPage() {
           <button
             className={`${styles.copyBtn}${copiedUrl ? ` ${styles.copied}` : ""}`}
             onClick={() => {
-              copyToClipboard(url);
+              void copyToClipboard(url);
               setCopiedUrl(true);
-              setTimeout(() => setCopiedUrl(false), 1500);
+              setTimeout(() => {
+                setCopiedUrl(false);
+              }, 1500);
             }}
           >
             {copiedUrl ? "Copied!" : "Copy"}

@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
-import { GetStaticProps } from "next";
+import React, { useState, useMemo } from "react";
+import { type GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { PORT_GROUPS } from "@/data/port-numbers";
@@ -14,45 +14,50 @@ export default function PortNumbersPage({
   groups,
 }: {
   groups: typeof PORT_GROUPS;
-}) {
+}): React.ReactNode {
   const branding = useBranding();
-  const [search, setSearch] = useState("");
-  const [activeGroup, setActiveGroup] = useState("all");
+  const [search, setSearch] = useState(() =>
+    typeof window === "undefined"
+      ? ""
+      : (new URLSearchParams(window.location.search).get("q") ?? ""),
+  );
+  const [activeGroup, setActiveGroup] = useState(() =>
+    typeof window === "undefined"
+      ? "all"
+      : (new URLSearchParams(window.location.search).get("grp") ?? "all"),
+  );
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("q");
-    const grp = params.get("grp");
-    if (q) setSearch(q);
-    if (grp) setActiveGroup(grp);
-  }, []);
-
-  function updateUrl(q: string, grp: string) {
+  function updateUrl(q: string, grp: string): void {
     const params = new URLSearchParams();
+
     if (q) params.set("q", q);
     if (grp !== "all") params.set("grp", grp);
     const qs = params.toString();
+
     history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }
 
-  function handleSearch(value: string) {
+  function handleSearch(value: string): void {
     setSearch(value);
     updateUrl(value, activeGroup);
   }
 
-  function handleGroupToggle(grp: string) {
+  function handleGroupToggle(grp: string): void {
     const next = activeGroup === grp ? "all" : grp;
+
     setActiveGroup(next);
     updateUrl(search, next);
   }
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
+
     return groups
       .map((group) => {
         const ports = group.ports.filter((p) => {
           if (activeGroup !== "all" && activeGroup !== group.id) return false;
           if (!q) return true;
+
           return (
             String(p.port).includes(q) ||
             p.service.toLowerCase().includes(q) ||
@@ -64,7 +69,7 @@ export default function PortNumbersPage({
         return { ...group, ports };
       })
       .filter((g) => g.ports.length > 0);
-  }, [search, activeGroup]);
+  }, [search, activeGroup, groups]);
 
   return (
     <div className={styles.page}>
@@ -117,14 +122,18 @@ export default function PortNumbersPage({
               type="text"
               placeholder="Search by port, service, or description..."
               value={search}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => {
+                handleSearch(e.target.value);
+              }}
               autoComplete="off"
               spellCheck={false}
             />
             {search && (
               <button
                 className={styles.clearBtn}
-                onClick={() => handleSearch("")}
+                onClick={() => {
+                  handleSearch("");
+                }}
                 aria-label="Clear search"
               >
                 ✕
@@ -135,7 +144,9 @@ export default function PortNumbersPage({
           <div className={styles.classFilters}>
             <button
               className={`${styles.classBtn} ${activeGroup === "all" ? styles.classBtnActive : ""}`}
-              onClick={() => handleGroupToggle("all")}
+              onClick={() => {
+                handleGroupToggle("all");
+              }}
             >
               All
             </button>
@@ -149,7 +160,9 @@ export default function PortNumbersPage({
                     "--cls-subtle": group.subtle,
                   } as React.CSSProperties
                 }
-                onClick={() => handleGroupToggle(group.id)}
+                onClick={() => {
+                  handleGroupToggle(group.id);
+                }}
               >
                 {group.id}
                 <span className={styles.classBtnLabel}>{group.label}</span>

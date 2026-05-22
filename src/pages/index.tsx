@@ -3,9 +3,9 @@ import path from "path";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
-import { GetServerSideProps } from "next";
+import { type GetServerSideProps } from "next";
 import styles from "../styles/index.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { SiBluesky, SiGithub } from "react-icons/si";
@@ -21,31 +21,36 @@ import {
 
 const RELEASES_DIR = path.join(process.cwd(), "src/content/releases");
 
-type ReleaseEntry = {
+interface ReleaseEntry {
   slug: string;
   date: string;
   formattedDate: string;
   title: string;
   description: string;
   tags: string[];
-};
+}
 
 function parseReleaseFrontmatter(raw: string): Record<string, string> {
   if (!raw.startsWith("---")) return {};
   const end = raw.indexOf("---", 3);
+
   if (end === -1) return {};
   const block = raw.slice(3, end).trim();
   const meta: Record<string, string> = {};
+
   for (const line of block.split("\n")) {
     const colon = line.indexOf(":");
+
     if (colon > -1)
       meta[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
   }
+
   return meta;
 }
 
 function parseReleaseTags(value?: string): string[] {
   if (!value) return [];
+
   return value
     .split(",")
     .map((t) => t.trim())
@@ -54,6 +59,7 @@ function parseReleaseTags(value?: string): string[] {
 
 function formatReleaseDate(slug: string): string {
   const parts = slug.split("-");
+
   if (parts.length !== 3) return slug;
   const months = [
     "Jan",
@@ -70,24 +76,29 @@ function formatReleaseDate(slug: string): string {
     "Dec",
   ];
   const month = parseInt(parts[1], 10);
+
   return `${months[month - 1]} ${parseInt(parts[2], 10)}, ${parts[0]}`;
 }
 
+/* eslint-disable-next-line @typescript-eslint/require-await -- GetServerSideProps must return Promise */
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const host = req.headers.host ?? "hypothesis.sh";
   const hostname = host.split(":")[0];
   const branding = getBranding(hostname);
   const protocol = req.headers["x-forwarded-proto"] ?? "https";
-  const baseUrl = `${protocol}://${host}`;
+  const baseUrl = `${String(protocol)}://${host}`;
 
   let releasesList: ReleaseEntry[] = [];
+
   try {
     const files = fs.readdirSync(RELEASES_DIR).filter((f) => f.endsWith(".md"));
+
     releasesList = files
       .map((file) => {
         const slug = file.replace(/\.md$/, "");
         const raw = fs.readFileSync(path.join(RELEASES_DIR, file), "utf-8");
         const meta = parseReleaseFrontmatter(raw);
+
         return {
           slug,
           date: slug,
@@ -134,7 +145,7 @@ export default function HomePage({
   experimentsList: typeof experiments;
   referencesList: typeof references;
   releasesList: ReleaseEntry[];
-}) {
+}): React.ReactNode {
   const branding = useBranding();
   const router = useRouter();
   const [activeTags, setActiveTags] = useState<Tag[]>([]);
@@ -144,24 +155,28 @@ export default function HomePage({
   const searchRef = useRef<HTMLInputElement>(null);
   const focusedIndexRef = useRef<number | null>(null);
   const navRef = useRef({
-    items: [] as Array<{ href: string }>,
+    items: [] as { href: string }[],
     toolsCount: 0,
     expsCount: 0,
   });
 
   useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
+    function onKeyDown(e: KeyboardEvent): void {
       if (e.key === "/" && document.activeElement !== searchRef.current) {
         e.preventDefault();
         searchRef.current?.focus();
       }
     }
+
     document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+    };
   }, []);
 
   useEffect(() => {
-    setFocusedIndex(null);
+    setFocusedIndex(null); // eslint-disable-line react-hooks/set-state-in-effect
     focusedIndexRef.current = null;
   }, [query, activeTags]);
 
@@ -173,7 +188,7 @@ export default function HomePage({
   }, [focusedIndex]);
 
   useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
+    function onKeyDown(e: KeyboardEvent): void {
       if (document.activeElement === searchRef.current) {
         if (e.key === "ArrowDown" && navRef.current.items.length > 0) {
           e.preventDefault();
@@ -184,17 +199,22 @@ export default function HomePage({
           setQuery("");
           searchRef.current?.blur();
         }
+
         return;
       }
+
       const { items, toolsCount, expsCount } = navRef.current;
       const total = items.length;
+
       if (total === 0) return;
       const current = focusedIndexRef.current;
 
-      function colsAt(i: number) {
+      function colsAt(i: number): number {
         const twoCol = window.innerWidth > 480;
+
         if (i < toolsCount) return twoCol ? 2 : 1;
         if (i < toolsCount + expsCount) return 1;
+
         return twoCol ? 2 : 1;
       }
 
@@ -202,12 +222,14 @@ export default function HomePage({
         if (i < toolsCount) return [0, toolsCount];
         if (i < toolsCount + expsCount)
           return [toolsCount, toolsCount + expsCount];
+
         return [toolsCount + expsCount, total];
       }
 
       if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         e.preventDefault();
         let next: number;
+
         if (current === null) {
           next = e.key === "ArrowUp" || e.key === "ArrowLeft" ? total - 1 : 0;
         } else {
@@ -215,6 +237,7 @@ export default function HomePage({
           const [secStart, secEnd] = sectionBounds(current);
           const posInSection = current - secStart;
           const col = posInSection % cols;
+
           if (e.key === "ArrowRight") {
             next = Math.min(current + 1, total - 1);
           } else if (e.key === "ArrowLeft") {
@@ -224,6 +247,7 @@ export default function HomePage({
               next = current + cols;
             } else if (secEnd < total) {
               const nextCols = colsAt(secEnd);
+
               next = secEnd + Math.min(col, nextCols - 1);
             } else {
               next = current;
@@ -239,6 +263,7 @@ export default function HomePage({
               const lastRowStart =
                 prevSecStart +
                 Math.floor((prevCount - 1) / prevCols) * prevCols;
+
               next = Math.min(
                 lastRowStart + Math.min(col, prevCols - 1),
                 prevSecEnd - 1,
@@ -248,11 +273,12 @@ export default function HomePage({
             }
           }
         }
+
         focusedIndexRef.current = next;
         setFocusedIndex(next);
       } else if (e.key === "Enter" && current !== null) {
         e.preventDefault();
-        router.push(items[current].href);
+        void router.push(items[current].href);
       } else if (e.key === "Escape") {
         if (current !== null) {
           focusedIndexRef.current = null;
@@ -266,14 +292,19 @@ export default function HomePage({
         setFocusedIndex(null);
       }
     }
+
     document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function matchesQuery(name: string, desc: string) {
+  function matchesQuery(name: string, desc: string): boolean {
     if (!query) return true;
     const lower = query.toLowerCase();
+
     return (
       name.toLowerCase().includes(lower) || desc.toLowerCase().includes(lower)
     );
@@ -309,23 +340,27 @@ export default function HomePage({
   );
   const toolsCount = sortedTools.length;
   const expsCount = filteredExperiments.length;
-  navRef.current = {
-    items: [...sortedTools, ...filteredExperiments, ...sortedRefs],
-    toolsCount,
-    expsCount,
-  };
 
-  function toggleTag(tag: Tag) {
+  useEffect(() => {
+    navRef.current = {
+      items: [...sortedTools, ...filteredExperiments, ...sortedRefs],
+      toolsCount,
+      expsCount,
+    };
+  });
+
+  function toggleTag(tag: Tag): void {
     setActiveTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   }
 
-  function toggleRefTag(tag: Tag) {
+  function toggleRefTag(tag: Tag): void {
     setActiveRefTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   }
+
   return (
     <div className={styles.page}>
       <Head>
@@ -384,7 +419,9 @@ export default function HomePage({
             placeholder="Search tools, experiments, references…"
             ref={searchRef}
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+            }}
             autoComplete="off"
             spellCheck={false}
           />
@@ -405,7 +442,9 @@ export default function HomePage({
                       "--tag-color-subtle": TAG_COLORS[tag].subtle,
                     } as React.CSSProperties
                   }
-                  onClick={() => toggleTag(tag)}
+                  onClick={() => {
+                    toggleTag(tag);
+                  }}
                 >
                   {tag}
                 </button>
@@ -458,7 +497,9 @@ export default function HomePage({
                       "--tag-color-subtle": TAG_COLORS[tag].subtle,
                     } as React.CSSProperties
                   }
-                  onClick={() => toggleRefTag(tag)}
+                  onClick={() => {
+                    toggleRefTag(tag);
+                  }}
                 >
                   {tag}
                 </button>
@@ -641,7 +682,7 @@ function ExperimentCard({
   active?: boolean;
   navIndex?: number;
   releaseTags?: string[];
-}) {
+}): React.ReactNode {
   return (
     <div
       className={`${styles.card}${active ? ` ${styles.cardActive}` : ""}`}

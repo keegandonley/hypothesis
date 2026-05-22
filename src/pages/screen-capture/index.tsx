@@ -14,7 +14,7 @@ const FRAME_DOMAINS = ["hypothesis.sh", "conclusion.sh", "observation.sh"];
 const LOREM =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
 
-export default function ScreenCapturePage() {
+export default function ScreenCapturePage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [status, setStatus] = useState<Status>("idle");
@@ -25,12 +25,13 @@ export default function ScreenCapturePage() {
     2,
   );
 
-  async function handleCapture() {
+  async function handleCapture(): Promise<void> {
     setStatus("capturing");
     setErrorMsg("");
     try {
       const blob = await captureTab({ mimeType: "image/png" });
       const url = URL.createObjectURL(blob);
+
       window.open(url, "_blank");
       setStatus("idle");
     } catch (err: unknown) {

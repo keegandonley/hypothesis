@@ -9,9 +9,11 @@ const UUID_RE =
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
+): Promise<void> {
   if (req.method !== "GET") {
-    return res.status(405).end();
+    res.status(405).end();
+
+    return;
   }
 
   const {
@@ -25,15 +27,20 @@ export default async function handler(
   };
 
   if (!deviceId || !UUID_RE.test(deviceId)) {
-    return res.status(400).json({ error: "deviceId must be a valid UUID" });
+    res.status(400).json({ error: "deviceId must be a valid UUID" });
+
+    return;
   }
 
   if (afterParam) {
     const ts = Date.parse(afterParam);
+
     if (isNaN(ts)) {
-      return res
+      res
         .status(400)
         .json({ error: "invalid 'after' parameter — expected ISO 8601 date" });
+
+      return;
     }
   }
 
@@ -45,29 +52,38 @@ export default async function handler(
   );
 
   if (!authorized) {
-    return res.status(403).json({ error: "forbidden" });
+    res.status(403).json({ error: "forbidden" });
+
+    return;
   }
 
   try {
-    const sessionResult = await pool.query(
+    const sessionResult = await pool.query<{ id: string }>(
       "SELECT id FROM sessions WHERE device_id = $1",
       [deviceId],
     );
+
     if (!sessionResult.rows[0]) {
-      return res
-        .status(404)
-        .json({ error: "no session found for this device" });
+      res.status(404).json({ error: "no session found for this device" });
+
+      return;
     }
 
-    const sessionId = sessionResult.rows[0].id as string;
+    const sessionId = sessionResult.rows[0].id;
     const host = req.headers.host ?? "hypothesis.sh";
     const protocol = host.startsWith("localhost") ? "http" : "https";
     const webhookUrl = `${protocol}://${host}/api/webhook/${sessionId}`;
 
     const events = await getEvents({ sessionId, after: afterParam, limit });
-    return res.json({ events, count: events.length, sessionId, webhookUrl });
+
+    res.json({ events, count: events.length, sessionId, webhookUrl });
+
+    return;
   } catch (err) {
     console.error("native events error", err);
-    return res.status(500).json({ error: "internal server error" });
+
+    res.status(500).json({ error: "internal server error" });
+
+    return;
   }
 }

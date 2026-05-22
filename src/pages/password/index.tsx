@@ -1,6 +1,6 @@
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "@/styles/password.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
@@ -21,6 +21,7 @@ function generatePasswords(
   count: number,
 ): string[] {
   let charset = "";
+
   if (upper) charset += UPPER;
   if (lower) charset += LOWER;
   if (digits) charset += DIGITS;
@@ -28,8 +29,10 @@ function generatePasswords(
   if (!charset) return [];
 
   const results: string[] = [];
+
   for (let i = 0; i < count; i++) {
     const arr = new Uint32Array(length);
+
     crypto.getRandomValues(arr);
     results.push(
       Array.from(arr)
@@ -37,10 +40,11 @@ function generatePasswords(
         .join(""),
     );
   }
+
   return results;
 }
 
-export default function PasswordPage() {
+export default function PasswordPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [length, setLength] = useState(20);
@@ -58,11 +62,11 @@ export default function PasswordPage() {
     Map<number | "all", ReturnType<typeof setTimeout>>
   >(new Map());
 
-  const generate = useCallback(() => {
+  const generate = (): void => {
     setPasswords(
       generatePasswords(length, upper, lower, digits, symbols, count),
     );
-  }, [length, upper, lower, digits, symbols, count]);
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -72,7 +76,8 @@ export default function PasswordPage() {
     const d = params.get("digits");
     const s = params.get("symbols");
     const c = params.get("count");
-    if (l) setLength(Number(l));
+
+    if (l) setLength(Number(l)); // eslint-disable-line react-hooks/set-state-in-effect
     if (u !== null) setUpper(u === "1");
     if (lo !== null) setLower(lo === "1");
     if (d !== null) setDigits(d === "1");
@@ -88,7 +93,7 @@ export default function PasswordPage() {
     d: boolean,
     s: boolean,
     c: number,
-  ) {
+  ): void {
     const params = new URLSearchParams({
       len: String(l),
       upper: u ? "1" : "0",
@@ -97,53 +102,64 @@ export default function PasswordPage() {
       symbols: s ? "1" : "0",
       count: String(c),
     });
+
     history.replaceState(null, "", `?${params}`);
     setUrl(window.location.href);
   }
 
-  function setLengthAndSync(v: number) {
+  function setLengthAndSync(v: number): void {
     setLength(v);
     updateUrl(v, upper, lower, digits, symbols, count);
   }
-  function setUpperAndSync(v: boolean) {
+
+  function setUpperAndSync(v: boolean): void {
     setUpper(v);
     updateUrl(length, v, lower, digits, symbols, count);
   }
-  function setLowerAndSync(v: boolean) {
+
+  function setLowerAndSync(v: boolean): void {
     setLower(v);
     updateUrl(length, upper, v, digits, symbols, count);
   }
-  function setDigitsAndSync(v: boolean) {
+
+  function setDigitsAndSync(v: boolean): void {
     setDigits(v);
     updateUrl(length, upper, lower, v, symbols, count);
   }
-  function setSymbolsAndSync(v: boolean) {
+
+  function setSymbolsAndSync(v: boolean): void {
     setSymbols(v);
     updateUrl(length, upper, lower, digits, v, count);
   }
-  function setCountAndSync(v: number) {
+
+  function setCountAndSync(v: number): void {
     setCount(v);
     updateUrl(length, upper, lower, digits, symbols, v);
   }
 
-  function handleCopy(value: string, idx: number) {
-    copyToClipboard(value);
+  function handleCopy(value: string, idx: number): void {
+    void copyToClipboard(value);
     setCopiedIdx(idx);
     const prev = copyTimeouts.current.get(idx);
+
     if (prev) clearTimeout(prev);
-    const t = setTimeout(
-      () => setCopiedIdx((c) => (c === idx ? null : c)),
-      1500,
-    );
+    const t = setTimeout(() => {
+      setCopiedIdx((c) => (c === idx ? null : c));
+    }, 1500);
+
     copyTimeouts.current.set(idx, t);
   }
 
-  function handleCopyAll() {
-    copyToClipboard(passwords.join("\n"));
+  function handleCopyAll(): void {
+    void copyToClipboard(passwords.join("\n"));
     setCopiedAll(true);
     const prev = copyTimeouts.current.get("all");
+
     if (prev) clearTimeout(prev);
-    const t = setTimeout(() => setCopiedAll(false), 1500);
+    const t = setTimeout(() => {
+      setCopiedAll(false);
+    }, 1500);
+
     copyTimeouts.current.set("all", t);
   }
 
@@ -196,7 +212,9 @@ export default function PasswordPage() {
             min={4}
             max={128}
             value={length}
-            onChange={(e) => setLengthAndSync(Number(e.target.value))}
+            onChange={(e) => {
+              setLengthAndSync(Number(e.target.value));
+            }}
           />
           <span className={styles.sliderValue}>{length}</span>
         </div>
@@ -208,7 +226,9 @@ export default function PasswordPage() {
               <input
                 type="checkbox"
                 checked={upper}
-                onChange={(e) => setUpperAndSync(e.target.checked)}
+                onChange={(e) => {
+                  setUpperAndSync(e.target.checked);
+                }}
               />
               A–Z
             </label>
@@ -216,7 +236,9 @@ export default function PasswordPage() {
               <input
                 type="checkbox"
                 checked={lower}
-                onChange={(e) => setLowerAndSync(e.target.checked)}
+                onChange={(e) => {
+                  setLowerAndSync(e.target.checked);
+                }}
               />
               a–z
             </label>
@@ -224,7 +246,9 @@ export default function PasswordPage() {
               <input
                 type="checkbox"
                 checked={digits}
-                onChange={(e) => setDigitsAndSync(e.target.checked)}
+                onChange={(e) => {
+                  setDigitsAndSync(e.target.checked);
+                }}
               />
               0–9
             </label>
@@ -232,7 +256,9 @@ export default function PasswordPage() {
               <input
                 type="checkbox"
                 checked={symbols}
-                onChange={(e) => setSymbolsAndSync(e.target.checked)}
+                onChange={(e) => {
+                  setSymbolsAndSync(e.target.checked);
+                }}
               />
               symbols
             </label>
@@ -244,14 +270,18 @@ export default function PasswordPage() {
           <div className={styles.countGroup}>
             <button
               className={styles.countBtn}
-              onClick={() => setCountAndSync(Math.max(1, count - 1))}
+              onClick={() => {
+                setCountAndSync(Math.max(1, count - 1));
+              }}
             >
               −
             </button>
             <span className={styles.countValue}>{count}</span>
             <button
               className={styles.countBtn}
-              onClick={() => setCountAndSync(Math.min(20, count + 1))}
+              onClick={() => {
+                setCountAndSync(Math.min(20, count + 1));
+              }}
             >
               +
             </button>
@@ -279,7 +309,9 @@ export default function PasswordPage() {
               {!isIframe && (
                 <button
                   className={`${styles.copyBtn} ${copiedIdx === idx ? styles.copied : ""}`}
-                  onClick={() => handleCopy(pw, idx)}
+                  onClick={() => {
+                    handleCopy(pw, idx);
+                  }}
                 >
                   {copiedIdx === idx ? "Copied!" : "Copy"}
                 </button>
@@ -298,9 +330,11 @@ export default function PasswordPage() {
           <button
             className={`${styles.copyBtn}${copiedUrl ? ` ${styles.copied}` : ""}`}
             onClick={() => {
-              copyToClipboard(url);
+              void copyToClipboard(url);
               setCopiedUrl(true);
-              setTimeout(() => setCopiedUrl(false), 1500);
+              setTimeout(() => {
+                setCopiedUrl(false);
+              }, 1500);
             }}
           >
             {copiedUrl ? "Copied!" : "Copy"}

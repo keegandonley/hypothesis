@@ -8,7 +8,7 @@ import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
-export default function UrlEncodePage() {
+export default function UrlEncodePage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [decoded, setDecoded] = useState("");
@@ -18,10 +18,12 @@ export default function UrlEncodePage() {
   const [uriMode, setUriMode] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const buildUrl = (dec: string, uri: boolean) => {
+  const buildUrl = (dec: string, uri: boolean): string => {
     if (!dec) return `${window.location.origin}${window.location.pathname}`;
     const params = new URLSearchParams({ value: dec });
+
     if (uri) params.set("mode", "uri");
+
     return `${window.location.origin}${window.location.pathname}?${params}`;
   };
 
@@ -31,60 +33,73 @@ export default function UrlEncodePage() {
     const uriParam = params.get("mode") === "uri";
 
     if (value) {
-      setDecoded(value);
+      setDecoded(value); // eslint-disable-line react-hooks/set-state-in-effect
       const enc = uriParam ? encodeURI(value) : encodeURIComponent(value);
+
       setEncoded(enc);
     }
+
     if (uriParam) setUriMode(true);
     setUrl(window.location.href);
   }, []);
 
-  const handleDecodedChange = (value: string) => {
+  const handleDecodedChange = (value: string): void => {
     setDecoded(value);
     const enc = uriMode ? encodeURI(value) : encodeURIComponent(value);
+
     setEncoded(enc);
     const newUrl = buildUrl(value, uriMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleEncodedChange = (value: string) => {
+  const handleEncodedChange = (value: string): void => {
     setEncoded(value);
     try {
       const dec = decodeURIComponent(value);
+
       setDecoded(dec);
     } catch {
       setDecoded("");
     }
+
     const newUrl = buildUrl(decoded, uriMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleUriToggle = () => {
+  const handleUriToggle = (): void => {
     const next = !uriMode;
+
     setUriMode(next);
     const enc = next ? encodeURI(decoded) : encodeURIComponent(decoded);
+
     setEncoded(enc);
     const newUrl = buildUrl(decoded, next);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setDecoded("");
     setEncoded("");
     setUriMode(false);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
@@ -148,7 +163,9 @@ export default function UrlEncodePage() {
             <textarea
               className={styles.textarea}
               value={decoded}
-              onChange={(e) => handleDecodedChange(e.target.value)}
+              onChange={(e) => {
+                handleDecodedChange(e.target.value);
+              }}
               placeholder="Type or paste text here..."
               spellCheck={false}
             />
@@ -164,7 +181,9 @@ export default function UrlEncodePage() {
             <textarea
               className={styles.textarea}
               value={encoded}
-              onChange={(e) => handleEncodedChange(e.target.value)}
+              onChange={(e) => {
+                handleEncodedChange(e.target.value);
+              }}
               placeholder="Paste encoded string here..."
               spellCheck={false}
             />

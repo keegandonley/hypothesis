@@ -8,7 +8,7 @@ import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { dump, load } from "js-yaml";
 
-export default function JsonYamlPage() {
+export default function JsonYamlPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [json, setJson] = useState("");
@@ -23,11 +23,14 @@ export default function JsonYamlPage() {
     const params = new URLSearchParams(window.location.search);
     const j = params.get("json");
     const y = params.get("yaml");
+
     if (j) {
       const decoded = decodeURIComponent(j);
-      setJson(decoded);
+
+      setJson(decoded); // eslint-disable-line react-hooks/set-state-in-effect
       try {
-        const parsed = JSON.parse(decoded);
+        const parsed: unknown = JSON.parse(decoded);
+
         setYaml(dump(parsed, { indent: 2 }).trimEnd());
         setJsonError(false);
       } catch {
@@ -35,33 +38,40 @@ export default function JsonYamlPage() {
       }
     } else if (y) {
       const decoded = decodeURIComponent(y);
+
       setYaml(decoded);
       try {
-        const parsed = load(decoded);
+        const parsed: unknown = load(decoded);
+
         setJson(JSON.stringify(parsed, null, 2));
         setYamlError(false);
       } catch {
         setYamlError(true);
       }
     }
+
     setUrl(window.location.href);
   }, []);
 
-  function handleJsonChange(value: string) {
+  function handleJsonChange(value: string): void {
     setJson(value);
     if (!value.trim()) {
       setYaml("");
       setJsonError(false);
       history.replaceState(null, "", window.location.pathname);
       setUrl(window.location.href);
+
       return;
     }
+
     try {
-      const parsed = JSON.parse(value);
+      const parsed: unknown = JSON.parse(value);
       const yamlOut = dump(parsed, { indent: 2 }).trimEnd();
+
       setYaml(yamlOut);
       setJsonError(false);
       const params = new URLSearchParams({ json: encodeURIComponent(value) });
+
       history.replaceState(null, "", `?${params}`);
       setUrl(window.location.href);
     } catch {
@@ -69,21 +79,25 @@ export default function JsonYamlPage() {
     }
   }
 
-  function handleYamlChange(value: string) {
+  function handleYamlChange(value: string): void {
     setYaml(value);
     if (!value.trim()) {
       setJson("");
       setYamlError(false);
       history.replaceState(null, "", window.location.pathname);
       setUrl(window.location.href);
+
       return;
     }
+
     try {
-      const parsed = load(value);
+      const parsed: unknown = load(value);
       const jsonOut = JSON.stringify(parsed, null, 2);
+
       setJson(jsonOut);
       setYamlError(false);
       const params = new URLSearchParams({ yaml: encodeURIComponent(value) });
+
       history.replaceState(null, "", `?${params}`);
       setUrl(window.location.href);
     } catch {
@@ -91,11 +105,13 @@ export default function JsonYamlPage() {
     }
   }
 
-  function handleCopy() {
-    copyToClipboard(url);
+  function handleCopy(): void {
+    void copyToClipboard(url);
     setCopied(true);
     if (copyTimeout.current) clearTimeout(copyTimeout.current);
-    copyTimeout.current = setTimeout(() => setCopied(false), 1500);
+    copyTimeout.current = setTimeout(() => {
+      setCopied(false);
+    }, 1500);
   }
 
   return (
@@ -147,7 +163,9 @@ export default function JsonYamlPage() {
             <textarea
               className={styles.textarea}
               value={json}
-              onChange={(e) => handleJsonChange(e.target.value)}
+              onChange={(e) => {
+                handleJsonChange(e.target.value);
+              }}
               placeholder='{"key": "value"}'
               autoComplete="off"
               spellCheck={false}
@@ -166,7 +184,9 @@ export default function JsonYamlPage() {
             <textarea
               className={styles.textarea}
               value={yaml}
-              onChange={(e) => handleYamlChange(e.target.value)}
+              onChange={(e) => {
+                handleYamlChange(e.target.value);
+              }}
               placeholder="key: value"
               autoComplete="off"
               spellCheck={false}

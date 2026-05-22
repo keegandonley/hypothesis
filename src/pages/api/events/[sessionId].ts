@@ -5,9 +5,11 @@ import { getEvents } from "@/lib/events";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
+): Promise<void> {
   if (req.method !== "GET") {
-    return res.status(405).json({ error: "method not allowed" });
+    res.status(405).json({ error: "method not allowed" });
+
+    return;
   }
 
   const {
@@ -22,16 +24,22 @@ export default async function handler(
 
   const UUID_RE =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
   if (!UUID_RE.test(sessionId)) {
-    return res.status(404).json({ error: "session not found" });
+    res.status(404).json({ error: "session not found" });
+
+    return;
   }
 
   if (afterParam) {
     const ts = Date.parse(afterParam);
+
     if (isNaN(ts)) {
-      return res
+      res
         .status(400)
         .json({ error: "invalid 'after' parameter — expected ISO 8601 date" });
+
+      return;
     }
   }
 
@@ -39,8 +47,11 @@ export default async function handler(
 
   try {
     const session = await getSession(sessionId);
+
     if (!session) {
-      return res.status(404).json({ error: "session not found" });
+      res.status(404).json({ error: "session not found" });
+
+      return;
     }
 
     const events = await getEvents({
@@ -48,9 +59,15 @@ export default async function handler(
       after: afterParam,
       limit,
     });
-    return res.json({ events, count: events.length });
+
+    res.json({ events, count: events.length });
+
+    return;
   } catch (err) {
     console.error("events error", err);
-    return res.status(500).json({ error: "internal server error" });
+
+    res.status(500).json({ error: "internal server error" });
+
+    return;
   }
 }

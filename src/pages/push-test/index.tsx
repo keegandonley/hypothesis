@@ -13,7 +13,7 @@ type Result =
   | { status: "ok"; apnsId?: string }
   | { status: "error"; message: string };
 
-export default function PushTestPage() {
+export default function PushTestPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [deviceId, setDeviceId] = useState("");
@@ -36,11 +36,13 @@ export default function PushTestPage() {
   const curlGetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    setOrigin(window.location.origin);
+    setOrigin(window.location.origin); // eslint-disable-line react-hooks/set-state-in-effect
     const stored = localStorage.getItem(DEVICE_ID_LS_KEY);
+
     if (stored) setDeviceId(stored);
 
     const params = new URLSearchParams(window.location.search);
+
     if (params.has("dev")) {
       setShowSandbox(true);
     }
@@ -49,8 +51,10 @@ export default function PushTestPage() {
   useEffect(() => {
     if (!didMount.current) {
       didMount.current = true;
+
       return;
     }
+
     if (deviceId) {
       localStorage.setItem(DEVICE_ID_LS_KEY, deviceId);
     } else {
@@ -58,17 +62,19 @@ export default function PushTestPage() {
     }
   }, [deviceId]);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent): Promise<void> {
     e.preventDefault();
     setValidationError(null);
     setResult(null);
 
-    let parsedData: object | undefined;
+    let parsedData: Record<string, unknown> | undefined;
+
     if (data.trim()) {
       try {
-        parsedData = JSON.parse(data.trim());
+        parsedData = JSON.parse(data.trim()) as Record<string, unknown>;
       } catch {
         setValidationError("Data field is not valid JSON");
+
         return;
       }
     }
@@ -78,13 +84,16 @@ export default function PushTestPage() {
       title: title.trim(),
       body: body.trim(),
     };
+
     if (showSandbox || sandbox) payload.sandbox = sandbox;
     if (subtitle.trim()) payload.subtitle = subtitle.trim();
     if (sound.trim()) payload.sound = sound.trim();
     if (badge.trim()) {
       const b = parseInt(badge, 10);
+
       if (!isNaN(b) && b >= 0) payload.badge = b;
     }
+
     if (parsedData) payload.data = parsedData;
 
     setLoading(true);
@@ -95,19 +104,24 @@ export default function PushTestPage() {
         body: JSON.stringify(payload),
       });
 
-      const json = await res.json();
+      const json = (await res.json()) as Record<string, unknown>;
 
       if (!res.ok) {
-        setResult({ status: "error", message: json.error ?? "Unknown error" });
+        setResult({
+          status: "error",
+          message: (json.error as string) ?? "Unknown error",
+        });
+
         return;
       }
 
       if (json.ok) {
-        setResult({ status: "ok", apnsId: json.apnsId });
+        setResult({ status: "ok", apnsId: json.apnsId as string | undefined });
       } else {
         setResult({
           status: "error",
-          message: json.error ?? `APNs error ${json.statusCode}`,
+          message:
+            (json.error as string) ?? `APNs error ${String(json.statusCode)}`,
         });
       }
     } catch {
@@ -123,30 +137,36 @@ export default function PushTestPage() {
       title: title.trim(),
       body: body.trim(),
     };
+
     if (showSandbox || sandbox) payload.sandbox = sandbox;
     if (subtitle.trim()) payload.subtitle = subtitle.trim();
     if (sound.trim()) payload.sound = sound.trim();
     if (badge.trim()) {
       const b = parseInt(badge, 10);
+
       if (!isNaN(b) && b >= 0) payload.badge = b;
     }
+
     if (data.trim()) {
       try {
-        payload.data = JSON.parse(data.trim());
+        payload.data = JSON.parse(data.trim()) as Record<string, unknown>;
       } catch {
         // omit invalid data
       }
     }
+
     return payload;
   }
 
   function buildCurl(): string {
     const payload = buildCurlPayload();
+
     return `curl -X POST ${origin}/api/push/send \\\n  -H "Content-Type: application/json" \\\n  -d '${JSON.stringify(payload)}'`;
   }
 
   function buildCurlGet(): string {
     const params = new URLSearchParams();
+
     params.set("deviceId", deviceId.trim());
     params.set("title", title.trim());
     params.set("body", body.trim());
@@ -155,8 +175,10 @@ export default function PushTestPage() {
     if (sound.trim()) params.set("sound", sound.trim());
     if (badge.trim()) {
       const b = parseInt(badge, 10);
+
       if (!isNaN(b) && b >= 0) params.set("badge", String(b));
     }
+
     if (data.trim()) {
       try {
         JSON.parse(data.trim());
@@ -165,27 +187,29 @@ export default function PushTestPage() {
         // omit invalid data
       }
     }
+
     return `curl "${origin}/api/push/send?${params.toString()}"`;
   }
 
   const canCopy = !!deviceId.trim() && !!title.trim() && !!body.trim();
 
-  function handleCopyCurl() {
-    copyToClipboard(buildCurl()).then(() => {
+  function handleCopyCurl(): void {
+    void copyToClipboard(buildCurl()).then(() => {
       setCurlCopied(true);
       if (curlTimeoutRef.current) clearTimeout(curlTimeoutRef.current);
-      curlTimeoutRef.current = setTimeout(() => setCurlCopied(false), 1500);
+      curlTimeoutRef.current = setTimeout(() => {
+        setCurlCopied(false);
+      }, 1500);
     });
   }
 
-  function handleCopyCurlGet() {
-    copyToClipboard(buildCurlGet()).then(() => {
+  function handleCopyCurlGet(): void {
+    void copyToClipboard(buildCurlGet()).then(() => {
       setCurlGetCopied(true);
       if (curlGetTimeoutRef.current) clearTimeout(curlGetTimeoutRef.current);
-      curlGetTimeoutRef.current = setTimeout(
-        () => setCurlGetCopied(false),
-        1500,
-      );
+      curlGetTimeoutRef.current = setTimeout(() => {
+        setCurlGetCopied(false);
+      }, 1500);
     });
   }
 
@@ -242,7 +266,9 @@ export default function PushTestPage() {
                   className={styles.input}
                   type="text"
                   value={deviceId}
-                  onChange={(e) => setDeviceId(e.target.value)}
+                  onChange={(e) => {
+                    setDeviceId(e.target.value);
+                  }}
                   placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                   spellCheck={false}
                   required
@@ -257,7 +283,9 @@ export default function PushTestPage() {
                   className={styles.input}
                   type="text"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                  }}
                   placeholder="Notification title"
                   required
                 />
@@ -271,7 +299,9 @@ export default function PushTestPage() {
                   className={styles.input}
                   type="text"
                   value={body}
-                  onChange={(e) => setBody(e.target.value)}
+                  onChange={(e) => {
+                    setBody(e.target.value);
+                  }}
                   placeholder="Notification body"
                   required
                 />
@@ -285,7 +315,9 @@ export default function PushTestPage() {
                   className={styles.input}
                   type="text"
                   value={subtitle}
-                  onChange={(e) => setSubtitle(e.target.value)}
+                  onChange={(e) => {
+                    setSubtitle(e.target.value);
+                  }}
                   placeholder="Second line under title"
                 />
               </div>
@@ -299,7 +331,9 @@ export default function PushTestPage() {
                     className={styles.input}
                     type="text"
                     value={sound}
-                    onChange={(e) => setSound(e.target.value)}
+                    onChange={(e) => {
+                      setSound(e.target.value);
+                    }}
                     placeholder="default"
                   />
                 </div>
@@ -313,7 +347,9 @@ export default function PushTestPage() {
                     type="number"
                     min={0}
                     value={badge}
-                    onChange={(e) => setBadge(e.target.value)}
+                    onChange={(e) => {
+                      setBadge(e.target.value);
+                    }}
                     placeholder="0"
                   />
                 </div>
@@ -326,7 +362,9 @@ export default function PushTestPage() {
                   id="data"
                   className={styles.textarea}
                   value={data}
-                  onChange={(e) => setData(e.target.value)}
+                  onChange={(e) => {
+                    setData(e.target.value);
+                  }}
                   placeholder='{ "key": "value" }'
                   spellCheck={false}
                 />
@@ -337,7 +375,9 @@ export default function PushTestPage() {
                     <input
                       type="checkbox"
                       checked={sandbox}
-                      onChange={(e) => setSandbox(e.target.checked)}
+                      onChange={(e) => {
+                        setSandbox(e.target.checked);
+                      }}
                       className={styles.checkbox}
                     />
                     Sandbox

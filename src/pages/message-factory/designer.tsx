@@ -19,19 +19,27 @@ function encodeActions(actions: Action[]): string {
     name: a.name,
     payload: (() => {
       try {
-        return JSON.parse(a.payload);
+        return JSON.parse(a.payload) as Record<string, unknown>;
       } catch {
         return {};
       }
     })(),
   }));
+
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   return btoa(unescape(encodeURIComponent(JSON.stringify(clean))));
 }
 
 function decodeActions(raw: string): Action[] {
   try {
-    const parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const parsed = JSON.parse(decodeURIComponent(escape(atob(raw)))) as Record<
+      string,
+      unknown
+    >[];
+
     if (!Array.isArray(parsed)) return [];
+
     return parsed.map((item) => ({
       id: typeof item.id === "string" ? item.id : "",
       name: typeof item.name === "string" ? item.name : "",
@@ -52,18 +60,22 @@ function buildBaseUrl(): string {
 
 function buildUrl(actions: Action[]): string {
   const hasContent = actions.some((a) => a.id || a.name || a.payload !== "{}");
+
   if (!hasContent && actions.length === 0) return buildBaseUrl();
+
   return `${buildBaseUrl()}?actions=${encodeActions(actions)}`;
 }
 
 function buildViewerUrl(actions: Action[]): string {
   const b64 = encodeActions(actions);
+
   return `${window.location.origin}/message-factory/viewer?actions=${b64}`;
 }
 
 function isValidJson(s: string): boolean {
   try {
     JSON.parse(s);
+
     return true;
   } catch {
     return false;
@@ -71,12 +83,14 @@ function isValidJson(s: string): boolean {
 }
 
 let actionIdCounter = 0;
+
 function newAction(): Action & { _key: string } {
   actionIdCounter += 1;
+
   return { _key: String(actionIdCounter), id: "", name: "", payload: "{}" };
 }
 
-export default function DesignerPage() {
+export default function DesignerPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [actions, setActions] = useState<(Action & { _key: string })[]>([]);
@@ -92,11 +106,15 @@ export default function DesignerPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const raw = params.get("actions");
+
     if (raw) {
       const decoded = decodeActions(raw);
+
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActions(
         decoded.map((a) => {
           actionIdCounter += 1;
+
           return { ...a, _key: String(actionIdCounter) };
         }),
       );
@@ -104,61 +122,72 @@ export default function DesignerPage() {
     } else {
       setViewerUrl(`${window.location.origin}/message-factory/viewer`);
     }
+
     setUrl(window.location.href);
   }, []);
 
-  const syncUrl = (next: (Action & { _key: string })[]) => {
+  const syncUrl = (next: (Action & { _key: string })[]): void => {
     const newUrl = buildUrl(next);
+
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
     setViewerUrl(buildViewerUrl(next));
   };
 
-  const handleChange = (key: string, field: keyof Action, value: string) => {
+  const handleChange = (
+    key: string,
+    field: keyof Action,
+    value: string,
+  ): void => {
     const next = actions.map((a) =>
       a._key === key ? { ...a, [field]: value } : a,
     );
+
     setActions(next);
     syncUrl(next);
   };
 
-  const handleAdd = () => {
+  const handleAdd = (): void => {
     const next = [...actions, newAction()];
+
     setActions(next);
     syncUrl(next);
   };
 
-  const handleRemove = (key: string) => {
+  const handleRemove = (key: string): void => {
     const next = actions.filter((a) => a._key !== key);
+
     setActions(next);
     syncUrl(next);
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setActions([]);
     const newUrl = buildBaseUrl();
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
     setViewerUrl(`${window.location.origin}/message-factory/viewer`);
   };
 
-  const handleCopyViewer = () => {
-    copyToClipboard(viewerUrl).then(() => {
+  const handleCopyViewer = (): void => {
+    void copyToClipboard(viewerUrl).then(() => {
       setCopiedViewer(true);
       if (copyViewerTimeoutRef.current)
         clearTimeout(copyViewerTimeoutRef.current);
-      copyViewerTimeoutRef.current = setTimeout(
-        () => setCopiedViewer(false),
-        1500,
-      );
+      copyViewerTimeoutRef.current = setTimeout(() => {
+        setCopiedViewer(false);
+      }, 1500);
     });
   };
 
-  const handleCopy = () => {
-    copyToClipboard(url).then(() => {
+  const handleCopy = (): void => {
+    void copyToClipboard(url).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
@@ -200,7 +229,7 @@ export default function DesignerPage() {
       <div className={styles.actionsList}>
         {actions.length === 0 && (
           <div className={styles.emptyState}>
-            No actions yet. Click "Add Action" to get started.
+            No actions yet. Click &ldquo;Add Action&rdquo; to get started.
           </div>
         )}
         {actions.map((action, idx) => (
@@ -209,7 +238,9 @@ export default function DesignerPage() {
               <span className={styles.actionIndex}>action {idx + 1}</span>
               <button
                 className={styles.removeBtn}
-                onClick={() => handleRemove(action._key)}
+                onClick={() => {
+                  handleRemove(action._key);
+                }}
               >
                 Remove
               </button>
@@ -221,9 +252,9 @@ export default function DesignerPage() {
                   type="text"
                   className={styles.fieldInput}
                   value={action.name}
-                  onChange={(e) =>
-                    handleChange(action._key, "name", e.target.value)
-                  }
+                  onChange={(e) => {
+                    handleChange(action._key, "name", e.target.value);
+                  }}
                   placeholder="Button label"
                   spellCheck={false}
                   autoComplete="off"
@@ -235,9 +266,9 @@ export default function DesignerPage() {
                   type="text"
                   className={styles.fieldInput}
                   value={action.id}
-                  onChange={(e) =>
-                    handleChange(action._key, "id", e.target.value)
-                  }
+                  onChange={(e) => {
+                    handleChange(action._key, "id", e.target.value);
+                  }}
                   placeholder="action-id"
                   spellCheck={false}
                   autoComplete="off"
@@ -253,9 +284,9 @@ export default function DesignerPage() {
                 <textarea
                   className={styles.payloadTextarea}
                   value={action.payload}
-                  onChange={(e) =>
-                    handleChange(action._key, "payload", e.target.value)
-                  }
+                  onChange={(e) => {
+                    handleChange(action._key, "payload", e.target.value);
+                  }}
                   placeholder="{}"
                   spellCheck={false}
                 />

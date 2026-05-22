@@ -4,8 +4,12 @@ import { tools, type ToolItem } from "@/lib/tools";
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<ToolItem[]>,
-) {
-  if (req.method !== "GET") return res.status(405).end();
+): void {
+  if (req.method !== "GET") {
+    res.status(405).end();
+
+    return;
+  }
 
   const raw = req.query.includeMobile;
   const includeMobile = Array.isArray(raw) ? raw : raw ? [raw] : [];

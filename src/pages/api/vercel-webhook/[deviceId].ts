@@ -13,21 +13,26 @@ function readBody(req: NextApiRequest): Promise<string> {
   return new Promise((resolve, reject) => {
     let data = "";
     let byteLength = 0;
+
     req.on("data", (chunk: Buffer) => {
       byteLength += chunk.byteLength;
       if (byteLength > MAX_BODY_BYTES) {
         req.destroy();
         reject(new Error("PAYLOAD_TOO_LARGE"));
+
         return;
       }
-      data += chunk;
+
+      data += chunk.toString();
     });
-    req.on("end", () => resolve(data));
+    req.on("end", () => {
+      resolve(data);
+    });
     req.on("error", reject);
   });
 }
 
-type VercelEvent = {
+interface VercelEvent {
   type: string;
   createdAt: number;
   payload?: {
@@ -38,7 +43,7 @@ type VercelEvent = {
     check?: { name?: string };
     integration?: { name?: string };
   };
-};
+}
 
 function formatNotification(event: VercelEvent): {
   title: string;
@@ -83,51 +88,82 @@ function formatNotification(event: VercelEvent): {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
-  if (req.method !== "POST") return res.status(405).end();
+): Promise<void> {
+  if (req.method !== "POST") {
+    res.status(405).end();
+
+    return;
+  }
 
   const { deviceId } = req.query as { deviceId: string };
 
   let rawBody: string;
+
   try {
     rawBody = await readBody(req);
   } catch (e) {
     if ((e as Error).message === "PAYLOAD_TOO_LARGE") {
-      return res.status(413).json({ error: "payload too large" });
+      res.status(413).json({ error: "payload too large" });
+
+      return;
     }
+
     throw e;
   }
 
   const signature = req.headers["x-vercel-signature"];
+
   if (!signature || typeof signature !== "string") {
-    return res.status(401).json({ error: "missing signature" });
+    res.status(401).json({ error: "missing signature" });
+
+    return;
   }
 
   const secret = process.env.VERCEL_WEBHOOK_SECRET;
+
   if (!secret) {
     console.error("[vercel-webhook] VERCEL_WEBHOOK_SECRET not set");
-    return res.status(500).json({ error: "server misconfiguration" });
+
+    res.status(500).json({ error: "server misconfiguration" });
+
+    return;
   }
 
   const computed = createHmac("sha1", secret).update(rawBody).digest("hex");
   const sigBuf = Buffer.from(signature);
   const computedBuf = Buffer.from(computed);
+
   if (
     sigBuf.length !== computedBuf.length ||
     !timingSafeEqual(sigBuf, computedBuf)
   ) {
-    return res.status(401).json({ error: "invalid signature" });
+    res.status(401).json({ error: "invalid signature" });
+
+    return;
   }
 
   const device = await getPushTokenByDeviceId(deviceId);
-  if (!device) return res.status(404).json({ error: "device not found" });
-  if (!device.token) return res.status(200).end();
+
+  if (!device) {
+    res.status(404).json({ error: "device not found" });
+
+    return;
+  }
+
+  if (!device.token) {
+    res.status(200).end();
+
+    return;
+  }
 
   let event: VercelEvent;
+
   try {
     event = JSON.parse(rawBody) as VercelEvent;
   } catch {
-    return res.status(400).json({ error: "invalid JSON" });
+    res.status(400).json({ error: "invalid JSON" });
+
+    return;
   }
 
   const { title, body } = formatNotification(event);
@@ -155,9 +191,9 @@ export default async function handler(
     data,
     apnsId: result.apnsId ?? null,
     success: result.ok,
-  }).catch((err) =>
-    console.error("[vercel-webhook] failed to record notification", err),
-  );
+  }).catch((err: unknown) => {
+    console.error("[vercel-webhook] failed to record notification", err);
+  });
 
   try {
     await track("Vercel Webhook Received", {
@@ -175,5 +211,5 @@ export default async function handler(
     );
   }
 
-  return res.status(200).json({ ok: true });
+  res.status(200).json({ ok: true });
 }

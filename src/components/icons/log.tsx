@@ -1,4 +1,10 @@
-export function LogIcon({ className }: { className?: string }) {
+import React from "react";
+
+export function LogIcon({
+  className,
+}: {
+  className?: string;
+}): React.ReactNode {
   return (
     <svg
       width="15"

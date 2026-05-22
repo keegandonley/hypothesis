@@ -7,15 +7,19 @@ const EC_LEVELS: ECLevel[] = ["L", "M", "Q", "H"];
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-) {
-  if (req.method !== "GET") return res.status(405).end();
+): Promise<void> {
+  if (req.method !== "GET") {
+    res.status(405).end();
+
+    return;
+  }
 
   const { value, ecl, dark, light } = req.query;
 
   if (!value || typeof value !== "string" || !value.trim()) {
-    return res
-      .status(400)
-      .json({ error: "Missing required query parameter: value" });
+    res.status(400).json({ error: "Missing required query parameter: value" });
+
+    return;
   }
 
   const ecLevel: ECLevel =

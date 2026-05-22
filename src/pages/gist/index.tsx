@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "../../styles/gist.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -11,19 +11,23 @@ const GIST_URL_RE = /^https?:\/\/gist\.github\.com\/[^/]+\/([a-f0-9]+)/i;
 
 function buildApiUrl(url: string, file: string): string {
   const params = new URLSearchParams({ url });
+
   if (file.trim()) params.set("file", file.trim());
+
   return `/api/gist?${params}`;
 }
 
 function buildPageUrl(url: string, file: string): string {
   const params = new URLSearchParams();
+
   if (url) params.set("url", url);
   if (file.trim()) params.set("file", file.trim());
   const qs = params.toString();
+
   return `${window.location.origin}${window.location.pathname}${qs ? `?${qs}` : ""}`;
 }
 
-export default function GistPage() {
+export default function GistPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [url, setUrl] = useState("");
@@ -41,53 +45,58 @@ export default function GistPage() {
     const params = new URLSearchParams(window.location.search);
     const u = params.get("url") ?? "";
     const f = params.get("file") ?? "";
-    setUrl(u);
+
+    setUrl(u); // eslint-disable-line react-hooks/set-state-in-effect
     setFile(f);
     setPageUrl(window.location.href);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleUrlChange = (u: string) => {
+  const handleUrlChange = (u: string): void => {
     setUrl(u);
     const next = buildPageUrl(u, file);
+
     history.replaceState(null, "", next);
     setPageUrl(next);
   };
 
-  const handleFileChange = (f: string) => {
+  const handleFileChange = (f: string): void => {
     setFile(f);
     const next = buildPageUrl(url, f);
+
     history.replaceState(null, "", next);
     setPageUrl(next);
   };
 
-  const handleReload = () => setIframeKey((k) => k + 1);
+  const handleReload = (): void => {
+    setIframeKey((k) => k + 1);
+  };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setUrl("");
     setFile("");
     setIframeKey((k) => k + 1);
     const next = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", next);
     setPageUrl(next);
   };
 
-  const handleCopyPermalink = () => {
-    copyToClipboard(pageUrl).then(() => {
+  const handleCopyPermalink = (): void => {
+    void copyToClipboard(pageUrl).then(() => {
       setPermalinkCopied(true);
       if (permalinkTimeoutRef.current)
         clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(
-        () => setPermalinkCopied(false),
-        1500,
-      );
+      permalinkTimeoutRef.current = setTimeout(() => {
+        setPermalinkCopied(false);
+      }, 1500);
     });
   };
 
-  const handleCopyApiUrl = () => {
+  const handleCopyApiUrl = (): void => {
     if (!isValid) return;
     const apiUrl = `${window.location.origin}${buildApiUrl(url, file)}`;
-    copyToClipboard(apiUrl);
+
+    void copyToClipboard(apiUrl);
   };
 
   return (
@@ -121,8 +130,8 @@ export default function GistPage() {
         </div>
         <h1 className={styles.title}>Gist</h1>
         <p className={styles.tagline}>
-          Serve a public GitHub Gist's raw content via a proxy URL — preview it
-          live
+          Serve a public GitHub Gist&apos;s raw content via a proxy URL —
+          preview it live
         </p>
       </div>
 
@@ -138,7 +147,9 @@ export default function GistPage() {
             className={styles.input}
             type="text"
             value={url}
-            onChange={(e) => handleUrlChange(e.target.value)}
+            onChange={(e) => {
+              handleUrlChange(e.target.value);
+            }}
             placeholder="https://gist.github.com/user/abc123"
             spellCheck={false}
           />
@@ -152,7 +163,9 @@ export default function GistPage() {
             className={styles.input}
             type="text"
             value={file}
-            onChange={(e) => handleFileChange(e.target.value)}
+            onChange={(e) => {
+              handleFileChange(e.target.value);
+            }}
             placeholder="index.html"
             spellCheck={false}
           />

@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
@@ -35,15 +35,17 @@ const DESCRIPTIONS: Record<string, string> = {
     "Uncompressed WAV audio file. Larger than compressed formats; useful for testing raw PCM playback and audio element behavior.",
 };
 
-export default function MediaFilesPage() {
+export default function MediaFilesPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
 
-  function handleCopy(url: string) {
-    copyToClipboard(url);
+  function handleCopy(url: string): void {
+    void copyToClipboard(url);
     setCopiedUrl(url);
-    setTimeout(() => setCopiedUrl(null), 1500);
+    setTimeout(() => {
+      setCopiedUrl(null);
+    }, 1500);
   }
 
   const description =
@@ -99,6 +101,7 @@ export default function MediaFilesPage() {
           <div className={styles.codeList}>
             {MEDIA_FILES.map((file) => {
               const badge = BADGE_STYLES[file.label];
+
               return (
                 <div key={file.filename} className={styles.codeRowFull}>
                   <div className={styles.codeInfo}>
@@ -144,7 +147,9 @@ export default function MediaFilesPage() {
                       </code>
                       {!isIframe && (
                         <button
-                          onClick={() => handleCopy(file.url)}
+                          onClick={() => {
+                            handleCopy(file.url);
+                          }}
                           style={{
                             fontFamily: "var(--font-mono)",
                             fontSize: 10,

@@ -9,12 +9,12 @@ import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import type { WebhookEvent } from "@/lib/events";
 
-type Session = {
+interface Session {
   sessionId: string;
   webhookUrl: string;
   createdAt: string;
   updatedAt: string;
-};
+}
 
 function StatusCard({
   variant = "info",
@@ -24,7 +24,7 @@ function StatusCard({
   variant?: "info" | "error";
   message: string;
   action?: { label: string; onClick: () => void };
-}) {
+}): React.ReactNode {
   return (
     <div
       className={`${styles.statusCard} ${variant === "error" ? styles.statusCardError : ""}`}
@@ -58,12 +58,14 @@ function methodColor(method: string): string {
 
 function relativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
+
   if (diff < 60000) return `${Math.floor(diff / 1000)}s ago`;
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+
   return `${Math.floor(diff / 3600000)}h ago`;
 }
 
-export default function WebhookPage() {
+export default function WebhookPage(): React.ReactNode {
   const router = useRouter();
   const branding = useBranding();
   const isIframe = useIsIframe();
@@ -89,21 +91,22 @@ export default function WebhookPage() {
   const lastEventReceivedAtRef = useRef<number>(Date.now());
   const currentSessionIdRef = useRef<string | null>(null);
 
-  async function fetchEvents(sessionId: string) {
+  async function fetchEvents(sessionId: string): Promise<void> {
     const cursor = latestReceivedAtRef.current;
     const url = `/api/events/${sessionId}?limit=50${cursor ? `&after=${encodeURIComponent(cursor)}` : ""}`;
     const res = await fetch(url);
+
     if (!res.ok || sessionId !== currentSessionIdRef.current) return;
-    const data = await res.json();
+    const data = (await res.json()) as { events: WebhookEvent[] };
+
     if (sessionId !== currentSessionIdRef.current) return;
     if (data.events.length > 0) {
       latestReceivedAtRef.current = data.events[0].receivedAt;
       lastEventReceivedAtRef.current = Date.now();
       setEvents((prev) => {
         const existingIds = new Set(prev.map((e) => e.id));
-        const newEvents = data.events.filter(
-          (e: WebhookEvent) => !existingIds.has(e.id),
-        );
+        const newEvents = data.events.filter((e) => !existingIds.has(e.id));
+
         return newEvents.length > 0 ? [...newEvents, ...prev] : prev;
       });
     }
@@ -115,7 +118,7 @@ export default function WebhookPage() {
       skipLocalStorage = false,
       fromLocalStorage = false,
     }: { skipLocalStorage?: boolean; fromLocalStorage?: boolean } = {},
-  ) {
+  ): void {
     if (intervalRef.current) clearInterval(intervalRef.current);
     if (heartbeatRef.current) clearInterval(heartbeatRef.current);
     if (idleCheckRef.current) clearInterval(idleCheckRef.current);
@@ -129,52 +132,61 @@ export default function WebhookPage() {
     setEvents([]);
     setSelectedEvent(null);
 
-    fetch("/api/session", {
+    void fetch("/api/session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: sessionId ? JSON.stringify({ sessionId }) : "{}",
     })
       .then(async (r) => {
-        const data = await r.json();
+        const data = (await r.json()) as Session & { error?: string };
+
         if (r.status === 429) {
           setErrorMessage(data.error ?? "rate limit exceeded");
           setStatus("ready");
+
           return;
         }
+
         if (r.status === 404) {
           if (fromLocalStorage) {
             localStorage.removeItem("webhookSessionId");
             startSession();
+
             return;
           }
+
           setStatus("deleted");
+
           return;
         }
+
         if (!r.ok) {
           setErrorMessage(data.error ?? "unknown error");
           setStatus("error");
+
           return;
         }
+
         return data;
       })
-      .then((data) => {
+      .then((data: (Session & { error?: string }) | undefined) => {
         if (!data) return;
         currentSessionIdRef.current = data.sessionId;
         if (!skipLocalStorage) {
           localStorage.setItem("webhookSessionId", data.sessionId);
-          router.replace({ query: { s: data.sessionId } }, undefined, {
+          void router.replace({ query: { s: data.sessionId } }, undefined, {
             shallow: true,
           });
         }
+
         setSession(data);
         setStatus("ready");
-        fetchEvents(data.sessionId);
-        intervalRef.current = setInterval(
-          () => fetchEvents(data.sessionId),
-          2500,
-        );
+        void fetchEvents(data.sessionId);
+        intervalRef.current = setInterval(() => {
+          void fetchEvents(data.sessionId);
+        }, 2500);
         heartbeatRef.current = setInterval(() => {
-          fetch("/api/session", {
+          void fetch("/api/session", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ sessionId: data.sessionId }),
@@ -182,13 +194,17 @@ export default function WebhookPage() {
         }, 60_000);
         idleCheckRef.current = setInterval(() => {
           if (Date.now() - lastEventReceivedAtRef.current > 30 * 60 * 1000) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             clearInterval(intervalRef.current!);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             clearInterval(idleCheckRef.current!);
             setStatus("idle");
           }
         }, 60_000);
       })
-      .catch(() => setStatus("error"));
+      .catch(() => {
+        setStatus("error");
+      });
   }
 
   useEffect(() => {
@@ -209,20 +225,24 @@ export default function WebhookPage() {
       if (heartbeatRef.current) clearInterval(heartbeatRef.current);
       if (idleCheckRef.current) clearInterval(idleCheckRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function buildCurlCommand(method: string, url: string): string {
     const hasBody = ["POST", "PUT", "PATCH"].includes(method.toUpperCase());
+
     if (hasBody) {
       return `curl -X ${method.toUpperCase()} ${url} \\\n  -H "Content-Type: application/json" \\\n  -d '{"hello":"world"}'`;
     }
+
     return `curl -X ${method.toUpperCase()} ${url}`;
   }
 
-  const handleSendRequest = () => {
+  const handleSendRequest = (): void => {
     if (!session || sendState === "sending") return;
     setSendState("sending");
     const hasBody = ["POST", "PUT", "PATCH"].includes(curlMethod.toUpperCase());
+
     fetch(session.webhookUrl, {
       method: curlMethod,
       credentials: "omit",
@@ -233,26 +253,39 @@ export default function WebhookPage() {
           }
         : {}),
     })
-      .then((r) => setSendState(r.ok ? "sent" : "error"))
-      .catch(() => setSendState("error"))
-      .finally(() => setTimeout(() => setSendState("idle"), 2000));
+      .then((r) => {
+        setSendState(r.ok ? "sent" : "error");
+      })
+      .catch(() => {
+        setSendState("error");
+      })
+      .finally(() =>
+        setTimeout(() => {
+          setSendState("idle");
+        }, 2000),
+      );
   };
 
-  const handleCurlCopy = () => {
+  const handleCurlCopy = (): void => {
     const url = session?.webhookUrl ?? "";
-    copyToClipboard(buildCurlCommand(curlMethod, url)).then(() => {
+
+    void copyToClipboard(buildCurlCommand(curlMethod, url)).then(() => {
       setCurlCopied(true);
       if (curlCopyTimeoutRef.current) clearTimeout(curlCopyTimeoutRef.current);
-      curlCopyTimeoutRef.current = setTimeout(() => setCurlCopied(false), 1500);
+      curlCopyTimeoutRef.current = setTimeout(() => {
+        setCurlCopied(false);
+      }, 1500);
     });
   };
 
-  const handleCopy = () => {
+  const handleCopy = (): void => {
     if (!session) return;
-    copyToClipboard(session.webhookUrl).then(() => {
+    void copyToClipboard(session.webhookUrl).then(() => {
       setCopied(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     });
   };
 
@@ -308,7 +341,9 @@ export default function WebhookPage() {
           message="session has expired"
           action={{
             label: "Generate new session",
-            onClick: () => startSession(),
+            onClick: () => {
+              startSession();
+            },
           }}
         />
       )}
@@ -326,7 +361,9 @@ export default function WebhookPage() {
                 <div style={{ display: "flex", gap: "6px" }}>
                   <button
                     className={styles.copyBtn}
-                    onClick={() => startSession()}
+                    onClick={() => {
+                      startSession();
+                    }}
                   >
                     New session
                   </button>
@@ -361,7 +398,9 @@ export default function WebhookPage() {
                             } as React.CSSProperties)
                           : undefined
                       }
-                      onClick={() => setCurlMethod(m)}
+                      onClick={() => {
+                        setCurlMethod(m);
+                      }}
                     >
                       {m}
                     </button>
@@ -409,11 +448,11 @@ export default function WebhookPage() {
                   <div
                     key={event.id}
                     className={`${styles.eventRow}${selectedEvent?.id === event.id ? ` ${styles.selected}` : ""}`}
-                    onClick={() =>
+                    onClick={() => {
                       setSelectedEvent(
                         selectedEvent?.id === event.id ? null : event,
-                      )
-                    }
+                      );
+                    }}
                   >
                     <span
                       className={styles.methodBadge}
@@ -467,7 +506,9 @@ export default function WebhookPage() {
                 </p>
                 <button
                   className={styles.idleAction}
-                  onClick={() => startSession(session.sessionId)}
+                  onClick={() => {
+                    startSession(session.sessionId);
+                  }}
                 >
                   Re-activate session
                 </button>
