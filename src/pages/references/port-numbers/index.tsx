@@ -10,7 +10,11 @@ export const getStaticProps: GetStaticProps = () => ({
   props: { groups: PORT_GROUPS },
 });
 
-export default function PortNumbersPage({ groups }: { groups: typeof PORT_GROUPS }) {
+export default function PortNumbersPage({
+  groups,
+}: {
+  groups: typeof PORT_GROUPS;
+}) {
   const branding = useBranding();
   const [search, setSearch] = useState("");
   const [activeGroup, setActiveGroup] = useState("all");
@@ -44,19 +48,22 @@ export default function PortNumbersPage({ groups }: { groups: typeof PORT_GROUPS
 
   const filteredSections = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return groups.map((group) => {
-      const ports = group.ports.filter((p) => {
-        if (activeGroup !== "all" && activeGroup !== group.id) return false;
-        if (!q) return true;
-        return (
-          String(p.port).includes(q) ||
-          p.service.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q) ||
-          p.protocol.toLowerCase().includes(q)
-        );
-      });
-      return { ...group, ports };
-    }).filter((g) => g.ports.length > 0);
+    return groups
+      .map((group) => {
+        const ports = group.ports.filter((p) => {
+          if (activeGroup !== "all" && activeGroup !== group.id) return false;
+          if (!q) return true;
+          return (
+            String(p.port).includes(q) ||
+            p.service.toLowerCase().includes(q) ||
+            p.description.toLowerCase().includes(q) ||
+            p.protocol.toLowerCase().includes(q)
+          );
+        });
+
+        return { ...group, ports };
+      })
+      .filter((g) => g.ports.length > 0);
   }, [search, activeGroup]);
 
   return (
@@ -194,14 +201,23 @@ export default function PortNumbersPage({ groups }: { groups: typeof PORT_GROUPS
                       >
                         <span className={styles.codeBadge}>{port.port}</span>
                         <div className={styles.codeInfo}>
-                          <span className={styles.codeName}>{port.service}</span>
+                          <span className={styles.codeName}>
+                            {port.service}
+                          </span>
                           <div className={styles.flagRow}>
                             <span className={styles.codeDesc}>
                               {port.description}
                             </span>
                           </div>
                           <div className={styles.flagRow}>
-                            <span className={styles.flagBadge} style={{ color: group.color, backgroundColor: group.subtle, borderColor: group.border }}>
+                            <span
+                              className={styles.flagBadge}
+                              style={{
+                                color: group.color,
+                                backgroundColor: group.subtle,
+                                borderColor: group.border,
+                              }}
+                            >
                               {port.protocol}
                             </span>
                           </div>
