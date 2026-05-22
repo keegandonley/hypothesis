@@ -512,7 +512,11 @@ export default function ColorPage(): React.ReactNode {
           spellCheck={false}
         />
         {supportsEyeDropper && !isIframe && (
-          <button className={styles.eyeDropperBtn} onClick={handleEyeDropper} title="Pick a color from anywhere on screen">
+          <button
+            className={styles.eyeDropperBtn}
+            onClick={handleEyeDropper}
+            title="Pick a color from anywhere on screen"
+          >
             Eyedropper
           </button>
         )}

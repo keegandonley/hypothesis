@@ -256,7 +256,8 @@ export default function HashPage() {
         </div>
         <h1 className={styles.title}>Hash Generator</h1>
         <p className={styles.tagline}>
-          Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text or file
+          Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any
+          text or file
         </p>
       </div>
 
@@ -292,7 +293,10 @@ export default function HashPage() {
           <div
             className={`${styles.dropZone}${isDragging ? ` ${styles.dropZoneDragging}` : ""}`}
             onClick={() => fileInputRef.current?.click()}
-            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDragging(true);
+            }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={(e) => {
               e.preventDefault();
@@ -304,10 +308,14 @@ export default function HashPage() {
             {fileName ? (
               <div className={styles.fileInfo}>
                 <span className={styles.fileName}>{fileName}</span>
-                <span className={styles.fileSizeLabel}>{formatBytes(fileSize!)}</span>
+                <span className={styles.fileSizeLabel}>
+                  {formatBytes(fileSize!)}
+                </span>
               </div>
             ) : (
-              <span className={styles.dropZoneHint}>Drop a file here or click to browse</span>
+              <span className={styles.dropZoneHint}>
+                Drop a file here or click to browse
+              </span>
             )}
             <input
               ref={fileInputRef}
@@ -352,7 +360,11 @@ export default function HashPage() {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row style={mode === "file" ? { display: "none" } : undefined}>
+      <div
+        className={styles.permalinkRow}
+        data-permalink-row
+        style={mode === "file" ? { display: "none" } : undefined}
+      >
         <span className={styles.fieldLabel}>Permalink</span>
         <span className={styles.permalinkUrl}>{url}</span>
         {!isIframe && (

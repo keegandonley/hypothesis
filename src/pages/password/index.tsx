@@ -15,15 +15,25 @@ const SYMBOLS = "!@#$%^&*()-_=+[]{}|;:,.<>?";
 type Strength = "very-weak" | "weak" | "fair" | "strong" | "very-strong";
 
 const STRENGTH_FILL: Record<Strength, number> = {
-  "very-weak": 1, "weak": 2, "fair": 3, "strong": 4, "very-strong": 5,
+  "very-weak": 1,
+  weak: 2,
+  fair: 3,
+  strong: 4,
+  "very-strong": 5,
 };
 const STRENGTH_COLORS: Record<Strength, string> = {
-  "very-weak": "#ef4444", "weak": "#f97316", "fair": "#eab308",
-  "strong": "#84cc16", "very-strong": "#22c55e",
+  "very-weak": "#ef4444",
+  weak: "#f97316",
+  fair: "#eab308",
+  strong: "#84cc16",
+  "very-strong": "#22c55e",
 };
 const STRENGTH_LABELS: Record<Strength, string> = {
-  "very-weak": "Very Weak", "weak": "Weak", "fair": "Fair",
-  "strong": "Strong", "very-strong": "Very Strong",
+  "very-weak": "Very Weak",
+  weak: "Weak",
+  fair: "Fair",
+  strong: "Strong",
+  "very-strong": "Very Strong",
 };
 
 function formatCrackTime(entropy: number): string {
@@ -37,7 +47,8 @@ function formatCrackTime(entropy: number): string {
   if (seconds < 2592000) return `${Math.round(seconds / 86400)} days`;
   if (seconds < 31536000) return `${Math.round(seconds / 2592000)} months`;
   if (seconds < 3153600000) return `${Math.round(seconds / 31536000)} years`;
-  if (seconds < 3.154e13) return `${Math.round(seconds / 3153600000)} centuries`;
+  if (seconds < 3.154e13)
+    return `${Math.round(seconds / 3153600000)} centuries`;
   return "effectively uncrackable";
 }
 
@@ -53,11 +64,25 @@ function analyzePassword(pw: string) {
   if (hasSymbols) charsetSize += 32;
   const entropy = charsetSize > 0 ? pw.length * Math.log2(charsetSize) : 0;
   const strength: Strength =
-    entropy < 28 ? "very-weak" :
-    entropy < 36 ? "weak" :
-    entropy < 60 ? "fair" :
-    entropy < 128 ? "strong" : "very-strong";
-  return { entropy, length: pw.length, hasUpper, hasLower, hasDigits, hasSymbols, strength, crackTime: formatCrackTime(entropy) };
+    entropy < 28
+      ? "very-weak"
+      : entropy < 36
+        ? "weak"
+        : entropy < 60
+          ? "fair"
+          : entropy < 128
+            ? "strong"
+            : "very-strong";
+  return {
+    entropy,
+    length: pw.length,
+    hasUpper,
+    hasLower,
+    hasDigits,
+    hasSymbols,
+    strength,
+    crackTime: formatCrackTime(entropy),
+  };
 }
 
 function generatePasswords(
@@ -81,7 +106,11 @@ function generatePasswords(
     const arr = new Uint32Array(length);
 
     crypto.getRandomValues(arr);
-    results.push(Array.from(arr).map((n) => charset[n % charset.length]).join(""));
+    results.push(
+      Array.from(arr)
+        .map((n) => charset[n % charset.length])
+        .join(""),
+    );
   }
 
   return results;
@@ -117,13 +146,26 @@ export default function PasswordPage(): React.ReactNode {
   const analysis = checkInput ? analyzePassword(checkInput) : null;
 
   const generate = useCallback(() => {
-    setPasswords(generatePasswords(length, upper, lower, digits, symbols, count));
+    setPasswords(
+      generatePasswords(length, upper, lower, digits, symbols, count),
+    );
   }, [length, upper, lower, digits, symbols, count]);
 
-  function updateUrl(l: number, u: boolean, lo: boolean, d: boolean, s: boolean, c: number) {
+  function updateUrl(
+    l: number,
+    u: boolean,
+    lo: boolean,
+    d: boolean,
+    s: boolean,
+    c: number,
+  ) {
     const params = new URLSearchParams({
-      len: String(l), upper: u ? "1" : "0", lower: lo ? "1" : "0",
-      digits: d ? "1" : "0", symbols: s ? "1" : "0", count: String(c),
+      len: String(l),
+      upper: u ? "1" : "0",
+      lower: lo ? "1" : "0",
+      digits: d ? "1" : "0",
+      symbols: s ? "1" : "0",
+      count: String(c),
     });
     history.replaceState(null, "", `?${params}`);
     setUrl(window.location.href);
@@ -166,12 +208,30 @@ export default function PasswordPage(): React.ReactNode {
     }
   }
 
-  function setLengthAndSync(v: number) { setLength(v); updateUrl(v, upper, lower, digits, symbols, count); }
-  function setUpperAndSync(v: boolean) { setUpper(v); updateUrl(length, v, lower, digits, symbols, count); }
-  function setLowerAndSync(v: boolean) { setLower(v); updateUrl(length, upper, v, digits, symbols, count); }
-  function setDigitsAndSync(v: boolean) { setDigits(v); updateUrl(length, upper, lower, v, symbols, count); }
-  function setSymbolsAndSync(v: boolean) { setSymbols(v); updateUrl(length, upper, lower, digits, v, count); }
-  function setCountAndSync(v: number) { setCount(v); updateUrl(length, upper, lower, digits, symbols, v); }
+  function setLengthAndSync(v: number) {
+    setLength(v);
+    updateUrl(v, upper, lower, digits, symbols, count);
+  }
+  function setUpperAndSync(v: boolean) {
+    setUpper(v);
+    updateUrl(length, v, lower, digits, symbols, count);
+  }
+  function setLowerAndSync(v: boolean) {
+    setLower(v);
+    updateUrl(length, upper, v, digits, symbols, count);
+  }
+  function setDigitsAndSync(v: boolean) {
+    setDigits(v);
+    updateUrl(length, upper, lower, v, symbols, count);
+  }
+  function setSymbolsAndSync(v: boolean) {
+    setSymbols(v);
+    updateUrl(length, upper, lower, digits, v, count);
+  }
+  function setCountAndSync(v: number) {
+    setCount(v);
+    updateUrl(length, upper, lower, digits, symbols, v);
+  }
 
   function handleCopy(value: string, idx: number): void {
     void copyToClipboard(value);
@@ -290,19 +350,35 @@ export default function PasswordPage(): React.ReactNode {
               <span className={styles.controlLabel}>Chars</span>
               <div className={styles.checkboxGroup}>
                 <label className={styles.checkLabel}>
-                  <input type="checkbox" checked={upper} onChange={(e) => setUpperAndSync(e.target.checked)} />
+                  <input
+                    type="checkbox"
+                    checked={upper}
+                    onChange={(e) => setUpperAndSync(e.target.checked)}
+                  />
                   A–Z
                 </label>
                 <label className={styles.checkLabel}>
-                  <input type="checkbox" checked={lower} onChange={(e) => setLowerAndSync(e.target.checked)} />
+                  <input
+                    type="checkbox"
+                    checked={lower}
+                    onChange={(e) => setLowerAndSync(e.target.checked)}
+                  />
                   a–z
                 </label>
                 <label className={styles.checkLabel}>
-                  <input type="checkbox" checked={digits} onChange={(e) => setDigitsAndSync(e.target.checked)} />
+                  <input
+                    type="checkbox"
+                    checked={digits}
+                    onChange={(e) => setDigitsAndSync(e.target.checked)}
+                  />
                   0–9
                 </label>
                 <label className={styles.checkLabel}>
-                  <input type="checkbox" checked={symbols} onChange={(e) => setSymbolsAndSync(e.target.checked)} />
+                  <input
+                    type="checkbox"
+                    checked={symbols}
+                    onChange={(e) => setSymbolsAndSync(e.target.checked)}
+                  />
                   symbols
                 </label>
               </div>
@@ -311,18 +387,32 @@ export default function PasswordPage(): React.ReactNode {
             <div className={styles.controlRow}>
               <span className={styles.controlLabel}>Count</span>
               <div className={styles.countGroup}>
-                <button className={styles.countBtn} onClick={() => setCountAndSync(Math.max(1, count - 1))}>−</button>
+                <button
+                  className={styles.countBtn}
+                  onClick={() => setCountAndSync(Math.max(1, count - 1))}
+                >
+                  −
+                </button>
                 <span className={styles.countValue}>{count}</span>
-                <button className={styles.countBtn} onClick={() => setCountAndSync(Math.min(20, count + 1))}>+</button>
+                <button
+                  className={styles.countBtn}
+                  onClick={() => setCountAndSync(Math.min(20, count + 1))}
+                >
+                  +
+                </button>
               </div>
             </div>
           </div>
 
           {noCharset ? (
-            <div className={styles.warningText}>Select at least one character set.</div>
+            <div className={styles.warningText}>
+              Select at least one character set.
+            </div>
           ) : (
             <div className={styles.generateRow}>
-              <button className={styles.generateBtn} onClick={generate}>Generate</button>
+              <button className={styles.generateBtn} onClick={generate}>
+                Generate
+              </button>
             </div>
           )}
 
@@ -398,22 +488,31 @@ export default function PasswordPage(): React.ReactNode {
               <div className={styles.statsCard}>
                 <div className={styles.statRow}>
                   <span className={styles.statLabel}>Entropy</span>
-                  <span className={styles.statValue}>{analysis.entropy.toFixed(1)} bits</span>
+                  <span className={styles.statValue}>
+                    {analysis.entropy.toFixed(1)} bits
+                  </span>
                 </div>
                 <div className={styles.statRow}>
                   <span className={styles.statLabel}>Length</span>
-                  <span className={styles.statValue}>{analysis.length} characters</span>
+                  <span className={styles.statValue}>
+                    {analysis.length} characters
+                  </span>
                 </div>
                 <div className={styles.statRow}>
                   <span className={styles.statLabel}>Charset</span>
                   <div className={styles.charBadges}>
-                    {([
-                      ["A-Z", analysis.hasUpper],
-                      ["a-z", analysis.hasLower],
-                      ["0-9", analysis.hasDigits],
-                      ["!@#", analysis.hasSymbols],
-                    ] as [string, boolean][]).map(([label, active]) => (
-                      <span key={label} className={`${styles.charBadge}${active ? ` ${styles.charBadgeActive}` : ""}`}>
+                    {(
+                      [
+                        ["A-Z", analysis.hasUpper],
+                        ["a-z", analysis.hasLower],
+                        ["0-9", analysis.hasDigits],
+                        ["!@#", analysis.hasSymbols],
+                      ] as [string, boolean][]
+                    ).map(([label, active]) => (
+                      <span
+                        key={label}
+                        className={`${styles.charBadge}${active ? ` ${styles.charBadgeActive}` : ""}`}
+                      >
                         {label}
                       </span>
                     ))}

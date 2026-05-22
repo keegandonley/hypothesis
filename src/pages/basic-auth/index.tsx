@@ -11,14 +11,19 @@ function encodeBasicAuth(username: string, password: string): string {
   return btoa(`${username}:${password}`);
 }
 
-function decodeBasicAuth(input: string): { username: string; password: string } | null {
+function decodeBasicAuth(
+  input: string,
+): { username: string; password: string } | null {
   try {
     const token = input.replace(/^Basic\s+/i, "").trim();
     if (!token) return null;
     const decoded = atob(token);
     const colonIdx = decoded.indexOf(":");
     if (colonIdx === -1) return { username: decoded, password: "" };
-    return { username: decoded.slice(0, colonIdx), password: decoded.slice(colonIdx + 1) };
+    return {
+      username: decoded.slice(0, colonIdx),
+      password: decoded.slice(colonIdx + 1),
+    };
   } catch {
     return null;
   }
@@ -84,7 +89,7 @@ export default function BasicAuthPage() {
       setUsername(u);
       setUrl(buildEncodeUrl(u));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleModeChange = (newMode: "encode" | "decode") => {
@@ -155,7 +160,10 @@ export default function BasicAuthPage() {
     copyToClipboard(decodeResult.username).then(() => {
       setCopiedDecUser(true);
       if (decUserTimeoutRef.current) clearTimeout(decUserTimeoutRef.current);
-      decUserTimeoutRef.current = setTimeout(() => setCopiedDecUser(false), 1500);
+      decUserTimeoutRef.current = setTimeout(
+        () => setCopiedDecUser(false),
+        1500,
+      );
     });
   };
 
@@ -164,7 +172,10 @@ export default function BasicAuthPage() {
     copyToClipboard(decodeResult.password).then(() => {
       setCopiedDecPass(true);
       if (decPassTimeoutRef.current) clearTimeout(decPassTimeoutRef.current);
-      decPassTimeoutRef.current = setTimeout(() => setCopiedDecPass(false), 1500);
+      decPassTimeoutRef.current = setTimeout(
+        () => setCopiedDecPass(false),
+        1500,
+      );
     });
   };
 
@@ -330,7 +341,9 @@ export default function BasicAuthPage() {
                   </button>
                 )}
               </div>
-              <div className={`${styles.outputValue}${!decodeResult ? ` ${styles.outputEmpty}` : ""}`}>
+              <div
+                className={`${styles.outputValue}${!decodeResult ? ` ${styles.outputEmpty}` : ""}`}
+              >
                 {decodeResult ? decodeResult.username || <em>empty</em> : "—"}
               </div>
             </div>
@@ -357,14 +370,20 @@ export default function BasicAuthPage() {
                   )}
                 </div>
               </div>
-              <div className={`${styles.outputValue}${!decodeResult ? ` ${styles.outputEmpty}` : ""}`}>
-                {decodeResult
-                  ? showDecodedPassword
-                    ? decodeResult.password || <em>empty</em>
-                    : decodeResult.password
-                    ? "••••••••"
-                    : <em>empty</em>
-                  : "—"}
+              <div
+                className={`${styles.outputValue}${!decodeResult ? ` ${styles.outputEmpty}` : ""}`}
+              >
+                {decodeResult ? (
+                  showDecodedPassword ? (
+                    decodeResult.password || <em>empty</em>
+                  ) : decodeResult.password ? (
+                    "••••••••"
+                  ) : (
+                    <em>empty</em>
+                  )
+                ) : (
+                  "—"
+                )}
               </div>
             </div>
           </div>

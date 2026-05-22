@@ -30,8 +30,12 @@ export default function Base64Page() {
   const [imageCopiedRaw, setImageCopiedRaw] = useState(false);
   const [imageCopiedDataUrl, setImageCopiedDataUrl] = useState(false);
   const imageFileInputRef = useRef<HTMLInputElement>(null);
-  const imageCopyRawTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const imageCopyDataUrlTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const imageCopyRawTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const imageCopyDataUrlTimeoutRef = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
 
   const buildUrl = (enc: string, json: boolean) => {
     if (!enc) return `${window.location.origin}${window.location.pathname}`;
@@ -224,7 +228,7 @@ export default function Base64Page() {
     }
     if (file.size / (1024 * 1024) > 5) {
       setImageError(
-        `Warning: large file (${(file.size / 1024 / 1024).toFixed(1)} MB). Output may be very long.`
+        `Warning: large file (${(file.size / 1024 / 1024).toFixed(1)} MB). Output may be very long.`,
       );
     } else {
       setImageError("");
@@ -266,7 +270,7 @@ export default function Base64Page() {
         clearTimeout(imageCopyRawTimeoutRef.current);
       imageCopyRawTimeoutRef.current = setTimeout(
         () => setImageCopiedRaw(false),
-        1500
+        1500,
       );
     });
   };
@@ -278,7 +282,7 @@ export default function Base64Page() {
         clearTimeout(imageCopyDataUrlTimeoutRef.current);
       imageCopyDataUrlTimeoutRef.current = setTimeout(
         () => setImageCopiedDataUrl(false),
-        1500
+        1500,
       );
     });
   };
@@ -439,9 +443,7 @@ export default function Base64Page() {
                 </>
               )}
             </div>
-            {imageError && (
-              <p className={styles.imageError}>{imageError}</p>
-            )}
+            {imageError && <p className={styles.imageError}>{imageError}</p>}
           </div>
 
           <div className={styles.panel}>

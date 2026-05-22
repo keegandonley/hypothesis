@@ -36,8 +36,20 @@ interface VCardState {
   url: string;
 }
 
-const EMPTY_WIFI: WifiState = { ssid: "", password: "", security: "WPA", hidden: false };
-const EMPTY_VCARD: VCardState = { first: "", last: "", phone: "", email: "", org: "", url: "" };
+const EMPTY_WIFI: WifiState = {
+  ssid: "",
+  password: "",
+  security: "WPA",
+  hidden: false,
+};
+const EMPTY_VCARD: VCardState = {
+  first: "",
+  last: "",
+  phone: "",
+  email: "",
+  org: "",
+  url: "",
+};
 
 function escapeWifi(s: string): string {
   return s.replace(/([\\;,"])/g, "\\$1");
@@ -45,7 +57,8 @@ function escapeWifi(s: string): string {
 
 function buildWifiString(w: WifiState): string {
   if (!w.ssid) return "";
-  const p = w.security !== "nopass" && w.password ? `P:${escapeWifi(w.password)};` : "";
+  const p =
+    w.security !== "nopass" && w.password ? `P:${escapeWifi(w.password)};` : "";
   return `WIFI:T:${w.security};S:${escapeWifi(w.ssid)};${p}H:${w.hidden};;`;
 }
 
@@ -65,7 +78,12 @@ function buildVCardString(v: VCardState): string {
   return lines.join("\n");
 }
 
-function getQrString(mode: QrMode, text: string, wifi: WifiState, vcard: VCardState): string {
+function getQrString(
+  mode: QrMode,
+  text: string,
+  wifi: WifiState,
+  vcard: VCardState,
+): string {
   if (mode === "text") return text;
   if (mode === "wifi") return buildWifiString(wifi);
   return buildVCardString(vcard);
@@ -117,7 +135,13 @@ export default function QrPage() {
     }
   };
 
-  const buildUrl = (m: QrMode, ec: ECLevel, textVal: string, w: WifiState, vc: VCardState): string => {
+  const buildUrl = (
+    m: QrMode,
+    ec: ECLevel,
+    textVal: string,
+    w: WifiState,
+    vc: VCardState,
+  ): string => {
     const params = new URLSearchParams();
     params.set("ecl", ec);
     if (m === "text") {
@@ -125,7 +149,8 @@ export default function QrPage() {
     } else if (m === "wifi") {
       params.set("mode", "wifi");
       if (w.ssid) params.set("ssid", w.ssid);
-      if (w.password && w.security !== "nopass") params.set("wpass", w.password);
+      if (w.password && w.security !== "nopass")
+        params.set("wpass", w.password);
       if (w.security !== "WPA") params.set("sec", w.security);
       if (w.hidden) params.set("hidden", "1");
     } else {
@@ -183,7 +208,7 @@ export default function QrPage() {
       history.replaceState(null, "", url);
       setPageUrl(url);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleModeChange = (newMode: QrMode) => {
@@ -297,9 +322,11 @@ export default function QrPage() {
   const hasContent = !!getQrString(mode, value, wifi, vcard).trim();
 
   const emptyStateText =
-    mode === "wifi" ? "Enter a network name to generate a QR code" :
-    mode === "vcard" ? "Enter contact details to generate a QR code" :
-    "Enter text to generate a QR code";
+    mode === "wifi"
+      ? "Enter a network name to generate a QR code"
+      : mode === "vcard"
+        ? "Enter contact details to generate a QR code"
+        : "Enter text to generate a QR code";
 
   return (
     <div className={styles.page}>
@@ -387,8 +414,12 @@ export default function QrPage() {
                       type={showWifiPassword ? "text" : "password"}
                       className={`${styles.formInput} ${styles.formInputWithBtn}`}
                       value={wifi.password}
-                      onChange={(e) => handleWifiChange({ password: e.target.value })}
-                      placeholder={wifi.security === "nopass" ? "No password" : "Password"}
+                      onChange={(e) =>
+                        handleWifiChange({ password: e.target.value })
+                      }
+                      placeholder={
+                        wifi.security === "nopass" ? "No password" : "Password"
+                      }
                       disabled={wifi.security === "nopass"}
                       autoComplete="off"
                       spellCheck={false}
@@ -443,7 +474,9 @@ export default function QrPage() {
                       type="text"
                       className={styles.formInput}
                       value={vcard.first}
-                      onChange={(e) => handleVcardChange({ first: e.target.value })}
+                      onChange={(e) =>
+                        handleVcardChange({ first: e.target.value })
+                      }
                       placeholder="Jane"
                       spellCheck={false}
                     />
@@ -454,7 +487,9 @@ export default function QrPage() {
                       type="text"
                       className={styles.formInput}
                       value={vcard.last}
-                      onChange={(e) => handleVcardChange({ last: e.target.value })}
+                      onChange={(e) =>
+                        handleVcardChange({ last: e.target.value })
+                      }
                       placeholder="Doe"
                       spellCheck={false}
                     />
@@ -466,7 +501,9 @@ export default function QrPage() {
                     type="tel"
                     className={styles.formInput}
                     value={vcard.phone}
-                    onChange={(e) => handleVcardChange({ phone: e.target.value })}
+                    onChange={(e) =>
+                      handleVcardChange({ phone: e.target.value })
+                    }
                     placeholder="+1 555 000 0000"
                     spellCheck={false}
                   />
@@ -477,7 +514,9 @@ export default function QrPage() {
                     type="email"
                     className={styles.formInput}
                     value={vcard.email}
-                    onChange={(e) => handleVcardChange({ email: e.target.value })}
+                    onChange={(e) =>
+                      handleVcardChange({ email: e.target.value })
+                    }
                     placeholder="jane@example.com"
                     spellCheck={false}
                   />
@@ -529,10 +568,18 @@ export default function QrPage() {
 
           {!isIframe && (
             <div className={styles.actions}>
-              <button className={styles.actionBtn} disabled={!svgContent} onClick={handleDownloadSvg}>
+              <button
+                className={styles.actionBtn}
+                disabled={!svgContent}
+                onClick={handleDownloadSvg}
+              >
                 Download SVG
               </button>
-              <button className={styles.actionBtn} disabled={!hasContent} onClick={handleDownloadPng}>
+              <button
+                className={styles.actionBtn}
+                disabled={!hasContent}
+                onClick={handleDownloadPng}
+              >
                 Download PNG
               </button>
               <button
@@ -550,7 +597,10 @@ export default function QrPage() {
           <div className={styles.previewPanel}>
             {error && <div className={styles.errorMsg}>{error}</div>}
             {svgContent && !error && (
-              <div className={styles.svgWrapper} dangerouslySetInnerHTML={{ __html: svgContent }} />
+              <div
+                className={styles.svgWrapper}
+                dangerouslySetInnerHTML={{ __html: svgContent }}
+              />
             )}
             {!svgContent && !error && (
               <div className={styles.emptyState}>{emptyStateText}</div>

@@ -89,7 +89,10 @@
   color: var(--muted);
   text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+  transition:
+    background-color 0.15s,
+    color 0.15s,
+    border-color 0.15s;
 }
 
 .modeTab:hover:not(.modeTabActive) {

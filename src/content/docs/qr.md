@@ -11,6 +11,7 @@ Select an input mode, fill in the fields, and a QR code is generated in real tim
 **Text** — free-form text or URL. Any string is accepted. Existing permalinks using `?value=` continue to work.
 
 **WiFi** — generates a WiFi QR code that phones can scan to join a network automatically. Fields:
+
 - **SSID** — the network name (required)
 - **Password** — network password (disabled when security is None)
 - **Security** — WPA/WPA2, WEP, or None (open network)
@@ -41,10 +42,10 @@ Higher error correction increases QR code density (more modules, larger image).
 
 All modes support permalinks. The `ecl` parameter is shared across modes.
 
-| Mode | Parameters |
-|------|-----------|
-| Text | `?value=<text>&ecl=M` |
-| WiFi | `?mode=wifi&ssid=<name>&wpass=<pw>&sec=<WPA\|WEP\|nopass>&hidden=1&ecl=M` |
+| Mode  | Parameters                                                                             |
+| ----- | -------------------------------------------------------------------------------------- |
+| Text  | `?value=<text>&ecl=M`                                                                  |
+| WiFi  | `?mode=wifi&ssid=<name>&wpass=<pw>&sec=<WPA\|WEP\|nopass>&hidden=1&ecl=M`              |
 | vCard | `?mode=vcard&fn=<first>&ln=<last>&tel=<phone>&email=<email>&org=<org>&url=<url>&ecl=M` |
 
 ## API
