@@ -95,7 +95,7 @@ async function hashBytes(buffer: ArrayBuffer): Promise<Record<string, string>> {
   const bytes = new Uint8Array(buffer);
   const results: Record<string, string> = {};
 
-  results["MD5"] = md5(bytes);
+  results.MD5 = md5(bytes);
   for (const algo of SHA_ALGOS) {
     const buf = await crypto.subtle.digest(algo, buffer);
 
@@ -109,17 +109,19 @@ async function hashBytes(buffer: ArrayBuffer): Promise<Record<string, string>> {
 
 async function hashText(text: string): Promise<Record<string, string>> {
   const encoded = new TextEncoder().encode(text);
-  return hashBytes(encoded.buffer as ArrayBuffer);
+
+  return hashBytes(encoded.buffer);
 }
 
 function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`;
   if (n < 1048576) return `${(n / 1024).toFixed(1)} KB`;
   if (n < 1073741824) return `${(n / 1048576).toFixed(1)} MB`;
+
   return `${(n / 1073741824).toFixed(1)} GB`;
 }
 
-export default function HashPage() {
+export default function HashPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [mode, setMode] = useState<"text" | "file">("text");
@@ -184,24 +186,25 @@ export default function HashPage() {
     setUrl(newUrl);
   };
 
-  const handleModeChange = (newMode: "text" | "file") => {
+  const handleModeChange = (newMode: "text" | "file"): void => {
     setMode(newMode);
     setHashes({});
     setFileName(null);
     setFileSize(null);
     setInput("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleFile = (file: File) => {
+  const handleFile = (file: File): void => {
     setFileName(file.name);
     setFileSize(file.size);
-    file.arrayBuffer().then((buf) => hashBytes(buf).then(setHashes));
+    void file.arrayBuffer().then((buf) => hashBytes(buf).then(setHashes));
   };
 
-  const handleCopyHash = (algo: string) => {
+  const handleCopyHash = (algo: string): void => {
     const value = hashes[algo];
 
     if (!value) return;
@@ -269,13 +272,17 @@ export default function HashPage() {
           <div className={styles.modeTabs}>
             <button
               className={`${styles.modeTab}${mode === "text" ? ` ${styles.modeTabActive}` : ""}`}
-              onClick={() => handleModeChange("text")}
+              onClick={() => {
+                handleModeChange("text");
+              }}
             >
               Text
             </button>
             <button
               className={`${styles.modeTab}${mode === "file" ? ` ${styles.modeTabActive}` : ""}`}
-              onClick={() => handleModeChange("file")}
+              onClick={() => {
+                handleModeChange("file");
+              }}
             >
               File
             </button>
@@ -285,7 +292,9 @@ export default function HashPage() {
           <textarea
             className={styles.textarea}
             value={input}
-            onChange={(e) => handleInputChange(e.target.value)}
+            onChange={(e) => {
+              handleInputChange(e.target.value);
+            }}
             placeholder="Enter text to hash..."
             spellCheck={false}
           />
@@ -297,11 +306,14 @@ export default function HashPage() {
               e.preventDefault();
               setIsDragging(true);
             }}
-            onDragLeave={() => setIsDragging(false)}
+            onDragLeave={() => {
+              setIsDragging(false);
+            }}
             onDrop={(e) => {
               e.preventDefault();
               setIsDragging(false);
               const file = e.dataTransfer.files[0];
+
               if (file) handleFile(file);
             }}
           >
@@ -309,7 +321,7 @@ export default function HashPage() {
               <div className={styles.fileInfo}>
                 <span className={styles.fileName}>{fileName}</span>
                 <span className={styles.fileSizeLabel}>
-                  {formatBytes(fileSize!)}
+                  {formatBytes(fileSize ?? 0)}
                 </span>
               </div>
             ) : (
@@ -323,6 +335,7 @@ export default function HashPage() {
               style={{ display: "none" }}
               onChange={(e) => {
                 const file = e.target.files?.[0];
+
                 if (file) handleFile(file);
                 e.target.value = "";
               }}

@@ -9,7 +9,7 @@ import { useIsIframe } from "@/lib/useIsIframe";
 
 type Tab = "text" | "image";
 
-export default function Base64Page() {
+export default function Base64Page(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [plain, setPlain] = useState("");
@@ -37,7 +37,7 @@ export default function Base64Page() {
     typeof setTimeout
   > | null>(null);
 
-  const buildUrl = (enc: string, json: boolean) => {
+  const buildUrl = (enc: string, json: boolean): string => {
     if (!enc) return `${window.location.origin}${window.location.pathname}`;
     const params = new URLSearchParams({ value: enc });
 
@@ -52,10 +52,9 @@ export default function Base64Page() {
     const jsonParam = params.get("json") === "1";
     const tabParam = params.get("tab");
 
-    if (tabParam === "image") setTab("image");
+    if (tabParam === "image") setTab("image"); // eslint-disable-line react-hooks/set-state-in-effect
 
     if (value) {
-      /* eslint-disable-next-line react-hooks/set-state-in-effect */
       setEncoded(value);
       try {
         // eslint-disable-next-line @typescript-eslint/no-deprecated
@@ -211,21 +210,24 @@ export default function Base64Page() {
     });
   };
 
-  const handleTabChange = (next: Tab) => {
+  const handleTabChange = (next: Tab): void => {
     setTab(next);
     const newUrl =
       next === "image"
         ? `${window.location.origin}${window.location.pathname}?tab=image`
         : buildUrl(encoded, jsonMode);
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };
 
-  const handleImageFile = (file: File) => {
+  const handleImageFile = (file: File): void => {
     if (!file.type.startsWith("image/")) {
       setImageError("Unsupported file type. Please drop an image.");
+
       return;
     }
+
     if (file.size / (1024 * 1024) > 5) {
       setImageError(
         `Warning: large file (${(file.size / 1024 / 1024).toFixed(1)} MB). Output may be very long.`,
@@ -233,57 +235,65 @@ export default function Base64Page() {
     } else {
       setImageError("");
     }
+
     setImageFile(file);
     const reader = new FileReader();
+
     reader.onload = (e) => {
-      const dataUrl = e.target!.result as string;
+      const dataUrl = e.target?.result as string;
+
       setImageDataUrl(dataUrl);
       setImageBase64(dataUrl.split(",")[1] ?? "");
     };
+
     reader.readAsDataURL(file);
   };
 
-  const handleImageDrop = (e: React.DragEvent) => {
+  const handleImageDrop = (e: React.DragEvent): void => {
     e.preventDefault();
     setImageDragging(false);
     const file = e.dataTransfer.files[0];
+
     if (file) handleImageFile(file);
   };
 
-  const handleImageDragOver = (e: React.DragEvent) => {
+  const handleImageDragOver = (e: React.DragEvent): void => {
     e.preventDefault();
     setImageDragging(true);
   };
 
-  const handleImageDragLeave = () => setImageDragging(false);
+  const handleImageDragLeave = (): void => {
+    setImageDragging(false);
+  };
 
-  const handleImageFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFileInput = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
     const file = e.target.files?.[0];
+
     if (file) handleImageFile(file);
     e.target.value = "";
   };
 
-  const handleCopyRaw = () => {
-    copyToClipboard(imageBase64).then(() => {
+  const handleCopyRaw = (): void => {
+    void copyToClipboard(imageBase64).then(() => {
       setImageCopiedRaw(true);
       if (imageCopyRawTimeoutRef.current)
         clearTimeout(imageCopyRawTimeoutRef.current);
-      imageCopyRawTimeoutRef.current = setTimeout(
-        () => setImageCopiedRaw(false),
-        1500,
-      );
+      imageCopyRawTimeoutRef.current = setTimeout(() => {
+        setImageCopiedRaw(false);
+      }, 1500);
     });
   };
 
-  const handleCopyDataUrl = () => {
-    copyToClipboard(imageDataUrl).then(() => {
+  const handleCopyDataUrl = (): void => {
+    void copyToClipboard(imageDataUrl).then(() => {
       setImageCopiedDataUrl(true);
       if (imageCopyDataUrlTimeoutRef.current)
         clearTimeout(imageCopyDataUrlTimeoutRef.current);
-      imageCopyDataUrlTimeoutRef.current = setTimeout(
-        () => setImageCopiedDataUrl(false),
-        1500,
-      );
+      imageCopyDataUrlTimeoutRef.current = setTimeout(() => {
+        setImageCopiedDataUrl(false);
+      }, 1500);
     });
   };
 
@@ -326,7 +336,9 @@ export default function Base64Page() {
           <button
             key={t}
             className={`${styles.tabBtn}${tab === t ? ` ${styles.tabBtnActive}` : ""}`}
-            onClick={() => handleTabChange(t)}
+            onClick={() => {
+              handleTabChange(t);
+            }}
           >
             {t.toUpperCase()}
           </button>
@@ -364,7 +376,9 @@ export default function Base64Page() {
                 ref={plainRef}
                 className={styles.textarea}
                 value={plain}
-                onChange={(e) => handlePlainChange(e.target.value)}
+                onChange={(e) => {
+                  handlePlainChange(e.target.value);
+                }}
                 onKeyDown={handlePlainKeyDown}
                 placeholder={`Type or paste ${jsonMode ? "JSON" : "plain text"} here...`}
                 spellCheck={false}
@@ -390,7 +404,9 @@ export default function Base64Page() {
               <textarea
                 className={styles.textarea}
                 value={encoded}
-                onChange={(e) => handleEncodedChange(e.target.value)}
+                onChange={(e) => {
+                  handleEncodedChange(e.target.value);
+                }}
                 placeholder="Paste base64 here..."
                 spellCheck={false}
               />

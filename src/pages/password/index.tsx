@@ -39,6 +39,7 @@ const STRENGTH_LABELS: Record<Strength, string> = {
 function formatCrackTime(entropy: number): string {
   if (entropy <= 0) return "instant";
   const seconds = Math.pow(2, entropy) / 1e10 / 2;
+
   if (seconds < 0.001) return "instant";
   if (seconds < 1) return "less than a second";
   if (seconds < 60) return `${Math.round(seconds)} seconds`;
@@ -49,15 +50,26 @@ function formatCrackTime(entropy: number): string {
   if (seconds < 3153600000) return `${Math.round(seconds / 31536000)} years`;
   if (seconds < 3.154e13)
     return `${Math.round(seconds / 3153600000)} centuries`;
+
   return "effectively uncrackable";
 }
 
-function analyzePassword(pw: string) {
+function analyzePassword(pw: string): {
+  entropy: number;
+  length: number;
+  hasUpper: boolean;
+  hasLower: boolean;
+  hasDigits: boolean;
+  hasSymbols: boolean;
+  strength: Strength;
+  crackTime: string;
+} {
   const hasUpper = /[A-Z]/.test(pw);
   const hasLower = /[a-z]/.test(pw);
   const hasDigits = /[0-9]/.test(pw);
   const hasSymbols = /[^A-Za-z0-9]/.test(pw);
   let charsetSize = 0;
+
   if (hasUpper) charsetSize += 26;
   if (hasLower) charsetSize += 26;
   if (hasDigits) charsetSize += 10;
@@ -73,6 +85,7 @@ function analyzePassword(pw: string) {
           : entropy < 128
             ? "strong"
             : "very-strong";
+
   return {
     entropy,
     length: pw.length,
@@ -158,7 +171,7 @@ export default function PasswordPage(): React.ReactNode {
     d: boolean,
     s: boolean,
     c: number,
-  ) {
+  ): void {
     const params = new URLSearchParams({
       len: String(l),
       upper: u ? "1" : "0",
@@ -167,19 +180,24 @@ export default function PasswordPage(): React.ReactNode {
       symbols: s ? "1" : "0",
       count: String(c),
     });
+
     history.replaceState(null, "", `?${params}`);
     setUrl(window.location.href);
   }
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+
     if (params.get("mode") === "check") {
-      setMode("check");
+      setMode("check"); // eslint-disable-line react-hooks/set-state-in-effect
       const checkUrl = `${window.location.origin}${window.location.pathname}?mode=check`;
+
       history.replaceState(null, "", checkUrl);
       setUrl(checkUrl);
+
       return;
     }
+
     const l = params.get("len");
     const u = params.get("upper");
     const lo = params.get("lower");
@@ -187,7 +205,7 @@ export default function PasswordPage(): React.ReactNode {
     const s = params.get("symbols");
     const c = params.get("count");
 
-    if (l) setLength(Number(l)); // eslint-disable-line react-hooks/set-state-in-effect
+    if (l) setLength(Number(l));
     if (u !== null) setUpper(u === "1");
     if (lo !== null) setLower(lo === "1");
     if (d !== null) setDigits(d === "1");
@@ -196,11 +214,12 @@ export default function PasswordPage(): React.ReactNode {
     setUrl(window.location.href);
   }, []);
 
-  function handleModeChange(newMode: "generate" | "check") {
+  function handleModeChange(newMode: "generate" | "check"): void {
     setMode(newMode);
     setCheckInput("");
     if (newMode === "check") {
       const checkUrl = `${window.location.origin}${window.location.pathname}?mode=check`;
+
       history.replaceState(null, "", checkUrl);
       setUrl(checkUrl);
     } else {
@@ -208,27 +227,32 @@ export default function PasswordPage(): React.ReactNode {
     }
   }
 
-  function setLengthAndSync(v: number) {
+  function setLengthAndSync(v: number): void {
     setLength(v);
     updateUrl(v, upper, lower, digits, symbols, count);
   }
-  function setUpperAndSync(v: boolean) {
+
+  function setUpperAndSync(v: boolean): void {
     setUpper(v);
     updateUrl(length, v, lower, digits, symbols, count);
   }
-  function setLowerAndSync(v: boolean) {
+
+  function setLowerAndSync(v: boolean): void {
     setLower(v);
     updateUrl(length, upper, v, digits, symbols, count);
   }
-  function setDigitsAndSync(v: boolean) {
+
+  function setDigitsAndSync(v: boolean): void {
     setDigits(v);
     updateUrl(length, upper, lower, v, symbols, count);
   }
-  function setSymbolsAndSync(v: boolean) {
+
+  function setSymbolsAndSync(v: boolean): void {
     setSymbols(v);
     updateUrl(length, upper, lower, digits, v, count);
   }
-  function setCountAndSync(v: number) {
+
+  function setCountAndSync(v: number): void {
     setCount(v);
     updateUrl(length, upper, lower, digits, symbols, v);
   }
@@ -259,11 +283,13 @@ export default function PasswordPage(): React.ReactNode {
     copyTimeouts.current.set("all", t);
   }
 
-  function handleReset() {
+  function handleReset(): void {
     if (mode === "check") {
       setCheckInput("");
+
       return;
     }
+
     setLength(20);
     setUpper(true);
     setLower(true);
@@ -318,13 +344,17 @@ export default function PasswordPage(): React.ReactNode {
       <div className={styles.modeTabs}>
         <button
           className={`${styles.modeTab}${mode === "generate" ? ` ${styles.modeTabActive}` : ""}`}
-          onClick={() => handleModeChange("generate")}
+          onClick={() => {
+            handleModeChange("generate");
+          }}
         >
           Generate
         </button>
         <button
           className={`${styles.modeTab}${mode === "check" ? ` ${styles.modeTabActive}` : ""}`}
-          onClick={() => handleModeChange("check")}
+          onClick={() => {
+            handleModeChange("check");
+          }}
         >
           Check
         </button>
@@ -341,7 +371,9 @@ export default function PasswordPage(): React.ReactNode {
                 min={4}
                 max={128}
                 value={length}
-                onChange={(e) => setLengthAndSync(Number(e.target.value))}
+                onChange={(e) => {
+                  setLengthAndSync(Number(e.target.value));
+                }}
               />
               <span className={styles.sliderValue}>{length}</span>
             </div>
@@ -353,7 +385,9 @@ export default function PasswordPage(): React.ReactNode {
                   <input
                     type="checkbox"
                     checked={upper}
-                    onChange={(e) => setUpperAndSync(e.target.checked)}
+                    onChange={(e) => {
+                      setUpperAndSync(e.target.checked);
+                    }}
                   />
                   A–Z
                 </label>
@@ -361,7 +395,9 @@ export default function PasswordPage(): React.ReactNode {
                   <input
                     type="checkbox"
                     checked={lower}
-                    onChange={(e) => setLowerAndSync(e.target.checked)}
+                    onChange={(e) => {
+                      setLowerAndSync(e.target.checked);
+                    }}
                   />
                   a–z
                 </label>
@@ -369,7 +405,9 @@ export default function PasswordPage(): React.ReactNode {
                   <input
                     type="checkbox"
                     checked={digits}
-                    onChange={(e) => setDigitsAndSync(e.target.checked)}
+                    onChange={(e) => {
+                      setDigitsAndSync(e.target.checked);
+                    }}
                   />
                   0–9
                 </label>
@@ -377,7 +415,9 @@ export default function PasswordPage(): React.ReactNode {
                   <input
                     type="checkbox"
                     checked={symbols}
-                    onChange={(e) => setSymbolsAndSync(e.target.checked)}
+                    onChange={(e) => {
+                      setSymbolsAndSync(e.target.checked);
+                    }}
                   />
                   symbols
                 </label>
@@ -389,14 +429,18 @@ export default function PasswordPage(): React.ReactNode {
               <div className={styles.countGroup}>
                 <button
                   className={styles.countBtn}
-                  onClick={() => setCountAndSync(Math.max(1, count - 1))}
+                  onClick={() => {
+                    setCountAndSync(Math.max(1, count - 1));
+                  }}
                 >
                   −
                 </button>
                 <span className={styles.countValue}>{count}</span>
                 <button
                   className={styles.countBtn}
-                  onClick={() => setCountAndSync(Math.min(20, count + 1))}
+                  onClick={() => {
+                    setCountAndSync(Math.min(20, count + 1));
+                  }}
                 >
                   +
                 </button>
@@ -424,7 +468,9 @@ export default function PasswordPage(): React.ReactNode {
                   {!isIframe && (
                     <button
                       className={`${styles.copyBtn} ${copiedIdx === idx ? styles.copied : ""}`}
-                      onClick={() => handleCopy(pw, idx)}
+                      onClick={() => {
+                        handleCopy(pw, idx);
+                      }}
                     >
                       {copiedIdx === idx ? "Copied!" : "Copy"}
                     </button>
@@ -443,7 +489,9 @@ export default function PasswordPage(): React.ReactNode {
               <span className={styles.panelLabel}>Password</span>
               <button
                 className={styles.showHideBtn}
-                onClick={() => setShowCheckPw((v) => !v)}
+                onClick={() => {
+                  setShowCheckPw((v) => !v);
+                }}
                 type="button"
               >
                 {showCheckPw ? "hide" : "show"}
@@ -453,7 +501,9 @@ export default function PasswordPage(): React.ReactNode {
               type={showCheckPw ? "text" : "password"}
               className={styles.checkInput}
               value={checkInput}
-              onChange={(e) => setCheckInput(e.target.value)}
+              onChange={(e) => {
+                setCheckInput(e.target.value);
+              }}
               placeholder="Enter a password to analyze"
               autoComplete="off"
               spellCheck={false}

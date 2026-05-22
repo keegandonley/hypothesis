@@ -363,17 +363,18 @@ export default function ColorPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleEyeDropper = async () => {
+  const handleEyeDropper = async (): Promise<void> => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       const result = await new (window as any).EyeDropper().open();
-      handleInputChange(result.sRGBHex);
+
+      handleInputChange(result.sRGBHex); // eslint-disable-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
     } catch {
       // user cancelled
     }
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setInput("");
     setColor(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
