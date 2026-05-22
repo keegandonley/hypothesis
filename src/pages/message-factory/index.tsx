@@ -1,7 +1,7 @@
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import styles from "../../styles/message-factory.module.css";
+import styles from "@/styles/message-factory.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";

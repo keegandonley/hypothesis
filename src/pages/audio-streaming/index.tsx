@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
-import styles from "../../styles/audio-streaming.module.css";
+import styles from "@/styles/audio-streaming.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";

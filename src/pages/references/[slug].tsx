@@ -2,9 +2,8 @@ import fs from "fs";
 import path from "path";
 import Head from "next/head";
 import Link from "next/link";
-import { type GetStaticPaths, type GetStaticProps } from "next";
-import React from "react";
-import styles from "../../styles/docs.module.css";
+import type { GetStaticPaths, GetStaticProps } from "next";
+import styles from "@/styles/docs.module.css";
 import { useBranding } from "@/lib/branding";
 
 const REFERENCES_DIR = path.join(process.cwd(), "src/content/references");

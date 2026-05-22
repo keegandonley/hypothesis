@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
-import styles from "../../styles/qr.module.css";
+import styles from "@/styles/qr.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
@@ -395,10 +395,12 @@ export default function QrPage(): React.ReactNode {
           <div className={styles.inputPanel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelLabel}>Input</span>
-              <div className={styles.modeTabs}>
+              <div className={styles.modeTabs} role="tablist">
                 {(["text", "wifi", "vcard"] as QrMode[]).map((m) => (
                   <button
                     key={m}
+                    role="tab"
+                    aria-selected={mode === m}
                     className={`${styles.modeTab}${mode === m ? ` ${styles.modeTabActive}` : ""}`}
                     onClick={() => {
                       handleModeChange(m);

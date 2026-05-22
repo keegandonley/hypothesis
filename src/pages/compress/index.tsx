@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import { upload } from "@vercel/blob/client";
-import styles from "../../styles/compress.module.css";
+import styles from "@/styles/compress.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";

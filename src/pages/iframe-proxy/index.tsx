@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
-import styles from "../../styles/iframe-proxy.module.css";
+import styles from "@/styles/iframe-proxy.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { LogIcon } from "@/components/icons/log";
 import { useBranding } from "@/lib/branding";

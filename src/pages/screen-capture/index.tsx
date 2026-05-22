@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
-import styles from "../../styles/screen-capture.module.css";
+import styles from "@/styles/screen-capture.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
-import { useBranding } from "@/lib/branding";
+import { configs, useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { captureTab } from "@keegancodes/capture-screen";
 
 type Status = "idle" | "capturing" | "cancelled" | "error";
 
-const FRAME_DOMAINS = ["hypothesis.sh", "conclusion.sh", "observation.sh"];
+const ALL_DOMAINS = [...Object.keys(configs), "hypothesis.sh"];
 
 const LOREM =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
@@ -20,7 +20,7 @@ export default function ScreenCapturePage(): React.ReactNode {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const altDomains = FRAME_DOMAINS.filter((d) => d !== branding.domain).slice(
+  const altDomains = ALL_DOMAINS.filter((d) => d !== branding.domain).slice(
     0,
     2,
   );
