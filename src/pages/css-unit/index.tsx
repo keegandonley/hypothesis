@@ -4,7 +4,7 @@ import styles from "@/styles/css-unit.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Badge, Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
@@ -276,7 +276,7 @@ export default function CssUnitPage(): React.ReactNode {
       <div className={styles.inputSection}>
         <div className={styles.inputHeader}>
           <span className={styles.inputLabel}>Input Value</span>
-          <span className={styles.badge}>{inputUnit}</span>
+          <Badge>{inputUnit}</Badge>
         </div>
         <input
           type="number"

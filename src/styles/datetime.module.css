@@ -69,58 +69,6 @@
   transition: color 0.15s ease;
 }
 
-.badge {
-  display: inline-block;
-  padding: 2px 7px;
-  background-color: var(--accent-subtle);
-  border: 1px solid var(--accent-border);
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--accent);
-  text-transform: uppercase;
-}
-
-.badgeBlue {
-  display: inline-block;
-  padding: 2px 7px;
-  background-color: #3b82f618;
-  border: 1px solid #3b82f633;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #3b82f6;
-  text-transform: uppercase;
-}
-
-.badgeError {
-  display: inline-block;
-  padding: 2px 7px;
-  background-color: #ef444418;
-  border: 1px solid #ef444433;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #ef4444;
-  text-transform: uppercase;
-}
-
-.badgeReady {
-  display: inline-block;
-  padding: 2px 7px;
-  background-color: var(--accent-subtle);
-  border: 1px solid var(--accent-border);
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--accent);
-  text-transform: uppercase;
-}
-
 .panelLabel {
   font-size: 10px;
   text-transform: uppercase;

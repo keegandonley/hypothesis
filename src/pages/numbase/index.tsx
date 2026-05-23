@@ -4,7 +4,7 @@ import styles from "@/styles/numbase.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
+import { Badge, Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 interface Values {
@@ -191,11 +191,11 @@ export default function NumbasePage(): React.ReactNode {
             <Panel key={field}>
               <PanelHeader label={label}>
                 {isError ? (
-                  <span className={styles.badgeError}>invalid</span>
+                  <Badge color="error">invalid</Badge>
                 ) : val ? (
-                  <span className={styles.badge}>{val.length} digits</span>
+                  <Badge>{val.length} digits</Badge>
                 ) : (
-                  <span className={styles.badge}>{prefix}</span>
+                  <Badge>{prefix}</Badge>
                 )}
               </PanelHeader>
               <PanelBody>

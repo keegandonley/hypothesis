@@ -5,7 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Badge, Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { Panel, PanelHeader, PanelBody, PanelLabel } from "@/components/ui/Panel";
 
 type Tab = "text" | "image";
@@ -321,12 +321,12 @@ export default function Base64Page(): React.ReactNode {
               {jsonMode ? (
                 plain.length > 0 &&
                 (jsonValid ? (
-                  <span className={styles.badge}>valid</span>
+                  <Badge>valid</Badge>
                 ) : (
-                  <span className={styles.badgeError}>invalid</span>
+                  <Badge color="error">invalid</Badge>
                 ))
               ) : (
-                <span className={styles.badge}>{plain.length} chars</span>
+                <Badge>{plain.length} chars</Badge>
               )}
             </PanelHeader>
             <PanelBody>
@@ -355,7 +355,7 @@ export default function Base64Page(): React.ReactNode {
 
           <Panel>
             <PanelHeader label="Base64">
-              <span className={styles.badge}>{encoded.length} chars</span>
+              <Badge>{encoded.length} chars</Badge>
             </PanelHeader>
             <PanelBody>
               <textarea
@@ -375,7 +375,7 @@ export default function Base64Page(): React.ReactNode {
           <Panel>
             <PanelHeader label="Image">
               {imageFile && (
-                <span className={styles.badge}>{imageFile.name}</span>
+                <Badge>{imageFile.name}</Badge>
               )}
             </PanelHeader>
             <div
@@ -420,7 +420,7 @@ export default function Base64Page(): React.ReactNode {
 
           <Panel>
             <PanelHeader label="Raw Base64">
-              <span className={styles.badge}>{imageBase64.length} chars</span>
+              <Badge>{imageBase64.length} chars</Badge>
             </PanelHeader>
             <PanelBody>
               <textarea
@@ -434,7 +434,7 @@ export default function Base64Page(): React.ReactNode {
             </PanelBody>
             <div className={styles.panelHeaderDivided}>
               <PanelLabel>Data URL</PanelLabel>
-              <span className={styles.badge}>{imageDataUrl.length} chars</span>
+              <Badge>{imageDataUrl.length} chars</Badge>
             </div>
             <PanelBody>
               <textarea

@@ -4,7 +4,7 @@ import styles from "@/styles/unicode.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Badge, Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
@@ -248,12 +248,12 @@ export default function UnicodePage(): React.ReactNode {
             <div className={styles.textareaHeader}>
               <span className={styles.sectionLabel}>Text Input</span>
               {text.length === 0 ? (
-                <span className={styles.badgeReady}>Ready</span>
+                <Badge color="ready">Ready</Badge>
               ) : (
-                <span className={styles.badge}>
+                <Badge>
                   {cpCount} code point{cpCount !== 1 ? "s" : ""} · {text.length}{" "}
                   char{text.length !== 1 ? "s" : ""}
-                </span>
+                </Badge>
               )}
             </div>
             <textarea

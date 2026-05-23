@@ -5,7 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
+import { Badge, Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 
 type JsonValue =
   | string
@@ -269,11 +269,11 @@ export default function JsonTsPage(): React.ReactNode {
         <Panel>
           <PanelHeader label="JSON Input">
             {jsonInput.length === 0 ? (
-              <span className={styles.badgeReady}>ready</span>
+              <Badge color="ready">ready</Badge>
             ) : jsonValid ? (
-              <span className={styles.badge}>valid</span>
+              <Badge>valid</Badge>
             ) : (
-              <span className={styles.badgeError}>invalid</span>
+              <Badge color="error">invalid</Badge>
             )}
           </PanelHeader>
           <PanelBody>

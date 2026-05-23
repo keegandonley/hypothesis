@@ -69,19 +69,6 @@
   transition: color 0.15s ease;
 }
 
-.badge {
-  display: inline-block;
-  padding: 2px 7px;
-  background-color: var(--accent-subtle);
-  border: 1px solid var(--accent-border);
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--accent);
-  text-transform: uppercase;
-}
-
 .panels {
   display: grid;
   grid-template-columns: 1fr;
@@ -115,31 +102,7 @@
   margin-top: 20px;
 }
 
-.badgeBlue {
-  display: inline-block;
-  padding: 2px 7px;
-  background-color: #3b82f618;
-  border: 1px solid #3b82f633;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #3b82f6;
-  text-transform: uppercase;
-}
 
-.badgeAlt {
-  display: inline-block;
-  padding: 2px 7px;
-  background-color: #fbbf2418;
-  border: 1px solid #fbbf2433;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #fbbf24;
-  text-transform: uppercase;
-}
 
 .copyOverlay {
   position: absolute;

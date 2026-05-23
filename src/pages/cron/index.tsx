@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "@/styles/cron.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
-import { Button, CopyButton, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
+import { Badge, Button, CopyButton, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { CronExpressionParser } from "cron-parser";
 import cronstrue from "cronstrue";
@@ -211,7 +211,7 @@ export default function CronPage(): React.ReactNode {
           autoCapitalize="off"
           autoCorrect="off"
         />
-        {errorMsg && <span className={styles.badgeError}>invalid</span>}
+        {errorMsg && <Badge color="error">invalid</Badge>}
       </div>
 
       <div className={styles.examplesRow}>

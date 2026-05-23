@@ -139,19 +139,6 @@
   gap: 6px;
 }
 
-.badgeError {
-  display: inline-block;
-  padding: 1px 6px;
-  background-color: #fbbf2418;
-  border: 1px solid #fbbf2433;
-  border-radius: 4px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #fbbf24;
-  text-transform: uppercase;
-}
-
 .fieldInput {
   background-color: var(--bg);
   border: 1px solid var(--border);

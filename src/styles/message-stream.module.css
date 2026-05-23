@@ -38,19 +38,6 @@
   letter-spacing: 0.02em;
 }
 
-.badge {
-  display: inline-block;
-  padding: 4px 8px;
-  background-color: var(--accent-subtle);
-  border: 1px solid var(--accent-border);
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--accent);
-  text-transform: uppercase;
-}
-
 .divider {
   border: none;
   border-top: 1px solid var(--border);

@@ -98,19 +98,6 @@
   border-color: #fbbf24;
 }
 
-.badgeError {
-  display: inline-block;
-  padding: 2px 7px;
-  background-color: #fbbf2418;
-  border: 1px solid #fbbf2433;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #fbbf24;
-  text-transform: uppercase;
-}
-
 .presetsRow {
   display: flex;
   gap: 6px;

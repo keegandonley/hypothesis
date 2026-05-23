@@ -3,7 +3,7 @@ import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/regex.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
-import { Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
+import { Badge, Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
@@ -248,9 +248,9 @@ export default function RegexPage(): React.ReactNode {
       <div className={styles.panels}>
         <Panel>
           <PanelHeader label="Test Strings">
-            <span className={styles.badge}>
+            <Badge>
               {lineCount} line{lineCount !== 1 ? "s" : ""}
-            </span>
+            </Badge>
           </PanelHeader>
           <PanelBody>
             <textarea

@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "@/styles/cidr.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Badge, Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
@@ -297,7 +297,7 @@ export default function CidrPage(): React.ReactNode {
           autoCapitalize="off"
           autoCorrect="off"
         />
-        {error && <span className={styles.badgeError}>invalid</span>}
+        {error && <Badge color="error">invalid</Badge>}
       </div>
 
       {info && (

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { v1, v4, v7 } from "uuid";
-import { Button, CopyButton } from "@/components/ui";
+import { Badge, Button, CopyButton } from "@/components/ui";
 import { Panel, PanelHeader, PanelBody } from "@/components/ui/Panel";
 
 function generate(ver: 1 | 4 | 7): string {
@@ -102,11 +102,11 @@ export default function UuidPage(): React.ReactNode {
                 v{ver}
               </Button>
             ))}
-            <span
-              className={version === 4 ? styles.badgeBlue : styles.badgeAlt}
-            >
-              v{version}
-            </span>
+            {version === 4 ? (
+              <Badge color="blue">v{version}</Badge>
+            ) : (
+              <Badge color="error">v{version}</Badge>
+            )}
           </PanelHeader>
           <PanelBody className={styles.uuidBody}>
             <textarea

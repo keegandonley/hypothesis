@@ -69,44 +69,7 @@
   transition: color 0.15s ease;
 }
 
-.badge {
-  display: inline-block;
-  padding: 2px 7px;
-  background-color: var(--accent-subtle);
-  border: 1px solid var(--accent-border);
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--accent);
-  text-transform: uppercase;
-}
-
-.badgeError {
-  display: inline-block;
-  padding: 2px 7px;
-  background-color: #fbbf2418;
-  border: 1px solid #fbbf2433;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #fbbf24;
-  text-transform: uppercase;
-}
-
-.badgeReady {
-  display: inline-block;
-  padding: 2px 7px;
-  background-color: #60a5fa18;
-  border: 1px solid #60a5fa33;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #60a5fa;
-  text-transform: uppercase;
-}
+.panels {
 
 .textarea {
   width: 100%;

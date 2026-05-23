@@ -5,6 +5,7 @@ import styles from "@/styles/iframe-proxy.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { LogIcon } from "@/components/icons/log";
 import { useBranding } from "@/lib/branding";
+import { Badge } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 interface RelayedMessage {
@@ -142,7 +143,7 @@ export default function IframeProxyPage(): React.ReactNode {
       />
       {inWorkMode && !debug && (
         <div className={styles.workBar}>
-          <span className={styles.badge}>proxied url</span>
+          <Badge>proxied url</Badge>
           <form
             className={styles.urlInlineForm}
             onSubmit={(e) => {
@@ -170,7 +171,7 @@ export default function IframeProxyPage(): React.ReactNode {
 
       {debug && (
         <div className={styles.topBar}>
-          <span className={styles.badge}>proxied url</span>
+          <Badge>proxied url</Badge>
           {urlFromParam ? (
             <span className={styles.urlText}>{url}</span>
           ) : (

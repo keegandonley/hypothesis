@@ -5,7 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, CopyButton, Panel, PanelHeader, PanelBody } from "@/components/ui";
+import { Badge, Button, CopyButton, Panel, PanelHeader, PanelBody } from "@/components/ui";
 
 const URL_LIMIT = 2000;
 
@@ -124,12 +124,12 @@ export default function PrettyPrintPage(): React.ReactNode {
       <div className={styles.panels}>
         <Panel>
           <PanelHeader label="Input">
-            <span className={styles.badge}>{input.length} chars</span>
+            <Badge>{input.length} chars</Badge>
             {jsonValid === true && (
-              <span className={styles.badge}>valid</span>
+              <Badge>valid</Badge>
             )}
             {jsonValid === false && (
-              <span className={styles.badgeError}>invalid</span>
+              <Badge color="error">invalid</Badge>
             )}
           </PanelHeader>
           <PanelBody>
@@ -147,7 +147,7 @@ export default function PrettyPrintPage(): React.ReactNode {
 
         <Panel>
           <PanelHeader label="Formatted">
-            <span className={styles.badge}>{output.length} chars</span>
+            <Badge>{output.length} chars</Badge>
           </PanelHeader>
           <PanelBody>
             <textarea

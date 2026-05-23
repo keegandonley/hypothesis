@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
-import { Button, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
+import { Badge, Button, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 
 export default function UrlEncodePage(): React.ReactNode {
   const branding = useBranding();
@@ -137,7 +137,7 @@ export default function UrlEncodePage(): React.ReactNode {
             <Button variant="toggle" active={uriMode} onClick={handleUriToggle}>
               URI Mode {uriMode ? "ON" : "OFF"}
             </Button>
-            <span className={styles.badge}>{decoded.length} chars</span>
+            <Badge>{decoded.length} chars</Badge>
           </PanelHeader>
           <PanelBody>
             <textarea
@@ -154,7 +154,7 @@ export default function UrlEncodePage(): React.ReactNode {
 
         <Panel>
           <PanelHeader label="URL Encoded">
-            <span className={styles.badge}>{encoded.length} chars</span>
+            <Badge>{encoded.length} chars</Badge>
           </PanelHeader>
           <PanelBody>
             <textarea

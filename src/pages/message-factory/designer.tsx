@@ -5,7 +5,7 @@ import styles from "@/styles/message-factory-designer.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { PermalinkRow, CopyButton } from "@/components/ui";
+import { Badge, PermalinkRow, CopyButton } from "@/components/ui";
 
 interface Action {
   id: string;
@@ -252,7 +252,7 @@ export default function DesignerPage(): React.ReactNode {
                 <label className={styles.fieldLabel}>
                   payload
                   {!isValidJson(action.payload) && (
-                    <span className={styles.badgeError}>invalid json</span>
+                    <Badge color="error">invalid json</Badge>
                   )}
                 </label>
                 <textarea

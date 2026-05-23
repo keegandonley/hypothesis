@@ -5,7 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
+import { Badge, Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 // HTML5 named entity map (comprehensive set)
@@ -327,7 +327,7 @@ export default function HtmlEntityPage(): React.ReactNode {
       <div className={styles.panels}>
         <Panel>
           <PanelHeader label="Decoded Text">
-            <span className={styles.badge}>{decoded.length} chars</span>
+            <Badge>{decoded.length} chars</Badge>
           </PanelHeader>
           <PanelBody>
             <textarea
@@ -344,7 +344,7 @@ export default function HtmlEntityPage(): React.ReactNode {
 
         <Panel>
           <PanelHeader label="HTML Entities">
-            <span className={styles.badge}>{encoded.length} chars</span>
+            <Badge>{encoded.length} chars</Badge>
           </PanelHeader>
           <PanelBody>
             <textarea

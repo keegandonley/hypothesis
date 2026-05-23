@@ -3,7 +3,7 @@ import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/datetime.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Badge, Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
@@ -351,16 +351,16 @@ export default function DateTimePage(): React.ReactNode {
         >
           Live {liveMode ? "ON" : "OFF"}
         </button>
-        {liveMode && <span className={styles.badgeReady}>Live</span>}
+        {liveMode && <Badge color="ready">Live</Badge>}
         {!liveMode && !hasInput && (
-          <span className={styles.badgeBlue}>Ready</span>
+          <Badge color="blue">Ready</Badge>
         )}
         {!liveMode &&
           hasInput &&
           (isInvalid ? (
-            <span className={styles.badgeError}>Invalid</span>
+            <Badge color="error">Invalid</Badge>
           ) : (
-            <span className={styles.badgeReady}>Valid</span>
+            <Badge color="ready">Valid</Badge>
           ))}
       </div>
 

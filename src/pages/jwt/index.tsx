@@ -5,7 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
+import { Badge, Button, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 interface JwtParts {
@@ -221,10 +221,10 @@ export default function JwtPage(): React.ReactNode {
       <div className={styles.inputPanel}>
         <PanelHeader label="Token">
           {hasToken && error && (
-            <span className={styles.badgeError}>malformed</span>
+            <Badge color="error">malformed</Badge>
           )}
           {hasToken && !error && decoded && (
-            <span className={styles.badge}>{token.trim().length} chars</span>
+            <Badge>{token.trim().length} chars</Badge>
           )}
           <Button variant="copy" size="sm" onClick={handleGenerate}>
             Generate
@@ -261,11 +261,11 @@ export default function JwtPage(): React.ReactNode {
           <PanelHeader label="Payload">
             {decoded?.payload &&
               (expiryStatus === "valid" ? (
-                <span className={styles.badgeValid}>valid</span>
+                <Badge className={styles.badgeValid}>valid</Badge>
               ) : expiryStatus === "expired" ? (
-                <span className={styles.badgeExpired}>expired</span>
+                <Badge className={styles.badgeExpired}>expired</Badge>
               ) : (
-                <span className={styles.badgeMuted}>no exp</span>
+                <Badge className={styles.badgeMuted}>no exp</Badge>
               ))}
           </PanelHeader>
           <div className={styles.outputWrapper}>

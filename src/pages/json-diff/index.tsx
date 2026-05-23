@@ -3,7 +3,7 @@ import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/json-diff.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Badge, Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 
@@ -304,24 +304,24 @@ export default function JsonDiffPage(): React.ReactNode {
             {canDiff && (
               <div className={styles.diffSummary}>
                 {counts.added > 0 && (
-                  <span className={`${styles.badge} ${styles.badgeAdded}`}>
+                  <Badge className={styles.badgeAdded}>
                     +{counts.added} added
-                  </span>
+                  </Badge>
                 )}
                 {counts.removed > 0 && (
-                  <span className={`${styles.badge} ${styles.badgeRemoved}`}>
+                  <Badge className={styles.badgeRemoved}>
                     -{counts.removed} removed
-                  </span>
+                  </Badge>
                 )}
                 {counts.changed > 0 && (
-                  <span className={`${styles.badge} ${styles.badgeChanged}`}>
+                  <Badge className={styles.badgeChanged}>
                     ~{counts.changed} changed
-                  </span>
+                  </Badge>
                 )}
                 {diff.length === 0 && (
-                  <span className={`${styles.badge} ${styles.badgeEqual}`}>
+                  <Badge className={styles.badgeEqual}>
                     identical
-                  </span>
+                  </Badge>
                 )}
               </div>
             )}

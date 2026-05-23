@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import styles from "@/styles/json-yaml.module.css";
 import { DocIcon } from "@/components/icons/doc";
-import { Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
+import { Badge, Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { dump, load } from "js-yaml";
@@ -153,7 +153,7 @@ export default function JsonYamlPage(): React.ReactNode {
         <Panel>
           <PanelHeader label="JSON">
             {jsonError && (
-              <span className={styles.badgeError}>invalid json</span>
+              <Badge color="error">invalid json</Badge>
             )}
           </PanelHeader>
           <PanelBody>
@@ -173,7 +173,7 @@ export default function JsonYamlPage(): React.ReactNode {
         <Panel>
           <PanelHeader label="YAML">
             {yamlError && (
-              <span className={styles.badgeError}>invalid yaml</span>
+              <Badge color="error">invalid yaml</Badge>
             )}
           </PanelHeader>
           <PanelBody>

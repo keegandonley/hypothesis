@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import styles from "@/styles/message-factory.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
+import { Badge } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 const subExperiments = [
@@ -92,7 +93,7 @@ function SubExperimentCard({
   return (
     <div className={styles.card} onClick={() => router.push(href)}>
       <div className={styles.cardMain}>
-        <div className={styles.badge}>{id}</div>
+        <Badge>{id}</Badge>
         <div className={styles.cardBody}>
           <div className={styles.cardName}>{name}</div>
           <div className={styles.cardDesc}>{description}</div>

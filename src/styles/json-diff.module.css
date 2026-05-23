@@ -173,17 +173,6 @@
   align-items: center;
 }
 
-.badge {
-  display: inline-block;
-  padding: 2px 7px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  border: 1px solid transparent;
-}
-
 .badgeAdded {
   background: #22c55e18;
   border-color: #22c55e33;

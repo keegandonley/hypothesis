@@ -4,6 +4,7 @@ import styles from "@/styles/message-stream.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
+import { Badge } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 interface Message {
@@ -128,9 +129,9 @@ export default function MessagesPage(): React.ReactNode {
         <p className={styles.tagline}>
           Listening for messages from parent frame...
         </p>
-        <div className={styles.badge}>
+        <Badge>
           {messages.length} {messages.length === 1 ? "message" : "messages"}
-        </div>
+        </Badge>
       </div>
 
       <hr className={styles.divider} />
