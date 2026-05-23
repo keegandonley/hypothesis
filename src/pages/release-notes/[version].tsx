@@ -89,7 +89,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const title = meta.title ?? version;
   const description = meta.description ?? "";
   const formattedDate = formatDate(version);
-  const ogImageUrl = `https://hypothesis.sh/api/og?type=release&title=${encodeURIComponent(title)}&date=${version}&domain=hypothesis.sh`;
   const tags = parseTags(meta.tags);
 
   let blogPost: BlogPost = null;
@@ -125,8 +124,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       title,
       description,
       formattedDate,
-      ogImageUrl,
-      tags,
+    tags,
       blogPost,
     },
   };
@@ -405,7 +403,6 @@ export default function ReleaseNotePage({
   title,
   description,
   formattedDate,
-  ogImageUrl,
   tags,
   blogPost,
 }: {
@@ -414,11 +411,11 @@ export default function ReleaseNotePage({
   title: string;
   description: string;
   formattedDate: string;
-  ogImageUrl: string;
   tags: string[];
   blogPost: BlogPost;
 }): React.ReactNode {
   const branding = useBranding();
+  const ogImageUrl = `https://hypothesis.sh/api/og?type=release&title=${encodeURIComponent(title)}&date=${version}&domain=hypothesis.sh`;
 
   return (
     <div className={styles.page}>

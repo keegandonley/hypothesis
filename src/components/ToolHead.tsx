@@ -17,8 +17,8 @@ export function ToolHead({
 }: ToolHeadProps): React.ReactNode {
   const { name, domain } = useBranding();
   const brand = (brandName ?? name).toUpperCase();
-  const canonicalUrl = `https://${domain}${path}`;
-  const ogImage = `https://${domain}/api/og?domain=${domain}`;
+  const canonicalUrl = `https://hypothesis.sh${path}`;
+  const ogImage = `https://hypothesis.sh/api/og?domain=${domain}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
