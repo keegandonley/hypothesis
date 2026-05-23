@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/json-diff.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 type DiffType = "added" | "removed" | "changed" | "type-changed";
@@ -107,8 +107,6 @@ export default function JsonDiffPage(): React.ReactNode {
   const [leftError, setLeftError] = useState("");
   const [rightError, setRightError] = useState("");
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   let diff: DiffEntry[] = [];
   let canDiff = false;
@@ -214,16 +212,6 @@ export default function JsonDiffPage(): React.ReactNode {
     }
 
     syncUrl(left, v);
-  };
-
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
   };
 
   const handleReset = (): void => {
@@ -387,21 +375,7 @@ export default function JsonDiffPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

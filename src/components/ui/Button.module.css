@@ -121,3 +121,9 @@
   color: var(--text);
   border-color: var(--text);
 }
+
+.ghost.copied {
+  background-color: var(--accent-subtle);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}

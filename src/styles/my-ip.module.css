@@ -164,61 +164,9 @@
   word-break: break-all;
 }
 
-.copyBtn {
-  padding: 4px 10px;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--text);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    background-color 0.15s,
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.copyBtn:hover {
-  background-color: var(--border);
-}
-
-.copyBtn.copied {
-  background-color: var(--accent-subtle);
-  border-color: var(--accent-border);
-  color: var(--accent);
-}
-
 .bottomRow {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 16px;
-}
-
-.refreshBtn {
-  padding: 6px 14px;
-  background-color: var(--accent-subtle);
-  border: 1px solid var(--accent-border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--accent);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color 0.15s;
-}
-
-.refreshBtn:hover:not(:disabled) {
-  background-color: var(--accent-hover);
-}
-
-.refreshBtn:disabled {
-  opacity: 0.5;
-  cursor: default;
 }

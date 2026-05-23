@@ -4,8 +4,8 @@ import styles from "@/styles/lorem.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 
 const WORDS = [
   "lorem",
@@ -186,13 +186,7 @@ export default function LoremPage(): React.ReactNode {
   const [type, setType] = useState<UnitType>("paragraphs");
   const [count, setCount] = useState(3);
   const [output, setOutput] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [url, setUrl] = useState("");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
 
   const regenerate = useCallback((t: UnitType, c: number) => {
     setOutput(generate(t, c));
@@ -258,29 +252,8 @@ export default function LoremPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopyPermalink = (): void => {
-    void copyToClipboard(url).then(() => {
-      setPermalinkCopied(true);
-      if (permalinkTimeoutRef.current)
-        clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(() => {
-        setPermalinkCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleRegenerate = (): void => {
     regenerate(type, count);
-  };
-
-  const handleCopy = (): void => {
-    void copyToClipboard(output).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
   };
 
   const UNIT_TYPES: UnitType[] = ["words", "sentences", "paragraphs"];
@@ -327,15 +300,16 @@ export default function LoremPage(): React.ReactNode {
           <span className={styles.controlLabel}>Unit</span>
           <div className={styles.toggleGroup}>
             {UNIT_TYPES.map((t) => (
-              <button
+              <Button
                 key={t}
-                className={`${styles.toggleBtn}${type === t ? ` ${styles.active}` : ""}`}
+                variant="toggle"
+                active={type === t}
                 onClick={() => {
                   handleTypeChange(t);
                 }}
               >
                 {t}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -370,18 +344,16 @@ export default function LoremPage(): React.ReactNode {
         <div className={styles.panelHeader}>
           <span className={styles.panelLabel}>Output</span>
           <div className={styles.panelActions}>
-            <button className={styles.regenerateBtn} onClick={handleRegenerate}>
+            <Button variant="copy" onClick={handleRegenerate}>
               Regenerate
-            </button>
-            {!isIframe && (
-              <button
-                className={`${styles.outputCopyBtn}${copied ? ` ${styles.copied}` : ""}`}
-                onClick={handleCopy}
-                disabled={!output}
-              >
-                {copied ? "Copied!" : "Copy"}
-              </button>
-            )}
+            </Button>
+            <CopyButton
+              value={output}
+              variant="ghost"
+              size="sm"
+              className={styles.copyOverlay}
+              disabled={!output}
+            />
           </div>
         </div>
         <textarea
@@ -394,21 +366,7 @@ export default function LoremPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopyPermalink}
-          >
-            {permalinkCopied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import styles from "@/styles/compress.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button } from "@/components/ui";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 type OutputFormat = "png" | "webp" | "avif";
@@ -387,9 +388,9 @@ export default function CompressPage(): React.ReactNode {
           </div>
 
           <div className={styles.listFooter}>
-            <button className={styles.clearBtn} onClick={handleClear}>
+            <Button variant="reset" onClick={handleClear}>
               Clear all
-            </button>
+            </Button>
           </div>
         </>
       )}

@@ -4,19 +4,17 @@ import styles from "@/styles/urlencode.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
+import { Button, PermalinkRow } from "@/components/ui";
 
 export default function UrlEncodePage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [decoded, setDecoded] = useState("");
   const [encoded, setEncoded] = useState("");
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
   const [uriMode, setUriMode] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const buildUrl = (dec: string, uri: boolean): string => {
     if (!dec) return `${window.location.origin}${window.location.pathname}`;
@@ -93,16 +91,6 @@ export default function UrlEncodePage(): React.ReactNode {
     setUrl(window.location.href);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   return (
     <div className={styles.page}>
       <ToolHead
@@ -150,12 +138,9 @@ export default function UrlEncodePage(): React.ReactNode {
               {uriMode ? "URI" : "Decoded"}
             </span>
             <div className={styles.panelHeaderRight}>
-              <button
-                className={`${styles.toggleBtn}${uriMode ? ` ${styles.active}` : ""}`}
-                onClick={handleUriToggle}
-              >
+              <Button variant="toggle" active={uriMode} onClick={handleUriToggle}>
                 URI Mode {uriMode ? "ON" : "OFF"}
-              </button>
+              </Button>
               <span className={styles.badge}>{decoded.length} chars</span>
             </div>
           </div>
@@ -193,21 +178,7 @@ export default function UrlEncodePage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

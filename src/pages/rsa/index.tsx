@@ -4,8 +4,8 @@ import styles from "@/styles/rsa.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { PermalinkRow, CopyButton } from "@/components/ui";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -91,22 +91,10 @@ export default function RsaPage(): React.ReactNode {
 
   const [cryptoAvailable, setCryptoAvailable] = useState(true);
 
-  // Copy state
-  const [copiedPub, setCopiedPub] = useState(false);
-  const [copiedPriv, setCopiedPriv] = useState(false);
-  const [copiedCt, setCopiedCt] = useState(false);
-  const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [url, setUrl] = useState("");
 
   // Ciphertext textarea value (for step 3)
   const [ctInput, setCtInput] = useState("");
-
-  const pubTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const privTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const ctTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
 
   const plaintextBytes = new TextEncoder().encode(plaintext).length;
 
@@ -357,22 +345,6 @@ export default function RsaPage(): React.ReactNode {
     }
   }
 
-  // ── Copy helpers ───────────────────────────────────────────────────────────
-
-  function copyWithTimeout(
-    text: string,
-    setter: (v: boolean) => void,
-    ref: React.RefObject<ReturnType<typeof setTimeout> | null>,
-  ): void {
-    void copyToClipboard(text).then(() => {
-      setter(true);
-      if (ref.current) clearTimeout(ref.current);
-      ref.current = setTimeout(() => {
-        setter(false);
-      }, 1500);
-    });
-  }
-
   function handleReset(): void {
     setCiphertext("");
     setCtInput("");
@@ -461,15 +433,8 @@ export default function RsaPage(): React.ReactNode {
           <div className={styles.keyPanel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelLabel}>Public Key</span>
-              {!isIframe && publicKeyPem && (
-                <button
-                  className={`${styles.copyBtn}${copiedPub ? ` ${styles.copied}` : ""}`}
-                  onClick={() => {
-                    copyWithTimeout(publicKeyPem, setCopiedPub, pubTimeoutRef);
-                  }}
-                >
-                  {copiedPub ? "Copied!" : "Copy"}
-                </button>
+              {publicKeyPem && (
+                <CopyButton variant="copy" size="sm" value={publicKeyPem} />
               )}
             </div>
             <textarea
@@ -493,19 +458,8 @@ export default function RsaPage(): React.ReactNode {
           <div className={styles.keyPanel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelLabel}>Private Key</span>
-              {!isIframe && privateKeyPem && (
-                <button
-                  className={`${styles.copyBtn}${copiedPriv ? ` ${styles.copied}` : ""}`}
-                  onClick={() => {
-                    copyWithTimeout(
-                      privateKeyPem,
-                      setCopiedPriv,
-                      privTimeoutRef,
-                    );
-                  }}
-                >
-                  {copiedPriv ? "Copied!" : "Copy"}
-                </button>
+              {privateKeyPem && (
+                <CopyButton variant="copy" size="sm" value={privateKeyPem} />
               )}
             </div>
             <textarea
@@ -598,16 +552,7 @@ export default function RsaPage(): React.ReactNode {
           <div className={styles.outputPanel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelLabel}>Ciphertext (base64)</span>
-              {!isIframe && (
-                <button
-                  className={`${styles.copyBtn}${copiedCt ? ` ${styles.copied}` : ""}`}
-                  onClick={() => {
-                    copyWithTimeout(ciphertext, setCopiedCt, ctTimeoutRef);
-                  }}
-                >
-                  {copiedCt ? "Copied!" : "Copy"}
-                </button>
-              )}
+              <CopyButton variant="copy" size="sm" value={ciphertext} />
             </div>
             <div className={styles.ciphertextOutput}>{ciphertext}</div>
             <div className={styles.annotation}>
@@ -730,23 +675,7 @@ export default function RsaPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-            onClick={() => {
-              copyWithTimeout(url, setPermalinkCopied, permalinkTimeoutRef);
-            }}
-          >
-            {permalinkCopied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

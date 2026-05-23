@@ -1,11 +1,11 @@
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "@/styles/case.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { CopyButton, PermalinkRow } from "@/components/ui";
 
 function splitWords(input: string): string[] {
   return input
@@ -79,13 +79,7 @@ export default function CasePage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
-  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [url, setUrl] = useState("");
-  const [copiedUrl, setCopiedUrl] = useState(false);
-  const copiedUrlTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyTimeouts = useRef<Map<number, ReturnType<typeof setTimeout>>>(
-    new Map(),
-  );
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -104,19 +98,6 @@ export default function CasePage(): React.ReactNode {
 
     history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
     setUrl(window.location.href);
-  }
-
-  function handleCopy(value: string, idx: number): void {
-    void copyToClipboard(value);
-    setCopiedIdx(idx);
-    const prev = copyTimeouts.current.get(idx);
-
-    if (prev) clearTimeout(prev);
-    const t = setTimeout(() => {
-      setCopiedIdx((c) => (c === idx ? null : c));
-    }, 1500);
-
-    copyTimeouts.current.set(idx, t);
   }
 
   const words = splitWords(input);
@@ -187,16 +168,7 @@ export default function CasePage(): React.ReactNode {
               ) : (
                 <span className={styles.resultValueEmpty}>—</span>
               )}
-              {!isIframe && value && (
-                <button
-                  className={`${styles.copyBtn} ${copiedIdx === idx ? styles.copied : ""}`}
-                  onClick={() => {
-                    handleCopy(value, idx);
-                  }}
-                >
-                  {copiedIdx === idx ? "Copied!" : "Copy"}
-                </button>
-              )}
+              {value && <CopyButton value={value} size="xs" />}
             </div>
           );
         })}
@@ -204,34 +176,7 @@ export default function CasePage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copiedUrl ? ` ${styles.copied}` : ""}`}
-            onClick={() => {
-              void copyToClipboard(url);
-              setCopiedUrl(true);
-              if (copiedUrlTimeout.current)
-                clearTimeout(copiedUrlTimeout.current);
-              copiedUrlTimeout.current = setTimeout(() => {
-                setCopiedUrl(false);
-              }, 1500);
-            }}
-          >
-            {copiedUrl ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button
-          className={styles.resetBtn}
-          onClick={() => {
-            handleInput("");
-          }}
-        >
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={() => { handleInput(""); }} />
     </div>
   );
 }

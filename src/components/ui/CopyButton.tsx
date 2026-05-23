@@ -3,8 +3,11 @@ import { Button } from "./Button";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 
+type ButtonVariant = "copy" | "reset" | "tab" | "toggle" | "ghost";
+
 interface CopyButtonProps {
   value: string;
+  variant?: ButtonVariant;
   size?: "xs" | "sm" | "md";
   className?: string;
   disabled?: boolean;
@@ -12,6 +15,7 @@ interface CopyButtonProps {
 
 export function CopyButton({
   value,
+  variant = "copy",
   size = "md",
   className = "",
   disabled = false,
@@ -34,7 +38,7 @@ export function CopyButton({
 
   return (
     <Button
-      variant="copy"
+      variant={variant}
       size={size}
       copied={copied}
       className={className}

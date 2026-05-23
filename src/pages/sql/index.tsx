@@ -4,9 +4,9 @@ import styles from "@/styles/sql.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { format, type SqlLanguage } from "sql-formatter";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 
 const DIALECTS: { value: SqlLanguage; label: string }[] = [
   { value: "sql", label: "SQL" },
@@ -24,10 +24,6 @@ export default function SqlPage(): React.ReactNode {
   const [input, setInput] = useState("");
   const [dialect, setDialect] = useState<SqlLanguage>("sql");
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedSql, setCopiedSql] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const sqlCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   let formatted = "";
   let error = "";
@@ -91,16 +87,6 @@ export default function SqlPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleReset = (): void => {
     setInput("");
     setDialect("sql");
@@ -108,16 +94,6 @@ export default function SqlPage(): React.ReactNode {
 
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
-  };
-
-  const handleCopySql = (): void => {
-    void copyToClipboard(formatted).then(() => {
-      setCopiedSql(true);
-      if (sqlCopyTimeoutRef.current) clearTimeout(sqlCopyTimeoutRef.current);
-      sqlCopyTimeoutRef.current = setTimeout(() => {
-        setCopiedSql(false);
-      }, 1500);
-    });
   };
 
   return (
@@ -178,25 +154,23 @@ export default function SqlPage(): React.ReactNode {
             <span className={styles.panelLabel}>Formatted</span>
             <div className={styles.panelHeaderRight}>
               {DIALECTS.map((d) => (
-                <button
+                <Button
                   key={d.value}
-                  className={`${styles.toggleBtn}${dialect === d.value ? ` ${styles.active}` : ""}`}
+                  variant="toggle"
+                  active={dialect === d.value}
                   onClick={() => {
                     handleDialect(d.value);
                   }}
                 >
                   {d.label}
-                </button>
+                </Button>
               ))}
-              {!isIframe && (
-                <button
-                  className={`${styles.panelCopyBtn}${copiedSql ? ` ${styles.panelCopied}` : ""}`}
-                  onClick={handleCopySql}
-                  disabled={!formatted}
-                >
-                  {copiedSql ? "Copied!" : "Copy"}
-                </button>
-              )}
+              <CopyButton
+                value={formatted}
+                variant="ghost"
+                size="sm"
+                disabled={!formatted}
+              />
             </div>
           </div>
           {error ? (
@@ -215,21 +189,7 @@ export default function SqlPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

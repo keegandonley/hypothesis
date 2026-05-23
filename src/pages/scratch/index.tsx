@@ -1,20 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import LZString from "lz-string";
 import styles from "@/styles/scratch.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 export default function ScratchPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [text, setText] = useState("");
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -40,16 +38,6 @@ export default function ScratchPage(): React.ReactNode {
 
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
-  };
-
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
   };
 
   return (
@@ -103,21 +91,7 @@ export default function ScratchPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

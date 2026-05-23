@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/jwt.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, PermalinkRow } from "@/components/ui";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 interface JwtParts {
@@ -105,9 +105,7 @@ export default function JwtPage(): React.ReactNode {
   const [token, setToken] = useState("");
   const [decoded, setDecoded] = useState<JwtParts | null>(null);
   const [error, setError] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const buildUrl = (t: string): string => {
     if (!t) return `${window.location.origin}${window.location.pathname}`;
@@ -174,16 +172,6 @@ export default function JwtPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const expiryStatus = getExpiryStatus(decoded?.payload ?? null);
   const hasToken = token.length > 0;
 
@@ -240,9 +228,9 @@ export default function JwtPage(): React.ReactNode {
             {hasToken && !error && decoded && (
               <span className={styles.badge}>{token.trim().length} chars</span>
             )}
-            <button className={styles.generateBtn} onClick={handleGenerate}>
+            <Button variant="copy" size="sm" onClick={handleGenerate}>
               Generate
-            </button>
+            </Button>
           </div>
         </div>
         <div className={styles.textareaWrapper}>
@@ -309,21 +297,7 @@ export default function JwtPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

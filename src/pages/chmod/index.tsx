@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "@/styles/chmod.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
@@ -77,14 +77,7 @@ export default function ChmodPage(): React.ReactNode {
   const [perms, setPerms] = useState<Perms | null>(null);
   const [error, setError] = useState(false);
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedField, setCopiedField] = useState<"numeric" | "symbolic" | null>(
-    null,
-  );
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyFieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+
 
   const buildUrl = (mode: string): string => {
     if (!mode) return `${window.location.origin}${window.location.pathname}`;
@@ -164,29 +157,7 @@ export default function ChmodPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
 
-  const handleCopyField = (field: "numeric" | "symbolic"): void => {
-    if (!perms) return;
-    const val = field === "numeric" ? toNumeric(perms) : toSymbolic(perms);
-
-    void copyToClipboard(val).then(() => {
-      setCopiedField(field);
-      if (copyFieldTimeoutRef.current)
-        clearTimeout(copyFieldTimeoutRef.current);
-      copyFieldTimeoutRef.current = setTimeout(() => {
-        setCopiedField(null);
-      }, 1500);
-    });
-  };
 
   const bits = [
     { label: "Read", bit: 4 },
@@ -274,16 +245,7 @@ export default function ChmodPage(): React.ReactNode {
             <div className={styles.panel}>
               <div className={styles.panelHeader}>
                 <span className={styles.panelLabel}>Numeric</span>
-                {!isIframe && (
-                  <button
-                    className={`${styles.copyFieldBtn}${copiedField === "numeric" ? ` ${styles.copied}` : ""}`}
-                    onClick={() => {
-                      handleCopyField("numeric");
-                    }}
-                  >
-                    {copiedField === "numeric" ? "Copied!" : "Copy"}
-                  </button>
-                )}
+                <CopyButton value={toNumeric(perms)} variant="ghost" size="xs" />
               </div>
               <div className={styles.panelValue}>{toNumeric(perms)}</div>
             </div>
@@ -291,16 +253,7 @@ export default function ChmodPage(): React.ReactNode {
             <div className={styles.panel}>
               <div className={styles.panelHeader}>
                 <span className={styles.panelLabel}>Symbolic</span>
-                {!isIframe && (
-                  <button
-                    className={`${styles.copyFieldBtn}${copiedField === "symbolic" ? ` ${styles.copied}` : ""}`}
-                    onClick={() => {
-                      handleCopyField("symbolic");
-                    }}
-                  >
-                    {copiedField === "symbolic" ? "Copied!" : "Copy"}
-                  </button>
-                )}
+                <CopyButton value={toSymbolic(perms)} variant="ghost" size="xs" />
               </div>
               <div className={styles.panelValue}>{toSymbolic(perms)}</div>
             </div>
@@ -347,21 +300,7 @@ export default function ChmodPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

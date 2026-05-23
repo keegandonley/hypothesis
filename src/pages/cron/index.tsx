@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "@/styles/cron.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { CronExpressionParser } from "cron-parser";
 import cronstrue from "cronstrue";
@@ -83,10 +83,7 @@ export default function CronPage(): React.ReactNode {
   const [result, setResult] = useState<ParseResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedDesc, setCopiedDesc] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyDescTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   const buildUrl = (expr: string): string => {
     if (!expr) return `${window.location.origin}${window.location.pathname}`;
@@ -157,26 +154,7 @@ export default function CronPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
 
-  const handleCopyDesc = (): void => {
-    if (!result) return;
-    void copyToClipboard(result.description).then(() => {
-      setCopiedDesc(true);
-      if (copyDescTimeoutRef.current) clearTimeout(copyDescTimeoutRef.current);
-      copyDescTimeoutRef.current = setTimeout(() => {
-        setCopiedDesc(false);
-      }, 1500);
-    });
-  };
 
   return (
     <div className={styles.page}>
@@ -255,14 +233,7 @@ export default function CronPage(): React.ReactNode {
           <div className={styles.descPanel}>
             <div className={styles.descHeader}>
               <span className={styles.panelLabel}>Description</span>
-              {!isIframe && (
-                <button
-                  className={`${styles.copyFieldBtn}${copiedDesc ? ` ${styles.copied}` : ""}`}
-                  onClick={handleCopyDesc}
-                >
-                  {copiedDesc ? "Copied!" : "Copy"}
-                </button>
-              )}
+              <CopyButton value={result.description} variant="ghost" size="xs" />
             </div>
             <div className={styles.descValue}>{result.description}</div>
           </div>
@@ -288,21 +259,7 @@ export default function CronPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

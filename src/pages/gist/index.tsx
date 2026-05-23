@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/gist.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 const GIST_URL_RE = /^https?:\/\/gist\.github\.com\/[^/]+\/([a-f0-9]+)/i;
@@ -33,11 +34,7 @@ export default function GistPage(): React.ReactNode {
   const [url, setUrl] = useState("");
   const [file, setFile] = useState("");
   const [iframeKey, setIframeKey] = useState(0);
-  const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [pageUrl, setPageUrl] = useState("");
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
 
   const isValid = GIST_URL_RE.test(url);
 
@@ -79,17 +76,6 @@ export default function GistPage(): React.ReactNode {
 
     history.replaceState(null, "", next);
     setPageUrl(next);
-  };
-
-  const handleCopyPermalink = (): void => {
-    void copyToClipboard(pageUrl).then(() => {
-      setPermalinkCopied(true);
-      if (permalinkTimeoutRef.current)
-        clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(() => {
-        setPermalinkCopied(false);
-      }, 1500);
-    });
   };
 
   const handleCopyApiUrl = (): void => {
@@ -210,21 +196,7 @@ export default function GistPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{pageUrl}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopyPermalink}
-          >
-            {permalinkCopied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={pageUrl} onReset={handleReset} />
     </div>
   );
 }

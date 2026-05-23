@@ -6,6 +6,7 @@ import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { PermalinkRow, CopyButton } from "@/components/ui";
 
 const UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const LOWER = "abcdefghijklmnopqrstuvwxyz";
@@ -143,7 +144,6 @@ export default function PasswordPage(): React.ReactNode {
   const [symbols, setSymbols] = useState(false);
   const [count, setCount] = useState(5);
   const [passwords, setPasswords] = useState<string[]>([]);
-  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
 
   // check state
@@ -151,7 +151,6 @@ export default function PasswordPage(): React.ReactNode {
   const [showCheckPw, setShowCheckPw] = useState(false);
 
   const [url, setUrl] = useState("");
-  const [copiedUrl, setCopiedUrl] = useState(false);
   const copyTimeouts = useRef<
     Map<number | "all", ReturnType<typeof setTimeout>>
   >(new Map());
@@ -255,19 +254,6 @@ export default function PasswordPage(): React.ReactNode {
   function setCountAndSync(v: number): void {
     setCount(v);
     updateUrl(length, upper, lower, digits, symbols, v);
-  }
-
-  function handleCopy(value: string, idx: number): void {
-    void copyToClipboard(value);
-    setCopiedIdx(idx);
-    const prev = copyTimeouts.current.get(idx);
-
-    if (prev) clearTimeout(prev);
-    const t = setTimeout(() => {
-      setCopiedIdx((c) => (c === idx ? null : c));
-    }, 1500);
-
-    copyTimeouts.current.set(idx, t);
   }
 
   function handleCopyAll(): void {
@@ -469,16 +455,7 @@ export default function PasswordPage(): React.ReactNode {
               {passwords.map((pw, idx) => (
                 <div key={idx} className={styles.passwordRow}>
                   <span className={styles.passwordValue}>{pw}</span>
-                  {!isIframe && (
-                    <button
-                      className={`${styles.copyBtn} ${copiedIdx === idx ? styles.copied : ""}`}
-                      onClick={() => {
-                        handleCopy(pw, idx);
-                      }}
-                    >
-                      {copiedIdx === idx ? "Copied!" : "Copy"}
-                    </button>
-                  )}
+                  <CopyButton variant="ghost" size="xs" value={pw} />
                 </div>
               ))}
             </div>
@@ -587,35 +564,15 @@ export default function PasswordPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copiedUrl ? ` ${styles.copied}` : ""}`}
-            onClick={() => {
-              void copyToClipboard(url);
-              setCopiedUrl(true);
-              setTimeout(() => {
-                setCopiedUrl(false);
-              }, 1500);
-            }}
-          >
-            {copiedUrl ? "Copied!" : "Copy"}
-          </button>
-        )}
-        {!isIframe && mode === "generate" && passwords.length > 0 && (
-          <button
-            className={`${styles.copyAllBtn} ${copiedAll ? styles.copied : ""}`}
-            onClick={handleCopyAll}
-          >
-            {copiedAll ? "Copied!" : "Copy all"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
+      <PermalinkRow url={url} onReset={handleReset} />
+      {!isIframe && mode === "generate" && passwords.length > 0 && (
+        <button
+          className={`${styles.copyAllBtn} ${copiedAll ? styles.copied : ""}`}
+          onClick={handleCopyAll}
+        >
+          {copiedAll ? "Copied!" : "Copy all"}
         </button>
-      </div>
+      )}
     </div>
   );
 }

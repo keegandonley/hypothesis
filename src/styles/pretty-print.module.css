@@ -204,86 +204,8 @@
   opacity: 0.6;
 }
 
-.copyBtn {
-  flex-shrink: 0;
-  padding: 6px 14px;
-  background-color: var(--accent-subtle);
-  border: 1px solid var(--accent-border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--accent);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color 0.15s;
-}
-
-.copyBtn:hover {
-  background-color: var(--accent-hover);
-}
-
-.copyBtn.copied {
-  background-color: var(--accent);
-  border-color: var(--accent);
-  color: var(--bg);
-}
-
-.copyBtnDisabled {
-  opacity: 0.35;
-  cursor: default;
-  pointer-events: none;
-}
-
-.resetBtn {
-  flex-shrink: 0;
-  padding: 6px 14px;
-  background-color: #ef444418;
-  border: 1px solid #ef444433;
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: #ef4444;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color 0.15s;
-}
-
-.resetBtn:hover {
-  background-color: #ef444430;
-}
-
-.formatBtn {
+.formatBtnCopy {
   position: absolute;
   bottom: 10px;
   right: 10px;
-  padding: 4px 10px;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--text);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    background-color 0.15s,
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.formatBtn:hover {
-  background-color: var(--border);
-  color: var(--text);
-}
-
-.formatBtn:active {
-  background-color: var(--accent-subtle);
-  border-color: var(--accent-border);
-  color: var(--accent);
 }

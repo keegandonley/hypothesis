@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/basic-auth.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 
 function encodeBasicAuth(username: string, password: string): string {
   return btoa(`${username}:${password}`);
@@ -48,17 +48,6 @@ export default function BasicAuthPage(): React.ReactNode {
   const [showDecodedPassword, setShowDecodedPassword] = useState(false);
 
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedHeader, setCopiedHeader] = useState(false);
-  const [copiedToken, setCopiedToken] = useState(false);
-  const [copiedDecUser, setCopiedDecUser] = useState(false);
-  const [copiedDecPass, setCopiedDecPass] = useState(false);
-
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const headerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const tokenTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const decUserTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const decPassTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const encoded = encodeBasicAuth(username, password);
   const headerValue = `Basic ${encoded}`;
@@ -130,58 +119,6 @@ export default function BasicAuthPage(): React.ReactNode {
 
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
-  };
-
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
-  const handleCopyHeader = (): void => {
-    void copyToClipboard(fullHeader).then(() => {
-      setCopiedHeader(true);
-      if (headerTimeoutRef.current) clearTimeout(headerTimeoutRef.current);
-      headerTimeoutRef.current = setTimeout(() => {
-        setCopiedHeader(false);
-      }, 1500);
-    });
-  };
-
-  const handleCopyToken = (): void => {
-    void copyToClipboard(encoded).then(() => {
-      setCopiedToken(true);
-      if (tokenTimeoutRef.current) clearTimeout(tokenTimeoutRef.current);
-      tokenTimeoutRef.current = setTimeout(() => {
-        setCopiedToken(false);
-      }, 1500);
-    });
-  };
-
-  const handleCopyDecUser = (): void => {
-    if (!decodeResult) return;
-    void copyToClipboard(decodeResult.username).then(() => {
-      setCopiedDecUser(true);
-      if (decUserTimeoutRef.current) clearTimeout(decUserTimeoutRef.current);
-      decUserTimeoutRef.current = setTimeout(() => {
-        setCopiedDecUser(false);
-      }, 1500);
-    });
-  };
-
-  const handleCopyDecPass = (): void => {
-    if (!decodeResult) return;
-    void copyToClipboard(decodeResult.password).then(() => {
-      setCopiedDecPass(true);
-      if (decPassTimeoutRef.current) clearTimeout(decPassTimeoutRef.current);
-      decPassTimeoutRef.current = setTimeout(() => {
-        setCopiedDecPass(false);
-      }, 1500);
-    });
   };
 
   return (
@@ -298,14 +235,7 @@ export default function BasicAuthPage(): React.ReactNode {
             <div className={styles.outputBlock}>
               <div className={styles.outputHeader}>
                 <span className={styles.outputLabel}>Authorization Header</span>
-                {!isIframe && (
-                  <button
-                    className={`${styles.panelCopyBtn}${copiedHeader ? ` ${styles.panelCopied}` : ""}`}
-                    onClick={handleCopyHeader}
-                  >
-                    {copiedHeader ? "Copied!" : "Copy"}
-                  </button>
-                )}
+                <CopyButton value={fullHeader} variant="ghost" size="sm" />
               </div>
               <div className={styles.outputValue}>{fullHeader || "—"}</div>
             </div>
@@ -313,14 +243,7 @@ export default function BasicAuthPage(): React.ReactNode {
             <div className={styles.outputBlock}>
               <div className={styles.outputHeader}>
                 <span className={styles.outputLabel}>Base64 Token</span>
-                {!isIframe && (
-                  <button
-                    className={`${styles.panelCopyBtn}${copiedToken ? ` ${styles.panelCopied}` : ""}`}
-                    onClick={handleCopyToken}
-                  >
-                    {copiedToken ? "Copied!" : "Copy"}
-                  </button>
-                )}
+                <CopyButton value={encoded} variant="ghost" size="sm" />
               </div>
               <div className={styles.outputValue}>{encoded || "—"}</div>
             </div>
@@ -352,15 +275,7 @@ export default function BasicAuthPage(): React.ReactNode {
             <div className={styles.outputBlock}>
               <div className={styles.outputHeader}>
                 <span className={styles.outputLabel}>Username</span>
-                {!isIframe && (
-                  <button
-                    className={`${styles.panelCopyBtn}${copiedDecUser ? ` ${styles.panelCopied}` : ""}`}
-                    onClick={handleCopyDecUser}
-                    disabled={!decodeResult}
-                  >
-                    {copiedDecUser ? "Copied!" : "Copy"}
-                  </button>
-                )}
+                <CopyButton value={decodeResult ? decodeResult.username : ""} variant="ghost" size="sm" disabled={!decodeResult} />
               </div>
               <div
                 className={`${styles.outputValue}${!decodeResult ? ` ${styles.outputEmpty}` : ""}`}
@@ -382,15 +297,7 @@ export default function BasicAuthPage(): React.ReactNode {
                   >
                     {showDecodedPassword ? "hide" : "show"}
                   </button>
-                  {!isIframe && (
-                    <button
-                      className={`${styles.panelCopyBtn}${copiedDecPass ? ` ${styles.panelCopied}` : ""}`}
-                      onClick={handleCopyDecPass}
-                      disabled={!decodeResult}
-                    >
-                      {copiedDecPass ? "Copied!" : "Copy"}
-                    </button>
-                  )}
+                  <CopyButton value={decodeResult ? decodeResult.password : ""} variant="ghost" size="sm" disabled={!decodeResult} />
                 </div>
               </div>
               <div
@@ -415,21 +322,7 @@ export default function BasicAuthPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.permalinkLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

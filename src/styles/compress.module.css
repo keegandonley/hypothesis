@@ -276,22 +276,6 @@
   margin-top: 0.75rem;
 }
 
-.clearBtn {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  font-family: inherit;
-  font-size: 0.75rem;
-  padding: 0.3rem 0.7rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.1s;
-}
-.clearBtn:hover {
-  color: var(--text);
-  border-color: var(--text);
-}
-
 /* Info row */
 .infoRow {
   font-size: 0.75rem;

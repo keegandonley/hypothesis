@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/regex.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
@@ -81,8 +81,6 @@ export default function RegexPage(): React.ReactNode {
   });
   const [testInput, setTestInput] = useState("");
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const flagStr = FLAGS.filter((f) => flags[f]).join("");
 
@@ -163,16 +161,6 @@ export default function RegexPage(): React.ReactNode {
 
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
-  };
-
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
   };
 
   const results = computeResults(pattern, flagStr, testInput);
@@ -332,21 +320,7 @@ export default function RegexPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

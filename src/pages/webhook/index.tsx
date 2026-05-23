@@ -5,8 +5,8 @@ import { useRouter } from "next/router";
 import styles from "@/styles/webhook.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton } from "@/components/ui";
 import type { WebhookEvent } from "@/lib/events";
 
 interface Session {
@@ -31,9 +31,9 @@ function StatusCard({
     >
       <span className={styles.statusCardMessage}>{message}</span>
       {action && (
-        <button className={styles.statusCardAction} onClick={action.onClick}>
+        <Button variant="copy" onClick={action.onClick}>
           {action.label}
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -74,16 +74,12 @@ export default function WebhookPage(): React.ReactNode {
     "loading" | "ready" | "error" | "deleted" | "idle"
   >("loading");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
   const [curlMethod, setCurlMethod] = useState("POST");
-  const [curlCopied, setCurlCopied] = useState(false);
   const [sendState, setSendState] = useState<
     "idle" | "sending" | "sent" | "error"
   >("idle");
   const [events, setEvents] = useState<WebhookEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<WebhookEvent | null>(null);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const curlCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestReceivedAtRef = useRef<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -266,29 +262,6 @@ export default function WebhookPage(): React.ReactNode {
       );
   };
 
-  const handleCurlCopy = (): void => {
-    const url = session?.webhookUrl ?? "";
-
-    void copyToClipboard(buildCurlCommand(curlMethod, url)).then(() => {
-      setCurlCopied(true);
-      if (curlCopyTimeoutRef.current) clearTimeout(curlCopyTimeoutRef.current);
-      curlCopyTimeoutRef.current = setTimeout(() => {
-        setCurlCopied(false);
-      }, 1500);
-    });
-  };
-
-  const handleCopy = (): void => {
-    if (!session) return;
-    void copyToClipboard(session.webhookUrl).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   return (
     <div className={styles.page}>
       <ToolHead
@@ -359,22 +332,10 @@ export default function WebhookPage(): React.ReactNode {
               <div className={styles.panelHeader}>
                 <span className={styles.panelLabel}>Webhook URL</span>
                 <div style={{ display: "flex", gap: "6px" }}>
-                  <button
-                    className={styles.copyBtn}
-                    onClick={() => {
-                      startSession();
-                    }}
-                  >
+                  <Button variant="copy" onClick={() => { startSession(); }}>
                     New session
-                  </button>
-                  {!isIframe && (
-                    <button
-                      className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-                      onClick={handleCopy}
-                    >
-                      {copied ? "Copied!" : "Copy Webhook URL"}
-                    </button>
-                  )}
+                  </Button>
+                  <CopyButton value={session.webhookUrl} />
                 </div>
               </div>
               <div className={styles.urlDisplay}>{session.webhookUrl}</div>
@@ -388,9 +349,10 @@ export default function WebhookPage(): React.ReactNode {
                 <span className={styles.panelLabel}>curl</span>
                 <div className={styles.methodToggles}>
                   {["GET", "POST", "PUT", "PATCH", "DELETE"].map((m) => (
-                    <button
+                    <Button
                       key={m}
-                      className={`${styles.methodToggle}${curlMethod === m ? ` ${styles.active}` : ""}`}
+                      variant="tab"
+                      active={curlMethod === m}
                       style={
                         curlMethod === m
                           ? ({
@@ -403,7 +365,7 @@ export default function WebhookPage(): React.ReactNode {
                       }}
                     >
                       {m}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -411,16 +373,10 @@ export default function WebhookPage(): React.ReactNode {
                 <pre className={styles.curlCode}>
                   {buildCurlCommand(curlMethod, session.webhookUrl)}
                 </pre>
-                {!isIframe && (
-                  <button
-                    className={`${styles.copyBtn}${curlCopied ? ` ${styles.copied}` : ""}`}
-                    onClick={handleCurlCopy}
-                  >
-                    {curlCopied ? "Copied!" : "Copy"}
-                  </button>
-                )}
-                <button
-                  className={`${styles.copyBtn}${sendState === "sent" ? ` ${styles.copied}` : ""}`}
+                <CopyButton value={buildCurlCommand(curlMethod, session.webhookUrl)} variant="ghost" size="sm" />
+                <Button
+                  variant="copy"
+                  copied={sendState === "sent"}
                   onClick={handleSendRequest}
                   disabled={sendState === "sending"}
                 >
@@ -431,7 +387,7 @@ export default function WebhookPage(): React.ReactNode {
                       : sendState === "error"
                         ? "Error"
                         : "Send request"}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -504,14 +460,14 @@ export default function WebhookPage(): React.ReactNode {
                 <p className={styles.idleBody}>
                   No requests received in 30 minutes. Your session is paused.
                 </p>
-                <button
-                  className={styles.idleAction}
+                <Button
+                  variant="copy"
                   onClick={() => {
                     startSession(session.sessionId);
                   }}
                 >
                   Re-activate session
-                </button>
+                </Button>
               </div>
             </div>
           )}

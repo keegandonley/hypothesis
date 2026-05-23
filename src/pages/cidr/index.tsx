@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "@/styles/cidr.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
@@ -134,12 +134,7 @@ export default function CidrPage(): React.ReactNode {
   const [info, setInfo] = useState<CidrInfo | null>(null);
   const [error, setError] = useState(false);
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyFieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+
 
   const buildUrl = (cidr: string): string => {
     if (!cidr) return `${window.location.origin}${window.location.pathname}`;
@@ -204,26 +199,7 @@ export default function CidrPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
 
-  const handleCopyField = (key: string, val: string): void => {
-    void copyToClipboard(val).then(() => {
-      setCopiedKey(key);
-      if (copyFieldTimeoutRef.current)
-        clearTimeout(copyFieldTimeoutRef.current);
-      copyFieldTimeoutRef.current = setTimeout(() => {
-        setCopiedKey(null);
-      }, 1500);
-    });
-  };
 
   const rows: { label: string; key: string; value: string }[] = info
     ? [
@@ -330,16 +306,7 @@ export default function CidrPage(): React.ReactNode {
             <div key={key} className={styles.resultRow}>
               <span className={styles.resultLabel}>{label}</span>
               <span className={styles.resultValue}>{value}</span>
-              {!isIframe && (
-                <button
-                  className={`${styles.copyFieldBtn}${copiedKey === key ? ` ${styles.copied}` : ""}`}
-                  onClick={() => {
-                    handleCopyField(key, value);
-                  }}
-                >
-                  {copiedKey === key ? "Copied!" : "Copy"}
-                </button>
-              )}
+              <CopyButton value={value} variant="ghost" size="xs" />
             </div>
           ))}
         </div>
@@ -347,21 +314,7 @@ export default function CidrPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

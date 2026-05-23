@@ -4,8 +4,8 @@ import styles from "@/styles/hash.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { CopyButton, PermalinkRow } from "@/components/ui";
 
 const SHA_ALGOS = ["SHA-1", "SHA-256", "SHA-384", "SHA-512"] as const;
 const ALGOS = ["MD5", ...SHA_ALGOS] as const;
@@ -127,17 +127,11 @@ export default function HashPage(): React.ReactNode {
   const [mode, setMode] = useState<"text" | "file">("text");
   const [input, setInput] = useState("");
   const [hashes, setHashes] = useState<Record<string, string>>({});
-  const [copiedAlgo, setCopiedAlgo] = useState<string | null>(null);
-  const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [url, setUrl] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileSize, setFileSize] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
 
   const buildUrl = (val: string): string => {
     if (!val) return `${window.location.origin}${window.location.pathname}`;
@@ -202,30 +196,6 @@ export default function HashPage(): React.ReactNode {
     setFileName(file.name);
     setFileSize(file.size);
     void file.arrayBuffer().then((buf) => hashBytes(buf).then(setHashes));
-  };
-
-  const handleCopyHash = (algo: string): void => {
-    const value = hashes[algo];
-
-    if (!value) return;
-    void copyToClipboard(value).then(() => {
-      setCopiedAlgo(algo);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopiedAlgo(null);
-      }, 1500);
-    });
-  };
-
-  const handleCopyPermalink = (): void => {
-    void copyToClipboard(url).then(() => {
-      setPermalinkCopied(true);
-      if (permalinkTimeoutRef.current)
-        clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(() => {
-        setPermalinkCopied(false);
-      }, 1500);
-    });
   };
 
   return (
@@ -351,7 +321,6 @@ export default function HashPage(): React.ReactNode {
       <div className={styles.hashList}>
         {ALGOS.map((algo) => {
           const value = hashes[algo] ?? "";
-          const isCopied = copiedAlgo === algo;
 
           return (
             <div key={algo} className={styles.hashRow}>
@@ -361,15 +330,7 @@ export default function HashPage(): React.ReactNode {
               >
                 {value || "—"}
               </span>
-              <button
-                className={`${styles.copyBtn}${isCopied ? ` ${styles.copied}` : ""}`}
-                onClick={() => {
-                  handleCopyHash(algo);
-                }}
-                disabled={!value}
-              >
-                {isCopied ? "Copied!" : "Copy"}
-              </button>
+              <CopyButton value={value} variant="copy" size="xs" disabled={!value} />
             </div>
           );
         })}
@@ -377,24 +338,8 @@ export default function HashPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div
-        className={styles.permalinkRow}
-        data-permalink-row
-        style={mode === "file" ? { display: "none" } : undefined}
-      >
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopyPermalink}
-          >
-            {permalinkCopied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
+      <div style={mode === "file" ? { display: "none" } : undefined}>
+        <PermalinkRow url={url} onReset={handleReset} />
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/my-ip.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton } from "@/components/ui";
 import type { IpData } from "../api/my-ip";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
@@ -16,10 +16,7 @@ export default function MyIpPage(): React.ReactNode {
   const isIframe = useIsIframe();
   const [data, setData] = useState<IpData | null>(null);
   const [status, setStatus] = useState<Status>("idle");
-  const [copied, setCopied] = useState(false);
-  const [copiedCurl, setCopiedCurl] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyCurlTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   const fetchIp = async (): Promise<void> => {
     setStatus("loading");
@@ -40,28 +37,7 @@ export default function MyIpPage(): React.ReactNode {
     void fetchIp(); // eslint-disable-line react-hooks/set-state-in-effect
   }, []);
 
-  const handleCopy = (): void => {
-    if (!data) return;
-    void copyToClipboard(data.ip).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const curlCommand = `curl https://${branding.domain}/api/my-ip`;
-
-  const handleCopyCurl = (): void => {
-    void copyToClipboard(curlCommand).then(() => {
-      setCopiedCurl(true);
-      if (copyCurlTimeoutRef.current) clearTimeout(copyCurlTimeoutRef.current);
-      copyCurlTimeoutRef.current = setTimeout(() => {
-        setCopiedCurl(false);
-      }, 1500);
-    });
-  };
 
   const rows: { label: string; value: string | null | undefined }[] = data
     ? [
@@ -120,14 +96,7 @@ export default function MyIpPage(): React.ReactNode {
         <div className={styles.ipPanel}>
           <div className={styles.panelHeader}>
             <span className={styles.panelLabel}>Public IP Address</span>
-            {!isIframe && data && (
-              <button
-                className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-                onClick={handleCopy}
-              >
-                {copied ? "Copied!" : "Copy"}
-              </button>
-            )}
+            {data && <CopyButton value={data.ip} variant="ghost" size="sm" />}
           </div>
           <div className={styles.ipValue}>
             {status === "loading" && (
@@ -156,34 +125,23 @@ export default function MyIpPage(): React.ReactNode {
           </div>
         )}
 
-        {!isIframe && (
-          <div className={styles.detailsPanel}>
+        <div className={styles.detailsPanel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelLabel}>API</span>
-              <button
-                className={`${styles.copyBtn}${copiedCurl ? ` ${styles.copied}` : ""}`}
-                onClick={handleCopyCurl}
-              >
-                {copiedCurl ? "Copied!" : "Copy"}
-              </button>
+              <CopyButton value={curlCommand} variant="ghost" size="sm" />
             </div>
             <div className={styles.curlRow}>
               <code className={styles.curlCode}>{curlCommand}</code>
             </div>
           </div>
-        )}
       </div>
 
       <hr className={styles.divider} />
 
       <div className={styles.bottomRow}>
-        <button
-          className={styles.refreshBtn}
-          onClick={fetchIp}
-          disabled={status === "loading"}
-        >
+        <Button variant="copy" onClick={fetchIp} disabled={status === "loading"}>
           {status === "loading" ? "Fetching…" : "Refresh"}
-        </button>
+        </Button>
       </div>
     </div>
   );

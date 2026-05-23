@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/keycode.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 interface KeyInfo {
@@ -31,9 +31,6 @@ export default function KeycodePage(): React.ReactNode {
   const isIframe = useIsIframe();
   const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(null);
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   useEffect(() => {
     setUrl(window.location.href); // eslint-disable-line react-hooks/set-state-in-effect
     const handleKeyDown = (e: KeyboardEvent): void => {
@@ -73,14 +70,10 @@ export default function KeycodePage(): React.ReactNode {
       : keyInfo.key
     : null;
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
+  const handleReset = (): void => {
+    const newUrl = `${window.location.origin}${window.location.pathname}`;
+    history.replaceState(null, "", newUrl);
+    setUrl(newUrl);
   };
 
   return (
@@ -179,18 +172,7 @@ export default function KeycodePage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

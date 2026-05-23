@@ -4,7 +4,7 @@ import styles from "@/styles/numbase.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 interface Values {
@@ -31,12 +31,7 @@ export default function NumbasePage(): React.ReactNode {
   const [values, setValues] = useState<Values>(empty);
   const [errorField, setErrorField] = useState<keyof Values | null>(null);
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedField, setCopiedField] = useState<keyof Values | null>(null);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyFieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+
 
   const buildUrl = (dec: string): string => {
     if (!dec) return `${window.location.origin}${window.location.pathname}`;
@@ -112,26 +107,7 @@ export default function NumbasePage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
 
-  const handleCopyField = (field: keyof Values): void => {
-    void copyToClipboard(values[field]).then(() => {
-      setCopiedField(field);
-      if (copyFieldTimeoutRef.current)
-        clearTimeout(copyFieldTimeoutRef.current);
-      copyFieldTimeoutRef.current = setTimeout(() => {
-        setCopiedField(null);
-      }, 1500);
-    });
-  };
 
   const panels: {
     field: keyof Values;
@@ -237,15 +213,8 @@ export default function NumbasePage(): React.ReactNode {
                   autoCapitalize="off"
                   autoCorrect="off"
                 />
-                {val && !isError && !isIframe && (
-                  <button
-                    className={`${styles.copyFieldBtn}${copiedField === field ? ` ${styles.copied}` : ""}`}
-                    onClick={() => {
-                      handleCopyField(field);
-                    }}
-                  >
-                    {copiedField === field ? "Copied!" : "Copy"}
-                  </button>
+                {val && !isError && (
+                  <CopyButton value={val} variant="ghost" size="xs" />
                 )}
               </div>
             </div>
@@ -255,21 +224,7 @@ export default function NumbasePage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

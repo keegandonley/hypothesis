@@ -3,6 +3,7 @@ import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/datetime.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
@@ -156,10 +157,6 @@ export default function DateTimePage(): React.ReactNode {
   const [copied, setCopied] = useState<string | null>(null);
   const [url, setUrl] = useState("");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const [permalinkCopied, setPermalinkCopied] = useState(false);
   const liveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const relativeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
     null,
@@ -236,17 +233,6 @@ export default function DateTimePage(): React.ReactNode {
       setCopied(id);
       copyTimeoutRef.current = setTimeout(() => {
         setCopied(null);
-      }, 1500);
-    });
-  };
-
-  const handlePermalinkCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      if (permalinkCopyTimeoutRef.current)
-        clearTimeout(permalinkCopyTimeoutRef.current);
-      setPermalinkCopied(true);
-      permalinkCopyTimeoutRef.current = setTimeout(() => {
-        setPermalinkCopied(false);
       }, 1500);
     });
   };
@@ -425,21 +411,7 @@ export default function DateTimePage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-            onClick={handlePermalinkCopy}
-          >
-            {permalinkCopied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

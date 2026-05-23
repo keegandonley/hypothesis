@@ -1,11 +1,11 @@
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "@/styles/bytes.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { CopyButton, PermalinkRow } from "@/components/ui";
 
 type Mode = "binary" | "decimal";
 
@@ -43,12 +43,7 @@ export default function BytesPage(): React.ReactNode {
   const [rawValue, setRawValue] = useState("");
   const [selectedUnit, setSelectedUnit] = useState("B");
   const [mode, setMode] = useState<Mode>("binary");
-  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [url, setUrl] = useState("");
-  const [copiedUrl, setCopiedUrl] = useState(false);
-  const copyTimeouts = useRef<Map<number, ReturnType<typeof setTimeout>>>(
-    new Map(),
-  );
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -93,19 +88,6 @@ export default function BytesPage(): React.ReactNode {
     setMode(m);
     setSelectedUnit(newUnit);
     updateUrl(rawValue, newUnit, m);
-  }
-
-  function handleCopy(value: string, idx: number): void {
-    void copyToClipboard(value);
-    setCopiedIdx(idx);
-    const prev = copyTimeouts.current.get(idx);
-
-    if (prev) clearTimeout(prev);
-    const t = setTimeout(() => {
-      setCopiedIdx((c) => (c === idx ? null : c));
-    }, 1500);
-
-    copyTimeouts.current.set(idx, t);
   }
 
   const units = mode === "binary" ? BINARY_UNITS : DECIMAL_UNITS;
@@ -224,16 +206,7 @@ export default function BytesPage(): React.ReactNode {
               >
                 {display}
               </span>
-              {!isIframe && bytes !== null && (
-                <button
-                  className={`${styles.copyBtn} ${copiedIdx === idx ? styles.copied : ""}`}
-                  onClick={() => {
-                    handleCopy(display.replace(/,/g, ""), idx);
-                  }}
-                >
-                  {copiedIdx === idx ? "Copied!" : "Copy"}
-                </button>
-              )}
+              {bytes !== null && <CopyButton value={display.replace(/,/g, "")} variant="copy" size="xs" />}
             </div>
           );
         })}
@@ -241,36 +214,13 @@ export default function BytesPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copiedUrl ? ` ${styles.copied}` : ""}`}
-            onClick={() => {
-              void copyToClipboard(url);
-              setCopiedUrl(true);
-              setTimeout(() => {
-                setCopiedUrl(false);
-              }, 1500);
-            }}
-          >
-            {copiedUrl ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button
-          className={styles.resetBtn}
-          onClick={() => {
-            setRawValue("");
-            setSelectedUnit("B");
-            setMode("binary");
-            history.replaceState(null, "", window.location.pathname);
-            setUrl(window.location.href);
-          }}
-        >
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={() => {
+        setRawValue("");
+        setSelectedUnit("B");
+        setMode("binary");
+        history.replaceState(null, "", window.location.pathname);
+        setUrl(window.location.href);
+      }} />
     </div>
   );
 }

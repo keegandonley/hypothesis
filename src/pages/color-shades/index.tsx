@@ -3,6 +3,7 @@ import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/color-shades.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
@@ -100,7 +101,6 @@ export default function ColorShadesPage(): React.ReactNode {
   const isIframe = useIsIframe();
   const [color, setColor] = useState("#3b82f6");
   const [pageUrl, setPageUrl] = useState("");
-  const [copied, setCopied] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -134,16 +134,6 @@ export default function ColorShadesPage(): React.ReactNode {
 
     history.replaceState(null, "", newUrl);
     setPageUrl(newUrl);
-  };
-
-  const handleCopy = (): void => {
-    void copyToClipboard(pageUrl).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
   };
 
   const handleReset = (): void => {
@@ -295,21 +285,7 @@ export default function ColorShadesPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{pageUrl}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={pageUrl} onReset={handleReset} />
     </div>
   );
 }

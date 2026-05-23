@@ -4,9 +4,9 @@ import styles from "@/styles/qr.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import QRCode from "qrcode";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 
 type ECLevel = "L" | "M" | "Q" | "H";
 type QrMode = "text" | "wifi" | "vcard";
@@ -108,14 +108,7 @@ export default function QrPage(): React.ReactNode {
   const [ecLevel, setEcLevel] = useState<ECLevel>("M");
   const [svgContent, setSvgContent] = useState("");
   const [error, setError] = useState("");
-  const [copiedSvg, setCopiedSvg] = useState(false);
-  const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [pageUrl, setPageUrl] = useState("");
-
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
 
   const generateQR = async (text: string, ec: ECLevel): Promise<void> => {
     if (!text.trim()) {
@@ -290,17 +283,6 @@ export default function QrPage(): React.ReactNode {
     setPageUrl(url);
   };
 
-  const handleCopyPermalink = (): void => {
-    void copyToClipboard(pageUrl).then(() => {
-      setPermalinkCopied(true);
-      if (permalinkTimeoutRef.current)
-        clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(() => {
-        setPermalinkCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleDownloadSvg = (): void => {
     if (!svgContent) return;
     const blob = new Blob([svgContent], { type: "image/svg+xml" });
@@ -331,17 +313,6 @@ export default function QrPage(): React.ReactNode {
     a.href = dataUrl;
     a.download = "qrcode.png";
     a.click();
-  };
-
-  const handleCopySvg = (): void => {
-    if (!svgContent) return;
-    void copyToClipboard(svgContent).then(() => {
-      setCopiedSvg(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopiedSvg(false);
-      }, 1500);
-    });
   };
 
   const hasContent = !!getQrString(mode, value, wifi, vcard).trim();
@@ -473,15 +444,16 @@ export default function QrPage(): React.ReactNode {
                   <label className={styles.formLabel}>Security</label>
                   <div className={styles.toggleGroup}>
                     {(["WPA", "WEP", "nopass"] as WifiSecurity[]).map((s) => (
-                      <button
+                      <Button
                         key={s}
-                        className={`${styles.toggleBtn}${wifi.security === s ? ` ${styles.active}` : ""}`}
+                        variant="toggle"
+                        active={wifi.security === s}
                         onClick={() => {
                           handleWifiChange({ security: s });
                         }}
                       >
                         {s === "nopass" ? "None" : s}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
@@ -489,15 +461,16 @@ export default function QrPage(): React.ReactNode {
                   <label className={styles.formLabel}>Hidden network</label>
                   <div className={styles.toggleGroup}>
                     {([false, true] as boolean[]).map((h) => (
-                      <button
+                      <Button
                         key={String(h)}
-                        className={`${styles.toggleBtn}${wifi.hidden === h ? ` ${styles.active}` : ""}`}
+                        variant="toggle"
+                        active={wifi.hidden === h}
                         onClick={() => {
                           handleWifiChange({ hidden: h });
                         }}
                       >
                         {h ? "Yes" : "No"}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
@@ -594,16 +567,17 @@ export default function QrPage(): React.ReactNode {
             <span className={styles.settingLabel}>Error Correction</span>
             <div className={styles.toggleGroup}>
               {EC_LEVELS.map((ec) => (
-                <button
+                <Button
                   key={ec}
-                  className={`${styles.toggleBtn}${ecLevel === ec ? ` ${styles.active}` : ""}`}
+                  variant="toggle"
+                  active={ecLevel === ec}
                   onClick={() => {
                     handleEcChange(ec);
                   }}
                   title={EC_DESCRIPTIONS[ec]}
                 >
                   {ec}
-                </button>
+                </Button>
               ))}
             </div>
             <span className={styles.ecDesc}>{EC_DESCRIPTIONS[ecLevel]}</span>
@@ -625,13 +599,12 @@ export default function QrPage(): React.ReactNode {
               >
                 Download PNG
               </button>
-              <button
-                className={`${styles.copySvgBtn}${copiedSvg ? ` ${styles.copied}` : ""}`}
+              <CopyButton
+                value={svgContent}
+                variant="ghost"
+                size="sm"
                 disabled={!svgContent}
-                onClick={handleCopySvg}
-              >
-                {copiedSvg ? "Copied!" : "Copy SVG"}
-              </button>
+              />
             </div>
           )}
         </div>
@@ -654,21 +627,7 @@ export default function QrPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{pageUrl}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopyPermalink}
-          >
-            {permalinkCopied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={pageUrl} onReset={handleReset} />
     </div>
   );
 }

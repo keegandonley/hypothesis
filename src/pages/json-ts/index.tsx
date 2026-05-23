@@ -4,8 +4,8 @@ import styles from "@/styles/json-ts.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 
 type JsonValue =
   | string
@@ -131,12 +131,6 @@ export default function JsonTsPage(): React.ReactNode {
   const [optional, setOptional] = useState(false);
   const [jsonValid, setJsonValid] = useState<boolean | null>(null);
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedOutput, setCopiedOutput] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyOutputTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
 
   const buildUrl = (j: string, n: string, o: boolean): string => {
     if (!j) return `${window.location.origin}${window.location.pathname}`;
@@ -234,27 +228,6 @@ export default function JsonTsPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
-  const handleCopyOutput = (): void => {
-    void copyToClipboard(tsOutput).then(() => {
-      setCopiedOutput(true);
-      if (copyOutputTimeoutRef.current)
-        clearTimeout(copyOutputTimeoutRef.current);
-      copyOutputTimeoutRef.current = setTimeout(() => {
-        setCopiedOutput(false);
-      }, 1500);
-    });
-  };
-
   return (
     <div className={styles.page}>
       <ToolHead
@@ -323,14 +296,7 @@ export default function JsonTsPage(): React.ReactNode {
           <div className={styles.panelHeader}>
             <span className={styles.panelLabel}>TypeScript Output</span>
             <div className={styles.panelHeaderRight}>
-              {!isIframe && tsOutput && (
-                <button
-                  className={`${styles.copyBtn}${copiedOutput ? ` ${styles.copied}` : ""}`}
-                  onClick={handleCopyOutput}
-                >
-                  {copiedOutput ? "Copied!" : "Copy"}
-                </button>
-              )}
+              {tsOutput && <CopyButton value={tsOutput} variant="ghost" size="sm" />}
             </div>
           </div>
           <div className={styles.textareaWrapper}>
@@ -359,31 +325,18 @@ export default function JsonTsPage(): React.ReactNode {
             spellCheck={false}
           />
         </label>
-        <button
-          className={`${styles.toggleBtn}${optional ? ` ${styles.active}` : ""}`}
+        <Button
+          variant="toggle"
+          active={optional}
           onClick={handleOptionalToggle}
         >
           Optional fields {optional ? "ON" : "OFF"}
-        </button>
+        </Button>
       </div>
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.permalinkCopyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

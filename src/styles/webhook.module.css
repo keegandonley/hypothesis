@@ -133,35 +133,6 @@
   letter-spacing: 0.04em;
 }
 
-.copyBtn {
-  padding: 4px 10px;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--text);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    background-color 0.15s,
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.copyBtn:hover {
-  background-color: var(--border);
-  color: var(--text);
-}
-
-.copyBtn.copied {
-  background-color: var(--accent-subtle);
-  border-color: var(--accent-border);
-  color: var(--accent);
-}
-
 .appNotice {
   display: flex;
   flex-direction: row;
@@ -216,26 +187,6 @@
 
 .statusCardError .statusCardMessage {
   color: #ef4444;
-}
-
-.statusCardAction {
-  align-self: flex-start;
-  padding: 5px 12px;
-  background: transparent;
-  border: 1px solid var(--accent-border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--accent);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color 0.15s;
-}
-
-.statusCardAction:hover {
-  background-color: var(--accent-subtle);
 }
 
 .sensitiveWarning {
@@ -353,45 +304,6 @@
   flex-wrap: wrap;
 }
 
-.methodToggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 8px 3px 5px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.methodToggle::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--border);
-  flex-shrink: 0;
-  transition: background 0.15s;
-}
-
-.methodToggle.active {
-  border-color: var(--method-color, var(--accent-border));
-  color: var(--method-color, var(--accent));
-}
-
-.methodToggle.active::before {
-  background: var(--method-color, var(--accent));
-}
-
 .curlPanelBody {
   flex: 1;
   overflow-y: auto;
@@ -453,22 +365,4 @@
   letter-spacing: 0.02em;
 }
 
-.idleAction {
-  align-self: flex-start;
-  padding: 5px 12px;
-  background: transparent;
-  border: 1px solid var(--accent-border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--accent);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color 0.15s;
-}
 
-.idleAction:hover {
-  background-color: var(--accent-subtle);
-}

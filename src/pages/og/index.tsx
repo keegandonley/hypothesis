@@ -4,7 +4,7 @@ import styles from "@/styles/og.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 interface OgData {
@@ -70,10 +70,7 @@ export default function OgPage(): React.ReactNode {
   const isIframe = useIsIframe();
   const [data, setData] = useState<OgData>(DEFAULT);
   const [pageUrl, setPageUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedTags, setCopiedTags] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const tagsCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   const tags = buildTags(data);
   const hasImage = data.image.trim().length > 0;
@@ -115,15 +112,7 @@ export default function OgPage(): React.ReactNode {
     setPageUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(pageUrl).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
+
 
   const handleReset = (): void => {
     setData(DEFAULT);
@@ -131,16 +120,6 @@ export default function OgPage(): React.ReactNode {
 
     history.replaceState(null, "", newUrl);
     setPageUrl(newUrl);
-  };
-
-  const handleCopyTags = (): void => {
-    void copyToClipboard(tags).then(() => {
-      setCopiedTags(true);
-      if (tagsCopyTimeoutRef.current) clearTimeout(tagsCopyTimeoutRef.current);
-      tagsCopyTimeoutRef.current = setTimeout(() => {
-        setCopiedTags(false);
-      }, 1500);
-    });
   };
 
   return (
@@ -324,15 +303,7 @@ export default function OgPage(): React.ReactNode {
           <div className={styles.outputBlock}>
             <div className={styles.outputHeader}>
               <span className={styles.outputLabel}>Meta Tags</span>
-              {!isIframe && (
-                <button
-                  className={`${styles.panelCopyBtn}${copiedTags ? ` ${styles.panelCopied}` : ""}`}
-                  onClick={handleCopyTags}
-                  disabled={!tags}
-                >
-                  {copiedTags ? "Copied!" : "Copy"}
-                </button>
-              )}
+              <CopyButton value={tags} variant="ghost" size="xs" disabled={!tags} />
             </div>
             <pre className={styles.code}>
               {tags || "Fill in fields above to generate tags"}
@@ -343,21 +314,7 @@ export default function OgPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{pageUrl}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={pageUrl} onReset={handleReset} />
     </div>
   );
 }

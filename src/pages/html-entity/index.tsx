@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/html-entity.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 // HTML5 named entity map (comprehensive set)
@@ -213,10 +213,8 @@ export default function HtmlEntityPage(): React.ReactNode {
   const isIframe = useIsIframe();
   const [decoded, setDecoded] = useState("");
   const [encoded, setEncoded] = useState("");
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
   const [encodeMode, setEncodeMode] = useState<EncodeMode>("special");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const buildUrl = (dec: string, mode: EncodeMode): string => {
     if (!dec) return `${window.location.origin}${window.location.pathname}`;
@@ -289,16 +287,6 @@ export default function HtmlEntityPage(): React.ReactNode {
 
     history.replaceState(null, "", newUrl);
     setUrl(window.location.href);
-  };
-
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
   };
 
   return (
@@ -377,50 +365,21 @@ export default function HtmlEntityPage(): React.ReactNode {
       <div className={styles.modeSelector}>
         <span className={styles.fieldLabel}>Encode Mode</span>
         <div className={styles.modeButtons}>
-          <button
-            className={`${styles.modeBtn} ${encodeMode === "special" ? styles.active : ""}`}
-            onClick={() => {
-              handleModeChange("special");
-            }}
-          >
+          <Button variant="tab" active={encodeMode === "special"} onClick={() => { handleModeChange("special"); }}>
             Special (&lt; &gt; &amp; &quot; &apos;)
-          </button>
-          <button
-            className={`${styles.modeBtn} ${encodeMode === "non-ascii" ? styles.active : ""}`}
-            onClick={() => {
-              handleModeChange("non-ascii");
-            }}
-          >
+          </Button>
+          <Button variant="tab" active={encodeMode === "non-ascii"} onClick={() => { handleModeChange("non-ascii"); }}>
             Non-ASCII Only (excludes special chars)
-          </button>
-          <button
-            className={`${styles.modeBtn} ${encodeMode === "all" ? styles.active : ""}`}
-            onClick={() => {
-              handleModeChange("all");
-            }}
-          >
+          </Button>
+          <Button variant="tab" active={encodeMode === "all"} onClick={() => { handleModeChange("all"); }}>
             Special + Non-ASCII
-          </button>
+          </Button>
         </div>
       </div>
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

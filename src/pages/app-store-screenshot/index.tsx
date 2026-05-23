@@ -5,6 +5,7 @@ import styles from "@/styles/app-store-screenshot.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button } from "@/components/ui";
 
 type Dimension =
   | "1242x2688"
@@ -557,9 +558,9 @@ export default function AppStoreScreenshot(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.footerRow}>
-        <button className={styles.resetBtn} onClick={handleReset}>
+        <Button variant="reset" onClick={handleReset}>
           Reset
-        </button>
+        </Button>
       </div>
     </div>
   );

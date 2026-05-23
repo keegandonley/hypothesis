@@ -3,6 +3,7 @@ import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/bitwise.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
@@ -61,12 +62,8 @@ export default function BitwisePage(): React.ReactNode {
   const [inputA, setInputA] = useState("60");
   const [inputB, setInputB] = useState("13");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [url, setUrl] = useState("");
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
 
   const parseInput = (val: string): number | null => {
     if (val.trim() === "" || val.trim() === "-") return null;
@@ -124,17 +121,6 @@ export default function BitwisePage(): React.ReactNode {
 
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
-  };
-
-  const handleCopyPermalink = (): void => {
-    void copyToClipboard(url).then(() => {
-      setPermalinkCopied(true);
-      if (permalinkTimeoutRef.current)
-        clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(() => {
-        setPermalinkCopied(false);
-      }, 1500);
-    });
   };
 
   const handleCopy = (key: string, value: string): void => {
@@ -266,21 +252,7 @@ export default function BitwisePage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopyPermalink}
-          >
-            {permalinkCopied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

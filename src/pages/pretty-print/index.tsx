@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/pretty-print.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton } from "@/components/ui";
 
 const URL_LIMIT = 2000;
 
@@ -17,8 +17,6 @@ export default function PrettyPrintPage(): React.ReactNode {
   const [jsonValid, setJsonValid] = useState<boolean | null>(null);
   const [url, setUrl] = useState("");
   const [urlTooLong, setUrlTooLong] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const buildUrl = (encoded: string): string => {
     if (!encoded) return `${window.location.origin}${window.location.pathname}`;
@@ -87,21 +85,6 @@ export default function PrettyPrintPage(): React.ReactNode {
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
     setUrlTooLong(false);
-  };
-
-  const handleCopy = (): void => {
-    if (urlTooLong) return;
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
-  const handleCopyOutput = (): void => {
-    void copyToClipboard(output);
   };
 
   return (
@@ -178,11 +161,7 @@ export default function PrettyPrintPage(): React.ReactNode {
               placeholder="Formatted output appears here..."
               spellCheck={false}
             />
-            {output.length > 0 && !isIframe && (
-              <button className={styles.formatBtn} onClick={handleCopyOutput}>
-                Copy
-              </button>
-            )}
+            {output.length > 0 && <CopyButton value={output} variant="ghost" size="sm" className={styles.formatBtnCopy} />}
           </div>
         </div>
       </div>
@@ -196,18 +175,10 @@ export default function PrettyPrintPage(): React.ReactNode {
         >
           {urlTooLong ? "url too long to share" : url}
         </span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}${urlTooLong ? ` ${styles.copyBtnDisabled}` : ""}`}
-            onClick={handleCopy}
-            disabled={urlTooLong}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
+        <CopyButton value={url} disabled={urlTooLong} />
+        <Button variant="reset" onClick={handleReset}>
           Reset
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import styles from "@/styles/css-unit.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
@@ -119,10 +120,8 @@ export default function CssUnitPage(): React.ReactNode {
   const [inputValue, setInputValue] = useState<string>("16");
   const [inputUnit, setInputUnit] = useState<CSSUnit>("px");
   const [context, setContext] = useState<ConversionContext>(DEFAULT_CONTEXT);
-  const [copied, setCopied] = useState(false);
   const [copiedUnit, setCopiedUnit] = useState<string | null>(null);
   const [url, setUrl] = useState("");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const copyUnitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const buildUrl = (
@@ -207,16 +206,6 @@ export default function CssUnitPage(): React.ReactNode {
 
     setContext(newContext);
     updateUrl(inputValue, inputUnit, newContext);
-  };
-
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
   };
 
   const handleCardCopy = (unit: string, value: string): void => {
@@ -426,21 +415,7 @@ export default function CssUnitPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

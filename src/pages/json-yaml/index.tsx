@@ -1,10 +1,10 @@
 import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import styles from "@/styles/json-yaml.module.css";
 import { DocIcon } from "@/components/icons/doc";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { dump, load } from "js-yaml";
 
@@ -15,9 +15,7 @@ export default function JsonYamlPage(): React.ReactNode {
   const [yaml, setYaml] = useState("");
   const [jsonError, setJsonError] = useState(false);
   const [yamlError, setYamlError] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
-  const copyTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -105,13 +103,13 @@ export default function JsonYamlPage(): React.ReactNode {
     }
   }
 
-  function handleCopy(): void {
-    void copyToClipboard(url);
-    setCopied(true);
-    if (copyTimeout.current) clearTimeout(copyTimeout.current);
-    copyTimeout.current = setTimeout(() => {
-      setCopied(false);
-    }, 1500);
+  function handleReset(): void {
+    setJson("");
+    setYaml("");
+    setJsonError(false);
+    setYamlError(false);
+    history.replaceState(null, "", window.location.pathname);
+    setUrl(window.location.href);
   }
 
   return (
@@ -197,31 +195,7 @@ export default function JsonYamlPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn} ${copied ? styles.copied : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button
-          className={styles.resetBtn}
-          onClick={() => {
-            setJson("");
-            setYaml("");
-            setJsonError(false);
-            setYamlError(false);
-            history.replaceState(null, "", window.location.pathname);
-            setUrl(window.location.href);
-          }}
-        >
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }
