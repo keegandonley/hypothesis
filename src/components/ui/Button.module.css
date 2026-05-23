@@ -1,4 +1,5 @@
 .btn {
+  position: relative;
   flex-shrink: 0;
   border-radius: 4px;
   font-family: var(--font-mono);
@@ -11,6 +12,51 @@
     background-color 0.15s,
     border-color 0.15s,
     color 0.15s;
+}
+
+.btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.content {
+  visibility: visible;
+}
+
+.contentHidden {
+  visibility: hidden;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  width: 10px;
+  height: 10px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.successIcon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.errorIcon {
+  font-size: 13px;
+  line-height: 1;
 }
 
 .xs {
@@ -35,15 +81,22 @@
   background-color: var(--accent-hover);
 }
 
-.copy:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
 .copy.copied {
   background-color: var(--accent);
   border-color: var(--accent);
   color: var(--bg);
+}
+
+.copy.error {
+  background-color: var(--danger-subtle);
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+.ghost.error {
+  background-color: var(--danger-subtle);
+  border-color: var(--danger-border);
+  color: var(--danger);
 }
 
 .reset {
@@ -52,7 +105,7 @@
   color: var(--danger);
 }
 
-.reset:hover {
+.reset:hover:not(:disabled) {
   background-color: var(--danger-hover);
 }
 
@@ -64,7 +117,7 @@
   color: var(--muted);
 }
 
-.tab:hover {
+.tab:hover:not(:disabled) {
   border-color: var(--accent-border);
   color: var(--accent);
 }
@@ -117,7 +170,7 @@
   color: var(--muted);
 }
 
-.ghost:hover {
+.ghost:hover:not(:disabled) {
   color: var(--text);
   border-color: var(--text);
 }

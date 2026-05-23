@@ -315,7 +315,6 @@ export default function LoremPage(): React.ReactNode {
             <CopyButton
               value={output}
               variant="ghost"
-              size="sm"
               className={styles.copyOverlay}
               disabled={!output}
             />

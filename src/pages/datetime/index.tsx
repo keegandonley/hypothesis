@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/datetime.module.css";
-import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
-import { copyToClipboard } from "@/lib/copyToClipboard";
+import { Badge, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 interface FormatRow {
@@ -149,9 +148,7 @@ export default function DateTimePage(): React.ReactNode {
   const [liveDate, setLiveDate] = useState<Date | null>(null);
   const [relativeLive, setRelativeLive] = useState(true);
   const [, setRelativeTick] = useState(0);
-  const [copied, setCopied] = useState<string | null>(null);
   const [url, setUrl] = useState("");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const liveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const relativeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
     null,
@@ -222,20 +219,9 @@ export default function DateTimePage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleRowCopy = (id: string, text: string): void => {
-    void copyToClipboard(text).then(() => {
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      setCopied(id);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(null);
-      }, 1500);
-    });
-  };
-
   const handleReset = (): void => {
     setInput("");
     setParsedDate(null);
-    setCopied(null);
     const newUrl = buildUrl("", liveMode);
 
     history.replaceState(null, "", newUrl);
@@ -264,10 +250,8 @@ export default function DateTimePage(): React.ReactNode {
     setLiveMode((prev) => {
       const next = !prev;
       const newUrl = buildUrl(next ? "" : input, next);
-
       history.replaceState(null, "", newUrl);
       setUrl(newUrl);
-
       return next;
     });
   };
@@ -336,7 +320,6 @@ export default function DateTimePage(): React.ReactNode {
       <div className={styles.conversionGrid}>
         {FORMAT_ROWS.map((row) => {
           const value = displayDate ? row.format(displayDate) : null;
-          const isCopied = copied === row.id;
           const isRelativeRow = row.id === "relative";
 
           return (
@@ -347,32 +330,25 @@ export default function DateTimePage(): React.ReactNode {
               ) : (
                 <span className={styles.conversionValueEmpty}>—</span>
               )}
-              <div className={styles.rowActions}>
-                {isRelativeRow && (
-                  <button
-                    className={`${styles.nowBtn}${relativeLive && !liveMode ? ` ${styles.nowBtnActive}` : ""}`}
-                    onClick={liveMode ? undefined : handleRelativeLiveToggle}
-                    disabled={liveMode}
-                  >
-                    {liveMode
-                      ? "Live Unavailable"
-                      : `Live ${relativeLive ? "ON" : "OFF"}`}
-                  </button>
-                )}
-                {!isIframe &&
-                  (value !== null ? (
-                    <button
-                      className={`${styles.copyRowBtn}${isCopied ? ` ${styles.copied}` : ""}`}
-                      onClick={() => {
-                        handleRowCopy(row.id, value);
-                      }}
-                    >
-                      {isCopied ? "Copied!" : "Copy"}
-                    </button>
-                  ) : (
-                    <span className={styles.copyRowBtnDisabled}>Copy</span>
-                  ))}
-              </div>
+                  <div className={styles.rowActions}>
+                    {isRelativeRow && (
+                      <button
+                        className={`${styles.nowBtn}${relativeLive && !liveMode ? ` ${styles.nowBtnActive}` : ""}`}
+                        onClick={liveMode ? undefined : handleRelativeLiveToggle}
+                        disabled={liveMode}
+                      >
+                        {liveMode
+                          ? "Live Unavailable"
+                          : `Live ${relativeLive ? "ON" : "OFF"}`}
+                      </button>
+                    )}
+                    <CopyButton
+                      value={value ?? ""}
+                      variant="ghost"
+                      size="sm"
+                      disabled={value === null}
+                    />
+                  </div>
             </div>
           );
         })}

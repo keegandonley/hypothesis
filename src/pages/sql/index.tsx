@@ -133,7 +133,6 @@ export default function SqlPage(): React.ReactNode {
             <CopyButton
               value={formatted}
               variant="ghost"
-              size="sm"
               disabled={!formatted}
             />
           </PanelHeader>

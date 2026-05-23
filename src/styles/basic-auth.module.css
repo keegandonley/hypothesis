@@ -116,31 +116,13 @@
 }
 
 .passwordInput {
-  padding-right: 60px;
+  padding-right: 80px;
 }
 
-.showHideBtn {
+.showHideWrap {
   position: absolute;
   right: 10px;
-  padding: 2px 8px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    color 0.15s,
-    border-color 0.15s;
-}
-
-.showHideBtn:hover {
-  color: var(--text);
-  border-color: var(--text);
+  display: flex;
 }
 
 .outputs {
@@ -190,10 +172,6 @@
   display: flex;
   align-items: center;
   gap: 6px;
-}
-
-.outputActions .showHideBtn {
-  position: static;
 }
 
 

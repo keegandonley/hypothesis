@@ -335,20 +335,14 @@ export default function WebhookPage(): React.ReactNode {
                 <pre className={styles.curlCode}>
                   {buildCurlCommand(curlMethod, session.webhookUrl)}
                 </pre>
-                <CopyButton value={buildCurlCommand(curlMethod, session.webhookUrl)} variant="ghost" size="sm" />
+                <CopyButton value={buildCurlCommand(curlMethod, session.webhookUrl)} variant="ghost" />
                 <Button
                   variant="copy"
-                  copied={sendState === "sent"}
+                  status={sendState === "sending" ? "pending" : sendState === "sent" ? "success" : sendState === "error" ? "error" : "idle"}
                   onClick={handleSendRequest}
                   disabled={sendState === "sending"}
                 >
-                  {sendState === "sending"
-                    ? "Sending..."
-                    : sendState === "sent"
-                      ? "Sent!"
-                      : sendState === "error"
-                        ? "Error"
-                        : "Send request"}
+                  Send request
                 </Button>
               </div>
             </Panel>

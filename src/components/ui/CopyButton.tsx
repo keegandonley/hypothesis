@@ -45,7 +45,7 @@ export function CopyButton({
       onClick={handleClick}
       disabled={disabled}
     >
-      {copied ? "Copied!" : "Copy"}
+      Copy
     </Button>
   );
 }

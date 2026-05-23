@@ -570,7 +570,6 @@ export default function QrPage(): React.ReactNode {
               <CopyButton
                 value={svgContent}
                 variant="ghost"
-                size="sm"
                 disabled={!svgContent}
               />
             </div>

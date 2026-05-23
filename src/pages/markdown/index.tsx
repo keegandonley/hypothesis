@@ -112,7 +112,7 @@ export default function MarkdownPage(): React.ReactNode {
                 {m}
               </Button>
             ))}
-            <CopyButton value={html} variant="ghost" size="sm" />
+            <CopyButton value={html} variant="ghost" />
           </PanelHeader>
           {viewMode === "preview" ? (
             <div

@@ -183,15 +183,17 @@ export default function BasicAuthPage(): React.ReactNode {
                   autoComplete="off"
                   spellCheck={false}
                 />
-                <button
-                  className={styles.showHideBtn}
-                  onClick={() => {
-                    setShowPassword((v) => !v);
-                  }}
-                  type="button"
-                >
-                  {showPassword ? "hide" : "show"}
-                </button>
+                <span className={styles.showHideWrap}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setShowPassword((v) => !v);
+                    }}
+                  >
+                    {showPassword ? "hide" : "show"}
+                  </Button>
+                </span>
               </div>
             </div>
           </div>
@@ -253,15 +255,15 @@ export default function BasicAuthPage(): React.ReactNode {
               <div className={styles.outputHeader}>
                 <span className={styles.outputLabel}>Password</span>
                 <div className={styles.outputActions}>
-                  <button
-                    className={styles.showHideBtn}
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => {
                       setShowDecodedPassword((v) => !v);
                     }}
-                    type="button"
                   >
                     {showDecodedPassword ? "hide" : "show"}
-                  </button>
+                  </Button>
                   <CopyButton value={decodeResult ? decodeResult.password : ""} variant="ghost" size="sm" disabled={!decodeResult} />
                 </div>
               </div>
