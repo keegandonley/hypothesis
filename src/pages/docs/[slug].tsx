@@ -4,7 +4,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { type GetStaticPaths, type GetStaticProps } from "next";
 import { useRouter } from "next/router";
-import styles from "../../styles/docs.module.css";
+import styles from "@/styles/docs.module.css";
 import { useBranding } from "@/lib/branding";
 import React from "react";
 

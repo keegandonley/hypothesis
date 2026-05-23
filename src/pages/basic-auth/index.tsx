@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
-import styles from "../../styles/basic-auth.module.css";
+import styles from "@/styles/basic-auth.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
@@ -221,8 +221,10 @@ export default function BasicAuthPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.modeTabs}>
+      <div className={styles.modeTabs} role="tablist">
         <button
+          role="tab"
+          aria-selected={mode === "encode"}
           className={`${styles.modeTab}${mode === "encode" ? ` ${styles.modeTabActive}` : ""}`}
           onClick={() => {
             handleModeChange("encode");
@@ -231,6 +233,8 @@ export default function BasicAuthPage(): React.ReactNode {
           Encode
         </button>
         <button
+          role="tab"
+          aria-selected={mode === "decode"}
           className={`${styles.modeTab}${mode === "decode" ? ` ${styles.modeTabActive}` : ""}`}
           onClick={() => {
             handleModeChange("decode");

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { ToolHead } from "@/components/ToolHead";
-import styles from "../../styles/lorem.module.css";
+import styles from "@/styles/lorem.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";

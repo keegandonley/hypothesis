@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
-import styles from "../../styles/datetime.module.css";
+import styles from "@/styles/datetime.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";

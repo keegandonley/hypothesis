@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
-import styles from "../../styles/hash.module.css";
+import styles from "@/styles/hash.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
@@ -269,8 +269,10 @@ export default function HashPage(): React.ReactNode {
       <div className={styles.inputPanel}>
         <div className={styles.panelHeader}>
           <span className={styles.panelLabel}>Input</span>
-          <div className={styles.modeTabs}>
+          <div className={styles.modeTabs} role="tablist">
             <button
+              role="tab"
+              aria-selected={mode === "text"}
               className={`${styles.modeTab}${mode === "text" ? ` ${styles.modeTabActive}` : ""}`}
               onClick={() => {
                 handleModeChange("text");
@@ -279,6 +281,8 @@ export default function HashPage(): React.ReactNode {
               Text
             </button>
             <button
+              role="tab"
+              aria-selected={mode === "file"}
               className={`${styles.modeTab}${mode === "file" ? ` ${styles.modeTabActive}` : ""}`}
               onClick={() => {
                 handleModeChange("file");

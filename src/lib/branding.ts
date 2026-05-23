@@ -20,7 +20,7 @@ const defaultBranding: Branding = {
   colors: { accent: "#7ee8a2" },
 };
 
-const configs: Record<string, Branding> = {
+export const configs: Record<string, Branding> = {
   "conclusion.sh": {
     name: "conclusion",
     domain: "conclusion.sh",

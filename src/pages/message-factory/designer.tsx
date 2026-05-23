@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import styles from "../../styles/message-factory-designer.module.css";
+import styles from "@/styles/message-factory-designer.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";

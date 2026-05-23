@@ -341,8 +341,10 @@ export default function PasswordPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.modeTabs}>
+      <div className={styles.modeTabs} role="tablist">
         <button
+          role="tab"
+          aria-selected={mode === "generate"}
           className={`${styles.modeTab}${mode === "generate" ? ` ${styles.modeTabActive}` : ""}`}
           onClick={() => {
             handleModeChange("generate");
@@ -351,6 +353,8 @@ export default function PasswordPage(): React.ReactNode {
           Generate
         </button>
         <button
+          role="tab"
+          aria-selected={mode === "check"}
           className={`${styles.modeTab}${mode === "check" ? ` ${styles.modeTabActive}` : ""}`}
           onClick={() => {
             handleModeChange("check");

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
-import styles from "../../styles/base64.module.css";
+import styles from "@/styles/base64.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
@@ -331,10 +331,12 @@ export default function Base64Page(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.tabRow}>
+      <div className={styles.tabRow} role="tablist">
         {(["text", "image"] as Tab[]).map((t) => (
           <button
             key={t}
+            role="tab"
+            aria-selected={tab === t}
             className={`${styles.tabBtn}${tab === t ? ` ${styles.tabBtnActive}` : ""}`}
             onClick={() => {
               handleTabChange(t);

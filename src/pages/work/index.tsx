@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Head from "next/head";
-import styles from "../../styles/work.module.css";
+import styles from "@/styles/work.module.css";
 import { useBranding } from "@/lib/branding";
 import {
   tools,

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import Head from "next/head";
-import styles from "../../styles/open-mobile.module.css";
+import styles from "@/styles/open-mobile.module.css";
 
 const APP_STORE_URL =
   "https://apps.apple.com/us/app/hypothesis-sh/id6764898246";

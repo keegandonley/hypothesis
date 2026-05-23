@@ -61,7 +61,7 @@ export default function MediaFilesPage(): React.ReactNode {
         <meta property="og:type" content="website" />
         <link
           rel="canonical"
-          href={`https://${branding.domain}/references/media-files`}
+          href="https://hypothesis.sh/references/media-files"
         />
       </Head>
 
