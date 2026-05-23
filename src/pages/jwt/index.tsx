@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/jwt.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { Badge, Button, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
+import { Badge, Button, Panel, PanelHeader, PanelBody, PageLayout, PermalinkRow } from "@/components/ui";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 interface JwtParts {
@@ -100,8 +95,6 @@ function getExpiryStatus(
 }
 
 export default function JwtPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [token, setToken] = useState("");
   const [decoded, setDecoded] = useState<JwtParts | null>(null);
   const [error, setError] = useState(false);
@@ -177,46 +170,19 @@ export default function JwtPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="JWT Decoder"
-        description="Decode and inspect JWT tokens online — view header, payload claims, and expiry status. Free, no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="JWT Decoder"
+        metaDescription="Decode and inspect JWT tokens online — view header, payload claims, and expiry status. Free, no installation required. No data sent to servers."
         path="/jwt"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/jwt"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>JWT Decoder</h1>
-        <p className={styles.tagline}>
-          Decode JWT tokens and inspect header, payload, and expiry
-        </p>
+        h1="JWT Decoder"
+        tagline="Decode JWT tokens and inspect header, payload, and expiry"
+      >
         <ReferenceLinks
           refs={[
             { name: "HTTP Headers", slug: "http-headers" },
             { name: "HTTP Status Codes", slug: "http-status-codes" },
           ]}
         />
-      </div>
-
-      <hr className={styles.divider} />
 
       <div className={styles.inputPanel}>
         <PanelHeader label="Token">
@@ -284,6 +250,8 @@ export default function JwtPage(): React.ReactNode {
           </div>
         </Panel>
       </div>
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 

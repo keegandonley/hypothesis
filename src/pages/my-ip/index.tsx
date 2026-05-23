@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/my-ip.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, CopyButton } from "@/components/ui";
+import { Button, CopyButton, PageLayout } from "@/components/ui";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 import type { IpData } from "../api/my-ip";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
@@ -14,7 +10,6 @@ type Status = "idle" | "loading" | "success" | "error";
 
 export default function MyIpPage(): React.ReactNode {
   const branding = useBranding();
-  const isIframe = useIsIframe();
   const [data, setData] = useState<IpData | null>(null);
   const [status, setStatus] = useState<Status>("idle");
 
@@ -53,45 +48,19 @@ export default function MyIpPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="My IP"
-        description="Look up your current public IP address, geolocation, and network details. Free online IP lookup tool."
+      <PageLayout
+        metaTitle="My IP"
+        metaDescription="Look up your current public IP address, geolocation, and network details. Free online IP lookup tool."
         path="/my-ip"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/my-ip"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>My IP</h1>
-        <p className={styles.tagline}>
-          Your current public IP address and location info
-        </p>
+        h1="My IP"
+        tagline="Your current public IP address and location info"
+      >
         <ReferenceLinks
           refs={[
             { name: "DNS Record Types", slug: "dns-record-types" },
             { name: "Port Numbers", slug: "port-numbers" },
           ]}
         />
-      </div>
-
-      <hr className={styles.divider} />
 
       <div className={styles.body}>
         <Panel>
@@ -140,6 +109,7 @@ export default function MyIpPage(): React.ReactNode {
           {status === "loading" ? "Fetching…" : "Refresh"}
         </Button>
       </div>
+      </PageLayout>
     </div>
   );
 }

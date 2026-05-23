@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/markdown.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
 import { marked } from "marked";
-import { Button, CopyButton, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
+import { Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 
 type ViewMode = "preview" | "html";
 
@@ -30,8 +25,6 @@ const greet = (name) => \`Hello, \${name}!\`;
 `;
 
 export default function MarkdownPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("preview");
   const [url, setUrl] = useState("");
@@ -83,40 +76,13 @@ export default function MarkdownPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Markdown to HTML"
-        description="Preview Markdown as rendered HTML with live sync. Toggle between output and raw HTML source. Free online Markdown previewer — no installation required."
+      <PageLayout
+        metaTitle="Markdown to HTML"
+        metaDescription="Preview Markdown as rendered HTML with live sync. Toggle between output and raw HTML source. Free online Markdown previewer — no installation required."
         path="/markdown"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/markdown"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Markdown</h1>
-        <p className={styles.tagline}>
-          Convert Markdown to HTML with a live preview
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Markdown"
+        tagline="Convert Markdown to HTML with a live preview"
+      >
 
       <div className={styles.panels}>
         <Panel>
@@ -163,6 +129,8 @@ export default function MarkdownPage(): React.ReactNode {
           )}
         </Panel>
       </div>
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 

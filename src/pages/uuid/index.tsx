@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/uuid.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
 import { v1, v4, v7 } from "uuid";
-import { Badge, Button, CopyButton } from "@/components/ui";
+import { Badge, Button, CopyButton, PageLayout } from "@/components/ui";
 import { Panel, PanelHeader, PanelBody } from "@/components/ui/Panel";
 
 function generate(ver: 1 | 4 | 7): string {
@@ -18,8 +13,6 @@ function generate(ver: 1 | 4 | 7): string {
 }
 
 export default function UuidPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [uuid, setUuid] = useState("");
   const [version, setVersion] = useState<1 | 4 | 7>(4);
 
@@ -53,39 +46,13 @@ export default function UuidPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="UUID Generator"
-        description="Generate cryptographically secure UUIDs (v1, v4, v7) and inspect existing ones. Free online UUID generator — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="UUID Generator"
+        metaDescription="Generate cryptographically secure UUIDs (v1, v4, v7) and inspect existing ones. Free online UUID generator — no installation required. No data sent to servers."
         path="/uuid"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/uuid"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>UUID</h1>
-        <p className={styles.tagline}>
-          Generate UUIDs of any version with one click
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="UUID"
+        tagline="Generate UUIDs of any version with one click"
+      >
 
       <div className={styles.panels}>
         <Panel>
@@ -127,6 +94,7 @@ export default function UuidPage(): React.ReactNode {
           Regenerate
         </Button>
       </div>
+      </PageLayout>
     </div>
   );
 }

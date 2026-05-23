@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
 import styles from "@/styles/chmod.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
-import { Badge, Button, CopyButton, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 type Perms = [number, number, number]; // [owner, group, other]
@@ -71,8 +66,6 @@ function detectInput(raw: string): "numeric" | "symbolic" | "unknown" {
 }
 
 export default function ChmodPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [perms, setPerms] = useState<Perms | null>(null);
   const [error, setError] = useState(false);
@@ -169,46 +162,19 @@ export default function ChmodPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Chmod Calculator"
-        description="Convert Unix file permissions between numeric (755) and symbolic (rwxr-xr-x) modes. Free online chmod calculator — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Chmod Calculator"
+        metaDescription="Convert Unix file permissions between numeric (755) and symbolic (rwxr-xr-x) modes. Free online chmod calculator — no installation required. No data sent to servers."
         path="/chmod"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/chmod"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>chmod</h1>
-        <p className={styles.tagline}>
-          Convert between numeric and symbolic Unix file permission modes
-        </p>
+        h1="chmod"
+        tagline="Convert between numeric and symbolic Unix file permission modes"
+      >
         <ReferenceLinks
           refs={[
             { name: "Unix Signals", slug: "unix-signals" },
             { name: "Exit Codes", slug: "exit-codes" },
           ]}
         />
-      </div>
-
-      <hr className={styles.divider} />
 
       <div className={styles.inputRow}>
         <input
@@ -295,6 +261,8 @@ export default function ChmodPage(): React.ReactNode {
           </div>
         </>
       )}
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 

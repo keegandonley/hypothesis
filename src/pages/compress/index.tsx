@@ -1,12 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
 import { upload } from "@vercel/blob/client";
 import styles from "@/styles/compress.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { Button } from "@/components/ui";
+import { Button, PageLayout } from "@/components/ui";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 type OutputFormat = "png" | "webp" | "avif";
@@ -45,8 +40,6 @@ function savings(
 }
 
 export default function CompressPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [entries, setEntries] = useState<FileEntry[]>([]);
   const [format, setFormat] = useState<OutputFormat>("png");
   const [quality, setQuality] = useState(FORMAT_QUALITY_DEFAULTS.png);
@@ -231,42 +224,14 @@ export default function CompressPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Image Compressor"
-        description="Compress PNG, JPEG, and WebP images with side-by-side comparison. Convert to WebP or AVIF. Free online image compressor — no installation required."
+      <PageLayout
+        metaTitle="Image Compressor"
+        metaDescription="Compress PNG, JPEG, and WebP images with side-by-side comparison. Convert to WebP or AVIF. Free online image compressor — no installation required."
         path="/compress"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/compress"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Image Compressor</h1>
-        <p className={styles.tagline}>
-          Compress PNG, JPEG, and WebP images — convert to WebP or AVIF for
-          maximum savings
-        </p>
+        h1="Image Compressor"
+        tagline="Compress PNG, JPEG, and WebP images — convert to WebP or AVIF for maximum savings"
+      >
         <ReferenceLinks refs={[{ name: "MIME Types", slug: "mime-types" }]} />
-      </div>
-
-      <hr className={styles.divider} />
 
       <div className={styles.controls}>
         <span className={styles.controlLabel}>Output format</span>
@@ -411,6 +376,7 @@ export default function CompressPage(): React.ReactNode {
           and deleted after compression.
         </span>
       </div>
+      </PageLayout>
     </div>
   );
 }

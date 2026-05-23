@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import { PageLayout } from "@/components/ui";
 import Link from "next/link";
 import styles from "@/styles/iframe-proxy.module.css";
 import { DocIcon } from "@/components/icons/doc";
@@ -134,13 +134,12 @@ export default function IframeProxyPage(): React.ReactNode {
   };
 
   return (
-    <>
-      <ToolHead
-        title="Iframe Proxy"
-        description="Embed any URL in a sandboxed iframe with configurable postMessage communication. Free online iframe proxy tool."
-        path="/iframe-proxy"
-        brandName={branding.name}
-      />
+    <PageLayout
+      metaTitle="Iframe Proxy"
+      metaDescription="Embed any URL in a sandboxed iframe with configurable postMessage communication. Free online iframe proxy tool."
+      path="/iframe-proxy"
+      tagline="Embed any URL in a sandboxed iframe with configurable postMessage communication."
+    >
       {inWorkMode && !debug && (
         <div className={styles.workBar}>
           <Badge>proxied url</Badge>
@@ -334,6 +333,6 @@ export default function IframeProxyPage(): React.ReactNode {
           </div>
         </div>
       )}
-    </>
+    </PageLayout>
   );
 }

@@ -1,16 +1,9 @@
 import { useEffect, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import LZString from "lz-string";
 import styles from "@/styles/scratch.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 
 export default function ScratchPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [text, setText] = useState("");
   const [url, setUrl] = useState("");
 
@@ -42,39 +35,13 @@ export default function ScratchPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Scratch Pad"
-        description="A lightweight online scratchpad — type notes and save them instantly via shareable permalink. Free, no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Scratch Pad"
+        metaDescription="A lightweight online scratchpad — type notes and save them instantly via shareable permalink. Free, no installation required. No data sent to servers."
         path="/scratch"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/scratch"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Scratch</h1>
-        <p className={styles.tagline}>
-          Type anything — copy the permalink to bookmark it
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Scratch"
+        tagline="Type anything — copy the permalink to bookmark it"
+      >
 
       <div className={styles.textareaWrapper}>
         <textarea
@@ -88,6 +55,8 @@ export default function ScratchPage(): React.ReactNode {
           autoFocus
         />
       </div>
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 

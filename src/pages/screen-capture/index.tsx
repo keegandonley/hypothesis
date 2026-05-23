@@ -1,10 +1,7 @@
 import { useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import { PageLayout } from "@/components/ui";
 import styles from "@/styles/screen-capture.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
 import { configs, useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
 import { captureTab } from "@keegancodes/capture-screen";
 
 type Status = "idle" | "capturing" | "cancelled" | "error";
@@ -16,7 +13,7 @@ const LOREM =
 
 export default function ScreenCapturePage(): React.ReactNode {
   const branding = useBranding();
-  const isIframe = useIsIframe();
+
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -46,42 +43,12 @@ export default function ScreenCapturePage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="screen capture"
-        description="Capture the current browser tab as a PNG and open it in a new tab."
+      <PageLayout
+        metaTitle="screen capture"
+        metaDescription="Capture the current browser tab as a PNG and open it in a new tab."
         path="/screen-capture"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            style={{ color: "inherit", textDecoration: "none" }}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/screen-capture"
-            style={{
-              color: "inherit",
-              textDecoration: "none",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.3em",
-            }}
-          >
-            <DocIcon /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>screen capture</h1>
-        <p className={styles.tagline}>
-          Capture the current browser tab as a PNG and open it in a new tab.
-        </p>
-      </div>
+        tagline="Capture the current browser tab as a PNG and open it in a new tab."
+      >
 
       <div className={styles.captureRow}>
         <button
@@ -117,6 +84,7 @@ export default function ScreenCapturePage(): React.ReactNode {
       </div>
 
       <div className={styles.rainbow} />
+      </PageLayout>
     </div>
   );
 }

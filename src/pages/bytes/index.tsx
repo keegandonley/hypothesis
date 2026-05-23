@@ -1,11 +1,6 @@
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import styles from "@/styles/bytes.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { CopyButton, PermalinkRow } from "@/components/ui";
+import { CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 
 type Mode = "binary" | "decimal";
 
@@ -38,8 +33,6 @@ function formatValue(bytes: number, factor: number): string {
 }
 
 export default function BytesPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [rawValue, setRawValue] = useState("");
   const [selectedUnit, setSelectedUnit] = useState("B");
   const [mode, setMode] = useState<Mode>("binary");
@@ -103,40 +96,13 @@ export default function BytesPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Byte Size Converter"
-        description="Convert between bytes, kilobytes, megabytes, gigabytes, and more instantly. Free online byte size converter — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Byte Size Converter"
+        metaDescription="Convert between bytes, kilobytes, megabytes, gigabytes, and more instantly. Free online byte size converter — no installation required. No data sent to servers."
         path="/bytes"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/bytes"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Byte Size</h1>
-        <p className={styles.tagline}>
-          Convert between byte units with binary (1024) or decimal (1000) base.
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Byte Size"
+        tagline="Convert between byte units with binary (1024) or decimal (1000) base."
+      >
 
       <div className={styles.inputRow}>
         <select
@@ -211,6 +177,8 @@ export default function BytesPage(): React.ReactNode {
           );
         })}
       </div>
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 

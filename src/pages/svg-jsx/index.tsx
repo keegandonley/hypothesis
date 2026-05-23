@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/svg-jsx.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, CopyButton, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
+import { Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 
 const PLACEHOLDER = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <circle cx="12" cy="12" r="10" />
@@ -106,8 +101,6 @@ function toJsx(svg: string): string {
 }
 
 export default function SvgJsxPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [url, setUrl] = useState("");
 
@@ -158,38 +151,13 @@ export default function SvgJsxPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="SVG to JSX"
-        description="Convert SVG markup to React JSX syntax with automatic camelCase attribute conversion. Free online SVG to JSX converter — no installation required."
+      <PageLayout
+        metaTitle="SVG to JSX"
+        metaDescription="Convert SVG markup to React JSX syntax with automatic camelCase attribute conversion. Free online SVG to JSX converter — no installation required."
         path="/svg-jsx"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/svg-jsx"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>SVG to JSX</h1>
-        <p className={styles.tagline}>Convert SVG markup to React-ready JSX</p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="SVG to JSX"
+        tagline="Convert SVG markup to React-ready JSX"
+      >
 
       <div className={styles.panels}>
         <Panel>
@@ -222,6 +190,7 @@ export default function SvgJsxPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

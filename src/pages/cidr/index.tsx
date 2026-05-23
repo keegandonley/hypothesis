@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
 import styles from "@/styles/cidr.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
-import { Badge, Button, CopyButton, PermalinkRow } from "@/components/ui";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 interface CidrInfo {
@@ -128,8 +123,6 @@ function formatNumber(n: number): string {
 }
 
 export default function CidrPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [info, setInfo] = useState<CidrInfo | null>(null);
   const [error, setError] = useState(false);
@@ -244,46 +237,19 @@ export default function CidrPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="CIDR Calculator"
-        description="Calculate subnet details from CIDR notation: network address, broadcast, mask, host range, and usable IPs. Free online CIDR calculator — no installation required."
+      <PageLayout
+        metaTitle="CIDR Calculator"
+        metaDescription="Calculate subnet details from CIDR notation: network address, broadcast, mask, host range, and usable IPs. Free online CIDR calculator — no installation required."
         path="/cidr"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/cidr"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>CIDR</h1>
-        <p className={styles.tagline}>
-          Calculate subnet details from CIDR notation
-        </p>
+        h1="CIDR"
+        tagline="Calculate subnet details from CIDR notation"
+      >
         <ReferenceLinks
           refs={[
             { name: "DNS Record Types", slug: "dns-record-types" },
             { name: "Port Numbers", slug: "port-numbers" },
           ]}
         />
-      </div>
-
-      <hr className={styles.divider} />
 
       <div className={styles.inputRow}>
         <input
@@ -315,6 +281,7 @@ export default function CidrPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

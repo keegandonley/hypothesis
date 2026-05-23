@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/keycode.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 
 interface KeyInfo {
   key: string;
@@ -27,8 +22,6 @@ const LOCATION_NAMES: Record<number, string> = {
 };
 
 export default function KeycodePage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(null);
   const [url, setUrl] = useState("");
   useEffect(() => {
@@ -78,40 +71,13 @@ export default function KeycodePage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Keycode Inspector"
-        description="Inspect JavaScript keyboard event properties: keyCode, key, code, and modifiers for any key press. Free online keycode tool — no installation required."
+      <PageLayout
+        metaTitle="Keycode Inspector"
+        metaDescription="Inspect JavaScript keyboard event properties: keyCode, key, code, and modifiers for any key press. Free online keycode tool — no installation required."
         path="/keycode"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/keycode"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Keycode</h1>
-        <p className={styles.tagline}>
-          Press any key to inspect its JavaScript event properties
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Keycode"
+        tagline="Press any key to inspect its JavaScript event properties"
+      >
 
       <div className={styles.body}>
         <div className={styles.keyDisplay}>
@@ -169,6 +135,8 @@ export default function KeycodePage(): React.ReactNode {
           </div>
         </div>
       </div>
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 

@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/basic-auth.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 
 function encodeBasicAuth(username: string, password: string): string {
   return btoa(`${username}:${password}`);
@@ -33,9 +28,6 @@ function decodeBasicAuth(
 }
 
 export default function BasicAuthPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
-
   const [mode, setMode] = useState<"encode" | "decode">("encode");
 
   // encode state
@@ -123,40 +115,13 @@ export default function BasicAuthPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Basic Auth"
-        description="Generate and decode HTTP Basic Authentication headers. Free online Basic Auth encoder and decoder — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Basic Auth"
+        metaDescription="Generate and decode HTTP Basic Authentication headers. Free online Basic Auth encoder and decoder — no installation required. No data sent to servers."
         path="/basic-auth"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/basic-auth"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Basic Auth</h1>
-        <p className={styles.tagline}>
-          Generate and decode HTTP Basic Authentication headers
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Basic Auth"
+        tagline="Generate and decode HTTP Basic Authentication headers"
+      >
 
       <div className={styles.modeTabs} role="tablist">
         <button
@@ -323,6 +288,7 @@ export default function BasicAuthPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import { Badge, PageLayout } from "@/components/ui";
 import styles from "@/styles/message-stream.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { Badge } from "@/components/ui";
-import { useIsIframe } from "@/lib/useIsIframe";
 
 interface Message {
   id: string;
@@ -17,7 +13,6 @@ interface Message {
 
 export default function MessagesPage(): React.ReactNode {
   const branding = useBranding();
-  const isIframe = useIsIframe();
   const [messages, setMessages] = useState<Message[]>([]);
   const [context, setContext] = useState<Record<string, unknown> | null>(null);
   const [sendInput, setSendInput] = useState("");
@@ -99,42 +94,13 @@ export default function MessagesPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Message Stream"
-        description="Monitor and log postMessage events in real time across iframes for debugging cross-origin communication."
+      <PageLayout
+        metaTitle="Message Stream"
+        metaDescription="Monitor and log postMessage events in real time across iframes for debugging cross-origin communication."
         path="/message-stream"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/message-stream"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Message Stream</h1>
-        <p className={styles.tagline}>
-          Listening for messages from parent frame...
-        </p>
-        <Badge>
-          {messages.length} {messages.length === 1 ? "message" : "messages"}
-        </Badge>
-      </div>
-
-      <hr className={styles.divider} />
+        tagline="Listening for messages from parent frame..."
+        badge={<Badge>{messages.length} {messages.length === 1 ? "message" : "messages"}</Badge>}
+      >
 
       <div className={styles.sendSection}>
         <div className={styles.fieldLabel}>Send to Parent</div>
@@ -205,6 +171,7 @@ export default function MessagesPage(): React.ReactNode {
           ))
         )}
       </div>
+      </PageLayout>
     </div>
   );
 }

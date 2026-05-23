@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/hash.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { CopyButton, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
+import { CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 
 const SHA_ALGOS = ["SHA-1", "SHA-256", "SHA-384", "SHA-512"] as const;
 const ALGOS = ["MD5", ...SHA_ALGOS] as const;
@@ -122,8 +117,6 @@ function formatBytes(n: number): string {
 }
 
 export default function HashPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [mode, setMode] = useState<"text" | "file">("text");
   const [input, setInput] = useState("");
   const [hashes, setHashes] = useState<Record<string, string>>({});
@@ -200,41 +193,13 @@ export default function HashPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Hash Generator"
-        description="Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text. Free online hash generator — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Hash Generator"
+        metaDescription="Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text. Free online hash generator — no installation required. No data sent to servers."
         path="/hash"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/hash"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Hash Generator</h1>
-        <p className={styles.tagline}>
-          Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any
-          text or file
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Hash Generator"
+        tagline="Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text or file"
+      >
 
       <div className={styles.inputPanel}>
         <PanelHeader label="Input">
@@ -334,6 +299,8 @@ export default function HashPage(): React.ReactNode {
           );
         })}
       </div>
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 

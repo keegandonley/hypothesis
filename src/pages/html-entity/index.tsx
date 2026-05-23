@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/html-entity.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { Badge, Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
+import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 // HTML5 named entity map (comprehensive set)
@@ -209,8 +204,6 @@ function decodeHtmlEntities(text: string): string {
 }
 
 export default function HtmlEntityPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [decoded, setDecoded] = useState("");
   const [encoded, setEncoded] = useState("");
   const [url, setUrl] = useState("");
@@ -291,38 +284,14 @@ export default function HtmlEntityPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="HTML Entity Encoder / Decoder"
-        description="Encode and decode HTML entities like &amp;, &lt;, &gt;, and named or numeric references. Free online HTML entity tool — no installation required."
+      <PageLayout
+        metaTitle="HTML Entity Encoder / Decoder"
+        metaDescription="Encode and decode HTML entities like &amp;, &lt;, &gt;, and named or numeric references. Free online HTML entity tool — no installation required."
         path="/html-entity"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/html-entity"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>HTML Entity</h1>
-        <p className={styles.tagline}>Encode and decode HTML entities</p>
+        h1="HTML Entity"
+        tagline="Encode and decode HTML entities"
+      >
         <ReferenceLinks refs={[{ name: "ASCII Table", slug: "ascii" }]} />
-      </div>
-
-      <hr className={styles.divider} />
 
       <div className={styles.panels}>
         <Panel>
@@ -374,6 +343,8 @@ export default function HtmlEntityPage(): React.ReactNode {
           </Button>
         </div>
       </div>
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 

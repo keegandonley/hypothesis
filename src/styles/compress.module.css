@@ -6,57 +6,6 @@
   color: var(--text);
 }
 
-/* Header */
-.header {
-  margin-bottom: 1.5rem;
-}
-
-.eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-  color: var(--muted);
-  margin-bottom: 0.5rem;
-}
-
-.domainLink {
-  color: var(--accent);
-  text-decoration: none;
-}
-.domainLink:hover {
-  text-decoration: underline;
-}
-
-.docsLink {
-  color: var(--muted);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-.docsLink:hover {
-  color: var(--text);
-}
-
-.icon {
-  width: 12px;
-  height: 12px;
-}
-
-.title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 0 0.4rem;
-  letter-spacing: -0.02em;
-}
-
-.tagline {
-  font-size: 0.85rem;
-  color: var(--muted);
-  margin: 0;
-}
-
 .divider {
   border: none;
   border-top: 1px solid var(--border);

@@ -1,12 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/qr.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import QRCode from "qrcode";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 
 type ECLevel = "L" | "M" | "Q" | "H";
@@ -97,7 +93,6 @@ function getQrString(
 }
 
 export default function QrPage(): React.ReactNode {
-  const branding = useBranding();
   const isIframe = useIsIframe();
 
   const [mode, setMode] = useState<QrMode>("text");
@@ -327,40 +322,13 @@ export default function QrPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="QR Code Generator"
-        description="Generate QR codes from text, URLs, WiFi credentials, and contact cards. Download as SVG or PNG. Free online QR code generator — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="QR Code Generator"
+        metaDescription="Generate QR codes from text, URLs, WiFi credentials, and contact cards. Download as SVG or PNG. Free online QR code generator — no installation required. No data sent to servers."
         path="/qr"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/qr"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>QR Code</h1>
-        <p className={styles.tagline}>
-          Generate QR codes from text, WiFi credentials, or contact cards
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="QR Code"
+        tagline="Generate QR codes from text, WiFi credentials, or contact cards"
+      >
 
       <div className={styles.layout}>
         <div className={styles.leftCol}>
@@ -628,6 +596,7 @@ export default function QrPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <PermalinkRow url={pageUrl} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

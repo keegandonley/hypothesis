@@ -1,11 +1,9 @@
-import { ToolHead } from "@/components/ToolHead";
+import { PageLayout } from "@/components/ui";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "@/styles/message-factory.module.css";
 import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
 import { Badge } from "@/components/ui";
-import { useIsIframe } from "@/lib/useIsIframe";
 
 const subExperiments = [
   {
@@ -27,40 +25,17 @@ const subExperiments = [
 ];
 
 export default function MessageFactoryPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
+
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Message Factory"
-        description="Build and send custom postMessage payloads between iframes for testing cross-origin communication."
+      <PageLayout
+        metaTitle="Message Factory"
+        metaDescription="Build and send custom postMessage payloads between iframes for testing cross-origin communication."
         path="/message-factory"
-        brandName={branding.name}
-      />
+        tagline="Design and trigger postMessage actions with an interactive viewer and designer."
+      >
       <div className={styles.inner}>
-        <header className={styles.header}>
-          <div className={styles.eyebrow} data-eyebrow>
-            EXP-003
-          </div>
-          <h1 className={styles.title}>Message Factory</h1>
-          <p className={styles.tagline}>
-            Design and trigger postMessage actions with an interactive viewer
-            and designer.
-          </p>
-          <div className={styles.backRow}>
-            <Link
-              href="/"
-              target={isIframe ? "_blank" : undefined}
-              rel={isIframe ? "noopener noreferrer" : undefined}
-              className={styles.backLink}
-            >
-              ← back
-            </Link>
-          </div>
-        </header>
-
-        <hr className={styles.divider} />
 
         <div className={styles.section}>
           <div className={styles.sectionLabel}>Sub-experiments</div>
@@ -71,6 +46,7 @@ export default function MessageFactoryPage(): React.ReactNode {
           </div>
         </div>
       </div>
+      </PageLayout>
     </div>
   );
 }

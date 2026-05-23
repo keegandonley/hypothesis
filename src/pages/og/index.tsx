@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/og.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 
 interface OgData {
   title: string;
@@ -66,8 +61,6 @@ function buildTags(d: OgData): string {
 }
 
 export default function OgPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [data, setData] = useState<OgData>(DEFAULT);
   const [pageUrl, setPageUrl] = useState("");
 
@@ -124,40 +117,13 @@ export default function OgPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="OG Tag Generator"
-        description="Generate Open Graph and Twitter Card meta tags for your web pages. Free online OG tag generator — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="OG Tag Generator"
+        metaDescription="Generate Open Graph and Twitter Card meta tags for your web pages. Free online OG tag generator — no installation required. No data sent to servers."
         path="/og"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/og"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>OG Tags</h1>
-        <p className={styles.tagline}>
-          Generate Open Graph and Twitter Card meta tags for any page
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="OG Tags"
+        tagline="Generate Open Graph and Twitter Card meta tags for any page"
+      >
 
       <div className={styles.body}>
         <div className={styles.formCol}>
@@ -315,6 +281,7 @@ export default function OgPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <PermalinkRow url={pageUrl} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

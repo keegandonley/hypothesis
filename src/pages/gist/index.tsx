@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/gist.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 const GIST_URL_RE = /^https?:\/\/gist\.github\.com\/[^/]+\/([a-f0-9]+)/i;
@@ -29,7 +25,6 @@ function buildPageUrl(url: string, file: string): string {
 }
 
 export default function GistPage(): React.ReactNode {
-  const branding = useBranding();
   const isIframe = useIsIframe();
   const [url, setUrl] = useState("");
   const [file, setFile] = useState("");
@@ -87,41 +82,13 @@ export default function GistPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Gist Proxy"
-        description="Load and render GitHub Gist files inline. Free online Gist viewer."
+      <PageLayout
+        metaTitle="Gist Proxy"
+        metaDescription="Load and render GitHub Gist files inline. Free online Gist viewer."
         path="/gist"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/gist"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Gist</h1>
-        <p className={styles.tagline}>
-          Serve a public GitHub Gist&apos;s raw content via a proxy URL —
-          preview it live
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Gist"
+        tagline="Serve a public GitHub Gist's raw content via a proxy URL — preview it live"
+      >
 
       <div className={styles.inputRow}>
         <div className={styles.inputGroup}>
@@ -193,6 +160,8 @@ export default function GistPage(): React.ReactNode {
           </div>
         )}
       </div>
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 

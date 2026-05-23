@@ -1,12 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/bitwise.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
-import { useBranding } from "@/lib/branding";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
 
 function toBin(n: number): string {
   return (n >>> 0).toString(2).padStart(32, "0");
@@ -57,8 +52,6 @@ const OPERATIONS: Operation[] = [
 ];
 
 export default function BitwisePage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [inputA, setInputA] = useState("60");
   const [inputB, setInputB] = useState("13");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -135,41 +128,13 @@ export default function BitwisePage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Bitwise Operations"
-        description="Perform bitwise AND, OR, XOR, NOT, and shift operations with binary, hex, and decimal visualization. Free online bitwise calculator — no installation required."
+      <PageLayout
+        metaTitle="Bitwise Operations"
+        metaDescription="Perform bitwise AND, OR, XOR, NOT, and shift operations with binary, hex, and decimal visualization. Free online bitwise calculator — no installation required."
         path="/bitwise"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/bitwise"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Bitwise Operations</h1>
-        <p className={styles.tagline}>
-          Visualize AND, OR, XOR, NAND, NOR, and shift operations with binary
-          and decimal output
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Bitwise Operations"
+        tagline="Visualize AND, OR, XOR, NAND, NOR, and shift operations with binary and decimal output"
+      >
 
       <div className={styles.inputs}>
         <div className={styles.inputGroup}>
@@ -249,6 +214,8 @@ export default function BitwisePage(): React.ReactNode {
           );
         })}
       </div>
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 

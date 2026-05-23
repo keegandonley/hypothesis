@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/sql.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
 import { format, type SqlLanguage } from "sql-formatter";
-import { Button, CopyButton, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
+import { Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 
 const DIALECTS: { value: SqlLanguage; label: string }[] = [
   { value: "sql", label: "SQL" },
@@ -19,8 +14,6 @@ const DIALECTS: { value: SqlLanguage; label: string }[] = [
 const PLACEHOLDER = `SELECT u.id, u.name, COUNT(o.id) AS order_count FROM users u LEFT JOIN orders o ON o.user_id = u.id WHERE u.created_at > '2024-01-01' GROUP BY u.id, u.name HAVING COUNT(o.id) > 0 ORDER BY order_count DESC LIMIT 25;`;
 
 export default function SqlPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [dialect, setDialect] = useState<SqlLanguage>("sql");
   const [url, setUrl] = useState("");
@@ -98,40 +91,13 @@ export default function SqlPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="SQL Formatter"
-        description="Format and prettify SQL queries with proper indentation. Supports PostgreSQL, MySQL, SQLite, BigQuery. Free online SQL formatter — no signup needed."
+      <PageLayout
+        metaTitle="SQL Formatter"
+        metaDescription="Format and prettify SQL queries with proper indentation. Supports PostgreSQL, MySQL, SQLite, BigQuery. Free online SQL formatter — no signup needed."
         path="/sql"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/sql"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>SQL Formatter</h1>
-        <p className={styles.tagline}>
-          Format and prettify SQL queries with dialect-aware keyword casing
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="SQL Formatter"
+        tagline="Format and prettify SQL queries with dialect-aware keyword casing"
+      >
 
       <div className={styles.panels}>
         <Panel>
@@ -188,6 +154,7 @@ export default function SqlPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

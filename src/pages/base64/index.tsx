@@ -1,18 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/base64.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { Badge, Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { Panel, PanelHeader, PanelBody, PanelLabel } from "@/components/ui/Panel";
 
 type Tab = "text" | "image";
 
 export default function Base64Page(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [plain, setPlain] = useState("");
   const [encoded, setEncoded] = useState("");
   const [url, setUrl] = useState("");
@@ -258,38 +251,13 @@ export default function Base64Page(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Base64 Encoder / Decoder"
-        description="Encode and decode Base64 strings instantly. Free online Base64 encoder/decoder — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Base64 Encoder / Decoder"
+        metaDescription="Encode and decode Base64 strings instantly. Free online Base64 encoder/decoder — no installation required. No data sent to servers."
         path="/base64"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/base64"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Base64</h1>
-        <p className={styles.tagline}>Encode and decode base64 strings</p>
-      </div>
-
-      <hr className={styles.divider} />
-
+        h1="Base64"
+        tagline="Encode and decode base64 strings"
+      >
       <div className={styles.tabRow} role="tablist">
         {(["text", "image"] as Tab[]).map((t) => (
           <Button
@@ -453,6 +421,7 @@ export default function Base64Page(): React.ReactNode {
       <hr className={styles.divider} />
 
       <PermalinkRow url={url} onReset={handleReset} muted={tab === "image"} />
+      </PageLayout>
     </div>
   );
 }

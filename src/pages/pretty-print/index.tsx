@@ -1,17 +1,10 @@
 import { useEffect, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/pretty-print.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { Badge, Button, CopyButton, Panel, PanelHeader, PanelBody } from "@/components/ui";
+import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody } from "@/components/ui";
 
 const URL_LIMIT = 2000;
 
 export default function PrettyPrintPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [jsonValid, setJsonValid] = useState<boolean | null>(null);
@@ -89,37 +82,13 @@ export default function PrettyPrintPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="JSON Pretty Printer"
-        description="Format and pretty-print JSON with proper indentation and syntax highlighting. Free online JSON formatter — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="JSON Pretty Printer"
+        metaDescription="Format and pretty-print JSON with proper indentation and syntax highlighting. Free online JSON formatter — no installation required. No data sent to servers."
         path="/pretty-print"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/pretty-print"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Pretty Print</h1>
-        <p className={styles.tagline}>Format and validate JSON</p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Pretty Print"
+        tagline="Format and validate JSON"
+      >
 
       <div className={styles.panels}>
         <Panel>
@@ -176,6 +145,7 @@ export default function PrettyPrintPage(): React.ReactNode {
           Reset
         </Button>
       </div>
+      </PageLayout>
     </div>
   );
 }

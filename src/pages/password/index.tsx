@@ -1,12 +1,8 @@
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
 import styles from "@/styles/password.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { PermalinkRow, CopyButton } from "@/components/ui";
+import { CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 
 const UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -132,7 +128,6 @@ function generatePasswords(
 }
 
 export default function PasswordPage(): React.ReactNode {
-  const branding = useBranding();
   const isIframe = useIsIframe();
 
   const [mode, setMode] = useState<"generate" | "check">("generate");
@@ -292,41 +287,13 @@ export default function PasswordPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Password Generator"
-        description="Generate cryptographically secure passwords and check the strength of existing ones. Free, no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Password Generator"
+        metaDescription="Generate cryptographically secure passwords and check the strength of existing ones. Free, no installation required. No data sent to servers."
         path="/password"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/password"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Password Generator</h1>
-        <p className={styles.tagline}>
-          Cryptographically secure passwords via{" "}
-          <code>crypto.getRandomValues</code>.
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Password Generator"
+        tagline='Cryptographically secure passwords via crypto.getRandomValues.'
+      >
 
       <div className={styles.modeTabs} role="tablist">
         <button
@@ -573,6 +540,7 @@ export default function PasswordPage(): React.ReactNode {
           {copiedAll ? "Copied!" : "Copy all"}
         </button>
       )}
+      </PageLayout>
     </div>
   );
 }

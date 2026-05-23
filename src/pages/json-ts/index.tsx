@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/json-ts.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { Badge, Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
+import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 
 type JsonValue =
   | string
@@ -123,8 +118,6 @@ function jsonToTs(input: string, rootName: string, optional: boolean): string {
 }
 
 export default function JsonTsPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [jsonInput, setJsonInput] = useState("");
   const [tsOutput, setTsOutput] = useState("");
   const [rootName, setRootName] = useState("Root");
@@ -230,40 +223,13 @@ export default function JsonTsPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="JSON to TypeScript"
-        description="Convert JSON objects to TypeScript interfaces and types instantly. Free online JSON to TypeScript converter — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="JSON to TypeScript"
+        metaDescription="Convert JSON objects to TypeScript interfaces and types instantly. Free online JSON to TypeScript converter — no installation required. No data sent to servers."
         path="/json-ts"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/json-ts"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>JSON → TypeScript</h1>
-        <p className={styles.tagline}>
-          Convert a JSON sample into TypeScript interface definitions
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="JSON → TypeScript"
+        tagline="Convert a JSON sample into TypeScript interface definitions"
+      >
 
       <div className={styles.panels}>
         <Panel>
@@ -331,6 +297,7 @@ export default function JsonTsPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

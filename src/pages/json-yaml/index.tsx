@@ -1,16 +1,9 @@
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import styles from "@/styles/json-yaml.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { Badge, Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { dump, load } from "js-yaml";
 
 export default function JsonYamlPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [json, setJson] = useState("");
   const [yaml, setYaml] = useState("");
   const [jsonError, setJsonError] = useState(false);
@@ -114,40 +107,13 @@ export default function JsonYamlPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="JSON ↔ YAML Converter"
-        description="Convert between JSON and YAML with live bidirectional sync and shareable permalinks. Free online JSON to YAML converter — no installation required."
+      <PageLayout
+        metaTitle="JSON ↔ YAML Converter"
+        metaDescription="Convert between JSON and YAML with live bidirectional sync and shareable permalinks. Free online JSON to YAML converter — no installation required."
         path="/json-yaml"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/json-yaml"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>JSON ↔ YAML</h1>
-        <p className={styles.tagline}>
-          Convert between JSON and YAML with live bidirectional sync.
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="JSON ↔ YAML"
+        tagline="Convert between JSON and YAML with live bidirectional sync."
+      >
 
       <div className={styles.panels}>
         <Panel>
@@ -190,6 +156,8 @@ export default function JsonYamlPage(): React.ReactNode {
           </PanelBody>
         </Panel>
       </div>
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 

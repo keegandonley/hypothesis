@@ -1,9 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
+import { PageLayout } from "@/components/ui";
 import styles from "@/styles/video-streaming.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { MEDIA_FILES } from "@/data/media-files";
@@ -289,7 +286,6 @@ function logEntryClass(event: string): string {
 }
 
 export default function VideoStreamingPage(): React.ReactNode {
-  const branding = useBranding();
   const isIframe = useIsIframe();
 
   const [settings, setSettings] = useState<Settings>(DEFAULTS);
@@ -642,45 +638,12 @@ export default function VideoStreamingPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="video streaming"
-        description="Test and inspect HTML video element behavior — buffering, events, and playback state — with full telemetry."
+      <PageLayout
+        metaTitle="video streaming"
+        metaDescription="Test and inspect HTML video element behavior — buffering, events, and playback state — with full telemetry."
         path="/video-streaming"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            style={{ color: "inherit", textDecoration: "none" }}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/video-streaming"
-            style={{
-              color: "inherit",
-              textDecoration: "none",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.3em",
-            }}
-          >
-            <DocIcon /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>video streaming</h1>
-        <p className={styles.tagline}>
-          Test HTML video element behavior — buffering, events, and playback
-          state — with full telemetry.
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        tagline="Test HTML video element behavior — buffering, events, and playback state — with full telemetry."
+      >
 
       <div className={styles.grid}>
         {/* ── Settings panel ──────────────────────────────────────────── */}
@@ -1249,6 +1212,7 @@ export default function VideoStreamingPage(): React.ReactNode {
           </div>
         </section>
       </div>
+      </PageLayout>
     </div>
   );
 }

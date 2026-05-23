@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/numbase.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { Badge, Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 
 interface Values {
   bin: string;
@@ -26,8 +21,6 @@ function fromDecimal(n: number): Values {
 }
 
 export default function NumbasePage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [values, setValues] = useState<Values>(empty);
   const [errorField, setErrorField] = useState<keyof Values | null>(null);
   const [url, setUrl] = useState("");
@@ -148,39 +141,13 @@ export default function NumbasePage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Number Base Converter"
-        description="Convert numbers between binary, octal, decimal, and hexadecimal bases instantly. Free online number base converter — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Number Base Converter"
+        metaDescription="Convert numbers between binary, octal, decimal, and hexadecimal bases instantly. Free online number base converter — no installation required. No data sent to servers."
         path="/numbase"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/numbase"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Number Base</h1>
-        <p className={styles.tagline}>
-          Convert integers between binary, octal, decimal, and hex
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Number Base"
+        tagline="Convert integers between binary, octal, decimal, and hex"
+      >
 
       <div className={styles.panels}>
         {panels.map(({ field, label, prefix, base, placeholder }) => {
@@ -222,6 +189,7 @@ export default function NumbasePage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

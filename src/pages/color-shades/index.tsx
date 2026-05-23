@@ -1,10 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/color-shades.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
-import { useBranding } from "@/lib/branding";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 
@@ -97,7 +93,6 @@ function isDark(hex: string): boolean {
 }
 
 export default function ColorShadesPage(): React.ReactNode {
-  const branding = useBranding();
   const isIframe = useIsIframe();
   const [color, setColor] = useState("#3b82f6");
   const [pageUrl, setPageUrl] = useState("");
@@ -172,40 +167,13 @@ export default function ColorShadesPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Color Shades Generator"
-        description="Generate tints and shades from any base color for design systems and palettes. Free online color shades generator — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Color Shades Generator"
+        metaDescription="Generate tints and shades from any base color for design systems and palettes. Free online color shades generator — no installation required. No data sent to servers."
         path="/color-shades"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/color-shades"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Color Shades</h1>
-        <p className={styles.tagline}>
-          Generate a perceptually uniform 11-step color scale from any hex color
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Color Shades"
+        tagline="Generate a perceptually uniform 11-step color scale from any hex color"
+      >
 
       <div className={styles.body}>
         <div className={styles.controls}>
@@ -286,6 +254,7 @@ export default function ColorShadesPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <PermalinkRow url={pageUrl} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

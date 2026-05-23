@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/json-diff.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { Badge, Button, CopyButton, PermalinkRow } from "@/components/ui";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 
 type DiffType = "added" | "removed" | "changed" | "type-changed";
 
@@ -100,8 +95,6 @@ const DIFF_LABELS: Record<DiffType, string> = {
 };
 
 export default function JsonDiffPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [left, setLeft] = useState("");
   const [right, setRight] = useState("");
   const [leftError, setLeftError] = useState("");
@@ -227,40 +220,13 @@ export default function JsonDiffPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="JSON Diff"
-        description="Compare two JSON objects and see a structured diff of added, removed, and changed keys. Free online JSON diff tool — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="JSON Diff"
+        metaDescription="Compare two JSON objects and see a structured diff of added, removed, and changed keys. Free online JSON diff tool — no installation required. No data sent to servers."
         path="/json-diff"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/json-diff"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>JSON Diff</h1>
-        <p className={styles.tagline}>
-          Compare two JSON structures and highlight structural differences
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="JSON Diff"
+        tagline="Compare two JSON structures and highlight structural differences"
+      >
 
       <div className={styles.body}>
         <div className={styles.inputs}>
@@ -372,6 +338,8 @@ export default function JsonDiffPage(): React.ReactNode {
           </div>
         </div>
       </div>
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 

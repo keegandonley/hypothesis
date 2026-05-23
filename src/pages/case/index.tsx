@@ -1,11 +1,6 @@
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import styles from "@/styles/case.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { CopyButton, PermalinkRow } from "@/components/ui";
+import { CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 
 function splitWords(input: string): string[] {
@@ -77,8 +72,6 @@ const CASES: { label: string; fn: (w: string[]) => string }[] = [
 ];
 
 export default function CasePage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [url, setUrl] = useState("");
 
@@ -106,40 +99,13 @@ export default function CasePage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="String Case Converter"
-        description="Convert text between camelCase, snake_case, PascalCase, kebab-case, CONSTANT_CASE, and more. Free online string case converter — no installation required."
+      <PageLayout
+        metaTitle="String Case Converter"
+        metaDescription="Convert text between camelCase, snake_case, PascalCase, kebab-case, CONSTANT_CASE, and more. Free online string case converter — no installation required."
         path="/case"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/case"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>String Case</h1>
-        <p className={styles.tagline}>
-          Convert between camelCase, snake_case, kebab-case, and more.
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="String Case"
+        tagline="Convert between camelCase, snake_case, kebab-case, and more."
+      >
 
       <Panel>
         <PanelHeader label="Input" />
@@ -176,6 +142,7 @@ export default function CasePage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <PermalinkRow url={url} onReset={() => { handleInput(""); }} />
+      </PageLayout>
     </div>
   );
 }

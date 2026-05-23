@@ -1,11 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
+import { PageLayout } from "@/components/ui";
 import { useRouter } from "next/router";
 import styles from "@/styles/webhook.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
 import { Button, CopyButton } from "@/components/ui";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 import type { WebhookEvent } from "@/lib/events";
@@ -68,8 +64,7 @@ function relativeTime(iso: string): string {
 
 export default function WebhookPage(): React.ReactNode {
   const router = useRouter();
-  const branding = useBranding();
-  const isIframe = useIsIframe();
+
   const [session, setSession] = useState<Session | null>(null);
   const [status, setStatus] = useState<
     "loading" | "ready" | "error" | "deleted" | "idle"
@@ -265,43 +260,12 @@ export default function WebhookPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Webhook Inspector"
-        description="Receive and inspect incoming HTTP webhook requests in real time. Free online webhook testing tool."
+      <PageLayout
+        metaTitle="Webhook Inspector"
+        metaDescription="Receive and inspect incoming HTTP webhook requests in real time. Free online webhook testing tool."
         path="/webhook"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/webhook"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>webhook</h1>
-        <p className={styles.tagline}>
-          Capture and inspect incoming HTTP webhook requests in real time.
-          <br />
-          <br />
-          Remain on this page to keep your session active. Expired sessions will
-          be deleted within 24 hours.
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        tagline="Capture and inspect incoming HTTP webhook requests in real time. Remain on this page to keep your session active. Expired sessions will be deleted within 24 hours."
+      >
 
       {status === "loading" && <StatusCard message="initializing..." />}
 
@@ -487,6 +451,7 @@ export default function WebhookPage(): React.ReactNode {
           />
         </a>
       </div>
+      </PageLayout>
     </div>
   );
 }

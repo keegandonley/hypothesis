@@ -11,64 +11,10 @@
   gap: 0;
 }
 
-/* ── Header ─────────────────────────────────────────────────────────────────── */
-
-.header {
-  margin-bottom: 16px;
-}
-
-.eyebrow {
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  color: var(--accent);
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  display: flex;
-  gap: 0.4em;
-}
-
-.title {
-  margin: 0 0 4px;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text);
-}
-
-.tagline {
-  color: var(--muted);
-  font-size: 12px;
-  margin: 0;
-  letter-spacing: 0.02em;
-}
-
 .divider {
   border: none;
   border-top: 1px solid var(--border);
   margin: 0 0 20px;
-}
-
-.icon {
-  margin-right: 4px;
-}
-
-.docsLink {
-  display: flex;
-  align-items: center;
-  color: var(--muted);
-  transition: color 0.15s ease;
-}
-
-.docsLink:hover {
-  color: var(--accent);
-}
-
-.domainLink {
-  display: flex;
-  align-items: center;
-  color: var(--accent);
-  transition: color 0.15s ease;
 }
 
 /* ── Steps ───────────────────────────────────────────────────────────────────── */

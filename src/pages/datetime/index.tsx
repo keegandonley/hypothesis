@@ -1,10 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/datetime.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { Badge, Button, CopyButton, PermalinkRow } from "@/components/ui";
-import { useBranding } from "@/lib/branding";
+import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 
@@ -146,7 +142,6 @@ function parseInput(value: string): Date | null {
 }
 
 export default function DateTimePage(): React.ReactNode {
-  const branding = useBranding();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [parsedDate, setParsedDate] = useState<Date | null>(null);
@@ -287,39 +282,13 @@ export default function DateTimePage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Datetime Converter"
-        description="Convert Unix timestamps, ISO dates, and relative times across timezones with live sync. Free online timestamp converter — no installation required."
+      <PageLayout
+        metaTitle="Datetime Converter"
+        metaDescription="Convert Unix timestamps, ISO dates, and relative times across timezones with live sync. Free online timestamp converter — no installation required."
         path="/datetime"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/datetime"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>DateTime</h1>
-        <p className={styles.tagline}>
-          Convert timestamps and dates between many formats at once
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="DateTime"
+        tagline="Convert timestamps and dates between many formats at once"
+      >
 
       <div className={styles.inputRow}>
         <input
@@ -412,6 +381,7 @@ export default function DateTimePage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

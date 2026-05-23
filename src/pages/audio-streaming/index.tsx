@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-confusing-void-expression, padding-line-between-statements, react-hooks/refs, react-hooks/set-state-in-effect */
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
+import { PageLayout } from "@/components/ui";
 import styles from "@/styles/audio-streaming.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { MEDIA_FILES } from "@/data/media-files";
@@ -258,7 +255,6 @@ function logEntryClass(event: string): string {
 }
 
 export default function AudioStreamingPage() {
-  const branding = useBranding();
   const isIframe = useIsIframe();
 
   const [settings, setSettings] = useState<Settings>(DEFAULTS);
@@ -538,45 +534,12 @@ export default function AudioStreamingPage() {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="audio streaming"
-        description="Test and inspect HTML audio element behavior — buffering, events, and playback state — with full telemetry."
+      <PageLayout
+        metaTitle="audio streaming"
+        metaDescription="Test and inspect HTML audio element behavior — buffering, events, and playback state — with full telemetry."
         path="/audio-streaming"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            style={{ color: "inherit", textDecoration: "none" }}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/audio-streaming"
-            style={{
-              color: "inherit",
-              textDecoration: "none",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.3em",
-            }}
-          >
-            <DocIcon /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>audio streaming</h1>
-        <p className={styles.tagline}>
-          Test HTML audio element behavior — buffering, events, and playback
-          state — with full telemetry.
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        tagline="Test HTML audio element behavior — buffering, events, and playback state — with full telemetry."
+      >
 
       <div className={styles.grid}>
         {/* ── Settings panel ──────────────────────────────────────────── */}
@@ -1066,6 +1029,7 @@ export default function AudioStreamingPage() {
           </div>
         </section>
       </div>
+      </PageLayout>
     </div>
   );
 }

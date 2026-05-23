@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/regex.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { Badge, Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 const FLAGS = ["g", "i", "m", "s", "u"] as const;
@@ -69,8 +64,6 @@ function getPatternStatus(
 }
 
 export default function RegexPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [pattern, setPattern] = useState("");
   const [flags, setFlags] = useState<Record<Flag, boolean>>({
     g: true,
@@ -169,42 +162,16 @@ export default function RegexPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Regex Tester"
-        description="Test regular expressions with live match highlighting and shareable permalinks. Free online regex tester — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Regex Tester"
+        metaDescription="Test regular expressions with live match highlighting and shareable permalinks. Free online regex tester — no installation required. No data sent to servers."
         path="/regex"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/regex"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Regex Tester</h1>
-        <p className={styles.tagline}>
-          Test regular expressions against strings with live match results
-        </p>
+        h1="Regex Tester"
+        tagline="Test regular expressions against strings with live match results"
+      >
         <ReferenceLinks
           refs={[{ name: "Regex Syntax", slug: "regex-syntax" }]}
         />
-      </div>
-
-      <hr className={styles.divider} />
 
       {/* Pattern panel */}
       <Panel>
@@ -315,6 +282,7 @@ export default function RegexPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

@@ -1,10 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import { PageLayout } from "@/components/ui";
 import styles from "@/styles/push-test.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
 import { CopyButton } from "@/components/ui";
 
 const DEVICE_ID_LS_KEY = "pushTestDeviceId";
@@ -14,8 +10,7 @@ type Result =
   | { status: "error"; message: string };
 
 export default function PushTestPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
+
   const [deviceId, setDeviceId] = useState("");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -191,40 +186,12 @@ export default function PushTestPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Push Test"
-        description="Send a test push notification to a registered mobile device."
+      <PageLayout
+        metaTitle="Push Test"
+        metaDescription="Send a test push notification to a registered mobile device."
         path="/push-test"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/push-test"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Push Test</h1>
-        <p className={styles.tagline}>
-          Send a test push notification to a registered device.
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        tagline="Send a test push notification to a registered device."
+      >
 
       <div className={styles.layout}>
         <div className={styles.leftCol}>
@@ -448,6 +415,7 @@ export default function PushTestPage(): React.ReactNode {
           </div>
         </div>
       </div>
+      </PageLayout>
     </div>
   );
 }
