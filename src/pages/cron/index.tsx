@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "@/styles/cron.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { CronExpressionParser } from "cron-parser";
 import cronstrue from "cronstrue";
@@ -231,17 +231,14 @@ export default function CronPage(): React.ReactNode {
       {result && (
         <>
           <div className={styles.descPanel}>
-            <div className={styles.descHeader}>
-              <span className={styles.panelLabel}>Description</span>
+            <PanelHeader label="Description">
               <CopyButton value={result.description} variant="ghost" size="xs" />
-            </div>
+            </PanelHeader>
             <div className={styles.descValue}>{result.description}</div>
           </div>
 
           <div className={styles.runsPanel}>
-            <div className={styles.runsHeader}>
-              <span className={styles.panelLabel}>Next {NEXT_COUNT} runs</span>
-            </div>
+            <PanelHeader label={`Next ${NEXT_COUNT} runs`} />
             <div className={styles.runsList}>
               {result.nextRuns.map((d, i) => (
                 <div key={i} className={styles.runRow}>

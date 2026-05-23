@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { marked } from "marked";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 
 type ViewMode = "preview" | "html";
 
@@ -119,10 +119,8 @@ export default function MarkdownPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Markdown</span>
-          </div>
+        <Panel>
+          <PanelHeader label="Markdown" />
           <textarea
             className={styles.textarea}
             value={input}
@@ -132,27 +130,24 @@ export default function MarkdownPage(): React.ReactNode {
             placeholder={PLACEHOLDER}
             spellCheck={false}
           />
-        </div>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Output</span>
-            <div className={styles.panelHeaderRight}>
-              {(["preview", "html"] as ViewMode[]).map((m) => (
-                <Button
-                  key={m}
-                  variant="toggle"
-                  active={viewMode === m}
-                  onClick={() => {
-                    setViewMode(m);
-                  }}
-                >
-                  {m}
-                </Button>
-              ))}
-              <CopyButton value={html} variant="ghost" size="sm" />
-            </div>
-          </div>
+        <Panel>
+          <PanelHeader label="Output">
+            {(["preview", "html"] as ViewMode[]).map((m) => (
+              <Button
+                key={m}
+                variant="toggle"
+                active={viewMode === m}
+                onClick={() => {
+                  setViewMode(m);
+                }}
+              >
+                {m}
+              </Button>
+            ))}
+            <CopyButton value={html} variant="ghost" size="sm" />
+          </PanelHeader>
           {viewMode === "preview" ? (
             <div
               className={styles.preview}
@@ -166,7 +161,7 @@ export default function MarkdownPage(): React.ReactNode {
               spellCheck={false}
             />
           )}
-        </div>
+        </Panel>
       </div>
 
       <hr className={styles.divider} />

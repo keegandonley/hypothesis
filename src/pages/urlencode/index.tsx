@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
-import { Button, PermalinkRow } from "@/components/ui";
+import { Button, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 
 export default function UrlEncodePage(): React.ReactNode {
   const branding = useBranding();
@@ -132,19 +132,14 @@ export default function UrlEncodePage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>
-              {uriMode ? "URI" : "Decoded"}
-            </span>
-            <div className={styles.panelHeaderRight}>
-              <Button variant="toggle" active={uriMode} onClick={handleUriToggle}>
-                URI Mode {uriMode ? "ON" : "OFF"}
-              </Button>
-              <span className={styles.badge}>{decoded.length} chars</span>
-            </div>
-          </div>
-          <div className={styles.textareaWrapper}>
+        <Panel>
+          <PanelHeader label={uriMode ? "URI" : "Decoded"}>
+            <Button variant="toggle" active={uriMode} onClick={handleUriToggle}>
+              URI Mode {uriMode ? "ON" : "OFF"}
+            </Button>
+            <span className={styles.badge}>{decoded.length} chars</span>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={decoded}
@@ -154,15 +149,14 @@ export default function UrlEncodePage(): React.ReactNode {
               placeholder="Type or paste text here..."
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>URL Encoded</span>
+        <Panel>
+          <PanelHeader label="URL Encoded">
             <span className={styles.badge}>{encoded.length} chars</span>
-          </div>
-          <div className={styles.textareaWrapper}>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={encoded}
@@ -172,8 +166,8 @@ export default function UrlEncodePage(): React.ReactNode {
               placeholder="Paste encoded string here..."
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
       </div>
 
       <hr className={styles.divider} />

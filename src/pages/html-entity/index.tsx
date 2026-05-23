@@ -5,7 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 // HTML5 named entity map (comprehensive set)
@@ -325,12 +325,11 @@ export default function HtmlEntityPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Decoded Text</span>
+        <Panel>
+          <PanelHeader label="Decoded Text">
             <span className={styles.badge}>{decoded.length} chars</span>
-          </div>
-          <div className={styles.textareaWrapper}>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={decoded}
@@ -340,15 +339,14 @@ export default function HtmlEntityPage(): React.ReactNode {
               placeholder="Type or paste text here..."
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>HTML Entities</span>
+        <Panel>
+          <PanelHeader label="HTML Entities">
             <span className={styles.badge}>{encoded.length} chars</span>
-          </div>
-          <div className={styles.textareaWrapper}>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={encoded}
@@ -358,8 +356,8 @@ export default function HtmlEntityPage(): React.ReactNode {
               placeholder="Paste encoded entities here..."
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
       </div>
 
       <div className={styles.modeSelector}>

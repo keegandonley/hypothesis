@@ -5,7 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { CopyButton, PermalinkRow } from "@/components/ui";
+import { CopyButton, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 
 const SHA_ALGOS = ["SHA-1", "SHA-256", "SHA-384", "SHA-512"] as const;
 const ALGOS = ["MD5", ...SHA_ALGOS] as const;
@@ -237,9 +237,8 @@ export default function HashPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.inputPanel}>
-        <div className={styles.panelHeader}>
-          <span className={styles.panelLabel}>Input</span>
-          <div className={styles.modeTabs} role="tablist">
+        <PanelHeader label="Input">
+            <div className={styles.modeTabs} role="tablist">
             <button
               role="tab"
               aria-selected={mode === "text"}
@@ -261,7 +260,7 @@ export default function HashPage(): React.ReactNode {
               File
             </button>
           </div>
-        </div>
+        </PanelHeader>
         {mode === "text" ? (
           <textarea
             className={styles.textarea}

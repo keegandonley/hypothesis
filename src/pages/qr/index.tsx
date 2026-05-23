@@ -7,6 +7,7 @@ import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import QRCode from "qrcode";
 import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Panel, PanelHeader } from "@/components/ui/Panel";
 
 type ECLevel = "L" | "M" | "Q" | "H";
 type QrMode = "text" | "wifi" | "vcard";
@@ -363,9 +364,8 @@ export default function QrPage(): React.ReactNode {
 
       <div className={styles.layout}>
         <div className={styles.leftCol}>
-          <div className={styles.inputPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Input</span>
+          <Panel>
+            <PanelHeader label="Input">
               <div className={styles.modeTabs} role="tablist">
                 {(["text", "wifi", "vcard"] as QrMode[]).map((m) => (
                   <button
@@ -381,7 +381,7 @@ export default function QrPage(): React.ReactNode {
                   </button>
                 ))}
               </div>
-            </div>
+            </PanelHeader>
 
             {mode === "text" && (
               <textarea
@@ -561,7 +561,7 @@ export default function QrPage(): React.ReactNode {
                 </div>
               </div>
             )}
-          </div>
+          </Panel>
 
           <div className={styles.settingsRow}>
             <span className={styles.settingLabel}>Error Correction</span>

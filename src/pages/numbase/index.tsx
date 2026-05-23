@@ -4,7 +4,7 @@ import styles from "@/styles/numbase.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 interface Values {
@@ -188,20 +188,17 @@ export default function NumbasePage(): React.ReactNode {
           const val = values[field];
 
           return (
-            <div key={field} className={styles.panel}>
-              <div className={styles.panelHeader}>
-                <span className={styles.panelLabel}>{label}</span>
-                <div className={styles.panelHeaderRight}>
-                  {isError ? (
-                    <span className={styles.badgeError}>invalid</span>
-                  ) : val ? (
-                    <span className={styles.badge}>{val.length} digits</span>
-                  ) : (
-                    <span className={styles.badge}>{prefix}</span>
-                  )}
-                </div>
-              </div>
-              <div className={styles.textareaWrapper}>
+            <Panel key={field}>
+              <PanelHeader label={label}>
+                {isError ? (
+                  <span className={styles.badgeError}>invalid</span>
+                ) : val ? (
+                  <span className={styles.badge}>{val.length} digits</span>
+                ) : (
+                  <span className={styles.badge}>{prefix}</span>
+                )}
+              </PanelHeader>
+              <PanelBody>
                 <textarea
                   className={styles.textarea}
                   value={val}
@@ -216,8 +213,8 @@ export default function NumbasePage(): React.ReactNode {
                 {val && !isError && (
                   <CopyButton value={val} variant="ghost" size="xs" />
                 )}
-              </div>
-            </div>
+              </PanelBody>
+            </Panel>
           );
         })}
       </div>

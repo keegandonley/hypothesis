@@ -70,30 +70,6 @@
 
 /* ── Input ───────────────────────────────────────────────────────────────── */
 
-.inputWrap {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background-color: var(--card-bg);
-  overflow: hidden;
-  margin-bottom: 12px;
-}
-
-.inputHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--border);
-}
-
-.panelLabel {
-  font-size: 10px;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: var(--muted);
-  letter-spacing: 0.12em;
-}
-
 .textarea {
   width: 100%;
   min-height: 80px;

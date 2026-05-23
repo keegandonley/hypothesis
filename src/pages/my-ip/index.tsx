@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { Button, CopyButton } from "@/components/ui";
+import { Panel, PanelHeader } from "@/components/ui/Panel";
 import type { IpData } from "../api/my-ip";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
@@ -93,11 +94,10 @@ export default function MyIpPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.body}>
-        <div className={styles.ipPanel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Public IP Address</span>
+        <Panel>
+          <PanelHeader label="Public IP Address">
             {data && <CopyButton value={data.ip} variant="ghost" size="sm" />}
-          </div>
+          </PanelHeader>
           <div className={styles.ipValue}>
             {status === "loading" && (
               <span className={styles.muted}>Fetching…</span>
@@ -107,13 +107,11 @@ export default function MyIpPage(): React.ReactNode {
             )}
             {status === "success" && data && <span>{data.ip}</span>}
           </div>
-        </div>
+        </Panel>
 
         {status === "success" && data && (
-          <div className={styles.detailsPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Location</span>
-            </div>
+          <Panel>
+            <PanelHeader label="Location" />
             <div className={styles.table}>
               {rows.map(({ label, value }) => (
                 <div key={label} className={styles.row}>
@@ -122,18 +120,17 @@ export default function MyIpPage(): React.ReactNode {
                 </div>
               ))}
             </div>
-          </div>
+          </Panel>
         )}
 
-        <div className={styles.detailsPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>API</span>
+        <Panel>
+            <PanelHeader label="API">
               <CopyButton value={curlCommand} variant="ghost" size="sm" />
-            </div>
+            </PanelHeader>
             <div className={styles.curlRow}>
               <code className={styles.curlCode}>{curlCommand}</code>
             </div>
-          </div>
+          </Panel>
       </div>
 
       <hr className={styles.divider} />

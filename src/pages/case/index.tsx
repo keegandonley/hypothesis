@@ -6,6 +6,7 @@ import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { CopyButton, PermalinkRow } from "@/components/ui";
+import { Panel, PanelHeader } from "@/components/ui/Panel";
 
 function splitWords(input: string): string[] {
   return input
@@ -140,10 +141,8 @@ export default function CasePage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.inputWrap}>
-        <div className={styles.inputHeader}>
-          <span className={styles.panelLabel}>Input</span>
-        </div>
+      <Panel>
+        <PanelHeader label="Input" />
         <textarea
           className={styles.textarea}
           value={input}
@@ -154,7 +153,7 @@ export default function CasePage(): React.ReactNode {
           autoComplete="off"
           spellCheck={false}
         />
-      </div>
+      </Panel>
 
       <div className={styles.results}>
         {CASES.map((c, idx) => {

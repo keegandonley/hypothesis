@@ -7,6 +7,7 @@ import { useBranding } from "@/lib/branding";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { PermalinkRow, CopyButton } from "@/components/ui";
+import { Panel, PanelHeader } from "@/components/ui/Panel";
 
 const UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const LOWER = "abcdefghijklmnopqrstuvwxyz";
@@ -465,9 +466,8 @@ export default function PasswordPage(): React.ReactNode {
 
       {mode === "check" && (
         <>
-          <div className={styles.checkPanel}>
-            <div className={styles.checkPanelHeader}>
-              <span className={styles.panelLabel}>Password</span>
+          <Panel>
+            <PanelHeader label="Password">
               <button
                 className={styles.showHideBtn}
                 onClick={() => {
@@ -477,7 +477,7 @@ export default function PasswordPage(): React.ReactNode {
               >
                 {showCheckPw ? "hide" : "show"}
               </button>
-            </div>
+            </PanelHeader>
             <input
               type={showCheckPw ? "text" : "password"}
               className={styles.checkInput}
@@ -489,7 +489,7 @@ export default function PasswordPage(): React.ReactNode {
               autoComplete="off"
               spellCheck={false}
             />
-          </div>
+          </Panel>
 
           {analysis && (
             <>

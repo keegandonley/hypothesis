@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "@/styles/chmod.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
@@ -242,21 +242,19 @@ export default function ChmodPage(): React.ReactNode {
       {perms && (
         <>
           <div className={styles.outputPanels}>
-            <div className={styles.panel}>
-              <div className={styles.panelHeader}>
-                <span className={styles.panelLabel}>Numeric</span>
+            <Panel>
+              <PanelHeader label="Numeric">
                 <CopyButton value={toNumeric(perms)} variant="ghost" size="xs" />
-              </div>
+              </PanelHeader>
               <div className={styles.panelValue}>{toNumeric(perms)}</div>
-            </div>
+            </Panel>
 
-            <div className={styles.panel}>
-              <div className={styles.panelHeader}>
-                <span className={styles.panelLabel}>Symbolic</span>
+            <Panel>
+              <PanelHeader label="Symbolic">
                 <CopyButton value={toSymbolic(perms)} variant="ghost" size="xs" />
-              </div>
+              </PanelHeader>
               <div className={styles.panelValue}>{toSymbolic(perms)}</div>
-            </div>
+            </Panel>
           </div>
 
           <div className={styles.tableWrapper}>

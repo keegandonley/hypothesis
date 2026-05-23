@@ -5,7 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, CopyButton } from "@/components/ui";
+import { Button, CopyButton, Panel, PanelHeader, PanelBody } from "@/components/ui";
 
 const URL_LIMIT = 2000;
 
@@ -122,20 +122,17 @@ export default function PrettyPrintPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Input</span>
-            <div className={styles.panelHeaderRight}>
-              <span className={styles.badge}>{input.length} chars</span>
-              {jsonValid === true && (
-                <span className={styles.badge}>valid</span>
-              )}
-              {jsonValid === false && (
-                <span className={styles.badgeError}>invalid</span>
-              )}
-            </div>
-          </div>
-          <div className={styles.textareaWrapper}>
+        <Panel>
+          <PanelHeader label="Input">
+            <span className={styles.badge}>{input.length} chars</span>
+            {jsonValid === true && (
+              <span className={styles.badge}>valid</span>
+            )}
+            {jsonValid === false && (
+              <span className={styles.badgeError}>invalid</span>
+            )}
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={input}
@@ -145,15 +142,14 @@ export default function PrettyPrintPage(): React.ReactNode {
               placeholder="Paste JSON here..."
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Formatted</span>
+        <Panel>
+          <PanelHeader label="Formatted">
             <span className={styles.badge}>{output.length} chars</span>
-          </div>
-          <div className={styles.textareaWrapper}>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={output}
@@ -162,8 +158,8 @@ export default function PrettyPrintPage(): React.ReactNode {
               spellCheck={false}
             />
             {output.length > 0 && <CopyButton value={output} variant="ghost" size="sm" className={styles.formatBtnCopy} />}
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
       </div>
 
       <hr className={styles.divider} />

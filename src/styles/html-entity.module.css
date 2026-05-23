@@ -97,38 +97,6 @@
   }
 }
 
-.panel {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background-color: var(--card-bg);
-  overflow: hidden;
-  min-height: 0;
-}
-
-.textareaWrapper {
-  flex: 1;
-  min-height: 0;
-  position: relative;
-}
-
-.panelHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--border);
-}
-
-.panelLabel {
-  font-size: 10px;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: var(--muted);
-  letter-spacing: 0.12em;
-}
-
 .fieldLabel {
   font-size: 10px;
   text-transform: uppercase;

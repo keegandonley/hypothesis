@@ -7,6 +7,7 @@ import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { v1, v4, v7 } from "uuid";
 import { Button, CopyButton } from "@/components/ui";
+import { Panel, PanelHeader, PanelBody } from "@/components/ui/Panel";
 
 function generate(ver: 1 | 4 | 7): string {
   if (ver === 1) return v1();
@@ -87,30 +88,27 @@ export default function UuidPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Generated UUID</span>
-            <div className={styles.panelHeaderRight}>
-              {([1, 4, 7] as const).map((ver) => (
-                <Button
-                  key={ver}
-                  variant="toggle"
-                  active={version === ver}
-                  onClick={() => {
-                    handleVersionChange(ver);
-                  }}
-                >
-                  v{ver}
-                </Button>
-              ))}
-              <span
-                className={version === 4 ? styles.badgeBlue : styles.badgeAlt}
+        <Panel>
+          <PanelHeader label="Generated UUID">
+            {([1, 4, 7] as const).map((ver) => (
+              <Button
+                key={ver}
+                variant="toggle"
+                active={version === ver}
+                onClick={() => {
+                  handleVersionChange(ver);
+                }}
               >
-                v{version}
-              </span>
-            </div>
-          </div>
-          <div className={styles.textareaWrapper}>
+                v{ver}
+              </Button>
+            ))}
+            <span
+              className={version === 4 ? styles.badgeBlue : styles.badgeAlt}
+            >
+              v{version}
+            </span>
+          </PanelHeader>
+          <PanelBody className={styles.uuidBody}>
             <textarea
               className={styles.uuidDisplay}
               value={uuid}
@@ -118,8 +116,8 @@ export default function UuidPage(): React.ReactNode {
               spellCheck={false}
             />
             <CopyButton value={uuid} className={styles.copyOverlay} />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
       </div>
 
       <hr className={styles.divider} />

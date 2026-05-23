@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import styles from "@/styles/json-yaml.module.css";
 import { DocIcon } from "@/components/icons/doc";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { dump, load } from "js-yaml";
@@ -150,14 +150,13 @@ export default function JsonYamlPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>JSON</span>
+        <Panel>
+          <PanelHeader label="JSON">
             {jsonError && (
               <span className={styles.badgeError}>invalid json</span>
             )}
-          </div>
-          <div className={styles.textareaWrapper}>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={json}
@@ -168,17 +167,16 @@ export default function JsonYamlPage(): React.ReactNode {
               autoComplete="off"
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>YAML</span>
+        <Panel>
+          <PanelHeader label="YAML">
             {yamlError && (
               <span className={styles.badgeError}>invalid yaml</span>
             )}
-          </div>
-          <div className={styles.textareaWrapper}>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={yaml}
@@ -189,8 +187,8 @@ export default function JsonYamlPage(): React.ReactNode {
               autoComplete="off"
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
       </div>
 
       <hr className={styles.divider} />

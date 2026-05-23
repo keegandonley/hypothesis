@@ -5,7 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 
 const WORDS = [
   "lorem",
@@ -341,8 +341,7 @@ export default function LoremPage(): React.ReactNode {
       </div>
 
       <div className={styles.outputPanel}>
-        <div className={styles.panelHeader}>
-          <span className={styles.panelLabel}>Output</span>
+        <PanelHeader label="Output">
           <div className={styles.panelActions}>
             <Button variant="copy" onClick={handleRegenerate}>
               Regenerate
@@ -355,7 +354,7 @@ export default function LoremPage(): React.ReactNode {
               disabled={!output}
             />
           </div>
-        </div>
+        </PanelHeader>
         <textarea
           className={styles.outputTextarea}
           value={output}

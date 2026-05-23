@@ -1,0 +1,47 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--card-bg);
+  overflow: hidden;
+  min-height: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.headerDivided {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.label {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}

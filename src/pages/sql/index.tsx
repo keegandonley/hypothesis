@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { format, type SqlLanguage } from "sql-formatter";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 
 const DIALECTS: { value: SqlLanguage; label: string }[] = [
   { value: "sql", label: "SQL" },
@@ -134,10 +134,8 @@ export default function SqlPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Input</span>
-          </div>
+        <Panel>
+          <PanelHeader label="Input" />
           <textarea
             className={styles.textarea}
             value={input}
@@ -147,32 +145,32 @@ export default function SqlPage(): React.ReactNode {
             placeholder={PLACEHOLDER}
             spellCheck={false}
           />
-        </div>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Formatted</span>
-            <div className={styles.panelHeaderRight}>
-              {DIALECTS.map((d) => (
-                <Button
-                  key={d.value}
-                  variant="toggle"
-                  active={dialect === d.value}
-                  onClick={() => {
-                    handleDialect(d.value);
-                  }}
-                >
-                  {d.label}
-                </Button>
-              ))}
-              <CopyButton
-                value={formatted}
-                variant="ghost"
-                size="sm"
-                disabled={!formatted}
-              />
-            </div>
-          </div>
+        <Panel>
+          <PanelHeader
+            label="Formatted"
+            className={styles.panelHeaderOverride}
+          >
+            {DIALECTS.map((d) => (
+              <Button
+                key={d.value}
+                variant="toggle"
+                active={dialect === d.value}
+                onClick={() => {
+                  handleDialect(d.value);
+                }}
+              >
+                {d.label}
+              </Button>
+            ))}
+            <CopyButton
+              value={formatted}
+              variant="ghost"
+              size="sm"
+              disabled={!formatted}
+            />
+          </PanelHeader>
           {error ? (
             <div className={styles.errorMsg}>{error}</div>
           ) : (
@@ -184,7 +182,7 @@ export default function SqlPage(): React.ReactNode {
               placeholder="Formatted SQL will appear here…"
             />
           )}
-        </div>
+        </Panel>
       </div>
 
       <hr className={styles.divider} />

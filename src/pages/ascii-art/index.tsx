@@ -6,6 +6,7 @@ import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { Button, CopyButton } from "@/components/ui";
+import { Panel, PanelHeader, PanelBody } from "@/components/ui/Panel";
 
 interface ImageAdjustments {
   brightness: number; // 50–200, where 100 = unchanged
@@ -610,21 +611,22 @@ export default function AsciiArtPage(): React.ReactNode {
         </div>
 
         <div className={styles.rightCol}>
-          <div className={styles.outputPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>ASCII Output</span>
+          <Panel>
+            <PanelHeader label="ASCII Output">
               {asciiOutput && !isIframe && (
                 <CopyButton value={asciiOutput} variant="ghost" />
               )}
-            </div>
-            {asciiOutput ? (
-              <pre className={styles.asciiPre}>{asciiOutput}</pre>
-            ) : (
-              <div className={styles.emptyState}>
-                Load an image to generate ASCII art
-              </div>
-            )}
-          </div>
+            </PanelHeader>
+            <PanelBody>
+              {asciiOutput ? (
+                <pre className={styles.asciiPre}>{asciiOutput}</pre>
+              ) : (
+                <div className={styles.emptyState}>
+                  Load an image to generate ASCII art
+                </div>
+              )}
+            </PanelBody>
+          </Panel>
         </div>
       </div>
 

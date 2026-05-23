@@ -145,13 +145,6 @@
   color: var(--accent);
 }
 
-.panelLabel {
-  font-size: 10px;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: var(--muted);
-  letter-spacing: 0.12em;
-}
 
 .descPanel {
   border: 1px solid var(--border);

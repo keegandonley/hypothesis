@@ -5,7 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, PermalinkRow } from "@/components/ui";
+import { Button, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 
 interface JwtParts {
@@ -219,21 +219,18 @@ export default function JwtPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.inputPanel}>
-        <div className={styles.panelHeader}>
-          <span className={styles.panelLabel}>Token</span>
-          <div className={styles.panelHeaderRight}>
-            {hasToken && error && (
-              <span className={styles.badgeError}>malformed</span>
-            )}
-            {hasToken && !error && decoded && (
-              <span className={styles.badge}>{token.trim().length} chars</span>
-            )}
-            <Button variant="copy" size="sm" onClick={handleGenerate}>
-              Generate
-            </Button>
-          </div>
-        </div>
-        <div className={styles.textareaWrapper}>
+        <PanelHeader label="Token">
+          {hasToken && error && (
+            <span className={styles.badgeError}>malformed</span>
+          )}
+          {hasToken && !error && decoded && (
+            <span className={styles.badge}>{token.trim().length} chars</span>
+          )}
+          <Button variant="copy" size="sm" onClick={handleGenerate}>
+            Generate
+          </Button>
+        </PanelHeader>
+        <PanelBody>
           <textarea
             className={styles.textarea}
             value={token}
@@ -243,14 +240,12 @@ export default function JwtPage(): React.ReactNode {
             placeholder="Paste JWT token here..."
             spellCheck={false}
           />
-        </div>
+        </PanelBody>
       </div>
 
       <div className={styles.outputPanels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Header</span>
-          </div>
+        <Panel>
+          <PanelHeader label="Header" />
           <div className={styles.outputWrapper}>
             <pre className={styles.output}>
               {decoded?.header
@@ -260,39 +255,34 @@ export default function JwtPage(): React.ReactNode {
                   : ""}
             </pre>
           </div>
-        </div>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Payload</span>
-            <div className={styles.panelHeaderRight}>
-              {decoded?.payload &&
-                (expiryStatus === "valid" ? (
-                  <span className={styles.badgeValid}>valid</span>
-                ) : expiryStatus === "expired" ? (
-                  <span className={styles.badgeExpired}>expired</span>
-                ) : (
-                  <span className={styles.badgeMuted}>no exp</span>
-                ))}
-            </div>
-          </div>
+        <Panel>
+          <PanelHeader label="Payload">
+            {decoded?.payload &&
+              (expiryStatus === "valid" ? (
+                <span className={styles.badgeValid}>valid</span>
+              ) : expiryStatus === "expired" ? (
+                <span className={styles.badgeExpired}>expired</span>
+              ) : (
+                <span className={styles.badgeMuted}>no exp</span>
+              ))}
+          </PanelHeader>
           <div className={styles.outputWrapper}>
             <pre className={styles.output}>
               {decoded?.payload ? JSON.stringify(decoded.payload, null, 2) : ""}
             </pre>
           </div>
-        </div>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Signature</span>
-          </div>
+        <Panel>
+          <PanelHeader label="Signature" />
           <div className={styles.outputWrapper}>
             <pre className={`${styles.output} ${styles.outputMuted}`}>
               {decoded?.signature ?? ""}
             </pre>
           </div>
-        </div>
+        </Panel>
       </div>
 
       <hr className={styles.divider} />

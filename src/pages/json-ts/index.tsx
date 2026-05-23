@@ -5,7 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 
 type JsonValue =
   | string
@@ -266,20 +266,17 @@ export default function JsonTsPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>JSON Input</span>
-            <div className={styles.panelHeaderRight}>
-              {jsonInput.length === 0 ? (
-                <span className={styles.badgeReady}>ready</span>
-              ) : jsonValid ? (
-                <span className={styles.badge}>valid</span>
-              ) : (
-                <span className={styles.badgeError}>invalid</span>
-              )}
-            </div>
-          </div>
-          <div className={styles.textareaWrapper}>
+        <Panel>
+          <PanelHeader label="JSON Input">
+            {jsonInput.length === 0 ? (
+              <span className={styles.badgeReady}>ready</span>
+            ) : jsonValid ? (
+              <span className={styles.badge}>valid</span>
+            ) : (
+              <span className={styles.badgeError}>invalid</span>
+            )}
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={jsonInput}
@@ -289,17 +286,14 @@ export default function JsonTsPage(): React.ReactNode {
               placeholder="Paste JSON here..."
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>TypeScript Output</span>
-            <div className={styles.panelHeaderRight}>
-              {tsOutput && <CopyButton value={tsOutput} variant="ghost" size="sm" />}
-            </div>
-          </div>
-          <div className={styles.textareaWrapper}>
+        <Panel>
+          <PanelHeader label="TypeScript Output">
+            {tsOutput && <CopyButton value={tsOutput} variant="ghost" size="sm" />}
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={tsOutput}
@@ -307,8 +301,8 @@ export default function JsonTsPage(): React.ReactNode {
               placeholder="TypeScript interfaces will appear here..."
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
       </div>
 
       <div className={styles.optionsRow}>

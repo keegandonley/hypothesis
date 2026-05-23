@@ -7,6 +7,7 @@ import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { Button, CopyButton } from "@/components/ui";
+import { Panel, PanelHeader } from "@/components/ui/Panel";
 import type { WebhookEvent } from "@/lib/events";
 
 interface Session {
@@ -328,23 +329,20 @@ export default function WebhookPage(): React.ReactNode {
       {(status === "ready" || status === "idle") && session && (
         <>
           <div className={styles.panels}>
-            <div className={styles.panel}>
-              <div className={styles.panelHeader}>
-                <span className={styles.panelLabel}>Webhook URL</span>
-                <div style={{ display: "flex", gap: "6px" }}>
-                  <Button variant="copy" onClick={() => { startSession(); }}>
-                    New session
-                  </Button>
-                  <CopyButton value={session.webhookUrl} />
-                </div>
-              </div>
+            <Panel>
+              <PanelHeader label="Webhook URL">
+                <Button variant="copy" onClick={() => { startSession(); }}>
+                  New session
+                </Button>
+                <CopyButton value={session.webhookUrl} />
+              </PanelHeader>
               <div className={styles.urlDisplay}>{session.webhookUrl}</div>
               {errorMessage && (
                 <div className={styles.errorText}>{errorMessage}</div>
               )}
-            </div>
+            </Panel>
 
-            <div className={styles.panel}>
+            <Panel>
               <div className={styles.curlPanelHeader}>
                 <span className={styles.panelLabel}>curl</span>
                 <div className={styles.methodToggles}>
@@ -389,13 +387,11 @@ export default function WebhookPage(): React.ReactNode {
                         : "Send request"}
                 </Button>
               </div>
-            </div>
+            </Panel>
           </div>
 
           <div className={styles.eventsPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Requests</span>
-            </div>
+            <PanelHeader label="Requests" />
             <div className={styles.eventsList}>
               {events.length === 0 ? (
                 <div className={styles.emptyState}>waiting for requests...</div>

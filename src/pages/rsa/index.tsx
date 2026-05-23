@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { PermalinkRow, CopyButton } from "@/components/ui";
+import { Panel, PanelHeader, PanelBody } from "@/components/ui/Panel";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -430,13 +431,12 @@ export default function RsaPage(): React.ReactNode {
 
         <div className={styles.keyPanels}>
           {/* Public key */}
-          <div className={styles.keyPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Public Key</span>
+          <Panel>
+            <PanelHeader label="Public Key">
               {publicKeyPem && (
                 <CopyButton variant="copy" size="sm" value={publicKeyPem} />
               )}
-            </div>
+            </PanelHeader>
             <textarea
               className={styles.keyTextarea}
               value={publicKeyPem}
@@ -452,16 +452,15 @@ export default function RsaPage(): React.ReactNode {
             <div className={styles.annotation}>
               Share freely — only encrypts, never decrypts.
             </div>
-          </div>
+          </Panel>
 
           {/* Private key */}
-          <div className={styles.keyPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Private Key</span>
+          <Panel>
+            <PanelHeader label="Private Key">
               {privateKeyPem && (
                 <CopyButton variant="copy" size="sm" value={privateKeyPem} />
               )}
-            </div>
+            </PanelHeader>
             <textarea
               className={`${styles.keyTextarea} ${styles.privateKeyTextarea}`}
               value={privateKeyPem}
@@ -477,7 +476,7 @@ export default function RsaPage(): React.ReactNode {
             <div className={styles.annotation}>
               Keep secret — this is the only key that can decrypt.
             </div>
-          </div>
+          </Panel>
         </div>
 
         {(encryptKey || decryptKey) && (
@@ -502,16 +501,15 @@ export default function RsaPage(): React.ReactNode {
           )}
         </div>
 
-        <div className={styles.inputPanel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Plaintext</span>
+        <Panel>
+          <PanelHeader label="Plaintext">
             <span
               className={`${styles.byteCounter}${plaintextBytes > 190 ? ` ${styles.byteCounterOver}` : ""}`}
             >
               {plaintextBytes} / 190 bytes
               {plaintextBytes > 190 && " — too long"}
             </span>
-          </div>
+          </PanelHeader>
           <div className={styles.byteBar}>
             <div
               className={`${styles.byteBarFill}${byteRatio > 1 ? ` ${styles.byteBarOver}` : ""}`}
@@ -527,7 +525,7 @@ export default function RsaPage(): React.ReactNode {
             placeholder="Enter plaintext to encrypt…"
             spellCheck={false}
           />
-        </div>
+        </Panel>
 
         <button
           className={styles.primaryBtn}
@@ -549,17 +547,16 @@ export default function RsaPage(): React.ReactNode {
         )}
 
         {ciphertext && (
-          <div className={styles.outputPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Ciphertext (base64)</span>
+          <Panel>
+            <PanelHeader label="Ciphertext (base64)">
               <CopyButton variant="copy" size="sm" value={ciphertext} />
-            </div>
+            </PanelHeader>
             <div className={styles.ciphertextOutput}>{ciphertext}</div>
             <div className={styles.annotation}>
               Always 344 base64 chars (256 bytes) regardless of input length —
               RSA-OAEP 2048 produces a fixed-size block.
             </div>
-          </div>
+          </Panel>
         )}
       </div>
 
@@ -584,10 +581,8 @@ export default function RsaPage(): React.ReactNode {
           </div>
         )}
 
-        <div className={styles.inputPanel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Ciphertext (base64)</span>
-          </div>
+        <Panel>
+          <PanelHeader label="Ciphertext (base64)" />
           <textarea
             className={styles.textarea}
             value={ctInput}
@@ -597,7 +592,7 @@ export default function RsaPage(): React.ReactNode {
             placeholder="Paste base64 ciphertext here, or encrypt something in Step 2…"
             spellCheck={false}
           />
-        </div>
+        </Panel>
 
         <div className={styles.decryptBtns}>
           <button
@@ -625,12 +620,10 @@ export default function RsaPage(): React.ReactNode {
         )}
 
         {decrypted && (
-          <div className={styles.outputPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Decrypted</span>
-            </div>
+          <Panel>
+            <PanelHeader label="Decrypted" />
             <div className={styles.decryptedOutput}>{decrypted}</div>
-          </div>
+          </Panel>
         )}
 
         {decryptError !== null && (

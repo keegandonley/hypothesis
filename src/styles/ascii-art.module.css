@@ -324,32 +324,6 @@
 
 /* Output panel */
 
-.outputPanel {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--card-bg);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.panelHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.panelLabel {
-  font-size: 10px;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: var(--muted);
-  letter-spacing: 0.12em;
-}
-
 .asciiPre {
   margin: 0;
   padding: 12px 14px;

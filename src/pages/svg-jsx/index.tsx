@@ -5,7 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 
 const PLACEHOLDER = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <circle cx="12" cy="12" r="10" />
@@ -192,10 +192,8 @@ export default function SvgJsxPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>SVG</span>
-          </div>
+        <Panel>
+          <PanelHeader label="SVG" />
           <textarea
             className={styles.textarea}
             value={input}
@@ -205,13 +203,12 @@ export default function SvgJsxPage(): React.ReactNode {
             placeholder={PLACEHOLDER}
             spellCheck={false}
           />
-        </div>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>JSX</span>
+        <Panel>
+          <PanelHeader label="JSX">
             <CopyButton value={jsx} variant="ghost" size="sm" disabled={!jsx} />
-          </div>
+          </PanelHeader>
           <textarea
             className={`${styles.textarea} ${styles.output}`}
             value={jsx}
@@ -219,7 +216,7 @@ export default function SvgJsxPage(): React.ReactNode {
             spellCheck={false}
             placeholder="JSX output will appear here…"
           />
-        </div>
+        </Panel>
       </div>
 
       <hr className={styles.divider} />

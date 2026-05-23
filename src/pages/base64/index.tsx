@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Panel, PanelHeader, PanelBody, PanelLabel } from "@/components/ui/Panel";
 
 type Tab = "text" | "image";
 
@@ -308,32 +309,27 @@ export default function Base64Page(): React.ReactNode {
 
       {tab === "text" ? (
         <div className={styles.panels}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>
-                {jsonMode ? "JSON" : "Plain Text"}
-              </span>
-              <div className={styles.panelHeaderRight}>
-                <Button
-                  variant="toggle"
-                  active={jsonMode}
-                  onClick={handleJsonToggle}
-                >
-                  JSON Mode {jsonMode ? "ON" : "OFF"}
-                </Button>
-                {jsonMode ? (
-                  plain.length > 0 &&
-                  (jsonValid ? (
-                    <span className={styles.badge}>valid</span>
-                  ) : (
-                    <span className={styles.badgeError}>invalid</span>
-                  ))
+          <Panel>
+            <PanelHeader label={jsonMode ? "JSON" : "Plain Text"}>
+              <Button
+                variant="toggle"
+                active={jsonMode}
+                onClick={handleJsonToggle}
+              >
+                JSON Mode {jsonMode ? "ON" : "OFF"}
+              </Button>
+              {jsonMode ? (
+                plain.length > 0 &&
+                (jsonValid ? (
+                  <span className={styles.badge}>valid</span>
                 ) : (
-                  <span className={styles.badge}>{plain.length} chars</span>
-                )}
-              </div>
-            </div>
-            <div className={styles.textareaWrapper}>
+                  <span className={styles.badgeError}>invalid</span>
+                ))
+              ) : (
+                <span className={styles.badge}>{plain.length} chars</span>
+              )}
+            </PanelHeader>
+            <PanelBody>
               <textarea
                 ref={plainRef}
                 className={styles.textarea}
@@ -354,15 +350,14 @@ export default function Base64Page(): React.ReactNode {
                   Format
                 </button>
               )}
-            </div>
-          </div>
+            </PanelBody>
+          </Panel>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Base64</span>
+          <Panel>
+            <PanelHeader label="Base64">
               <span className={styles.badge}>{encoded.length} chars</span>
-            </div>
-            <div className={styles.textareaWrapper}>
+            </PanelHeader>
+            <PanelBody>
               <textarea
                 className={styles.textarea}
                 value={encoded}
@@ -372,18 +367,17 @@ export default function Base64Page(): React.ReactNode {
                 placeholder="Paste base64 here..."
                 spellCheck={false}
               />
-            </div>
-          </div>
+            </PanelBody>
+          </Panel>
         </div>
       ) : (
         <div className={styles.imagePanels}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Image</span>
+          <Panel>
+            <PanelHeader label="Image">
               {imageFile && (
                 <span className={styles.badge}>{imageFile.name}</span>
               )}
-            </div>
+            </PanelHeader>
             <div
               className={`${styles.imageDropZone}${imageDragging ? ` ${styles.imageDropZoneDragging}` : ""}`}
               onDrop={handleImageDrop}
@@ -422,14 +416,13 @@ export default function Base64Page(): React.ReactNode {
               )}
             </div>
             {imageError && <p className={styles.imageError}>{imageError}</p>}
-          </div>
+          </Panel>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Raw Base64</span>
+          <Panel>
+            <PanelHeader label="Raw Base64">
               <span className={styles.badge}>{imageBase64.length} chars</span>
-            </div>
-            <div className={styles.textareaWrapper}>
+            </PanelHeader>
+            <PanelBody>
               <textarea
                 className={styles.textarea}
                 value={imageBase64}
@@ -438,12 +431,12 @@ export default function Base64Page(): React.ReactNode {
                 spellCheck={false}
               />
               {imageBase64 && <CopyButton value={imageBase64} size="sm" className={styles.copyOverlay} />}
-            </div>
+            </PanelBody>
             <div className={styles.panelHeaderDivided}>
-              <span className={styles.panelLabel}>Data URL</span>
+              <PanelLabel>Data URL</PanelLabel>
               <span className={styles.badge}>{imageDataUrl.length} chars</span>
             </div>
-            <div className={styles.textareaWrapper}>
+            <PanelBody>
               <textarea
                 className={styles.textarea}
                 value={imageDataUrl}
@@ -452,8 +445,8 @@ export default function Base64Page(): React.ReactNode {
                 spellCheck={false}
               />
               {imageDataUrl && <CopyButton value={imageDataUrl} size="sm" className={styles.copyOverlay} />}
-            </div>
-          </div>
+            </PanelBody>
+          </Panel>
         </div>
       )}
 

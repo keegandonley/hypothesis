@@ -3,7 +3,7 @@ import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/regex.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
-import { Button, CopyButton, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
@@ -207,15 +207,12 @@ export default function RegexPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       {/* Pattern panel */}
-      <div className={styles.panel}>
-        <div className={styles.panelHeader}>
-          <span className={styles.panelLabel}>Pattern</span>
-          <div className={styles.panelHeaderRight}>
-            {status.type && (
-              <span className={styles[status.type]}>{status.label}</span>
-            )}
-          </div>
-        </div>
+      <Panel>
+        <PanelHeader label="Pattern">
+          {status.type && (
+            <span className={styles[status.type]}>{status.label}</span>
+          )}
+        </PanelHeader>
         <div className={styles.patternInputRow}>
           <span className={styles.regexSlash}>/</span>
           <input
@@ -245,18 +242,17 @@ export default function RegexPage(): React.ReactNode {
             ))}
           </div>
         </div>
-      </div>
+      </Panel>
 
       {/* Test strings + Results */}
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Test Strings</span>
+        <Panel>
+          <PanelHeader label="Test Strings">
             <span className={styles.badge}>
               {lineCount} line{lineCount !== 1 ? "s" : ""}
             </span>
-          </div>
-          <div className={styles.textareaWrapper}>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={testInput}
@@ -266,13 +262,11 @@ export default function RegexPage(): React.ReactNode {
               placeholder={"Enter test strings, one per line..."}
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Results</span>
-          </div>
+        <Panel>
+          <PanelHeader label="Results" />
           <div className={styles.resultsPanel}>
             {!pattern ? (
               <div className={styles.emptyState}>
@@ -315,7 +309,7 @@ export default function RegexPage(): React.ReactNode {
                 ))
             )}
           </div>
-        </div>
+        </Panel>
       </div>
 
       <hr className={styles.divider} />
