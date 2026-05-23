@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/uuid.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { v1, v4, v7 } from "uuid";
+import { Button, CopyButton } from "@/components/ui";
 
 function generate(ver: 1 | 4 | 7): string {
   if (ver === 1) return v1();
@@ -21,8 +21,6 @@ export default function UuidPage(): React.ReactNode {
   const isIframe = useIsIframe();
   const [uuid, setUuid] = useState("");
   const [version, setVersion] = useState<1 | 4 | 7>(4);
-  const [copied, setCopied] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const buildUrl = (ver: number): string => {
     const params = new URLSearchParams({ version: String(ver) });
@@ -50,16 +48,6 @@ export default function UuidPage(): React.ReactNode {
     setVersion(ver);
     setUuid(generate(ver));
     history.replaceState(null, "", buildUrl(ver));
-  };
-
-  const handleCopy = (): void => {
-    void copyToClipboard(uuid).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
   };
 
   return (
@@ -104,15 +92,16 @@ export default function UuidPage(): React.ReactNode {
             <span className={styles.panelLabel}>Generated UUID</span>
             <div className={styles.panelHeaderRight}>
               {([1, 4, 7] as const).map((ver) => (
-                <button
+                <Button
                   key={ver}
-                  className={`${styles.toggleBtn}${version === ver ? ` ${styles.active}` : ""}`}
+                  variant="toggle"
+                  active={version === ver}
                   onClick={() => {
                     handleVersionChange(ver);
                   }}
                 >
                   v{ver}
-                </button>
+                </Button>
               ))}
               <span
                 className={version === 4 ? styles.badgeBlue : styles.badgeAlt}
@@ -128,14 +117,7 @@ export default function UuidPage(): React.ReactNode {
               readOnly
               spellCheck={false}
             />
-            {!isIframe && (
-              <button
-                className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-                onClick={handleCopy}
-              >
-                {copied ? "Copied!" : "Copy"}
-              </button>
-            )}
+            <CopyButton value={uuid} className={styles.copyOverlay} />
           </div>
         </div>
       </div>
@@ -143,9 +125,9 @@ export default function UuidPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.bottomRow}>
-        <button className={styles.regenerateBtn} onClick={handleRegenerate}>
+        <Button variant="copy" onClick={handleRegenerate}>
           Regenerate
-        </button>
+        </Button>
       </div>
     </div>
   );

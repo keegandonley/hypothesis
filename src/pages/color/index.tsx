@@ -4,8 +4,8 @@ import styles from "@/styles/color.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -318,14 +318,8 @@ export default function ColorPage(): React.ReactNode {
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [color, setColor] = useState<RGBA | null>(null);
-  const [copiedId, setCopiedId] = useState<ColorFormat | null>(null);
-  const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [url, setUrl] = useState("");
   const [supportsEyeDropper, setSupportsEyeDropper] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
   const colorPickerRef = useRef<HTMLInputElement>(null);
 
   const buildUrl = (val: string): string => {
@@ -381,30 +375,6 @@ export default function ColorPage(): React.ReactNode {
 
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
-  };
-
-  const handleCopyFormat = (id: ColorFormat): void => {
-    if (!color) return;
-    const value = formatColor(color, id);
-
-    void copyToClipboard(value).then(() => {
-      setCopiedId(id);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopiedId(null);
-      }, 1500);
-    });
-  };
-
-  const handleCopyPermalink = (): void => {
-    void copyToClipboard(url).then(() => {
-      setPermalinkCopied(true);
-      if (permalinkTimeoutRef.current)
-        clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(() => {
-        setPermalinkCopied(false);
-      }, 1500);
-    });
   };
 
   const hasError = input.trim().length > 0 && !color;
@@ -513,23 +483,22 @@ export default function ColorPage(): React.ReactNode {
           spellCheck={false}
         />
         {supportsEyeDropper && !isIframe && (
-          <button
-            className={styles.eyeDropperBtn}
+          <Button
+            variant="ghost"
             onClick={handleEyeDropper}
             title="Pick a color from anywhere on screen"
           >
             Eyedropper
-          </button>
+          </Button>
         )}
-        <button className={styles.resetBtn} onClick={handleReset}>
+        <Button variant="reset" onClick={handleReset}>
           Reset
-        </button>
+        </Button>
       </div>
 
       <div className={styles.outputGrid}>
         {FORMAT_LABELS.map(({ id, label }) => {
           const value = color ? formatColor(color, id) : "";
-          const isCopied = copiedId === id;
 
           return (
             <div key={id} className={styles.outputCard}>
@@ -545,15 +514,7 @@ export default function ColorPage(): React.ReactNode {
                 </div>
                 <div className={styles.cardBottom}>
                   <span className={styles.cardValue}>{value}</span>
-                  <button
-                    className={`${styles.copyBtn}${isCopied ? ` ${styles.copied}` : ""}`}
-                    onClick={() => {
-                      handleCopyFormat(id);
-                    }}
-                    disabled={!color}
-                  >
-                    {isCopied ? "Copied!" : "Copy"}
-                  </button>
+                  <CopyButton value={value} size="sm" disabled={!color} />
                 </div>
               </div>
             </div>
@@ -563,21 +524,7 @@ export default function ColorPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopyPermalink}
-          >
-            {permalinkCopied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

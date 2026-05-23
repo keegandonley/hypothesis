@@ -4,8 +4,8 @@ import styles from "@/styles/base64.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PermalinkRow } from "@/components/ui";
 
 type Tab = "text" | "image";
 
@@ -14,11 +14,9 @@ export default function Base64Page(): React.ReactNode {
   const isIframe = useIsIframe();
   const [plain, setPlain] = useState("");
   const [encoded, setEncoded] = useState("");
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
   const [jsonMode, setJsonMode] = useState(false);
   const [jsonValid, setJsonValid] = useState<boolean | null>(null);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const plainRef = useRef<HTMLTextAreaElement>(null);
 
   const [tab, setTab] = useState<Tab>("text");
@@ -27,15 +25,7 @@ export default function Base64Page(): React.ReactNode {
   const [imageBase64, setImageBase64] = useState<string>("");
   const [imageDragging, setImageDragging] = useState(false);
   const [imageError, setImageError] = useState<string>("");
-  const [imageCopiedRaw, setImageCopiedRaw] = useState(false);
-  const [imageCopiedDataUrl, setImageCopiedDataUrl] = useState(false);
   const imageFileInputRef = useRef<HTMLInputElement>(null);
-  const imageCopyRawTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const imageCopyDataUrlTimeoutRef = useRef<ReturnType<
-    typeof setTimeout
-  > | null>(null);
 
   const buildUrl = (enc: string, json: boolean): string => {
     if (!enc) return `${window.location.origin}${window.location.pathname}`;
@@ -200,16 +190,6 @@ export default function Base64Page(): React.ReactNode {
     setUrl(window.location.href);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleTabChange = (next: Tab): void => {
     setTab(next);
     const newUrl =
@@ -275,28 +255,6 @@ export default function Base64Page(): React.ReactNode {
     e.target.value = "";
   };
 
-  const handleCopyRaw = (): void => {
-    void copyToClipboard(imageBase64).then(() => {
-      setImageCopiedRaw(true);
-      if (imageCopyRawTimeoutRef.current)
-        clearTimeout(imageCopyRawTimeoutRef.current);
-      imageCopyRawTimeoutRef.current = setTimeout(() => {
-        setImageCopiedRaw(false);
-      }, 1500);
-    });
-  };
-
-  const handleCopyDataUrl = (): void => {
-    void copyToClipboard(imageDataUrl).then(() => {
-      setImageCopiedDataUrl(true);
-      if (imageCopyDataUrlTimeoutRef.current)
-        clearTimeout(imageCopyDataUrlTimeoutRef.current);
-      imageCopyDataUrlTimeoutRef.current = setTimeout(() => {
-        setImageCopiedDataUrl(false);
-      }, 1500);
-    });
-  };
-
   return (
     <div className={styles.page}>
       <ToolHead
@@ -333,17 +291,18 @@ export default function Base64Page(): React.ReactNode {
 
       <div className={styles.tabRow} role="tablist">
         {(["text", "image"] as Tab[]).map((t) => (
-          <button
+          <Button
             key={t}
+            variant="tab"
+            active={tab === t}
             role="tab"
             aria-selected={tab === t}
-            className={`${styles.tabBtn}${tab === t ? ` ${styles.tabBtnActive}` : ""}`}
             onClick={() => {
               handleTabChange(t);
             }}
           >
             {t.toUpperCase()}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -355,12 +314,13 @@ export default function Base64Page(): React.ReactNode {
                 {jsonMode ? "JSON" : "Plain Text"}
               </span>
               <div className={styles.panelHeaderRight}>
-                <button
-                  className={`${styles.toggleBtn}${jsonMode ? ` ${styles.active}` : ""}`}
+                <Button
+                  variant="toggle"
+                  active={jsonMode}
                   onClick={handleJsonToggle}
                 >
                   JSON Mode {jsonMode ? "ON" : "OFF"}
-                </button>
+                </Button>
                 {jsonMode ? (
                   plain.length > 0 &&
                   (jsonValid ? (
@@ -477,14 +437,7 @@ export default function Base64Page(): React.ReactNode {
                 placeholder="Encode an image to see its raw base64 string..."
                 spellCheck={false}
               />
-              {imageBase64 && !isIframe && (
-                <button
-                  className={`${styles.formatBtn}${imageCopiedRaw ? ` ${styles.formatBtnCopied}` : ""}`}
-                  onClick={handleCopyRaw}
-                >
-                  {imageCopiedRaw ? "Copied!" : "Copy"}
-                </button>
-              )}
+              {imageBase64 && <CopyButton value={imageBase64} size="sm" className={styles.copyOverlay} />}
             </div>
             <div className={styles.panelHeaderDivided}>
               <span className={styles.panelLabel}>Data URL</span>
@@ -498,14 +451,7 @@ export default function Base64Page(): React.ReactNode {
                 placeholder="data:image/png;base64,..."
                 spellCheck={false}
               />
-              {imageDataUrl && !isIframe && (
-                <button
-                  className={`${styles.formatBtn}${imageCopiedDataUrl ? ` ${styles.formatBtnCopied}` : ""}`}
-                  onClick={handleCopyDataUrl}
-                >
-                  {imageCopiedDataUrl ? "Copied!" : "Copy"}
-                </button>
-              )}
+              {imageDataUrl && <CopyButton value={imageDataUrl} size="sm" className={styles.copyOverlay} />}
             </div>
           </div>
         </div>
@@ -513,24 +459,7 @@ export default function Base64Page(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div
-        className={`${styles.permalinkRow}${tab === "image" ? ` ${styles.permalinkRowMuted}` : ""}`}
-        data-permalink-row
-      >
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} muted={tab === "image"} />
     </div>
   );
 }

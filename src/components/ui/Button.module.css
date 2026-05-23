@@ -1,0 +1,123 @@
+.btn {
+  flex-shrink: 0;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.xs {
+  padding: 3px 8px;
+}
+
+.sm {
+  padding: 4px 10px;
+}
+
+.md {
+  padding: 6px 14px;
+}
+
+.copy {
+  background-color: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+}
+
+.copy:hover:not(:disabled) {
+  background-color: var(--accent-hover);
+}
+
+.copy:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.copy.copied {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+.reset {
+  background-color: var(--danger-subtle);
+  border: 1px solid var(--danger-border);
+  color: var(--danger);
+}
+
+.reset:hover {
+  background-color: var(--danger-hover);
+}
+
+.tab {
+  padding: 4px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  color: var(--muted);
+}
+
+.tab:hover {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.tab.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.tabGroup {
+  display: flex;
+  gap: 4px;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 5px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+.toggle::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.toggle.active {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.toggle.active::before {
+  background: var(--accent);
+}
+
+.ghost {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.ghost:hover {
+  color: var(--text);
+  border-color: var(--text);
+}

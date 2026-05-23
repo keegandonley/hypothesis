@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/diff.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { diffLines, diffWords, diffChars } from "diff";
+import { Button, PermalinkRow } from "@/components/ui";
 
 type Mode = "lines" | "words" | "chars";
 
@@ -33,9 +33,7 @@ export default function DiffPage(): React.ReactNode {
   const [original, setOriginal] = useState("");
   const [modified, setModified] = useState("");
   const [mode, setMode] = useState<Mode>("lines");
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const changes = computeDiff(original, modified, mode);
 
@@ -112,16 +110,6 @@ export default function DiffPage(): React.ReactNode {
   const handleModeChange = (m: Mode): void => {
     setMode(m);
     syncUrl(original, modified, m);
-  };
-
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
   };
 
   const handleReset = (): void => {
@@ -207,15 +195,16 @@ export default function DiffPage(): React.ReactNode {
       <div className={styles.toolbar}>
         <div className={styles.modeGroup}>
           {MODES.map(({ value, label }) => (
-            <button
+            <Button
               key={value}
-              className={`${styles.modeBtn}${mode === value ? ` ${styles.modeBtnActive}` : ""}`}
+              variant="tab"
+              active={mode === value}
               onClick={() => {
                 handleModeChange(value);
               }}
             >
               {label}
-            </button>
+            </Button>
           ))}
         </div>
         {!isEmpty && (
@@ -270,21 +259,7 @@ export default function DiffPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }
