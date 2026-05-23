@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-confusing-void-expression, padding-line-between-statements, react-hooks/refs, react-hooks/set-state-in-effect */
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { PageLayout } from "@/components/ui";
+import { PageLayout, Button } from "@/components/ui";
 import styles from "@/styles/audio-streaming.module.css";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
@@ -589,19 +589,12 @@ export default function AudioStreamingPage() {
               onChange={(e) => upd("src", e.target.value)}
             />
             <div className={styles.btnRow} style={{ marginTop: 8 }}>
-              <button
-                className={`${styles.btn} ${styles.btnPrimary}`}
-                onClick={buildAudio}
-              >
+              <Button variant="primary" onClick={buildAudio}>
                 Load / Reload
-              </button>
-              <button
-                className={`${styles.btn} ${styles.btnGhost}`}
-                onClick={buildAudio}
-                title="Recreate the audio element with current attributes"
-              >
+              </Button>
+              <Button variant="ghost" onClick={buildAudio} title="Recreate the audio element with current attributes">
                 Rebuild
-              </button>
+              </Button>
             </div>
             <p className={styles.helpText}>
               Changing the URL, <code>preload</code>, or{" "}
@@ -819,19 +812,13 @@ export default function AudioStreamingPage() {
           </div>
 
           <div className={styles.btnRow}>
-            <button
-              className={`${styles.btn} ${styles.btnGhost}`}
-              onClick={handleReset}
-            >
+            <Button variant="ghost" onClick={handleReset}>
               Reset settings
-            </button>
+            </Button>
             {!isIframe && (
-              <button
-                className={`${styles.btn} ${styles.btnGhost}`}
-                onClick={handleExport}
-              >
+              <Button variant="ghost" onClick={handleExport}>
                 {exportCopied ? "Copied!" : "Copy URL"}
-              </button>
+              </Button>
             )}
           </div>
         </section>
@@ -862,33 +849,33 @@ export default function AudioStreamingPage() {
             className={styles.btnRow}
             style={{ marginTop: 10, flexWrap: "wrap" }}
           >
-            <button className={styles.btn} onClick={handlePlay}>
+            <Button variant="ghost" onClick={handlePlay}>
               Play
-            </button>
-            <button className={styles.btn} onClick={handlePause}>
+            </Button>
+            <Button variant="ghost" onClick={handlePause}>
               Pause
-            </button>
-            <button
-              className={styles.btn}
+            </Button>
+            <Button
+              variant="ghost"
               onClick={handleLoad}
               title="Calls audio.load()"
             >
               audio.load()
-            </button>
-            <button
-              className={styles.btn}
+            </Button>
+            <Button
+              variant="ghost"
               onClick={handleStepBack}
               title="Step back 5 seconds"
             >
               −5s
-            </button>
-            <button
-              className={styles.btn}
+            </Button>
+            <Button
+              variant="ghost"
               onClick={handleStepFwd}
               title="Step forward 5 seconds"
             >
               +5s
-            </button>
+            </Button>
             <label className={styles.seekLabel}>
               seek %
               <input
@@ -902,9 +889,9 @@ export default function AudioStreamingPage() {
                 onChange={(e) => setSeekPct(Number(e.target.value))}
               />
             </label>
-            <button className={styles.btn} onClick={handleSeek}>
+            <Button variant="ghost" onClick={handleSeek}>
               Seek
-            </button>
+            </Button>
           </div>
         </section>
 
@@ -1005,13 +992,13 @@ export default function AudioStreamingPage() {
                 />
                 autoscroll
               </label>
-              <button
-                className={`${styles.btn} ${styles.btnGhost}`}
+              <Button
+                variant="ghost"
                 style={{ padding: "2px 6px" }}
                 onClick={() => setLogEntries([])}
               >
                 clear
-              </button>
+              </Button>
             </div>
           </div>
 

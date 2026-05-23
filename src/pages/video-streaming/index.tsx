@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { PageLayout } from "@/components/ui";
+import { PageLayout, Button } from "@/components/ui";
 import styles from "@/styles/video-streaming.module.css";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
@@ -696,19 +696,12 @@ export default function VideoStreamingPage(): React.ReactNode {
               }}
             />
             <div className={styles.btnRow} style={{ marginTop: 8 }}>
-              <button
-                className={`${styles.btn} ${styles.btnPrimary}`}
-                onClick={buildVideo}
-              >
+              <Button variant="primary" onClick={buildVideo}>
                 Load / Reload
-              </button>
-              <button
-                className={`${styles.btn} ${styles.btnGhost}`}
-                onClick={buildVideo}
-                title="Recreate the video element with current attributes"
-              >
+              </Button>
+              <Button variant="ghost" onClick={buildVideo} title="Recreate the video element with current attributes">
                 Rebuild
-              </button>
+              </Button>
             </div>
             <p className={styles.helpText}>
               Changing the URL, <code>preload</code>, or{" "}
@@ -989,19 +982,13 @@ export default function VideoStreamingPage(): React.ReactNode {
           </div>
 
           <div className={styles.btnRow}>
-            <button
-              className={`${styles.btn} ${styles.btnGhost}`}
-              onClick={handleReset}
-            >
+            <Button variant="ghost" onClick={handleReset}>
               Reset settings
-            </button>
+            </Button>
             {!isIframe && (
-              <button
-                className={`${styles.btn} ${styles.btnGhost}`}
-                onClick={handleExport}
-              >
+              <Button variant="ghost" onClick={handleExport}>
                 {exportCopied ? "Copied!" : "Copy URL"}
-              </button>
+              </Button>
             )}
           </div>
         </section>
@@ -1032,33 +1019,33 @@ export default function VideoStreamingPage(): React.ReactNode {
             className={styles.btnRow}
             style={{ marginTop: 10, flexWrap: "wrap" }}
           >
-            <button className={styles.btn} onClick={handlePlay}>
+            <Button variant="ghost" onClick={handlePlay}>
               Play
-            </button>
-            <button className={styles.btn} onClick={handlePause}>
+            </Button>
+            <Button variant="ghost" onClick={handlePause}>
               Pause
-            </button>
-            <button
-              className={styles.btn}
+            </Button>
+            <Button
+              variant="ghost"
               onClick={handleLoad}
               title="Calls video.load()"
             >
               video.load()
-            </button>
-            <button
-              className={styles.btn}
+            </Button>
+            <Button
+              variant="ghost"
               onClick={handleFrameBack}
               title="Approx −1/30s"
             >
               −1f
-            </button>
-            <button
-              className={styles.btn}
+            </Button>
+            <Button
+              variant="ghost"
               onClick={handleFrameFwd}
               title="Approx +1/30s"
             >
               +1f
-            </button>
+            </Button>
             <label className={styles.seekLabel}>
               seek %
               <input
@@ -1074,9 +1061,9 @@ export default function VideoStreamingPage(): React.ReactNode {
                 }}
               />
             </label>
-            <button className={styles.btn} onClick={handleSeek}>
+            <Button variant="ghost" onClick={handleSeek}>
               Seek
-            </button>
+            </Button>
           </div>
         </section>
 
@@ -1186,15 +1173,15 @@ export default function VideoStreamingPage(): React.ReactNode {
                 />
                 autoscroll
               </label>
-              <button
-                className={`${styles.btn} ${styles.btnGhost}`}
+              <Button
+                variant="ghost"
                 style={{ padding: "2px 6px" }}
                 onClick={() => {
                   setLogEntries([]);
                 }}
               >
                 clear
-              </button>
+              </Button>
             </div>
           </div>
 

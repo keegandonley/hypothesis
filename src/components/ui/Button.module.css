@@ -180,3 +180,15 @@
   border-color: var(--accent-border);
   color: var(--accent);
 }
+
+.primary {
+  background-color: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+.primary:hover:not(:disabled) {
+  opacity: 0.85;
+  background-color: var(--accent);
+}

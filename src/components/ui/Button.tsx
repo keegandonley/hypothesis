@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./Button.module.css";
 
-type Variant = "copy" | "reset" | "tab" | "toggle" | "ghost";
+type Variant = "copy" | "reset" | "tab" | "toggle" | "ghost" | "primary";
 
 type Size = "xs" | "sm" | "md";
 
