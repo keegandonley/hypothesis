@@ -29,13 +29,13 @@ export default function MessageFactoryPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
+      <div className={styles.inner}>
       <PageLayout
         metaTitle="Message Factory"
         metaDescription="Build and send custom postMessage payloads between iframes for testing cross-origin communication."
         path="/message-factory"
         tagline="Design and trigger postMessage actions with an interactive viewer and designer."
       >
-      <div className={styles.inner}>
 
         <div className={styles.section}>
           <div className={styles.sectionLabel}>Sub-experiments</div>
@@ -45,8 +45,8 @@ export default function MessageFactoryPage(): React.ReactNode {
             ))}
           </div>
         </div>
-      </div>
       </PageLayout>
+      </div>
     </div>
   );
 }
