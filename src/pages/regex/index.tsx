@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "@/styles/regex.module.css";
 import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
 const FLAGS = ["g", "i", "m", "s", "u"] as const;
 
 type Flag = (typeof FLAGS)[number];
@@ -168,10 +166,8 @@ export default function RegexPage(): React.ReactNode {
         path="/regex"
         h1="Regex Tester"
         tagline="Test regular expressions against strings with live match results"
+        refs={[{ name: "Regex Syntax", slug: "regex-syntax" }]}
       >
-        <ReferenceLinks
-          refs={[{ name: "Regex Syntax", slug: "regex-syntax" }]}
-        />
 
       {/* Pattern panel */}
       <Panel>

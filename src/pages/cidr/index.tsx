@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/cidr.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
 interface CidrInfo {
   ip: string;
   prefix: number;
@@ -243,13 +241,11 @@ export default function CidrPage(): React.ReactNode {
         path="/cidr"
         h1="CIDR"
         tagline="Calculate subnet details from CIDR notation"
+        refs={[
+          { name: "DNS Record Types", slug: "dns-record-types" },
+          { name: "Port Numbers", slug: "port-numbers" },
+        ]}
       >
-        <ReferenceLinks
-          refs={[
-            { name: "DNS Record Types", slug: "dns-record-types" },
-            { name: "Port Numbers", slug: "port-numbers" },
-          ]}
-        />
 
       <div className={styles.inputRow}>
         <input

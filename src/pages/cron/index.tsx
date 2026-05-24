@@ -3,8 +3,6 @@ import styles from "@/styles/cron.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 import { CronExpressionParser } from "cron-parser";
 import cronstrue from "cronstrue";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
 const EXAMPLES = [
   { label: "Every minute", expr: "* * * * *" },
   { label: "Every hour", expr: "0 * * * *" },
@@ -157,13 +155,11 @@ export default function CronPage(): React.ReactNode {
         path="/cron"
         h1="Cron"
         tagline="Parse cron expressions and preview the next scheduled run times"
+        refs={[
+          { name: "Exit Codes", slug: "exit-codes" },
+          { name: "Unix Signals", slug: "unix-signals" },
+        ]}
       >
-        <ReferenceLinks
-          refs={[
-            { name: "Exit Codes", slug: "exit-codes" },
-            { name: "Unix Signals", slug: "unix-signals" },
-          ]}
-        />
 
       <div className={styles.inputRow}>
         <input

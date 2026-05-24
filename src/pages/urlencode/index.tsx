@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/urlencode.module.css";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
 import { Badge, Button, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 
 export default function UrlEncodePage(): React.ReactNode {
@@ -92,13 +91,11 @@ export default function UrlEncodePage(): React.ReactNode {
         path="/urlencode"
         h1="URL Encode"
         tagline="Encode and decode URL strings"
+        refs={[
+          { name: "MIME Types", slug: "mime-types" },
+          { name: "HTTP Headers", slug: "http-headers" },
+        ]}
       >
-        <ReferenceLinks
-          refs={[
-            { name: "MIME Types", slug: "mime-types" },
-            { name: "HTTP Headers", slug: "http-headers" },
-          ]}
-        />
 
       <div className={styles.panels}>
         <Panel>

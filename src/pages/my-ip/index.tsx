@@ -4,8 +4,6 @@ import { useBranding } from "@/lib/branding";
 import { Button, CopyButton, PageLayout } from "@/components/ui";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 import type { IpData } from "../api/my-ip";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
 type Status = "idle" | "loading" | "success" | "error";
 
 export default function MyIpPage(): React.ReactNode {
@@ -54,13 +52,11 @@ export default function MyIpPage(): React.ReactNode {
         path="/my-ip"
         h1="My IP"
         tagline="Your current public IP address and location info"
+        refs={[
+          { name: "DNS Record Types", slug: "dns-record-types" },
+          { name: "Port Numbers", slug: "port-numbers" },
+        ]}
       >
-        <ReferenceLinks
-          refs={[
-            { name: "DNS Record Types", slug: "dns-record-types" },
-            { name: "Port Numbers", slug: "port-numbers" },
-          ]}
-        />
 
       <div className={styles.body}>
         <Panel>

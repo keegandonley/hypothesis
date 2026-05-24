@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { upload } from "@vercel/blob/client";
 import styles from "@/styles/compress.module.css";
 import { Button, PageLayout } from "@/components/ui";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
 type OutputFormat = "png" | "webp" | "avif";
 
 const FORMAT_QUALITY_DEFAULTS: Record<OutputFormat, number> = {
@@ -230,8 +228,8 @@ export default function CompressPage(): React.ReactNode {
         path="/compress"
         h1="Image Compressor"
         tagline="Compress PNG, JPEG, and WebP images — convert to WebP or AVIF for maximum savings"
+        refs={[{ name: "MIME Types", slug: "mime-types" }]}
       >
-        <ReferenceLinks refs={[{ name: "MIME Types", slug: "mime-types" }]} />
 
       <div className={styles.controls}>
         <span className={styles.controlLabel}>Output format</span>

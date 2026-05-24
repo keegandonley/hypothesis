@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "@/styles/unicode.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
 const MAX_CODEPOINTS = 512;
 
 const NAMED_ENTITIES: Record<number, string> = {
@@ -200,13 +198,11 @@ export default function UnicodePage(): React.ReactNode {
         path="/unicode"
         h1="Unicode Inspector"
         tagline="Inspect code points, UTF-8/UTF-16 bytes, category, script, and HTML entity"
+        refs={[
+          { name: "Unicode Blocks", slug: "unicode-blocks" },
+          { name: "ASCII Table", slug: "ascii" },
+        ]}
       >
-        <ReferenceLinks
-          refs={[
-            { name: "Unicode Blocks", slug: "unicode-blocks" },
-            { name: "ASCII Table", slug: "ascii" },
-          ]}
-        />
 
       <div className={styles.content}>
         <div className={styles.leftPanel}>

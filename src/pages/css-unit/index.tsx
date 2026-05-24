@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/css-unit.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { copyToClipboard } from "@/lib/copyToClipboard";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
 type CSSUnit =
   | "px"
   | "rem"
@@ -237,10 +235,8 @@ export default function CssUnitPage(): React.ReactNode {
         path="/css-unit"
         h1="CSS Unit"
         tagline="Convert between CSS units"
+        refs={[{ name: "CSS Selectors", slug: "css-selectors" }]}
       >
-        <ReferenceLinks
-          refs={[{ name: "CSS Selectors", slug: "css-selectors" }]}
-        />
 
       <div className={styles.inputSection}>
         <div className={styles.inputHeader}>

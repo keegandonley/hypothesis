@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "@/styles/html-entity.module.css";
 import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
 // HTML5 named entity map (comprehensive set)
 const htmlEntities: Record<string, string> = {
   "&": "&amp;",
@@ -290,8 +288,8 @@ export default function HtmlEntityPage(): React.ReactNode {
         path="/html-entity"
         h1="HTML Entity"
         tagline="Encode and decode HTML entities"
+        refs={[{ name: "ASCII Table", slug: "ascii" }]}
       >
-        <ReferenceLinks refs={[{ name: "ASCII Table", slug: "ascii" }]} />
 
       <div className={styles.panels}>
         <Panel>

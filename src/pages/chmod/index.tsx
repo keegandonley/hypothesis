@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/chmod.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
 type Perms = [number, number, number]; // [owner, group, other]
 
 const PRESETS: { label: string; mode: string }[] = [
@@ -168,13 +166,11 @@ export default function ChmodPage(): React.ReactNode {
         path="/chmod"
         h1="chmod"
         tagline="Convert between numeric and symbolic Unix file permission modes"
+        refs={[
+          { name: "Unix Signals", slug: "unix-signals" },
+          { name: "Exit Codes", slug: "exit-codes" },
+        ]}
       >
-        <ReferenceLinks
-          refs={[
-            { name: "Unix Signals", slug: "unix-signals" },
-            { name: "Exit Codes", slug: "exit-codes" },
-          ]}
-        />
 
       <div className={styles.inputRow}>
         <input

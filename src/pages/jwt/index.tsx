@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "@/styles/jwt.module.css";
 import { Badge, Button, Panel, PanelHeader, PanelBody, PageLayout, PermalinkRow } from "@/components/ui";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
 interface JwtParts {
   header: Record<string, unknown> | null;
   payload: Record<string, unknown> | null;
@@ -176,13 +174,11 @@ export default function JwtPage(): React.ReactNode {
         path="/jwt"
         h1="JWT Decoder"
         tagline="Decode JWT tokens and inspect header, payload, and expiry"
+        refs={[
+          { name: "HTTP Headers", slug: "http-headers" },
+          { name: "HTTP Status Codes", slug: "http-status-codes" },
+        ]}
       >
-        <ReferenceLinks
-          refs={[
-            { name: "HTTP Headers", slug: "http-headers" },
-            { name: "HTTP Status Codes", slug: "http-status-codes" },
-          ]}
-        />
 
       <div className={styles.inputPanel}>
         <PanelHeader label="Token">
