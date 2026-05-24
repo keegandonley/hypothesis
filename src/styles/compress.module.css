@@ -1,15 +1,19 @@
 .page {
-  max-width: var(--content-width);
-  margin: 0 auto;
-  padding: 2rem 1.5rem 3rem;
-  font-family: var(--font-mono, monospace);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 28px 28px;
+  font-family: var(--font-mono);
   color: var(--text);
+  padding: 20px;
 }
 
 .divider {
   border: none;
   border-top: 1px solid var(--border);
-  margin: 1.5rem 0;
+  margin: 0 0 16px;
 }
 
 /* Controls */

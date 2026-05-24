@@ -63,39 +63,6 @@
   border-color: var(--accent-border);
 }
 
-/* Panel copy buttons */
-.panelCopyBtn {
-  padding: 6px 14px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--text);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    background-color 0.15s,
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.panelCopyBtn:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-.panelCopyBtn:not(:disabled):hover {
-  background: var(--border);
-}
-
-.panelCopyBtn.panelCopied {
-  background: var(--accent-subtle);
-  border-color: var(--accent-border);
-  color: var(--accent);
-}
-
 .shades {
   display: grid;
   grid-template-columns: repeat(11, 1fr);

@@ -199,13 +199,14 @@ export default function ColorShadesPage(): React.ReactNode {
             />
           </div>
           {!isIframe && (
-            <button
-              className={`${styles.panelCopyBtn}${copiedAll ? ` ${styles.panelCopied}` : ""}`}
+            <Button
+              variant="copy"
+              copied={copiedAll}
               onClick={handleCopyAll}
               disabled={!shades}
             >
-              {copiedAll ? "Copied!" : "Copy as Tailwind"}
-            </button>
+              Copy as Tailwind
+            </Button>
           )}
         </div>
 

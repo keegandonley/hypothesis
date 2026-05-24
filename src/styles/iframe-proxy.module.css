@@ -35,6 +35,8 @@
   font-size: 11px;
   z-index: 9999;
   box-sizing: border-box;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
 }
 
 .urlText {
@@ -310,6 +312,8 @@
   font-size: 11px;
   z-index: 9999;
   box-sizing: border-box;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
 }
 
 .iframeWork {
@@ -329,6 +333,7 @@
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--muted);
+  background: var(--bg);
 }
 
 .errorState {
