@@ -4,8 +4,8 @@ import Link from "next/link";
 import styles from "@/styles/message-factory-designer.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, PermalinkRow, CopyButton } from "@/components/ui";
 
 interface Action {
   id: string;
@@ -96,12 +96,7 @@ export default function DesignerPage(): React.ReactNode {
   const [actions, setActions] = useState<(Action & { _key: string })[]>([]);
   const [url, setUrl] = useState("");
   const [viewerUrl, setViewerUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedViewer, setCopiedViewer] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyViewerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -168,27 +163,6 @@ export default function DesignerPage(): React.ReactNode {
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
     setViewerUrl(`${window.location.origin}/message-factory/viewer`);
-  };
-
-  const handleCopyViewer = (): void => {
-    void copyToClipboard(viewerUrl).then(() => {
-      setCopiedViewer(true);
-      if (copyViewerTimeoutRef.current)
-        clearTimeout(copyViewerTimeoutRef.current);
-      copyViewerTimeoutRef.current = setTimeout(() => {
-        setCopiedViewer(false);
-      }, 1500);
-    });
-  };
-
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
   };
 
   return (
@@ -278,7 +252,7 @@ export default function DesignerPage(): React.ReactNode {
                 <label className={styles.fieldLabel}>
                   payload
                   {!isValidJson(action.payload) && (
-                    <span className={styles.badgeError}>invalid json</span>
+                    <Badge color="error">invalid json</Badge>
                   )}
                 </label>
                 <textarea
@@ -302,32 +276,12 @@ export default function DesignerPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      {/* Permalink row */}
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.permalinkLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
 
       {/* Open Viewer row */}
       <div className={styles.viewerRow}>
         {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copiedViewer ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopyViewer}
-          >
-            {copiedViewer ? "Copied!" : "Copy Viewer Link"}
-          </button>
+          <CopyButton value={viewerUrl} />
         )}
         <div className={styles.viewerLinks}>
           <a

@@ -1,10 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/datetime.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
+import { Badge, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 interface FormatRow {
@@ -145,7 +141,6 @@ function parseInput(value: string): Date | null {
 }
 
 export default function DateTimePage(): React.ReactNode {
-  const branding = useBranding();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [parsedDate, setParsedDate] = useState<Date | null>(null);
@@ -153,13 +148,7 @@ export default function DateTimePage(): React.ReactNode {
   const [liveDate, setLiveDate] = useState<Date | null>(null);
   const [relativeLive, setRelativeLive] = useState(true);
   const [, setRelativeTick] = useState(0);
-  const [copied, setCopied] = useState<string | null>(null);
   const [url, setUrl] = useState("");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const [permalinkCopied, setPermalinkCopied] = useState(false);
   const liveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const relativeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
     null,
@@ -230,31 +219,9 @@ export default function DateTimePage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleRowCopy = (id: string, text: string): void => {
-    void copyToClipboard(text).then(() => {
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      setCopied(id);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(null);
-      }, 1500);
-    });
-  };
-
-  const handlePermalinkCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      if (permalinkCopyTimeoutRef.current)
-        clearTimeout(permalinkCopyTimeoutRef.current);
-      setPermalinkCopied(true);
-      permalinkCopyTimeoutRef.current = setTimeout(() => {
-        setPermalinkCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleReset = (): void => {
     setInput("");
     setParsedDate(null);
-    setCopied(null);
     const newUrl = buildUrl("", liveMode);
 
     history.replaceState(null, "", newUrl);
@@ -283,10 +250,8 @@ export default function DateTimePage(): React.ReactNode {
     setLiveMode((prev) => {
       const next = !prev;
       const newUrl = buildUrl(next ? "" : input, next);
-
       history.replaceState(null, "", newUrl);
       setUrl(newUrl);
-
       return next;
     });
   };
@@ -301,39 +266,13 @@ export default function DateTimePage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Datetime Converter"
-        description="Convert Unix timestamps, ISO dates, and relative times across timezones with live sync. Free online timestamp converter — no installation required."
+      <PageLayout
+        metaTitle="Datetime Converter"
+        metaDescription="Convert Unix timestamps, ISO dates, and relative times across timezones with live sync. Free online timestamp converter — no installation required."
         path="/datetime"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/datetime"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>DateTime</h1>
-        <p className={styles.tagline}>
-          Convert timestamps and dates between many formats at once
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="DateTime"
+        tagline="Convert timestamps and dates between many formats at once"
+      >
 
       <div className={styles.inputRow}>
         <input
@@ -365,23 +304,22 @@ export default function DateTimePage(): React.ReactNode {
         >
           Live {liveMode ? "ON" : "OFF"}
         </button>
-        {liveMode && <span className={styles.badgeReady}>Live</span>}
+        {liveMode && <Badge color="ready">Live</Badge>}
         {!liveMode && !hasInput && (
-          <span className={styles.badgeBlue}>Ready</span>
+          <Badge color="blue">Ready</Badge>
         )}
         {!liveMode &&
           hasInput &&
           (isInvalid ? (
-            <span className={styles.badgeError}>Invalid</span>
+            <Badge color="error">Invalid</Badge>
           ) : (
-            <span className={styles.badgeReady}>Valid</span>
+            <Badge color="ready">Valid</Badge>
           ))}
       </div>
 
       <div className={styles.conversionGrid}>
         {FORMAT_ROWS.map((row) => {
           const value = displayDate ? row.format(displayDate) : null;
-          const isCopied = copied === row.id;
           const isRelativeRow = row.id === "relative";
 
           return (
@@ -392,32 +330,25 @@ export default function DateTimePage(): React.ReactNode {
               ) : (
                 <span className={styles.conversionValueEmpty}>—</span>
               )}
-              <div className={styles.rowActions}>
-                {isRelativeRow && (
-                  <button
-                    className={`${styles.nowBtn}${relativeLive && !liveMode ? ` ${styles.nowBtnActive}` : ""}`}
-                    onClick={liveMode ? undefined : handleRelativeLiveToggle}
-                    disabled={liveMode}
-                  >
-                    {liveMode
-                      ? "Live Unavailable"
-                      : `Live ${relativeLive ? "ON" : "OFF"}`}
-                  </button>
-                )}
-                {!isIframe &&
-                  (value !== null ? (
-                    <button
-                      className={`${styles.copyRowBtn}${isCopied ? ` ${styles.copied}` : ""}`}
-                      onClick={() => {
-                        handleRowCopy(row.id, value);
-                      }}
-                    >
-                      {isCopied ? "Copied!" : "Copy"}
-                    </button>
-                  ) : (
-                    <span className={styles.copyRowBtnDisabled}>Copy</span>
-                  ))}
-              </div>
+                  <div className={styles.rowActions}>
+                    {isRelativeRow && (
+                      <button
+                        className={`${styles.nowBtn}${relativeLive && !liveMode ? ` ${styles.nowBtnActive}` : ""}`}
+                        onClick={liveMode ? undefined : handleRelativeLiveToggle}
+                        disabled={liveMode}
+                      >
+                        {liveMode
+                          ? "Live Unavailable"
+                          : `Live ${relativeLive ? "ON" : "OFF"}`}
+                      </button>
+                    )}
+                    <CopyButton
+                      value={value ?? ""}
+                      variant="ghost"
+                      size="sm"
+                      disabled={value === null}
+                    />
+                  </div>
             </div>
           );
         })}
@@ -425,21 +356,8 @@ export default function DateTimePage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-            onClick={handlePermalinkCopy}
-          >
-            {permalinkCopied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

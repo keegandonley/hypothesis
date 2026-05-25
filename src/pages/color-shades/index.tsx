@@ -1,9 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/color-shades.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 
@@ -96,11 +93,9 @@ function isDark(hex: string): boolean {
 }
 
 export default function ColorShadesPage(): React.ReactNode {
-  const branding = useBranding();
   const isIframe = useIsIframe();
   const [color, setColor] = useState("#3b82f6");
   const [pageUrl, setPageUrl] = useState("");
-  const [copied, setCopied] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -134,16 +129,6 @@ export default function ColorShadesPage(): React.ReactNode {
 
     history.replaceState(null, "", newUrl);
     setPageUrl(newUrl);
-  };
-
-  const handleCopy = (): void => {
-    void copyToClipboard(pageUrl).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
   };
 
   const handleReset = (): void => {
@@ -182,40 +167,13 @@ export default function ColorShadesPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Color Shades Generator"
-        description="Generate tints and shades from any base color for design systems and palettes. Free online color shades generator — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Color Shades Generator"
+        metaDescription="Generate tints and shades from any base color for design systems and palettes. Free online color shades generator — no installation required. No data sent to servers."
         path="/color-shades"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/color-shades"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Color Shades</h1>
-        <p className={styles.tagline}>
-          Generate a perceptually uniform 11-step color scale from any hex color
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Color Shades"
+        tagline="Generate a perceptually uniform 11-step color scale from any hex color"
+      >
 
       <div className={styles.body}>
         <div className={styles.controls}>
@@ -241,13 +199,14 @@ export default function ColorShadesPage(): React.ReactNode {
             />
           </div>
           {!isIframe && (
-            <button
-              className={`${styles.panelCopyBtn}${copiedAll ? ` ${styles.panelCopied}` : ""}`}
+            <Button
+              variant="copy"
+              copied={copiedAll}
               onClick={handleCopyAll}
               disabled={!shades}
             >
-              {copiedAll ? "Copied!" : "Copy as Tailwind"}
-            </button>
+              Copy as Tailwind
+            </Button>
           )}
         </div>
 
@@ -295,21 +254,8 @@ export default function ColorShadesPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{pageUrl}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={pageUrl} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

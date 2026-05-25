@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/json-ts.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 
 type JsonValue =
   | string
@@ -123,20 +118,12 @@ function jsonToTs(input: string, rootName: string, optional: boolean): string {
 }
 
 export default function JsonTsPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [jsonInput, setJsonInput] = useState("");
   const [tsOutput, setTsOutput] = useState("");
   const [rootName, setRootName] = useState("Root");
   const [optional, setOptional] = useState(false);
   const [jsonValid, setJsonValid] = useState<boolean | null>(null);
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedOutput, setCopiedOutput] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyOutputTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
 
   const buildUrl = (j: string, n: string, o: boolean): string => {
     if (!j) return `${window.location.origin}${window.location.pathname}`;
@@ -234,79 +221,28 @@ export default function JsonTsPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
-  const handleCopyOutput = (): void => {
-    void copyToClipboard(tsOutput).then(() => {
-      setCopiedOutput(true);
-      if (copyOutputTimeoutRef.current)
-        clearTimeout(copyOutputTimeoutRef.current);
-      copyOutputTimeoutRef.current = setTimeout(() => {
-        setCopiedOutput(false);
-      }, 1500);
-    });
-  };
-
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="JSON to TypeScript"
-        description="Convert JSON objects to TypeScript interfaces and types instantly. Free online JSON to TypeScript converter — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="JSON to TypeScript"
+        metaDescription="Convert JSON objects to TypeScript interfaces and types instantly. Free online JSON to TypeScript converter — no installation required. No data sent to servers."
         path="/json-ts"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/json-ts"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>JSON → TypeScript</h1>
-        <p className={styles.tagline}>
-          Convert a JSON sample into TypeScript interface definitions
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="JSON → TypeScript"
+        tagline="Convert a JSON sample into TypeScript interface definitions"
+      >
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>JSON Input</span>
-            <div className={styles.panelHeaderRight}>
-              {jsonInput.length === 0 ? (
-                <span className={styles.badgeReady}>ready</span>
-              ) : jsonValid ? (
-                <span className={styles.badge}>valid</span>
-              ) : (
-                <span className={styles.badgeError}>invalid</span>
-              )}
-            </div>
-          </div>
-          <div className={styles.textareaWrapper}>
+        <Panel>
+          <PanelHeader label="JSON Input">
+            {jsonInput.length === 0 ? (
+              <Badge color="ready">ready</Badge>
+            ) : jsonValid ? (
+              <Badge>valid</Badge>
+            ) : (
+              <Badge color="error">invalid</Badge>
+            )}
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={jsonInput}
@@ -316,24 +252,14 @@ export default function JsonTsPage(): React.ReactNode {
               placeholder="Paste JSON here..."
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>TypeScript Output</span>
-            <div className={styles.panelHeaderRight}>
-              {!isIframe && tsOutput && (
-                <button
-                  className={`${styles.copyBtn}${copiedOutput ? ` ${styles.copied}` : ""}`}
-                  onClick={handleCopyOutput}
-                >
-                  {copiedOutput ? "Copied!" : "Copy"}
-                </button>
-              )}
-            </div>
-          </div>
-          <div className={styles.textareaWrapper}>
+        <Panel>
+          <PanelHeader label="TypeScript Output">
+            {tsOutput && <CopyButton value={tsOutput} variant="ghost" size="sm" />}
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={tsOutput}
@@ -341,8 +267,8 @@ export default function JsonTsPage(): React.ReactNode {
               placeholder="TypeScript interfaces will appear here..."
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
       </div>
 
       <div className={styles.optionsRow}>
@@ -359,31 +285,19 @@ export default function JsonTsPage(): React.ReactNode {
             spellCheck={false}
           />
         </label>
-        <button
-          className={`${styles.toggleBtn}${optional ? ` ${styles.active}` : ""}`}
+        <Button
+          variant="toggle"
+          active={optional}
           onClick={handleOptionalToggle}
         >
           Optional fields {optional ? "ON" : "OFF"}
-        </button>
+        </Button>
       </div>
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.permalinkCopyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

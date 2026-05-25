@@ -1,13 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import { useEffect, useState } from "react";
 import styles from "@/styles/jwt.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
+import { Badge, Button, Panel, PanelHeader, PanelBody, PageLayout, PermalinkRow } from "@/components/ui";
 interface JwtParts {
   header: Record<string, unknown> | null;
   payload: Record<string, unknown> | null;
@@ -100,14 +93,10 @@ function getExpiryStatus(
 }
 
 export default function JwtPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [token, setToken] = useState("");
   const [decoded, setDecoded] = useState<JwtParts | null>(null);
   const [error, setError] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const buildUrl = (t: string): string => {
     if (!t) return `${window.location.origin}${window.location.pathname}`;
@@ -174,78 +163,36 @@ export default function JwtPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const expiryStatus = getExpiryStatus(decoded?.payload ?? null);
   const hasToken = token.length > 0;
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="JWT Decoder"
-        description="Decode and inspect JWT tokens online — view header, payload claims, and expiry status. Free, no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="JWT Decoder"
+        metaDescription="Decode and inspect JWT tokens online — view header, payload claims, and expiry status. Free, no installation required. No data sent to servers."
         path="/jwt"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/jwt"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>JWT Decoder</h1>
-        <p className={styles.tagline}>
-          Decode JWT tokens and inspect header, payload, and expiry
-        </p>
-        <ReferenceLinks
-          refs={[
-            { name: "HTTP Headers", slug: "http-headers" },
-            { name: "HTTP Status Codes", slug: "http-status-codes" },
-          ]}
-        />
-      </div>
-
-      <hr className={styles.divider} />
+        h1="JWT Decoder"
+        tagline="Decode JWT tokens and inspect header, payload, and expiry"
+        refs={[
+          { name: "HTTP Headers", slug: "http-headers" },
+          { name: "HTTP Status Codes", slug: "http-status-codes" },
+        ]}
+      >
 
       <div className={styles.inputPanel}>
-        <div className={styles.panelHeader}>
-          <span className={styles.panelLabel}>Token</span>
-          <div className={styles.panelHeaderRight}>
-            {hasToken && error && (
-              <span className={styles.badgeError}>malformed</span>
-            )}
-            {hasToken && !error && decoded && (
-              <span className={styles.badge}>{token.trim().length} chars</span>
-            )}
-            <button className={styles.generateBtn} onClick={handleGenerate}>
-              Generate
-            </button>
-          </div>
-        </div>
-        <div className={styles.textareaWrapper}>
+        <PanelHeader label="Token">
+          {hasToken && error && (
+            <Badge color="error">malformed</Badge>
+          )}
+          {hasToken && !error && decoded && (
+            <Badge>{token.trim().length} chars</Badge>
+          )}
+          <Button variant="copy" size="sm" onClick={handleGenerate}>
+            Generate
+          </Button>
+        </PanelHeader>
+        <PanelBody>
           <textarea
             className={styles.textarea}
             value={token}
@@ -255,14 +202,12 @@ export default function JwtPage(): React.ReactNode {
             placeholder="Paste JWT token here..."
             spellCheck={false}
           />
-        </div>
+        </PanelBody>
       </div>
 
       <div className={styles.outputPanels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Header</span>
-          </div>
+        <Panel>
+          <PanelHeader label="Header" />
           <div className={styles.outputWrapper}>
             <pre className={styles.output}>
               {decoded?.header
@@ -272,58 +217,41 @@ export default function JwtPage(): React.ReactNode {
                   : ""}
             </pre>
           </div>
-        </div>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Payload</span>
-            <div className={styles.panelHeaderRight}>
-              {decoded?.payload &&
-                (expiryStatus === "valid" ? (
-                  <span className={styles.badgeValid}>valid</span>
-                ) : expiryStatus === "expired" ? (
-                  <span className={styles.badgeExpired}>expired</span>
-                ) : (
-                  <span className={styles.badgeMuted}>no exp</span>
-                ))}
-            </div>
-          </div>
+        <Panel>
+          <PanelHeader label="Payload">
+            {decoded?.payload &&
+              (expiryStatus === "valid" ? (
+                <Badge className={styles.badgeValid}>valid</Badge>
+              ) : expiryStatus === "expired" ? (
+                <Badge className={styles.badgeExpired}>expired</Badge>
+              ) : (
+                <Badge className={styles.badgeMuted}>no exp</Badge>
+              ))}
+          </PanelHeader>
           <div className={styles.outputWrapper}>
             <pre className={styles.output}>
               {decoded?.payload ? JSON.stringify(decoded.payload, null, 2) : ""}
             </pre>
           </div>
-        </div>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Signature</span>
-          </div>
+        <Panel>
+          <PanelHeader label="Signature" />
           <div className={styles.outputWrapper}>
             <pre className={`${styles.output} ${styles.outputMuted}`}>
               {decoded?.signature ?? ""}
             </pre>
           </div>
-        </div>
+        </Panel>
       </div>
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

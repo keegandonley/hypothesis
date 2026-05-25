@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/qr.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import QRCode from "qrcode";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
+import { Panel, PanelHeader } from "@/components/ui/Panel";
 
 type ECLevel = "L" | "M" | "Q" | "H";
 type QrMode = "text" | "wifi" | "vcard";
@@ -96,7 +93,6 @@ function getQrString(
 }
 
 export default function QrPage(): React.ReactNode {
-  const branding = useBranding();
   const isIframe = useIsIframe();
 
   const [mode, setMode] = useState<QrMode>("text");
@@ -108,14 +104,7 @@ export default function QrPage(): React.ReactNode {
   const [ecLevel, setEcLevel] = useState<ECLevel>("M");
   const [svgContent, setSvgContent] = useState("");
   const [error, setError] = useState("");
-  const [copiedSvg, setCopiedSvg] = useState(false);
-  const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [pageUrl, setPageUrl] = useState("");
-
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
 
   const generateQR = async (text: string, ec: ECLevel): Promise<void> => {
     if (!text.trim()) {
@@ -290,17 +279,6 @@ export default function QrPage(): React.ReactNode {
     setPageUrl(url);
   };
 
-  const handleCopyPermalink = (): void => {
-    void copyToClipboard(pageUrl).then(() => {
-      setPermalinkCopied(true);
-      if (permalinkTimeoutRef.current)
-        clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(() => {
-        setPermalinkCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleDownloadSvg = (): void => {
     if (!svgContent) return;
     const blob = new Blob([svgContent], { type: "image/svg+xml" });
@@ -333,17 +311,6 @@ export default function QrPage(): React.ReactNode {
     a.click();
   };
 
-  const handleCopySvg = (): void => {
-    if (!svgContent) return;
-    void copyToClipboard(svgContent).then(() => {
-      setCopiedSvg(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopiedSvg(false);
-      }, 1500);
-    });
-  };
-
   const hasContent = !!getQrString(mode, value, wifi, vcard).trim();
 
   const emptyStateText =
@@ -355,46 +322,18 @@ export default function QrPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="QR Code Generator"
-        description="Generate QR codes from text, URLs, WiFi credentials, and contact cards. Download as SVG or PNG. Free online QR code generator — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="QR Code Generator"
+        metaDescription="Generate QR codes from text, URLs, WiFi credentials, and contact cards. Download as SVG or PNG. Free online QR code generator — no installation required. No data sent to servers."
         path="/qr"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/qr"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>QR Code</h1>
-        <p className={styles.tagline}>
-          Generate QR codes from text, WiFi credentials, or contact cards
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="QR Code"
+        tagline="Generate QR codes from text, WiFi credentials, or contact cards"
+      >
 
       <div className={styles.layout}>
         <div className={styles.leftCol}>
-          <div className={styles.inputPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Input</span>
+          <Panel>
+            <PanelHeader label="Input">
               <div className={styles.modeTabs} role="tablist">
                 {(["text", "wifi", "vcard"] as QrMode[]).map((m) => (
                   <button
@@ -410,7 +349,7 @@ export default function QrPage(): React.ReactNode {
                   </button>
                 ))}
               </div>
-            </div>
+            </PanelHeader>
 
             {mode === "text" && (
               <textarea
@@ -473,15 +412,16 @@ export default function QrPage(): React.ReactNode {
                   <label className={styles.formLabel}>Security</label>
                   <div className={styles.toggleGroup}>
                     {(["WPA", "WEP", "nopass"] as WifiSecurity[]).map((s) => (
-                      <button
+                      <Button
                         key={s}
-                        className={`${styles.toggleBtn}${wifi.security === s ? ` ${styles.active}` : ""}`}
+                        variant="toggle"
+                        active={wifi.security === s}
                         onClick={() => {
                           handleWifiChange({ security: s });
                         }}
                       >
                         {s === "nopass" ? "None" : s}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
@@ -489,15 +429,16 @@ export default function QrPage(): React.ReactNode {
                   <label className={styles.formLabel}>Hidden network</label>
                   <div className={styles.toggleGroup}>
                     {([false, true] as boolean[]).map((h) => (
-                      <button
+                      <Button
                         key={String(h)}
-                        className={`${styles.toggleBtn}${wifi.hidden === h ? ` ${styles.active}` : ""}`}
+                        variant="toggle"
+                        active={wifi.hidden === h}
                         onClick={() => {
                           handleWifiChange({ hidden: h });
                         }}
                       >
                         {h ? "Yes" : "No"}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
@@ -588,22 +529,23 @@ export default function QrPage(): React.ReactNode {
                 </div>
               </div>
             )}
-          </div>
+          </Panel>
 
           <div className={styles.settingsRow}>
             <span className={styles.settingLabel}>Error Correction</span>
             <div className={styles.toggleGroup}>
               {EC_LEVELS.map((ec) => (
-                <button
+                <Button
                   key={ec}
-                  className={`${styles.toggleBtn}${ecLevel === ec ? ` ${styles.active}` : ""}`}
+                  variant="toggle"
+                  active={ecLevel === ec}
                   onClick={() => {
                     handleEcChange(ec);
                   }}
                   title={EC_DESCRIPTIONS[ec]}
                 >
                   {ec}
-                </button>
+                </Button>
               ))}
             </div>
             <span className={styles.ecDesc}>{EC_DESCRIPTIONS[ecLevel]}</span>
@@ -625,13 +567,11 @@ export default function QrPage(): React.ReactNode {
               >
                 Download PNG
               </button>
-              <button
-                className={`${styles.copySvgBtn}${copiedSvg ? ` ${styles.copied}` : ""}`}
+              <CopyButton
+                value={svgContent}
+                variant="ghost"
                 disabled={!svgContent}
-                onClick={handleCopySvg}
-              >
-                {copiedSvg ? "Copied!" : "Copy SVG"}
-              </button>
+              />
             </div>
           )}
         </div>
@@ -654,21 +594,8 @@ export default function QrPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{pageUrl}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopyPermalink}
-          >
-            {permalinkCopied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={pageUrl} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

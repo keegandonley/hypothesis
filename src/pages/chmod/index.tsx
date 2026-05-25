@@ -1,13 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
 import styles from "@/styles/chmod.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
+import { Badge, Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 type Perms = [number, number, number]; // [owner, group, other]
 
 const PRESETS: { label: string; mode: string }[] = [
@@ -71,20 +64,11 @@ function detectInput(raw: string): "numeric" | "symbolic" | "unknown" {
 }
 
 export default function ChmodPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [perms, setPerms] = useState<Perms | null>(null);
   const [error, setError] = useState(false);
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedField, setCopiedField] = useState<"numeric" | "symbolic" | null>(
-    null,
-  );
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyFieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+
 
   const buildUrl = (mode: string): string => {
     if (!mode) return `${window.location.origin}${window.location.pathname}`;
@@ -164,29 +148,7 @@ export default function ChmodPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
 
-  const handleCopyField = (field: "numeric" | "symbolic"): void => {
-    if (!perms) return;
-    const val = field === "numeric" ? toNumeric(perms) : toSymbolic(perms);
-
-    void copyToClipboard(val).then(() => {
-      setCopiedField(field);
-      if (copyFieldTimeoutRef.current)
-        clearTimeout(copyFieldTimeoutRef.current);
-      copyFieldTimeoutRef.current = setTimeout(() => {
-        setCopiedField(null);
-      }, 1500);
-    });
-  };
 
   const bits = [
     { label: "Read", bit: 4 },
@@ -198,46 +160,17 @@ export default function ChmodPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Chmod Calculator"
-        description="Convert Unix file permissions between numeric (755) and symbolic (rwxr-xr-x) modes. Free online chmod calculator — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Chmod Calculator"
+        metaDescription="Convert Unix file permissions between numeric (755) and symbolic (rwxr-xr-x) modes. Free online chmod calculator — no installation required. No data sent to servers."
         path="/chmod"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/chmod"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>chmod</h1>
-        <p className={styles.tagline}>
-          Convert between numeric and symbolic Unix file permission modes
-        </p>
-        <ReferenceLinks
-          refs={[
-            { name: "Unix Signals", slug: "unix-signals" },
-            { name: "Exit Codes", slug: "exit-codes" },
-          ]}
-        />
-      </div>
-
-      <hr className={styles.divider} />
+        h1="chmod"
+        tagline="Convert between numeric and symbolic Unix file permission modes"
+        refs={[
+          { name: "Unix Signals", slug: "unix-signals" },
+          { name: "Exit Codes", slug: "exit-codes" },
+        ]}
+      >
 
       <div className={styles.inputRow}>
         <input
@@ -251,7 +184,7 @@ export default function ChmodPage(): React.ReactNode {
           autoCapitalize="off"
           autoCorrect="off"
         />
-        {error && <span className={styles.badgeError}>invalid</span>}
+        {error && <Badge color="error">invalid</Badge>}
       </div>
 
       <div className={styles.presetsRow}>
@@ -271,39 +204,19 @@ export default function ChmodPage(): React.ReactNode {
       {perms && (
         <>
           <div className={styles.outputPanels}>
-            <div className={styles.panel}>
-              <div className={styles.panelHeader}>
-                <span className={styles.panelLabel}>Numeric</span>
-                {!isIframe && (
-                  <button
-                    className={`${styles.copyFieldBtn}${copiedField === "numeric" ? ` ${styles.copied}` : ""}`}
-                    onClick={() => {
-                      handleCopyField("numeric");
-                    }}
-                  >
-                    {copiedField === "numeric" ? "Copied!" : "Copy"}
-                  </button>
-                )}
-              </div>
+            <Panel>
+              <PanelHeader label="Numeric">
+                <CopyButton value={toNumeric(perms)} variant="ghost" size="xs" />
+              </PanelHeader>
               <div className={styles.panelValue}>{toNumeric(perms)}</div>
-            </div>
+            </Panel>
 
-            <div className={styles.panel}>
-              <div className={styles.panelHeader}>
-                <span className={styles.panelLabel}>Symbolic</span>
-                {!isIframe && (
-                  <button
-                    className={`${styles.copyFieldBtn}${copiedField === "symbolic" ? ` ${styles.copied}` : ""}`}
-                    onClick={() => {
-                      handleCopyField("symbolic");
-                    }}
-                  >
-                    {copiedField === "symbolic" ? "Copied!" : "Copy"}
-                  </button>
-                )}
-              </div>
+            <Panel>
+              <PanelHeader label="Symbolic">
+                <CopyButton value={toSymbolic(perms)} variant="ghost" size="xs" />
+              </PanelHeader>
               <div className={styles.panelValue}>{toSymbolic(perms)}</div>
-            </div>
+            </Panel>
           </div>
 
           <div className={styles.tableWrapper}>
@@ -345,23 +258,11 @@ export default function ChmodPage(): React.ReactNode {
         </>
       )}
 
+      </PageLayout>
+
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

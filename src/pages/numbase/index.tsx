@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/numbase.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 
 interface Values {
   bin: string;
@@ -26,17 +21,10 @@ function fromDecimal(n: number): Values {
 }
 
 export default function NumbasePage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [values, setValues] = useState<Values>(empty);
   const [errorField, setErrorField] = useState<keyof Values | null>(null);
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedField, setCopiedField] = useState<keyof Values | null>(null);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyFieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+
 
   const buildUrl = (dec: string): string => {
     if (!dec) return `${window.location.origin}${window.location.pathname}`;
@@ -112,26 +100,7 @@ export default function NumbasePage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
 
-  const handleCopyField = (field: keyof Values): void => {
-    void copyToClipboard(values[field]).then(() => {
-      setCopiedField(field);
-      if (copyFieldTimeoutRef.current)
-        clearTimeout(copyFieldTimeoutRef.current);
-      copyFieldTimeoutRef.current = setTimeout(() => {
-        setCopiedField(null);
-      }, 1500);
-    });
-  };
 
   const panels: {
     field: keyof Values;
@@ -172,39 +141,13 @@ export default function NumbasePage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Number Base Converter"
-        description="Convert numbers between binary, octal, decimal, and hexadecimal bases instantly. Free online number base converter — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Number Base Converter"
+        metaDescription="Convert numbers between binary, octal, decimal, and hexadecimal bases instantly. Free online number base converter — no installation required. No data sent to servers."
         path="/numbase"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/numbase"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Number Base</h1>
-        <p className={styles.tagline}>
-          Convert integers between binary, octal, decimal, and hex
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Number Base"
+        tagline="Convert integers between binary, octal, decimal, and hex"
+      >
 
       <div className={styles.panels}>
         {panels.map(({ field, label, prefix, base, placeholder }) => {
@@ -212,20 +155,17 @@ export default function NumbasePage(): React.ReactNode {
           const val = values[field];
 
           return (
-            <div key={field} className={styles.panel}>
-              <div className={styles.panelHeader}>
-                <span className={styles.panelLabel}>{label}</span>
-                <div className={styles.panelHeaderRight}>
-                  {isError ? (
-                    <span className={styles.badgeError}>invalid</span>
-                  ) : val ? (
-                    <span className={styles.badge}>{val.length} digits</span>
-                  ) : (
-                    <span className={styles.badge}>{prefix}</span>
-                  )}
-                </div>
-              </div>
-              <div className={styles.textareaWrapper}>
+            <Panel key={field}>
+              <PanelHeader label={label}>
+                {isError ? (
+                  <Badge color="error">invalid</Badge>
+                ) : val ? (
+                  <Badge>{val.length} digits</Badge>
+                ) : (
+                  <Badge>{prefix}</Badge>
+                )}
+              </PanelHeader>
+              <PanelBody>
                 <textarea
                   className={styles.textarea}
                   value={val}
@@ -237,39 +177,19 @@ export default function NumbasePage(): React.ReactNode {
                   autoCapitalize="off"
                   autoCorrect="off"
                 />
-                {val && !isError && !isIframe && (
-                  <button
-                    className={`${styles.copyFieldBtn}${copiedField === field ? ` ${styles.copied}` : ""}`}
-                    onClick={() => {
-                      handleCopyField(field);
-                    }}
-                  >
-                    {copiedField === field ? "Copied!" : "Copy"}
-                  </button>
+                {val && !isError && (
+                  <CopyButton value={val} variant="ghost" size="xs" />
                 )}
-              </div>
-            </div>
+              </PanelBody>
+            </Panel>
           );
         })}
       </div>
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

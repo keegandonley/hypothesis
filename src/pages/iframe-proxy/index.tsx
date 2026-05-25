@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import Link from "next/link";
 import styles from "@/styles/iframe-proxy.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { LogIcon } from "@/components/icons/log";
 import { useBranding } from "@/lib/branding";
+import { Badge } from "@/components/ui";
+import { ToolHead } from "@/components/ToolHead";
 import { useIsIframe } from "@/lib/useIsIframe";
 
 interface RelayedMessage {
@@ -134,15 +135,14 @@ export default function IframeProxyPage(): React.ReactNode {
 
   return (
     <>
-      <ToolHead
-        title="Iframe Proxy"
-        description="Embed any URL in a sandboxed iframe with configurable postMessage communication. Free online iframe proxy tool."
-        path="/iframe-proxy"
-        brandName={branding.name}
-      />
+    <ToolHead
+      title="Iframe Proxy"
+      description="Embed any URL in a sandboxed iframe with configurable postMessage communication. Free online iframe proxy tool."
+      path="/iframe-proxy"
+    />
       {inWorkMode && !debug && (
         <div className={styles.workBar}>
-          <span className={styles.badge}>proxied url</span>
+          <Badge>proxied url</Badge>
           <form
             className={styles.urlInlineForm}
             onSubmit={(e) => {
@@ -170,7 +170,7 @@ export default function IframeProxyPage(): React.ReactNode {
 
       {debug && (
         <div className={styles.topBar}>
-          <span className={styles.badge}>proxied url</span>
+          <Badge>proxied url</Badge>
           {urlFromParam ? (
             <span className={styles.urlText}>{url}</span>
           ) : (

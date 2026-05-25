@@ -1,13 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
 import styles from "@/styles/cidr.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
+import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 interface CidrInfo {
   ip: string;
   prefix: number;
@@ -128,18 +121,11 @@ function formatNumber(n: number): string {
 }
 
 export default function CidrPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [info, setInfo] = useState<CidrInfo | null>(null);
   const [error, setError] = useState(false);
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyFieldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+
 
   const buildUrl = (cidr: string): string => {
     if (!cidr) return `${window.location.origin}${window.location.pathname}`;
@@ -204,26 +190,7 @@ export default function CidrPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
 
-  const handleCopyField = (key: string, val: string): void => {
-    void copyToClipboard(val).then(() => {
-      setCopiedKey(key);
-      if (copyFieldTimeoutRef.current)
-        clearTimeout(copyFieldTimeoutRef.current);
-      copyFieldTimeoutRef.current = setTimeout(() => {
-        setCopiedKey(null);
-      }, 1500);
-    });
-  };
 
   const rows: { label: string; key: string; value: string }[] = info
     ? [
@@ -268,46 +235,17 @@ export default function CidrPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="CIDR Calculator"
-        description="Calculate subnet details from CIDR notation: network address, broadcast, mask, host range, and usable IPs. Free online CIDR calculator — no installation required."
+      <PageLayout
+        metaTitle="CIDR Calculator"
+        metaDescription="Calculate subnet details from CIDR notation: network address, broadcast, mask, host range, and usable IPs. Free online CIDR calculator — no installation required."
         path="/cidr"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/cidr"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>CIDR</h1>
-        <p className={styles.tagline}>
-          Calculate subnet details from CIDR notation
-        </p>
-        <ReferenceLinks
-          refs={[
-            { name: "DNS Record Types", slug: "dns-record-types" },
-            { name: "Port Numbers", slug: "port-numbers" },
-          ]}
-        />
-      </div>
-
-      <hr className={styles.divider} />
+        h1="CIDR"
+        tagline="Calculate subnet details from CIDR notation"
+        refs={[
+          { name: "DNS Record Types", slug: "dns-record-types" },
+          { name: "Port Numbers", slug: "port-numbers" },
+        ]}
+      >
 
       <div className={styles.inputRow}>
         <input
@@ -321,7 +259,7 @@ export default function CidrPage(): React.ReactNode {
           autoCapitalize="off"
           autoCorrect="off"
         />
-        {error && <span className={styles.badgeError}>invalid</span>}
+        {error && <Badge color="error">invalid</Badge>}
       </div>
 
       {info && (
@@ -330,16 +268,7 @@ export default function CidrPage(): React.ReactNode {
             <div key={key} className={styles.resultRow}>
               <span className={styles.resultLabel}>{label}</span>
               <span className={styles.resultValue}>{value}</span>
-              {!isIframe && (
-                <button
-                  className={`${styles.copyFieldBtn}${copiedKey === key ? ` ${styles.copied}` : ""}`}
-                  onClick={() => {
-                    handleCopyField(key, value);
-                  }}
-                >
-                  {copiedKey === key ? "Copied!" : "Copy"}
-                </button>
-              )}
+              <CopyButton value={value} variant="ghost" size="xs" />
             </div>
           ))}
         </div>
@@ -347,21 +276,8 @@ export default function CidrPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

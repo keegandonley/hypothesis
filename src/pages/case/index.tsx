@@ -1,11 +1,7 @@
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "@/styles/case.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
+import { Panel, PanelHeader } from "@/components/ui/Panel";
 
 function splitWords(input: string): string[] {
   return input
@@ -76,16 +72,8 @@ const CASES: { label: string; fn: (w: string[]) => string }[] = [
 ];
 
 export default function CasePage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
-  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [url, setUrl] = useState("");
-  const [copiedUrl, setCopiedUrl] = useState(false);
-  const copiedUrlTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyTimeouts = useRef<Map<number, ReturnType<typeof setTimeout>>>(
-    new Map(),
-  );
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -106,63 +94,21 @@ export default function CasePage(): React.ReactNode {
     setUrl(window.location.href);
   }
 
-  function handleCopy(value: string, idx: number): void {
-    void copyToClipboard(value);
-    setCopiedIdx(idx);
-    const prev = copyTimeouts.current.get(idx);
-
-    if (prev) clearTimeout(prev);
-    const t = setTimeout(() => {
-      setCopiedIdx((c) => (c === idx ? null : c));
-    }, 1500);
-
-    copyTimeouts.current.set(idx, t);
-  }
-
   const words = splitWords(input);
   const hasInput = words.length > 0;
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="String Case Converter"
-        description="Convert text between camelCase, snake_case, PascalCase, kebab-case, CONSTANT_CASE, and more. Free online string case converter — no installation required."
+      <PageLayout
+        metaTitle="String Case Converter"
+        metaDescription="Convert text between camelCase, snake_case, PascalCase, kebab-case, CONSTANT_CASE, and more. Free online string case converter — no installation required."
         path="/case"
-        brandName={branding.name}
-      />
+        h1="String Case"
+        tagline="Convert between camelCase, snake_case, kebab-case, and more."
+      >
 
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/case"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>String Case</h1>
-        <p className={styles.tagline}>
-          Convert between camelCase, snake_case, kebab-case, and more.
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
-
-      <div className={styles.inputWrap}>
-        <div className={styles.inputHeader}>
-          <span className={styles.panelLabel}>Input</span>
-        </div>
+      <Panel>
+        <PanelHeader label="Input" />
         <textarea
           className={styles.textarea}
           value={input}
@@ -173,7 +119,7 @@ export default function CasePage(): React.ReactNode {
           autoComplete="off"
           spellCheck={false}
         />
-      </div>
+      </Panel>
 
       <div className={styles.results}>
         {CASES.map((c, idx) => {
@@ -187,16 +133,7 @@ export default function CasePage(): React.ReactNode {
               ) : (
                 <span className={styles.resultValueEmpty}>—</span>
               )}
-              {!isIframe && value && (
-                <button
-                  className={`${styles.copyBtn} ${copiedIdx === idx ? styles.copied : ""}`}
-                  onClick={() => {
-                    handleCopy(value, idx);
-                  }}
-                >
-                  {copiedIdx === idx ? "Copied!" : "Copy"}
-                </button>
-              )}
+              {value && <CopyButton value={value} size="xs" />}
             </div>
           );
         })}
@@ -204,34 +141,8 @@ export default function CasePage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copiedUrl ? ` ${styles.copied}` : ""}`}
-            onClick={() => {
-              void copyToClipboard(url);
-              setCopiedUrl(true);
-              if (copiedUrlTimeout.current)
-                clearTimeout(copiedUrlTimeout.current);
-              copiedUrlTimeout.current = setTimeout(() => {
-                setCopiedUrl(false);
-              }, 1500);
-            }}
-          >
-            {copiedUrl ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button
-          className={styles.resetBtn}
-          onClick={() => {
-            handleInput("");
-          }}
-        >
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={() => { handleInput(""); }} />
+      </PageLayout>
     </div>
   );
 }

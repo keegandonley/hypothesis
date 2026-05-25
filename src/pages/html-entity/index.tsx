@@ -1,13 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import React, { useEffect, useState } from "react";
 import styles from "@/styles/html-entity.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
+import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 // HTML5 named entity map (comprehensive set)
 const htmlEntities: Record<string, string> = {
   "&": "&amp;",
@@ -209,14 +202,10 @@ function decodeHtmlEntities(text: string): string {
 }
 
 export default function HtmlEntityPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [decoded, setDecoded] = useState("");
   const [encoded, setEncoded] = useState("");
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
   const [encodeMode, setEncodeMode] = useState<EncodeMode>("special");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const buildUrl = (dec: string, mode: EncodeMode): string => {
     if (!dec) return `${window.location.origin}${window.location.pathname}`;
@@ -291,58 +280,23 @@ export default function HtmlEntityPage(): React.ReactNode {
     setUrl(window.location.href);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="HTML Entity Encoder / Decoder"
-        description="Encode and decode HTML entities like &amp;, &lt;, &gt;, and named or numeric references. Free online HTML entity tool — no installation required."
+      <PageLayout
+        metaTitle="HTML Entity Encoder / Decoder"
+        metaDescription="Encode and decode HTML entities like &amp;, &lt;, &gt;, and named or numeric references. Free online HTML entity tool — no installation required."
         path="/html-entity"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/html-entity"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>HTML Entity</h1>
-        <p className={styles.tagline}>Encode and decode HTML entities</p>
-        <ReferenceLinks refs={[{ name: "ASCII Table", slug: "ascii" }]} />
-      </div>
-
-      <hr className={styles.divider} />
+        h1="HTML Entity"
+        tagline="Encode and decode HTML entities"
+        refs={[{ name: "ASCII Table", slug: "ascii" }]}
+      >
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Decoded Text</span>
-            <span className={styles.badge}>{decoded.length} chars</span>
-          </div>
-          <div className={styles.textareaWrapper}>
+        <Panel>
+          <PanelHeader label="Decoded Text">
+            <Badge>{decoded.length} chars</Badge>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={decoded}
@@ -352,15 +306,14 @@ export default function HtmlEntityPage(): React.ReactNode {
               placeholder="Type or paste text here..."
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>HTML Entities</span>
-            <span className={styles.badge}>{encoded.length} chars</span>
-          </div>
-          <div className={styles.textareaWrapper}>
+        <Panel>
+          <PanelHeader label="HTML Entities">
+            <Badge>{encoded.length} chars</Badge>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={encoded}
@@ -370,57 +323,30 @@ export default function HtmlEntityPage(): React.ReactNode {
               placeholder="Paste encoded entities here..."
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
       </div>
 
       <div className={styles.modeSelector}>
         <span className={styles.fieldLabel}>Encode Mode</span>
         <div className={styles.modeButtons}>
-          <button
-            className={`${styles.modeBtn} ${encodeMode === "special" ? styles.active : ""}`}
-            onClick={() => {
-              handleModeChange("special");
-            }}
-          >
+          <Button variant="tab" active={encodeMode === "special"} onClick={() => { handleModeChange("special"); }}>
             Special (&lt; &gt; &amp; &quot; &apos;)
-          </button>
-          <button
-            className={`${styles.modeBtn} ${encodeMode === "non-ascii" ? styles.active : ""}`}
-            onClick={() => {
-              handleModeChange("non-ascii");
-            }}
-          >
+          </Button>
+          <Button variant="tab" active={encodeMode === "non-ascii"} onClick={() => { handleModeChange("non-ascii"); }}>
             Non-ASCII Only (excludes special chars)
-          </button>
-          <button
-            className={`${styles.modeBtn} ${encodeMode === "all" ? styles.active : ""}`}
-            onClick={() => {
-              handleModeChange("all");
-            }}
-          >
+          </Button>
+          <Button variant="tab" active={encodeMode === "all"} onClick={() => { handleModeChange("all"); }}>
             Special + Non-ASCII
-          </button>
+          </Button>
         </div>
       </div>
 
+      </PageLayout>
+
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/markdown.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
 import { marked } from "marked";
+import { Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 
 type ViewMode = "preview" | "html";
 
@@ -30,15 +25,9 @@ const greet = (name) => \`Hello, \${name}!\`;
 `;
 
 export default function MarkdownPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("preview");
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedHtml, setCopiedHtml] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const htmlCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const html = marked.parse(input || "") as string;
 
@@ -77,16 +66,6 @@ export default function MarkdownPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleReset = (): void => {
     setInput("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
@@ -95,58 +74,19 @@ export default function MarkdownPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopyHtml = (): void => {
-    void copyToClipboard(html).then(() => {
-      setCopiedHtml(true);
-      if (htmlCopyTimeoutRef.current) clearTimeout(htmlCopyTimeoutRef.current);
-      htmlCopyTimeoutRef.current = setTimeout(() => {
-        setCopiedHtml(false);
-      }, 1500);
-    });
-  };
-
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Markdown to HTML"
-        description="Preview Markdown as rendered HTML with live sync. Toggle between output and raw HTML source. Free online Markdown previewer — no installation required."
+      <PageLayout
+        metaTitle="Markdown to HTML"
+        metaDescription="Preview Markdown as rendered HTML with live sync. Toggle between output and raw HTML source. Free online Markdown previewer — no installation required."
         path="/markdown"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/markdown"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Markdown</h1>
-        <p className={styles.tagline}>
-          Convert Markdown to HTML with a live preview
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Markdown"
+        tagline="Convert Markdown to HTML with a live preview"
+      >
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Markdown</span>
-          </div>
+        <Panel>
+          <PanelHeader label="Markdown" />
           <textarea
             className={styles.textarea}
             value={input}
@@ -156,33 +96,24 @@ export default function MarkdownPage(): React.ReactNode {
             placeholder={PLACEHOLDER}
             spellCheck={false}
           />
-        </div>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Output</span>
-            <div className={styles.panelHeaderRight}>
-              {(["preview", "html"] as ViewMode[]).map((m) => (
-                <button
-                  key={m}
-                  className={`${styles.toggleBtn}${viewMode === m ? ` ${styles.active}` : ""}`}
-                  onClick={() => {
-                    setViewMode(m);
-                  }}
-                >
-                  {m}
-                </button>
-              ))}
-              {!isIframe && (
-                <button
-                  className={`${styles.panelCopyBtn}${copiedHtml ? ` ${styles.panelCopied}` : ""}`}
-                  onClick={handleCopyHtml}
-                >
-                  {copiedHtml ? "Copied!" : "Copy HTML"}
-                </button>
-              )}
-            </div>
-          </div>
+        <Panel>
+          <PanelHeader label="Output">
+            {(["preview", "html"] as ViewMode[]).map((m) => (
+              <Button
+                key={m}
+                variant="toggle"
+                active={viewMode === m}
+                onClick={() => {
+                  setViewMode(m);
+                }}
+              >
+                {m}
+              </Button>
+            ))}
+            <CopyButton value={html} variant="ghost" />
+          </PanelHeader>
           {viewMode === "preview" ? (
             <div
               className={styles.preview}
@@ -196,26 +127,14 @@ export default function MarkdownPage(): React.ReactNode {
               spellCheck={false}
             />
           )}
-        </div>
+        </Panel>
       </div>
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

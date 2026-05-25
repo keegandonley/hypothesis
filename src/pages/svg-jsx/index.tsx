@@ -1,11 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import { useEffect, useState } from "react";
 import styles from "@/styles/svg-jsx.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 
 const PLACEHOLDER = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <circle cx="12" cy="12" r="10" />
@@ -106,14 +101,9 @@ function toJsx(svg: string): string {
 }
 
 export default function SvgJsxPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedJsx, setCopiedJsx] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const jsxCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   const jsx = input ? toJsx(input) : "";
 
@@ -151,16 +141,6 @@ export default function SvgJsxPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleReset = (): void => {
     setInput("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
@@ -169,56 +149,19 @@ export default function SvgJsxPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopyJsx = (): void => {
-    void copyToClipboard(jsx).then(() => {
-      setCopiedJsx(true);
-      if (jsxCopyTimeoutRef.current) clearTimeout(jsxCopyTimeoutRef.current);
-      jsxCopyTimeoutRef.current = setTimeout(() => {
-        setCopiedJsx(false);
-      }, 1500);
-    });
-  };
-
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="SVG to JSX"
-        description="Convert SVG markup to React JSX syntax with automatic camelCase attribute conversion. Free online SVG to JSX converter — no installation required."
+      <PageLayout
+        metaTitle="SVG to JSX"
+        metaDescription="Convert SVG markup to React JSX syntax with automatic camelCase attribute conversion. Free online SVG to JSX converter — no installation required."
         path="/svg-jsx"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/svg-jsx"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>SVG to JSX</h1>
-        <p className={styles.tagline}>Convert SVG markup to React-ready JSX</p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="SVG to JSX"
+        tagline="Convert SVG markup to React-ready JSX"
+      >
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>SVG</span>
-          </div>
+        <Panel>
+          <PanelHeader label="SVG" />
           <textarea
             className={styles.textarea}
             value={input}
@@ -228,21 +171,12 @@ export default function SvgJsxPage(): React.ReactNode {
             placeholder={PLACEHOLDER}
             spellCheck={false}
           />
-        </div>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>JSX</span>
-            {!isIframe && (
-              <button
-                className={`${styles.panelCopyBtn}${copiedJsx ? ` ${styles.panelCopied}` : ""}`}
-                onClick={handleCopyJsx}
-                disabled={!jsx}
-              >
-                {copiedJsx ? "Copied!" : "Copy"}
-              </button>
-            )}
-          </div>
+        <Panel>
+          <PanelHeader label="JSX">
+            <CopyButton value={jsx} variant="ghost" size="sm" disabled={!jsx} />
+          </PanelHeader>
           <textarea
             className={`${styles.textarea} ${styles.output}`}
             value={jsx}
@@ -250,26 +184,13 @@ export default function SvgJsxPage(): React.ReactNode {
             spellCheck={false}
             placeholder="JSX output will appear here…"
           />
-        </div>
+        </Panel>
       </div>
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

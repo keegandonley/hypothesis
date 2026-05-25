@@ -1,15 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
 import styles from "@/styles/cron.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 import { CronExpressionParser } from "cron-parser";
 import cronstrue from "cronstrue";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
 const EXAMPLES = [
   { label: "Every minute", expr: "* * * * *" },
   { label: "Every hour", expr: "0 * * * *" },
@@ -77,16 +70,11 @@ function formatUtc(d: Date): string {
 }
 
 export default function CronPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [result, setResult] = useState<ParseResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedDesc, setCopiedDesc] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyDescTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   const buildUrl = (expr: string): string => {
     if (!expr) return `${window.location.origin}${window.location.pathname}`;
@@ -157,69 +145,21 @@ export default function CronPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
 
-  const handleCopyDesc = (): void => {
-    if (!result) return;
-    void copyToClipboard(result.description).then(() => {
-      setCopiedDesc(true);
-      if (copyDescTimeoutRef.current) clearTimeout(copyDescTimeoutRef.current);
-      copyDescTimeoutRef.current = setTimeout(() => {
-        setCopiedDesc(false);
-      }, 1500);
-    });
-  };
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Cron Expression Parser"
-        description="Parse and explain cron expressions with a human-readable schedule preview. Free online cron parser — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Cron Expression Parser"
+        metaDescription="Parse and explain cron expressions with a human-readable schedule preview. Free online cron parser — no installation required. No data sent to servers."
         path="/cron"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/cron"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Cron</h1>
-        <p className={styles.tagline}>
-          Parse cron expressions and preview the next scheduled run times
-        </p>
-        <ReferenceLinks
-          refs={[
-            { name: "Exit Codes", slug: "exit-codes" },
-            { name: "Unix Signals", slug: "unix-signals" },
-          ]}
-        />
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Cron"
+        tagline="Parse cron expressions and preview the next scheduled run times"
+        refs={[
+          { name: "Exit Codes", slug: "exit-codes" },
+          { name: "Unix Signals", slug: "unix-signals" },
+        ]}
+      >
 
       <div className={styles.inputRow}>
         <input
@@ -233,7 +173,7 @@ export default function CronPage(): React.ReactNode {
           autoCapitalize="off"
           autoCorrect="off"
         />
-        {errorMsg && <span className={styles.badgeError}>invalid</span>}
+        {errorMsg && <Badge color="error">invalid</Badge>}
       </div>
 
       <div className={styles.examplesRow}>
@@ -253,24 +193,14 @@ export default function CronPage(): React.ReactNode {
       {result && (
         <>
           <div className={styles.descPanel}>
-            <div className={styles.descHeader}>
-              <span className={styles.panelLabel}>Description</span>
-              {!isIframe && (
-                <button
-                  className={`${styles.copyFieldBtn}${copiedDesc ? ` ${styles.copied}` : ""}`}
-                  onClick={handleCopyDesc}
-                >
-                  {copiedDesc ? "Copied!" : "Copy"}
-                </button>
-              )}
-            </div>
+            <PanelHeader label="Description">
+              <CopyButton value={result.description} variant="ghost" size="xs" />
+            </PanelHeader>
             <div className={styles.descValue}>{result.description}</div>
           </div>
 
           <div className={styles.runsPanel}>
-            <div className={styles.runsHeader}>
-              <span className={styles.panelLabel}>Next {NEXT_COUNT} runs</span>
-            </div>
+            <PanelHeader label={`Next ${NEXT_COUNT} runs`} />
             <div className={styles.runsList}>
               {result.nextRuns.map((d, i) => (
                 <div key={i} className={styles.runRow}>
@@ -286,23 +216,11 @@ export default function CronPage(): React.ReactNode {
         </>
       )}
 
+      </PageLayout>
+
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

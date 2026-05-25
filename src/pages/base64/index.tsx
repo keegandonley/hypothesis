@@ -1,24 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/base64.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
+import { Panel, PanelHeader, PanelBody, PanelLabel } from "@/components/ui/Panel";
 
 type Tab = "text" | "image";
 
 export default function Base64Page(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [plain, setPlain] = useState("");
   const [encoded, setEncoded] = useState("");
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
   const [jsonMode, setJsonMode] = useState(false);
   const [jsonValid, setJsonValid] = useState<boolean | null>(null);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const plainRef = useRef<HTMLTextAreaElement>(null);
 
   const [tab, setTab] = useState<Tab>("text");
@@ -27,15 +19,7 @@ export default function Base64Page(): React.ReactNode {
   const [imageBase64, setImageBase64] = useState<string>("");
   const [imageDragging, setImageDragging] = useState(false);
   const [imageError, setImageError] = useState<string>("");
-  const [imageCopiedRaw, setImageCopiedRaw] = useState(false);
-  const [imageCopiedDataUrl, setImageCopiedDataUrl] = useState(false);
   const imageFileInputRef = useRef<HTMLInputElement>(null);
-  const imageCopyRawTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const imageCopyDataUrlTimeoutRef = useRef<ReturnType<
-    typeof setTimeout
-  > | null>(null);
 
   const buildUrl = (enc: string, json: boolean): string => {
     if (!enc) return `${window.location.origin}${window.location.pathname}`;
@@ -200,16 +184,6 @@ export default function Base64Page(): React.ReactNode {
     setUrl(window.location.href);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleTabChange = (next: Tab): void => {
     setTab(next);
     const newUrl =
@@ -275,105 +249,55 @@ export default function Base64Page(): React.ReactNode {
     e.target.value = "";
   };
 
-  const handleCopyRaw = (): void => {
-    void copyToClipboard(imageBase64).then(() => {
-      setImageCopiedRaw(true);
-      if (imageCopyRawTimeoutRef.current)
-        clearTimeout(imageCopyRawTimeoutRef.current);
-      imageCopyRawTimeoutRef.current = setTimeout(() => {
-        setImageCopiedRaw(false);
-      }, 1500);
-    });
-  };
-
-  const handleCopyDataUrl = (): void => {
-    void copyToClipboard(imageDataUrl).then(() => {
-      setImageCopiedDataUrl(true);
-      if (imageCopyDataUrlTimeoutRef.current)
-        clearTimeout(imageCopyDataUrlTimeoutRef.current);
-      imageCopyDataUrlTimeoutRef.current = setTimeout(() => {
-        setImageCopiedDataUrl(false);
-      }, 1500);
-    });
-  };
-
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Base64 Encoder / Decoder"
-        description="Encode and decode Base64 strings instantly. Free online Base64 encoder/decoder — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Base64 Encoder / Decoder"
+        metaDescription="Encode and decode Base64 strings instantly. Free online Base64 encoder/decoder — no installation required. No data sent to servers."
         path="/base64"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/base64"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Base64</h1>
-        <p className={styles.tagline}>Encode and decode base64 strings</p>
-      </div>
-
-      <hr className={styles.divider} />
-
+        h1="Base64"
+        tagline="Encode and decode base64 strings"
+      >
       <div className={styles.tabRow} role="tablist">
         {(["text", "image"] as Tab[]).map((t) => (
-          <button
+          <Button
             key={t}
+            variant="tab"
+            active={tab === t}
             role="tab"
             aria-selected={tab === t}
-            className={`${styles.tabBtn}${tab === t ? ` ${styles.tabBtnActive}` : ""}`}
             onClick={() => {
               handleTabChange(t);
             }}
           >
             {t.toUpperCase()}
-          </button>
+          </Button>
         ))}
       </div>
 
       {tab === "text" ? (
         <div className={styles.panels}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>
-                {jsonMode ? "JSON" : "Plain Text"}
-              </span>
-              <div className={styles.panelHeaderRight}>
-                <button
-                  className={`${styles.toggleBtn}${jsonMode ? ` ${styles.active}` : ""}`}
-                  onClick={handleJsonToggle}
-                >
-                  JSON Mode {jsonMode ? "ON" : "OFF"}
-                </button>
-                {jsonMode ? (
-                  plain.length > 0 &&
-                  (jsonValid ? (
-                    <span className={styles.badge}>valid</span>
-                  ) : (
-                    <span className={styles.badgeError}>invalid</span>
-                  ))
+          <Panel>
+            <PanelHeader label={jsonMode ? "JSON" : "Plain Text"}>
+              <Button
+                variant="toggle"
+                active={jsonMode}
+                onClick={handleJsonToggle}
+              >
+                JSON Mode {jsonMode ? "ON" : "OFF"}
+              </Button>
+              {jsonMode ? (
+                plain.length > 0 &&
+                (jsonValid ? (
+                  <Badge>valid</Badge>
                 ) : (
-                  <span className={styles.badge}>{plain.length} chars</span>
-                )}
-              </div>
-            </div>
-            <div className={styles.textareaWrapper}>
+                  <Badge color="error">invalid</Badge>
+                ))
+              ) : (
+                <Badge>{plain.length} chars</Badge>
+              )}
+            </PanelHeader>
+            <PanelBody>
               <textarea
                 ref={plainRef}
                 className={styles.textarea}
@@ -394,15 +318,14 @@ export default function Base64Page(): React.ReactNode {
                   Format
                 </button>
               )}
-            </div>
-          </div>
+            </PanelBody>
+          </Panel>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Base64</span>
-              <span className={styles.badge}>{encoded.length} chars</span>
-            </div>
-            <div className={styles.textareaWrapper}>
+          <Panel>
+            <PanelHeader label="Base64">
+              <Badge>{encoded.length} chars</Badge>
+            </PanelHeader>
+            <PanelBody>
               <textarea
                 className={styles.textarea}
                 value={encoded}
@@ -412,18 +335,17 @@ export default function Base64Page(): React.ReactNode {
                 placeholder="Paste base64 here..."
                 spellCheck={false}
               />
-            </div>
-          </div>
+            </PanelBody>
+          </Panel>
         </div>
       ) : (
         <div className={styles.imagePanels}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Image</span>
+          <Panel>
+            <PanelHeader label="Image">
               {imageFile && (
-                <span className={styles.badge}>{imageFile.name}</span>
+                <Badge>{imageFile.name}</Badge>
               )}
-            </div>
+            </PanelHeader>
             <div
               className={`${styles.imageDropZone}${imageDragging ? ` ${styles.imageDropZoneDragging}` : ""}`}
               onDrop={handleImageDrop}
@@ -462,14 +384,13 @@ export default function Base64Page(): React.ReactNode {
               )}
             </div>
             {imageError && <p className={styles.imageError}>{imageError}</p>}
-          </div>
+          </Panel>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Raw Base64</span>
-              <span className={styles.badge}>{imageBase64.length} chars</span>
-            </div>
-            <div className={styles.textareaWrapper}>
+          <Panel>
+            <PanelHeader label="Raw Base64">
+              <Badge>{imageBase64.length} chars</Badge>
+            </PanelHeader>
+            <PanelBody>
               <textarea
                 className={styles.textarea}
                 value={imageBase64}
@@ -477,20 +398,13 @@ export default function Base64Page(): React.ReactNode {
                 placeholder="Encode an image to see its raw base64 string..."
                 spellCheck={false}
               />
-              {imageBase64 && !isIframe && (
-                <button
-                  className={`${styles.formatBtn}${imageCopiedRaw ? ` ${styles.formatBtnCopied}` : ""}`}
-                  onClick={handleCopyRaw}
-                >
-                  {imageCopiedRaw ? "Copied!" : "Copy"}
-                </button>
-              )}
-            </div>
+              {imageBase64 && <CopyButton value={imageBase64} size="sm" className={styles.copyOverlay} />}
+            </PanelBody>
             <div className={styles.panelHeaderDivided}>
-              <span className={styles.panelLabel}>Data URL</span>
-              <span className={styles.badge}>{imageDataUrl.length} chars</span>
+              <PanelLabel>Data URL</PanelLabel>
+              <Badge>{imageDataUrl.length} chars</Badge>
             </div>
-            <div className={styles.textareaWrapper}>
+            <PanelBody>
               <textarea
                 className={styles.textarea}
                 value={imageDataUrl}
@@ -498,39 +412,16 @@ export default function Base64Page(): React.ReactNode {
                 placeholder="data:image/png;base64,..."
                 spellCheck={false}
               />
-              {imageDataUrl && !isIframe && (
-                <button
-                  className={`${styles.formatBtn}${imageCopiedDataUrl ? ` ${styles.formatBtnCopied}` : ""}`}
-                  onClick={handleCopyDataUrl}
-                >
-                  {imageCopiedDataUrl ? "Copied!" : "Copy"}
-                </button>
-              )}
-            </div>
-          </div>
+              {imageDataUrl && <CopyButton value={imageDataUrl} size="sm" className={styles.copyOverlay} />}
+            </PanelBody>
+          </Panel>
         </div>
       )}
 
       <hr className={styles.divider} />
 
-      <div
-        className={`${styles.permalinkRow}${tab === "image" ? ` ${styles.permalinkRowMuted}` : ""}`}
-        data-permalink-row
-      >
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} muted={tab === "image"} />
+      </PageLayout>
     </div>
   );
 }

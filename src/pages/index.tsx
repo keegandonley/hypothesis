@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import { type GetServerSideProps } from "next";
 import styles from "../styles/index.module.css";
+import { Badge } from "@/components/ui";
 import { DocIcon } from "@/components/icons/doc";
 import { SiBluesky, SiGithub } from "react-icons/si";
 import { useBranding, getBranding } from "@/lib/branding";
@@ -702,7 +703,7 @@ function ExperimentCard({
       ) : (
         <div className={styles.cardMain}>
           <div className={styles.cardBodyRow}>
-            {id && <div className={styles.badge}>{id}</div>}
+            {id && <Badge>{id}</Badge>}
             <div className={styles.arrow} style={{ marginLeft: "auto" }}>
               →
             </div>
@@ -757,9 +758,9 @@ function ExperimentCard({
           </div>
         )}
         {id && compact && (
-          <div className={styles.badge} style={{ marginLeft: "auto" }}>
+          <Badge style={{ marginLeft: "auto" }}>
             {id}
-          </div>
+          </Badge>
         )}
       </div>
     </div>

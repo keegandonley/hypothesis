@@ -1,13 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import { useEffect, useState } from "react";
 import styles from "@/styles/regex.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
+import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 const FLAGS = ["g", "i", "m", "s", "u"] as const;
 
 type Flag = (typeof FLAGS)[number];
@@ -69,8 +62,6 @@ function getPatternStatus(
 }
 
 export default function RegexPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [pattern, setPattern] = useState("");
   const [flags, setFlags] = useState<Record<Flag, boolean>>({
     g: true,
@@ -81,8 +72,6 @@ export default function RegexPage(): React.ReactNode {
   });
   const [testInput, setTestInput] = useState("");
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const flagStr = FLAGS.filter((f) => flags[f]).join("");
 
@@ -165,69 +154,28 @@ export default function RegexPage(): React.ReactNode {
     setUrl(window.location.href);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const results = computeResults(pattern, flagStr, testInput);
   const status = getPatternStatus(pattern, flagStr, results);
   const lineCount = testInput.split("\n").length;
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Regex Tester"
-        description="Test regular expressions with live match highlighting and shareable permalinks. Free online regex tester — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Regex Tester"
+        metaDescription="Test regular expressions with live match highlighting and shareable permalinks. Free online regex tester — no installation required. No data sent to servers."
         path="/regex"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/regex"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Regex Tester</h1>
-        <p className={styles.tagline}>
-          Test regular expressions against strings with live match results
-        </p>
-        <ReferenceLinks
-          refs={[{ name: "Regex Syntax", slug: "regex-syntax" }]}
-        />
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Regex Tester"
+        tagline="Test regular expressions against strings with live match results"
+        refs={[{ name: "Regex Syntax", slug: "regex-syntax" }]}
+      >
 
       {/* Pattern panel */}
-      <div className={styles.panel}>
-        <div className={styles.panelHeader}>
-          <span className={styles.panelLabel}>Pattern</span>
-          <div className={styles.panelHeaderRight}>
-            {status.type && (
-              <span className={styles[status.type]}>{status.label}</span>
-            )}
-          </div>
-        </div>
+      <Panel>
+        <PanelHeader label="Pattern">
+          {status.type && (
+            <span className={styles[status.type]}>{status.label}</span>
+          )}
+        </PanelHeader>
         <div className={styles.patternInputRow}>
           <span className={styles.regexSlash}>/</span>
           <input
@@ -257,18 +205,17 @@ export default function RegexPage(): React.ReactNode {
             ))}
           </div>
         </div>
-      </div>
+      </Panel>
 
       {/* Test strings + Results */}
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Test Strings</span>
-            <span className={styles.badge}>
+        <Panel>
+          <PanelHeader label="Test Strings">
+            <Badge>
               {lineCount} line{lineCount !== 1 ? "s" : ""}
-            </span>
-          </div>
-          <div className={styles.textareaWrapper}>
+            </Badge>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={testInput}
@@ -278,13 +225,11 @@ export default function RegexPage(): React.ReactNode {
               placeholder={"Enter test strings, one per line..."}
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Results</span>
-          </div>
+        <Panel>
+          <PanelHeader label="Results" />
           <div className={styles.resultsPanel}>
             {!pattern ? (
               <div className={styles.emptyState}>
@@ -327,26 +272,13 @@ export default function RegexPage(): React.ReactNode {
                 ))
             )}
           </div>
-        </div>
+        </Panel>
       </div>
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

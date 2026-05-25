@@ -1,12 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import React, { useEffect, useState } from "react";
 import styles from "@/styles/diff.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
 import { diffLines, diffWords, diffChars } from "diff";
+import { Button, PageLayout, PermalinkRow } from "@/components/ui";
 
 type Mode = "lines" | "words" | "chars";
 
@@ -28,14 +23,10 @@ function computeDiff(
 }
 
 export default function DiffPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [original, setOriginal] = useState("");
   const [modified, setModified] = useState("");
   const [mode, setMode] = useState<Mode>("lines");
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const changes = computeDiff(original, modified, mode);
 
@@ -114,16 +105,6 @@ export default function DiffPage(): React.ReactNode {
     syncUrl(original, modified, m);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleReset = (): void => {
     setOriginal("");
     setModified("");
@@ -138,40 +119,13 @@ export default function DiffPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Text Diff"
-        description="Compare two text blocks and see a visual diff with added and removed lines highlighted. Free online text diff tool — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Text Diff"
+        metaDescription="Compare two text blocks and see a visual diff with added and removed lines highlighted. Free online text diff tool — no installation required. No data sent to servers."
         path="/diff"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/diff"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Text Diff</h1>
-        <p className={styles.tagline}>
-          Compare two blocks of text and highlight additions and deletions
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Text Diff"
+        tagline="Compare two blocks of text and highlight additions and deletions"
+      >
 
       <div className={styles.inputs}>
         <div className={styles.inputPanel}>
@@ -207,15 +161,16 @@ export default function DiffPage(): React.ReactNode {
       <div className={styles.toolbar}>
         <div className={styles.modeGroup}>
           {MODES.map(({ value, label }) => (
-            <button
+            <Button
               key={value}
-              className={`${styles.modeBtn}${mode === value ? ` ${styles.modeBtnActive}` : ""}`}
+              variant="tab"
+              active={mode === value}
               onClick={() => {
                 handleModeChange(value);
               }}
             >
               {label}
-            </button>
+            </Button>
           ))}
         </div>
         {!isEmpty && (
@@ -268,23 +223,11 @@ export default function DiffPage(): React.ReactNode {
         )}
       </div>
 
+      </PageLayout>
+
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

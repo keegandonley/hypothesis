@@ -1,10 +1,9 @@
-import { ToolHead } from "@/components/ToolHead";
+import { PageLayout } from "@/components/ui";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "@/styles/message-factory.module.css";
 import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge } from "@/components/ui";
 
 const subExperiments = [
   {
@@ -26,40 +25,17 @@ const subExperiments = [
 ];
 
 export default function MessageFactoryPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
+
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Message Factory"
-        description="Build and send custom postMessage payloads between iframes for testing cross-origin communication."
-        path="/message-factory"
-        brandName={branding.name}
-      />
       <div className={styles.inner}>
-        <header className={styles.header}>
-          <div className={styles.eyebrow} data-eyebrow>
-            EXP-003
-          </div>
-          <h1 className={styles.title}>Message Factory</h1>
-          <p className={styles.tagline}>
-            Design and trigger postMessage actions with an interactive viewer
-            and designer.
-          </p>
-          <div className={styles.backRow}>
-            <Link
-              href="/"
-              target={isIframe ? "_blank" : undefined}
-              rel={isIframe ? "noopener noreferrer" : undefined}
-              className={styles.backLink}
-            >
-              ← back
-            </Link>
-          </div>
-        </header>
-
-        <hr className={styles.divider} />
+      <PageLayout
+        metaTitle="Message Factory"
+        metaDescription="Build and send custom postMessage payloads between iframes for testing cross-origin communication."
+        path="/message-factory"
+        tagline="Design and trigger postMessage actions with an interactive viewer and designer."
+      >
 
         <div className={styles.section}>
           <div className={styles.sectionLabel}>Sub-experiments</div>
@@ -69,6 +45,7 @@ export default function MessageFactoryPage(): React.ReactNode {
             ))}
           </div>
         </div>
+      </PageLayout>
       </div>
     </div>
   );
@@ -92,7 +69,7 @@ function SubExperimentCard({
   return (
     <div className={styles.card} onClick={() => router.push(href)}>
       <div className={styles.cardMain}>
-        <div className={styles.badge}>{id}</div>
+        <Badge>{id}</Badge>
         <div className={styles.cardBody}>
           <div className={styles.cardName}>{name}</div>
           <div className={styles.cardDesc}>{description}</div>

@@ -1,11 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
 import styles from "@/styles/ascii-art.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PageLayout } from "@/components/ui";
+import { Panel, PanelHeader, PanelBody } from "@/components/ui/Panel";
 
 interface ImageAdjustments {
   brightness: number; // 50–200, where 100 = unchanged
@@ -151,7 +148,6 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 export default function AsciiArtPage(): React.ReactNode {
-  const branding = useBranding();
   const isIframe = useIsIframe();
 
   const [inputMode, setInputMode] = useState<"file" | "url">("file");
@@ -179,11 +175,6 @@ export default function AsciiArtPage(): React.ReactNode {
   const [grayscale, setGrayscale] = useState(DEFAULT_ADJ.grayscale);
 
   const [asciiOutput, setAsciiOutput] = useState("");
-  const [asciiCopied, setAsciiCopied] = useState(false);
-
-  const asciiCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
 
   const triggerRender = useCallback(
     (
@@ -341,18 +332,6 @@ export default function AsciiArtPage(): React.ReactNode {
     setInvert(inv);
   };
 
-  const handleCopyAscii = (): void => {
-    if (!asciiOutput) return;
-    void copyToClipboard(asciiOutput).then(() => {
-      setAsciiCopied(true);
-      if (asciiCopyTimeoutRef.current)
-        clearTimeout(asciiCopyTimeoutRef.current);
-      asciiCopyTimeoutRef.current = setTimeout(() => {
-        setAsciiCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleReset = (): void => {
     imgRef.current = null;
     setImageSrc(null);
@@ -370,55 +349,29 @@ export default function AsciiArtPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="ASCII Art Generator"
-        description="Convert text to ASCII art using dozens of fonts and styles. Free online ASCII art generator — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="ASCII Art Generator"
+        metaDescription="Convert text to ASCII art using dozens of fonts and styles. Free online ASCII art generator — no installation required. No data sent to servers."
         path="/ascii-art"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/ascii-art"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>ASCII Art</h1>
-        <p className={styles.tagline}>
-          Convert images to ASCII art — entirely in your browser
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="ASCII Art"
+        tagline="Convert images to ASCII art — entirely in your browser"
+      >
 
       <div className={styles.controlsCard}>
         <div className={styles.controlRow}>
           <span className={styles.controlLabel}>Input</span>
           <div className={styles.toggleGroup}>
-            {(["file", "url"] as const).map((m) => (
-              <button
+              {(["file", "url"] as const).map((m) => (
+              <Button
                 key={m}
-                className={`${styles.toggleBtn}${inputMode === m ? ` ${styles.active}` : ""}`}
+                variant="toggle"
+                active={inputMode === m}
                 onClick={() => {
                   setInputMode(m);
                 }}
               >
                 {m.toUpperCase()}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -439,16 +392,17 @@ export default function AsciiArtPage(): React.ReactNode {
         <div className={styles.controlRow}>
           <span className={styles.controlLabel}>Chars</span>
           <div className={styles.toggleGroup}>
-            {(["simple", "detailed", "blocks"] as CharSetKey[]).map((k) => (
-              <button
+              {(["simple", "detailed", "blocks"] as CharSetKey[]).map((k) => (
+              <Button
                 key={k}
-                className={`${styles.toggleBtn}${charSetKey === k ? ` ${styles.active}` : ""}`}
+                variant="toggle"
+                active={charSetKey === k}
                 onClick={() => {
                   handleCharSetChange(k);
                 }}
               >
                 {k.toUpperCase()}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -616,35 +570,31 @@ export default function AsciiArtPage(): React.ReactNode {
                 placeholder="https://example.com/image.jpg"
                 spellCheck={false}
               />
-              <button className={styles.loadBtn} onClick={handleUrlLoad}>
+              <Button variant="copy" onClick={handleUrlLoad}>
                 Load
-              </button>
+              </Button>
               {urlError && <span className={styles.urlError}>{urlError}</span>}
             </div>
           )}
         </div>
 
         <div className={styles.rightCol}>
-          <div className={styles.outputPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>ASCII Output</span>
+          <Panel>
+            <PanelHeader label="ASCII Output">
               {asciiOutput && !isIframe && (
-                <button
-                  className={`${styles.copyAsciiBtn}${asciiCopied ? ` ${styles.copied}` : ""}`}
-                  onClick={handleCopyAscii}
-                >
-                  {asciiCopied ? "COPIED!" : "COPY"}
-                </button>
+                <CopyButton value={asciiOutput} variant="ghost" />
               )}
-            </div>
-            {asciiOutput ? (
-              <pre className={styles.asciiPre}>{asciiOutput}</pre>
-            ) : (
-              <div className={styles.emptyState}>
-                Load an image to generate ASCII art
-              </div>
-            )}
-          </div>
+            </PanelHeader>
+            <PanelBody>
+              {asciiOutput ? (
+                <pre className={styles.asciiPre}>{asciiOutput}</pre>
+              ) : (
+                <div className={styles.emptyState}>
+                  Load an image to generate ASCII art
+                </div>
+              )}
+            </PanelBody>
+          </Panel>
         </div>
       </div>
 
@@ -666,10 +616,11 @@ export default function AsciiArtPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.footerRow}>
-        <button className={styles.resetBtn} onClick={handleReset}>
+        <Button variant="reset" onClick={handleReset}>
           Reset
-        </button>
+        </Button>
       </div>
+      </PageLayout>
     </div>
   );
 }

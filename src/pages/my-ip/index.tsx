@@ -1,25 +1,16 @@
-import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import { useEffect, useState } from "react";
 import styles from "@/styles/my-ip.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PageLayout } from "@/components/ui";
+import { Panel, PanelHeader } from "@/components/ui/Panel";
 import type { IpData } from "../api/my-ip";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
 type Status = "idle" | "loading" | "success" | "error";
 
 export default function MyIpPage(): React.ReactNode {
   const branding = useBranding();
-  const isIframe = useIsIframe();
   const [data, setData] = useState<IpData | null>(null);
   const [status, setStatus] = useState<Status>("idle");
-  const [copied, setCopied] = useState(false);
-  const [copiedCurl, setCopiedCurl] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyCurlTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   const fetchIp = async (): Promise<void> => {
     setStatus("loading");
@@ -40,28 +31,7 @@ export default function MyIpPage(): React.ReactNode {
     void fetchIp(); // eslint-disable-line react-hooks/set-state-in-effect
   }, []);
 
-  const handleCopy = (): void => {
-    if (!data) return;
-    void copyToClipboard(data.ip).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const curlCommand = `curl https://${branding.domain}/api/my-ip`;
-
-  const handleCopyCurl = (): void => {
-    void copyToClipboard(curlCommand).then(() => {
-      setCopiedCurl(true);
-      if (copyCurlTimeoutRef.current) clearTimeout(copyCurlTimeoutRef.current);
-      copyCurlTimeoutRef.current = setTimeout(() => {
-        setCopiedCurl(false);
-      }, 1500);
-    });
-  };
 
   const rows: { label: string; value: string | null | undefined }[] = data
     ? [
@@ -76,59 +46,23 @@ export default function MyIpPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="My IP"
-        description="Look up your current public IP address, geolocation, and network details. Free online IP lookup tool."
+      <PageLayout
+        metaTitle="My IP"
+        metaDescription="Look up your current public IP address, geolocation, and network details. Free online IP lookup tool."
         path="/my-ip"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/my-ip"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>My IP</h1>
-        <p className={styles.tagline}>
-          Your current public IP address and location info
-        </p>
-        <ReferenceLinks
-          refs={[
-            { name: "DNS Record Types", slug: "dns-record-types" },
-            { name: "Port Numbers", slug: "port-numbers" },
-          ]}
-        />
-      </div>
-
-      <hr className={styles.divider} />
+        h1="My IP"
+        tagline="Your current public IP address and location info"
+        refs={[
+          { name: "DNS Record Types", slug: "dns-record-types" },
+          { name: "Port Numbers", slug: "port-numbers" },
+        ]}
+      >
 
       <div className={styles.body}>
-        <div className={styles.ipPanel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Public IP Address</span>
-            {!isIframe && data && (
-              <button
-                className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-                onClick={handleCopy}
-              >
-                {copied ? "Copied!" : "Copy"}
-              </button>
-            )}
-          </div>
+        <Panel>
+          <PanelHeader label="Public IP Address">
+            {data && <CopyButton value={data.ip} variant="ghost" size="sm" />}
+          </PanelHeader>
           <div className={styles.ipValue}>
             {status === "loading" && (
               <span className={styles.muted}>Fetching…</span>
@@ -138,13 +72,11 @@ export default function MyIpPage(): React.ReactNode {
             )}
             {status === "success" && data && <span>{data.ip}</span>}
           </div>
-        </div>
+        </Panel>
 
         {status === "success" && data && (
-          <div className={styles.detailsPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Location</span>
-            </div>
+          <Panel>
+            <PanelHeader label="Location" />
             <div className={styles.table}>
               {rows.map(({ label, value }) => (
                 <div key={label} className={styles.row}>
@@ -153,38 +85,27 @@ export default function MyIpPage(): React.ReactNode {
                 </div>
               ))}
             </div>
-          </div>
+          </Panel>
         )}
 
-        {!isIframe && (
-          <div className={styles.detailsPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>API</span>
-              <button
-                className={`${styles.copyBtn}${copiedCurl ? ` ${styles.copied}` : ""}`}
-                onClick={handleCopyCurl}
-              >
-                {copiedCurl ? "Copied!" : "Copy"}
-              </button>
-            </div>
+        <Panel>
+            <PanelHeader label="API">
+              <CopyButton value={curlCommand} variant="ghost" size="sm" />
+            </PanelHeader>
             <div className={styles.curlRow}>
               <code className={styles.curlCode}>{curlCommand}</code>
             </div>
-          </div>
-        )}
+          </Panel>
       </div>
 
       <hr className={styles.divider} />
 
       <div className={styles.bottomRow}>
-        <button
-          className={styles.refreshBtn}
-          onClick={fetchIp}
-          disabled={status === "loading"}
-        >
+        <Button variant="copy" onClick={fetchIp} disabled={status === "loading"}>
           {status === "loading" ? "Fetching…" : "Refresh"}
-        </button>
+        </Button>
       </div>
+      </PageLayout>
     </div>
   );
 }

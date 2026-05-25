@@ -1,11 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import { useEffect, useState } from "react";
 import styles from "@/styles/text-stats.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 
 interface TextStats {
   characters: { total: number; withoutSpaces: number };
@@ -132,13 +127,9 @@ function analyzeText(text: string, wpm: number): TextStats {
 }
 
 export default function TextStatsPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [text, setText] = useState("");
   const [wpm, setWpm] = useState(DEFAULT_WPM);
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const stats = analyzeText(text, wpm);
 
@@ -192,16 +183,6 @@ export default function TextStatsPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleReset = (): void => {
     setText("");
     setWpm(DEFAULT_WPM);
@@ -213,39 +194,13 @@ export default function TextStatsPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Text Statistics"
-        description="Analyze text for word count, character count, readability score, and more statistics. Free online text analysis tool — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Text Statistics"
+        metaDescription="Analyze text for word count, character count, readability score, and more statistics. Free online text analysis tool — no installation required. No data sent to servers."
         path="/text-stats"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/text-stats"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Text Stats</h1>
-        <p className={styles.tagline}>
-          Analyze text statistics and word frequency
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Text Stats"
+        tagline="Analyze text statistics and word frequency"
+      >
 
       <div className={styles.content}>
         <div className={styles.leftPanel}>
@@ -381,23 +336,11 @@ export default function TextStatsPage(): React.ReactNode {
         </div>
       </div>
 
+      </PageLayout>
+
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

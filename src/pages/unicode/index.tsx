@@ -1,13 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import { useEffect, useState } from "react";
 import styles from "@/styles/unicode.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
+import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 const MAX_CODEPOINTS = 512;
 
 const NAMED_ENTITIES: Record<number, string> = {
@@ -150,12 +143,8 @@ function analyzeText(text: string): { chars: CharInfo[]; truncated: boolean } {
 }
 
 export default function UnicodePage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [text, setText] = useState("");
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { chars, truncated } = analyzeText(text);
   // eslint-disable-next-line @typescript-eslint/no-misused-spread
@@ -193,16 +182,6 @@ export default function UnicodePage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleReset = (): void => {
     setText("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
@@ -213,46 +192,17 @@ export default function UnicodePage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Unicode Inspector"
-        description="Inspect Unicode code points, names, categories, and UTF-8 encodings for any character or string. Free online Unicode inspector — no installation required."
+      <PageLayout
+        metaTitle="Unicode Inspector"
+        metaDescription="Inspect Unicode code points, names, categories, and UTF-8 encodings for any character or string. Free online Unicode inspector — no installation required."
         path="/unicode"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/unicode"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Unicode Inspector</h1>
-        <p className={styles.tagline}>
-          Inspect code points, UTF-8/UTF-16 bytes, category, script, and HTML
-          entity
-        </p>
-        <ReferenceLinks
-          refs={[
-            { name: "Unicode Blocks", slug: "unicode-blocks" },
-            { name: "ASCII Table", slug: "ascii" },
-          ]}
-        />
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Unicode Inspector"
+        tagline="Inspect code points, UTF-8/UTF-16 bytes, category, script, and HTML entity"
+        refs={[
+          { name: "Unicode Blocks", slug: "unicode-blocks" },
+          { name: "ASCII Table", slug: "ascii" },
+        ]}
+      >
 
       <div className={styles.content}>
         <div className={styles.leftPanel}>
@@ -260,12 +210,12 @@ export default function UnicodePage(): React.ReactNode {
             <div className={styles.textareaHeader}>
               <span className={styles.sectionLabel}>Text Input</span>
               {text.length === 0 ? (
-                <span className={styles.badgeReady}>Ready</span>
+                <Badge color="ready">Ready</Badge>
               ) : (
-                <span className={styles.badge}>
+                <Badge>
                   {cpCount} code point{cpCount !== 1 ? "s" : ""} · {text.length}{" "}
                   char{text.length !== 1 ? "s" : ""}
-                </span>
+                </Badge>
               )}
             </div>
             <textarea
@@ -344,21 +294,8 @@ export default function UnicodePage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.permalinkLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

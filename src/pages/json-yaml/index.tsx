@@ -1,23 +1,14 @@
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import styles from "@/styles/json-yaml.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { dump, load } from "js-yaml";
 
 export default function JsonYamlPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [json, setJson] = useState("");
   const [yaml, setYaml] = useState("");
   const [jsonError, setJsonError] = useState(false);
   const [yamlError, setYamlError] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
-  const copyTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -105,61 +96,33 @@ export default function JsonYamlPage(): React.ReactNode {
     }
   }
 
-  function handleCopy(): void {
-    void copyToClipboard(url);
-    setCopied(true);
-    if (copyTimeout.current) clearTimeout(copyTimeout.current);
-    copyTimeout.current = setTimeout(() => {
-      setCopied(false);
-    }, 1500);
+  function handleReset(): void {
+    setJson("");
+    setYaml("");
+    setJsonError(false);
+    setYamlError(false);
+    history.replaceState(null, "", window.location.pathname);
+    setUrl(window.location.href);
   }
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="JSON ↔ YAML Converter"
-        description="Convert between JSON and YAML with live bidirectional sync and shareable permalinks. Free online JSON to YAML converter — no installation required."
+      <PageLayout
+        metaTitle="JSON ↔ YAML Converter"
+        metaDescription="Convert between JSON and YAML with live bidirectional sync and shareable permalinks. Free online JSON to YAML converter — no installation required."
         path="/json-yaml"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/json-yaml"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>JSON ↔ YAML</h1>
-        <p className={styles.tagline}>
-          Convert between JSON and YAML with live bidirectional sync.
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="JSON ↔ YAML"
+        tagline="Convert between JSON and YAML with live bidirectional sync."
+      >
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>JSON</span>
+        <Panel>
+          <PanelHeader label="JSON">
             {jsonError && (
-              <span className={styles.badgeError}>invalid json</span>
+              <Badge color="error">invalid json</Badge>
             )}
-          </div>
-          <div className={styles.textareaWrapper}>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={json}
@@ -170,17 +133,16 @@ export default function JsonYamlPage(): React.ReactNode {
               autoComplete="off"
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>YAML</span>
+        <Panel>
+          <PanelHeader label="YAML">
             {yamlError && (
-              <span className={styles.badgeError}>invalid yaml</span>
+              <Badge color="error">invalid yaml</Badge>
             )}
-          </div>
-          <div className={styles.textareaWrapper}>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={yaml}
@@ -191,37 +153,15 @@ export default function JsonYamlPage(): React.ReactNode {
               autoComplete="off"
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
       </div>
+
+      </PageLayout>
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn} ${copied ? styles.copied : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button
-          className={styles.resetBtn}
-          onClick={() => {
-            setJson("");
-            setYaml("");
-            setJsonError(false);
-            setYamlError(false);
-            history.replaceState(null, "", window.location.pathname);
-            setUrl(window.location.href);
-          }}
-        >
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

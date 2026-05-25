@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/rsa.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
+import { Panel, PanelHeader, PanelBody } from "@/components/ui/Panel";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -52,8 +48,7 @@ function parsePemBody(pem: string): ArrayBuffer | null {
 // ── Page ───────────────────────────────────────────────────────────────────────
 
 export default function RsaPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
+
 
   // Key pair
   const [encryptKey, setEncryptKey] = useState<CryptoKey | null>(null);
@@ -91,22 +86,10 @@ export default function RsaPage(): React.ReactNode {
 
   const [cryptoAvailable, setCryptoAvailable] = useState(true);
 
-  // Copy state
-  const [copiedPub, setCopiedPub] = useState(false);
-  const [copiedPriv, setCopiedPriv] = useState(false);
-  const [copiedCt, setCopiedCt] = useState(false);
-  const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [url, setUrl] = useState("");
 
   // Ciphertext textarea value (for step 3)
   const [ctInput, setCtInput] = useState("");
-
-  const pubTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const privTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const ctTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
 
   const plaintextBytes = new TextEncoder().encode(plaintext).length;
 
@@ -357,22 +340,6 @@ export default function RsaPage(): React.ReactNode {
     }
   }
 
-  // ── Copy helpers ───────────────────────────────────────────────────────────
-
-  function copyWithTimeout(
-    text: string,
-    setter: (v: boolean) => void,
-    ref: React.RefObject<ReturnType<typeof setTimeout> | null>,
-  ): void {
-    void copyToClipboard(text).then(() => {
-      setter(true);
-      if (ref.current) clearTimeout(ref.current);
-      ref.current = setTimeout(() => {
-        setter(false);
-      }, 1500);
-    });
-  }
-
   function handleReset(): void {
     setCiphertext("");
     setCtInput("");
@@ -390,41 +357,13 @@ export default function RsaPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="RSA Encryption"
-        description="Generate RSA key pairs, encrypt, and decrypt messages online. Free online RSA encryption tool — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="RSA Encryption"
+        metaDescription="Generate RSA key pairs, encrypt, and decrypt messages online. Free online RSA encryption tool — no installation required. No data sent to servers."
         path="/rsa"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/rsa"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>RSA Encryption</h1>
-        <p className={styles.tagline}>
-          EXP-005 · Interactive RSA-OAEP public-key encryption using the Web
-          Crypto API
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="RSA Encryption"
+        tagline="EXP-005 · Interactive RSA-OAEP public-key encryption using the Web Crypto API"
+      >
 
       {!cryptoAvailable && (
         <div className={styles.errorPanel} style={{ marginBottom: "1.5rem" }}>
@@ -458,20 +397,12 @@ export default function RsaPage(): React.ReactNode {
 
         <div className={styles.keyPanels}>
           {/* Public key */}
-          <div className={styles.keyPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Public Key</span>
-              {!isIframe && publicKeyPem && (
-                <button
-                  className={`${styles.copyBtn}${copiedPub ? ` ${styles.copied}` : ""}`}
-                  onClick={() => {
-                    copyWithTimeout(publicKeyPem, setCopiedPub, pubTimeoutRef);
-                  }}
-                >
-                  {copiedPub ? "Copied!" : "Copy"}
-                </button>
+          <Panel>
+            <PanelHeader label="Public Key">
+              {publicKeyPem && (
+                <CopyButton variant="copy" size="sm" value={publicKeyPem} />
               )}
-            </div>
+            </PanelHeader>
             <textarea
               className={styles.keyTextarea}
               value={publicKeyPem}
@@ -487,27 +418,15 @@ export default function RsaPage(): React.ReactNode {
             <div className={styles.annotation}>
               Share freely — only encrypts, never decrypts.
             </div>
-          </div>
+          </Panel>
 
           {/* Private key */}
-          <div className={styles.keyPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Private Key</span>
-              {!isIframe && privateKeyPem && (
-                <button
-                  className={`${styles.copyBtn}${copiedPriv ? ` ${styles.copied}` : ""}`}
-                  onClick={() => {
-                    copyWithTimeout(
-                      privateKeyPem,
-                      setCopiedPriv,
-                      privTimeoutRef,
-                    );
-                  }}
-                >
-                  {copiedPriv ? "Copied!" : "Copy"}
-                </button>
+          <Panel>
+            <PanelHeader label="Private Key">
+              {privateKeyPem && (
+                <CopyButton variant="copy" size="sm" value={privateKeyPem} />
               )}
-            </div>
+            </PanelHeader>
             <textarea
               className={`${styles.keyTextarea} ${styles.privateKeyTextarea}`}
               value={privateKeyPem}
@@ -523,7 +442,7 @@ export default function RsaPage(): React.ReactNode {
             <div className={styles.annotation}>
               Keep secret — this is the only key that can decrypt.
             </div>
-          </div>
+          </Panel>
         </div>
 
         {(encryptKey || decryptKey) && (
@@ -548,16 +467,15 @@ export default function RsaPage(): React.ReactNode {
           )}
         </div>
 
-        <div className={styles.inputPanel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Plaintext</span>
+        <Panel>
+          <PanelHeader label="Plaintext">
             <span
               className={`${styles.byteCounter}${plaintextBytes > 190 ? ` ${styles.byteCounterOver}` : ""}`}
             >
               {plaintextBytes} / 190 bytes
               {plaintextBytes > 190 && " — too long"}
             </span>
-          </div>
+          </PanelHeader>
           <div className={styles.byteBar}>
             <div
               className={`${styles.byteBarFill}${byteRatio > 1 ? ` ${styles.byteBarOver}` : ""}`}
@@ -573,7 +491,7 @@ export default function RsaPage(): React.ReactNode {
             placeholder="Enter plaintext to encrypt…"
             spellCheck={false}
           />
-        </div>
+        </Panel>
 
         <button
           className={styles.primaryBtn}
@@ -595,26 +513,16 @@ export default function RsaPage(): React.ReactNode {
         )}
 
         {ciphertext && (
-          <div className={styles.outputPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Ciphertext (base64)</span>
-              {!isIframe && (
-                <button
-                  className={`${styles.copyBtn}${copiedCt ? ` ${styles.copied}` : ""}`}
-                  onClick={() => {
-                    copyWithTimeout(ciphertext, setCopiedCt, ctTimeoutRef);
-                  }}
-                >
-                  {copiedCt ? "Copied!" : "Copy"}
-                </button>
-              )}
-            </div>
+          <Panel>
+            <PanelHeader label="Ciphertext (base64)">
+              <CopyButton variant="copy" size="sm" value={ciphertext} />
+            </PanelHeader>
             <div className={styles.ciphertextOutput}>{ciphertext}</div>
             <div className={styles.annotation}>
               Always 344 base64 chars (256 bytes) regardless of input length —
               RSA-OAEP 2048 produces a fixed-size block.
             </div>
-          </div>
+          </Panel>
         )}
       </div>
 
@@ -639,10 +547,8 @@ export default function RsaPage(): React.ReactNode {
           </div>
         )}
 
-        <div className={styles.inputPanel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Ciphertext (base64)</span>
-          </div>
+        <Panel>
+          <PanelHeader label="Ciphertext (base64)" />
           <textarea
             className={styles.textarea}
             value={ctInput}
@@ -652,7 +558,7 @@ export default function RsaPage(): React.ReactNode {
             placeholder="Paste base64 ciphertext here, or encrypt something in Step 2…"
             spellCheck={false}
           />
-        </div>
+        </Panel>
 
         <div className={styles.decryptBtns}>
           <button
@@ -680,12 +586,10 @@ export default function RsaPage(): React.ReactNode {
         )}
 
         {decrypted && (
-          <div className={styles.outputPanel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelLabel}>Decrypted</span>
-            </div>
+          <Panel>
+            <PanelHeader label="Decrypted" />
             <div className={styles.decryptedOutput}>{decrypted}</div>
-          </div>
+          </Panel>
         )}
 
         {decryptError !== null && (
@@ -730,23 +634,8 @@ export default function RsaPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-            onClick={() => {
-              copyWithTimeout(url, setPermalinkCopied, permalinkTimeoutRef);
-            }}
-          >
-            {permalinkCopied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

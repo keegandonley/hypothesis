@@ -1,13 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/css-unit.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
+import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
-
 type CSSUnit =
   | "px"
   | "rem"
@@ -114,15 +108,11 @@ function formatNumber(num: number): string {
 }
 
 export default function CssUnitPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [inputValue, setInputValue] = useState<string>("16");
   const [inputUnit, setInputUnit] = useState<CSSUnit>("px");
   const [context, setContext] = useState<ConversionContext>(DEFAULT_CONTEXT);
-  const [copied, setCopied] = useState(false);
   const [copiedUnit, setCopiedUnit] = useState<string | null>(null);
   const [url, setUrl] = useState("");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const copyUnitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const buildUrl = (
@@ -209,16 +199,6 @@ export default function CssUnitPage(): React.ReactNode {
     updateUrl(inputValue, inputUnit, newContext);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleCardCopy = (unit: string, value: string): void => {
     void copyToClipboard(value).then(() => {
       setCopiedUnit(unit);
@@ -249,45 +229,19 @@ export default function CssUnitPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="CSS Unit Converter"
-        description="Convert between CSS units: px, rem, em, vw, vh, and more with a configurable root font size. Free online CSS unit converter — no installation required."
+      <PageLayout
+        metaTitle="CSS Unit Converter"
+        metaDescription="Convert between CSS units: px, rem, em, vw, vh, and more with a configurable root font size. Free online CSS unit converter — no installation required."
         path="/css-unit"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/css-unit"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>CSS Unit</h1>
-        <p className={styles.tagline}>Convert between CSS units</p>
-        <ReferenceLinks
-          refs={[{ name: "CSS Selectors", slug: "css-selectors" }]}
-        />
-      </div>
-
-      <hr className={styles.divider} />
+        h1="CSS Unit"
+        tagline="Convert between CSS units"
+        refs={[{ name: "CSS Selectors", slug: "css-selectors" }]}
+      >
 
       <div className={styles.inputSection}>
         <div className={styles.inputHeader}>
           <span className={styles.inputLabel}>Input Value</span>
-          <span className={styles.badge}>{inputUnit}</span>
+          <Badge>{inputUnit}</Badge>
         </div>
         <input
           type="number"
@@ -424,23 +378,11 @@ export default function CssUnitPage(): React.ReactNode {
         </div>
       </div>
 
+      </PageLayout>
+
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

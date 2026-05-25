@@ -4,8 +4,8 @@ import Link from "next/link";
 import styles from "@/styles/message-factory-viewer.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { PermalinkRow, CopyButton } from "@/components/ui";
 
 interface Action {
   id: string;
@@ -43,9 +43,7 @@ export default function ViewerPage(): React.ReactNode {
   const [url, setUrl] = useState("");
   const [designerUrl, setDesignerUrl] = useState("");
   const [sentKeys, setSentKeys] = useState<Record<number, boolean>>({});
-  const [copied, setCopied] = useState(false);
   const [debug, setDebug] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sentTimeoutRefs = useRef<Record<number, ReturnType<typeof setTimeout>>>(
     {},
   );
@@ -76,16 +74,6 @@ export default function ViewerPage(): React.ReactNode {
     sentTimeoutRefs.current[idx] = setTimeout(() => {
       setSentKeys((prev) => ({ ...prev, [idx]: false }));
     }, 1500);
-  };
-
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
   };
 
   const handleReset = (): void => {
@@ -162,22 +150,7 @@ export default function ViewerPage(): React.ReactNode {
         <>
           <hr className={styles.divider} />
 
-          {/* Permalink row */}
-          <div className={styles.permalinkRow} data-permalink-row>
-            <span className={styles.permalinkLabel}>Permalink</span>
-            <span className={styles.permalinkUrl}>{url}</span>
-            {!isIframe && (
-              <button
-                className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-                onClick={handleCopy}
-              >
-                {copied ? "Copied!" : "Copy"}
-              </button>
-            )}
-            <button className={styles.resetBtn} onClick={handleReset}>
-              Reset
-            </button>
-          </div>
+          <PermalinkRow url={url} onReset={handleReset} />
 
           {/* Open Designer link */}
           <div className={styles.designerRow}>

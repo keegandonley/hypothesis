@@ -11,64 +11,6 @@
   padding: 20px;
 }
 
-.header {
-  margin-bottom: 16px;
-}
-
-.eyebrow {
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  color: var(--accent);
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  display: flex;
-  gap: 0.4em;
-}
-
-.title {
-  margin: 0 0 4px;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text);
-}
-
-.tagline {
-  color: var(--muted);
-  font-size: 12px;
-  margin: 0;
-  letter-spacing: 0.02em;
-}
-
-.divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 0 0 16px;
-}
-
-.icon {
-  margin-right: 4px;
-}
-
-.docsLink {
-  display: flex;
-  align-items: center;
-  color: var(--muted);
-  transition: color 0.15s ease;
-}
-
-.docsLink:hover {
-  color: var(--accent);
-}
-
-.domainLink {
-  display: flex;
-  align-items: center;
-  color: var(--accent);
-  transition: color 0.15s ease;
-}
-
 .panels {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -80,32 +22,6 @@
   .panels {
     grid-template-columns: 1fr;
   }
-}
-
-.panel {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background-color: var(--card-bg);
-  overflow: hidden;
-  height: 120px;
-}
-
-.panelHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--border);
-}
-
-.panelLabel {
-  font-size: 10px;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: var(--muted);
-  letter-spacing: 0.12em;
 }
 
 .urlDisplay {
@@ -131,35 +47,6 @@
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.04em;
-}
-
-.copyBtn {
-  padding: 4px 10px;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--text);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    background-color 0.15s,
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.copyBtn:hover {
-  background-color: var(--border);
-  color: var(--text);
-}
-
-.copyBtn.copied {
-  background-color: var(--accent-subtle);
-  border-color: var(--accent-border);
-  color: var(--accent);
 }
 
 .appNotice {
@@ -216,26 +103,6 @@
 
 .statusCardError .statusCardMessage {
   color: #ef4444;
-}
-
-.statusCardAction {
-  align-self: flex-start;
-  padding: 5px 12px;
-  background: transparent;
-  border: 1px solid var(--accent-border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--accent);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color 0.15s;
-}
-
-.statusCardAction:hover {
-  background-color: var(--accent-subtle);
 }
 
 .sensitiveWarning {
@@ -353,45 +220,6 @@
   flex-wrap: wrap;
 }
 
-.methodToggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 8px 3px 5px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.methodToggle::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--border);
-  flex-shrink: 0;
-  transition: background 0.15s;
-}
-
-.methodToggle.active {
-  border-color: var(--method-color, var(--accent-border));
-  color: var(--method-color, var(--accent));
-}
-
-.methodToggle.active::before {
-  background: var(--method-color, var(--accent));
-}
-
 .curlPanelBody {
   flex: 1;
   overflow-y: auto;
@@ -453,22 +281,4 @@
   letter-spacing: 0.02em;
 }
 
-.idleAction {
-  align-self: flex-start;
-  padding: 5px 12px;
-  background: transparent;
-  border: 1px solid var(--accent-border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--accent);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color 0.15s;
-}
 
-.idleAction:hover {
-  background-color: var(--accent-subtle);
-}

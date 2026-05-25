@@ -1,11 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import { PageLayout } from "@/components/ui";
 import styles from "@/styles/push-test.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { CopyButton } from "@/components/ui";
 
 const DEVICE_ID_LS_KEY = "pushTestDeviceId";
 
@@ -14,8 +10,7 @@ type Result =
   | { status: "error"; message: string };
 
 export default function PushTestPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
+
   const [deviceId, setDeviceId] = useState("");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -27,13 +22,9 @@ export default function PushTestPage(): React.ReactNode {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
-  const [curlCopied, setCurlCopied] = useState(false);
-  const [curlGetCopied, setCurlGetCopied] = useState(false);
   const [origin, setOrigin] = useState("");
   const [showSandbox, setShowSandbox] = useState(false);
   const didMount = useRef(false);
-  const curlTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const curlGetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setOrigin(window.location.origin); // eslint-disable-line react-hooks/set-state-in-effect
@@ -193,62 +184,14 @@ export default function PushTestPage(): React.ReactNode {
 
   const canCopy = !!deviceId.trim() && !!title.trim() && !!body.trim();
 
-  function handleCopyCurl(): void {
-    void copyToClipboard(buildCurl()).then(() => {
-      setCurlCopied(true);
-      if (curlTimeoutRef.current) clearTimeout(curlTimeoutRef.current);
-      curlTimeoutRef.current = setTimeout(() => {
-        setCurlCopied(false);
-      }, 1500);
-    });
-  }
-
-  function handleCopyCurlGet(): void {
-    void copyToClipboard(buildCurlGet()).then(() => {
-      setCurlGetCopied(true);
-      if (curlGetTimeoutRef.current) clearTimeout(curlGetTimeoutRef.current);
-      curlGetTimeoutRef.current = setTimeout(() => {
-        setCurlGetCopied(false);
-      }, 1500);
-    });
-  }
-
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Push Test"
-        description="Send a test push notification to a registered mobile device."
+      <PageLayout
+        metaTitle="Push Test"
+        metaDescription="Send a test push notification to a registered mobile device."
         path="/push-test"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/push-test"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Push Test</h1>
-        <p className={styles.tagline}>
-          Send a test push notification to a registered device.
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        tagline="Send a test push notification to a registered device."
+      >
 
       <div className={styles.layout}>
         <div className={styles.leftCol}>
@@ -414,14 +357,7 @@ export default function PushTestPage(): React.ReactNode {
             <div className={styles.panel}>
               <div className={styles.panelHeader}>
                 <span className={styles.panelLabel}>cURL (POST)</span>
-                <button
-                  type="button"
-                  className={`${styles.curlBtn}${curlCopied ? ` ${styles.copied}` : ""}`}
-                  disabled={!canCopy}
-                  onClick={handleCopyCurl}
-                >
-                  {curlCopied ? "Copied!" : "Copy"}
-                </button>
+                <CopyButton value={buildCurl()} variant="ghost" size="sm" disabled={!canCopy} />
               </div>
               <pre className={styles.curlCode}>{buildCurl()}</pre>
             </div>
@@ -429,14 +365,7 @@ export default function PushTestPage(): React.ReactNode {
             <div className={styles.panel}>
               <div className={styles.panelHeader}>
                 <span className={styles.panelLabel}>cURL (GET)</span>
-                <button
-                  type="button"
-                  className={`${styles.curlBtn}${curlGetCopied ? ` ${styles.copied}` : ""}`}
-                  disabled={!canCopy}
-                  onClick={handleCopyCurlGet}
-                >
-                  {curlGetCopied ? "Copied!" : "Copy"}
-                </button>
+                <CopyButton value={buildCurlGet()} variant="ghost" size="sm" disabled={!canCopy} />
               </div>
               <pre className={styles.curlCode}>{buildCurlGet()}</pre>
             </div>
@@ -486,6 +415,7 @@ export default function PushTestPage(): React.ReactNode {
           </div>
         </div>
       </div>
+      </PageLayout>
     </div>
   );
 }

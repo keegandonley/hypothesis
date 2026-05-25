@@ -1,11 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import { useEffect, useState } from "react";
 import styles from "@/styles/json-diff.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 
 type DiffType = "added" | "removed" | "changed" | "type-changed";
 
@@ -100,15 +95,11 @@ const DIFF_LABELS: Record<DiffType, string> = {
 };
 
 export default function JsonDiffPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [left, setLeft] = useState("");
   const [right, setRight] = useState("");
   const [leftError, setLeftError] = useState("");
   const [rightError, setRightError] = useState("");
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   let diff: DiffEntry[] = [];
   let canDiff = false;
@@ -216,16 +207,6 @@ export default function JsonDiffPage(): React.ReactNode {
     syncUrl(left, v);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleReset = (): void => {
     setLeft("");
     setRight("");
@@ -239,40 +220,13 @@ export default function JsonDiffPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="JSON Diff"
-        description="Compare two JSON objects and see a structured diff of added, removed, and changed keys. Free online JSON diff tool — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="JSON Diff"
+        metaDescription="Compare two JSON objects and see a structured diff of added, removed, and changed keys. Free online JSON diff tool — no installation required. No data sent to servers."
         path="/json-diff"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/json-diff"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>JSON Diff</h1>
-        <p className={styles.tagline}>
-          Compare two JSON structures and highlight structural differences
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="JSON Diff"
+        tagline="Compare two JSON structures and highlight structural differences"
+      >
 
       <div className={styles.body}>
         <div className={styles.inputs}>
@@ -316,24 +270,24 @@ export default function JsonDiffPage(): React.ReactNode {
             {canDiff && (
               <div className={styles.diffSummary}>
                 {counts.added > 0 && (
-                  <span className={`${styles.badge} ${styles.badgeAdded}`}>
+                  <Badge className={styles.badgeAdded}>
                     +{counts.added} added
-                  </span>
+                  </Badge>
                 )}
                 {counts.removed > 0 && (
-                  <span className={`${styles.badge} ${styles.badgeRemoved}`}>
+                  <Badge className={styles.badgeRemoved}>
                     -{counts.removed} removed
-                  </span>
+                  </Badge>
                 )}
                 {counts.changed > 0 && (
-                  <span className={`${styles.badge} ${styles.badgeChanged}`}>
+                  <Badge className={styles.badgeChanged}>
                     ~{counts.changed} changed
-                  </span>
+                  </Badge>
                 )}
                 {diff.length === 0 && (
-                  <span className={`${styles.badge} ${styles.badgeEqual}`}>
+                  <Badge className={styles.badgeEqual}>
                     identical
-                  </span>
+                  </Badge>
                 )}
               </div>
             )}
@@ -385,23 +339,11 @@ export default function JsonDiffPage(): React.ReactNode {
         </div>
       </div>
 
+      </PageLayout>
+
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

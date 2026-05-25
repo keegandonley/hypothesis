@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/sql.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
 import { format, type SqlLanguage } from "sql-formatter";
+import { Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 
 const DIALECTS: { value: SqlLanguage; label: string }[] = [
   { value: "sql", label: "SQL" },
@@ -19,15 +14,9 @@ const DIALECTS: { value: SqlLanguage; label: string }[] = [
 const PLACEHOLDER = `SELECT u.id, u.name, COUNT(o.id) AS order_count FROM users u LEFT JOIN orders o ON o.user_id = u.id WHERE u.created_at > '2024-01-01' GROUP BY u.id, u.name HAVING COUNT(o.id) > 0 ORDER BY order_count DESC LIMIT 25;`;
 
 export default function SqlPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [dialect, setDialect] = useState<SqlLanguage>("sql");
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [copiedSql, setCopiedSql] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const sqlCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   let formatted = "";
   let error = "";
@@ -91,16 +80,6 @@ export default function SqlPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   const handleReset = (): void => {
     setInput("");
     setDialect("sql");
@@ -110,58 +89,19 @@ export default function SqlPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopySql = (): void => {
-    void copyToClipboard(formatted).then(() => {
-      setCopiedSql(true);
-      if (sqlCopyTimeoutRef.current) clearTimeout(sqlCopyTimeoutRef.current);
-      sqlCopyTimeoutRef.current = setTimeout(() => {
-        setCopiedSql(false);
-      }, 1500);
-    });
-  };
-
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="SQL Formatter"
-        description="Format and prettify SQL queries with proper indentation. Supports PostgreSQL, MySQL, SQLite, BigQuery. Free online SQL formatter — no signup needed."
+      <PageLayout
+        metaTitle="SQL Formatter"
+        metaDescription="Format and prettify SQL queries with proper indentation. Supports PostgreSQL, MySQL, SQLite, BigQuery. Free online SQL formatter — no signup needed."
         path="/sql"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/sql"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>SQL Formatter</h1>
-        <p className={styles.tagline}>
-          Format and prettify SQL queries with dialect-aware keyword casing
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="SQL Formatter"
+        tagline="Format and prettify SQL queries with dialect-aware keyword casing"
+      >
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Input</span>
-          </div>
+        <Panel>
+          <PanelHeader label="Input" />
           <textarea
             className={styles.textarea}
             value={input}
@@ -171,34 +111,31 @@ export default function SqlPage(): React.ReactNode {
             placeholder={PLACEHOLDER}
             spellCheck={false}
           />
-        </div>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Formatted</span>
-            <div className={styles.panelHeaderRight}>
-              {DIALECTS.map((d) => (
-                <button
-                  key={d.value}
-                  className={`${styles.toggleBtn}${dialect === d.value ? ` ${styles.active}` : ""}`}
-                  onClick={() => {
-                    handleDialect(d.value);
-                  }}
-                >
-                  {d.label}
-                </button>
-              ))}
-              {!isIframe && (
-                <button
-                  className={`${styles.panelCopyBtn}${copiedSql ? ` ${styles.panelCopied}` : ""}`}
-                  onClick={handleCopySql}
-                  disabled={!formatted}
-                >
-                  {copiedSql ? "Copied!" : "Copy"}
-                </button>
-              )}
-            </div>
-          </div>
+        <Panel>
+          <PanelHeader
+            label="Formatted"
+            className={styles.panelHeaderOverride}
+          >
+            {DIALECTS.map((d) => (
+              <Button
+                key={d.value}
+                variant="toggle"
+                active={dialect === d.value}
+                onClick={() => {
+                  handleDialect(d.value);
+                }}
+              >
+                {d.label}
+              </Button>
+            ))}
+            <CopyButton
+              value={formatted}
+              variant="ghost"
+              disabled={!formatted}
+            />
+          </PanelHeader>
           {error ? (
             <div className={styles.errorMsg}>{error}</div>
           ) : (
@@ -210,26 +147,13 @@ export default function SqlPage(): React.ReactNode {
               placeholder="Formatted SQL will appear here…"
             />
           )}
-        </div>
+        </Panel>
       </div>
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }

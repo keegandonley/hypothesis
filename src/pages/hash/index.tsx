@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/hash.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 
 const SHA_ALGOS = ["SHA-1", "SHA-256", "SHA-384", "SHA-512"] as const;
 const ALGOS = ["MD5", ...SHA_ALGOS] as const;
@@ -122,22 +117,14 @@ function formatBytes(n: number): string {
 }
 
 export default function HashPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [mode, setMode] = useState<"text" | "file">("text");
   const [input, setInput] = useState("");
   const [hashes, setHashes] = useState<Record<string, string>>({});
-  const [copiedAlgo, setCopiedAlgo] = useState<string | null>(null);
-  const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [url, setUrl] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileSize, setFileSize] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
 
   const buildUrl = (val: string): string => {
     if (!val) return `${window.location.origin}${window.location.pathname}`;
@@ -204,72 +191,19 @@ export default function HashPage(): React.ReactNode {
     void file.arrayBuffer().then((buf) => hashBytes(buf).then(setHashes));
   };
 
-  const handleCopyHash = (algo: string): void => {
-    const value = hashes[algo];
-
-    if (!value) return;
-    void copyToClipboard(value).then(() => {
-      setCopiedAlgo(algo);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopiedAlgo(null);
-      }, 1500);
-    });
-  };
-
-  const handleCopyPermalink = (): void => {
-    void copyToClipboard(url).then(() => {
-      setPermalinkCopied(true);
-      if (permalinkTimeoutRef.current)
-        clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(() => {
-        setPermalinkCopied(false);
-      }, 1500);
-    });
-  };
-
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Hash Generator"
-        description="Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text. Free online hash generator — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Hash Generator"
+        metaDescription="Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text. Free online hash generator — no installation required. No data sent to servers."
         path="/hash"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/hash"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Hash Generator</h1>
-        <p className={styles.tagline}>
-          Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any
-          text or file
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Hash Generator"
+        tagline="Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text or file"
+      >
 
       <div className={styles.inputPanel}>
-        <div className={styles.panelHeader}>
-          <span className={styles.panelLabel}>Input</span>
-          <div className={styles.modeTabs} role="tablist">
+        <PanelHeader label="Input">
+            <div className={styles.modeTabs} role="tablist">
             <button
               role="tab"
               aria-selected={mode === "text"}
@@ -291,7 +225,7 @@ export default function HashPage(): React.ReactNode {
               File
             </button>
           </div>
-        </div>
+        </PanelHeader>
         {mode === "text" ? (
           <textarea
             className={styles.textarea}
@@ -351,7 +285,6 @@ export default function HashPage(): React.ReactNode {
       <div className={styles.hashList}>
         {ALGOS.map((algo) => {
           const value = hashes[algo] ?? "";
-          const isCopied = copiedAlgo === algo;
 
           return (
             <div key={algo} className={styles.hashRow}>
@@ -361,40 +294,18 @@ export default function HashPage(): React.ReactNode {
               >
                 {value || "—"}
               </span>
-              <button
-                className={`${styles.copyBtn}${isCopied ? ` ${styles.copied}` : ""}`}
-                onClick={() => {
-                  handleCopyHash(algo);
-                }}
-                disabled={!value}
-              >
-                {isCopied ? "Copied!" : "Copy"}
-              </button>
+              <CopyButton value={value} variant="copy" size="xs" disabled={!value} />
             </div>
           );
         })}
       </div>
 
+      </PageLayout>
+
       <hr className={styles.divider} />
 
-      <div
-        className={styles.permalinkRow}
-        data-permalink-row
-        style={mode === "file" ? { display: "none" } : undefined}
-      >
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopyPermalink}
-          >
-            {permalinkCopied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
+      <div style={mode === "file" ? { display: "none" } : undefined}>
+        <PermalinkRow url={url} onReset={handleReset} />
       </div>
     </div>
   );

@@ -1,24 +1,15 @@
-import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import { useEffect, useState } from "react";
 import styles from "@/styles/pretty-print.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody } from "@/components/ui";
 
 const URL_LIMIT = 2000;
 
 export default function PrettyPrintPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [jsonValid, setJsonValid] = useState<boolean | null>(null);
   const [url, setUrl] = useState("");
   const [urlTooLong, setUrlTooLong] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const buildUrl = (encoded: string): string => {
     if (!encoded) return `${window.location.origin}${window.location.pathname}`;
@@ -89,70 +80,28 @@ export default function PrettyPrintPage(): React.ReactNode {
     setUrlTooLong(false);
   };
 
-  const handleCopy = (): void => {
-    if (urlTooLong) return;
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
-  const handleCopyOutput = (): void => {
-    void copyToClipboard(output);
-  };
-
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="JSON Pretty Printer"
-        description="Format and pretty-print JSON with proper indentation and syntax highlighting. Free online JSON formatter — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="JSON Pretty Printer"
+        metaDescription="Format and pretty-print JSON with proper indentation and syntax highlighting. Free online JSON formatter — no installation required. No data sent to servers."
         path="/pretty-print"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/pretty-print"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Pretty Print</h1>
-        <p className={styles.tagline}>Format and validate JSON</p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Pretty Print"
+        tagline="Format and validate JSON"
+      >
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Input</span>
-            <div className={styles.panelHeaderRight}>
-              <span className={styles.badge}>{input.length} chars</span>
-              {jsonValid === true && (
-                <span className={styles.badge}>valid</span>
-              )}
-              {jsonValid === false && (
-                <span className={styles.badgeError}>invalid</span>
-              )}
-            </div>
-          </div>
-          <div className={styles.textareaWrapper}>
+        <Panel>
+          <PanelHeader label="Input">
+            <Badge>{input.length} chars</Badge>
+            {jsonValid === true && (
+              <Badge>valid</Badge>
+            )}
+            {jsonValid === false && (
+              <Badge color="error">invalid</Badge>
+            )}
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={input}
@@ -162,15 +111,14 @@ export default function PrettyPrintPage(): React.ReactNode {
               placeholder="Paste JSON here..."
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>Formatted</span>
-            <span className={styles.badge}>{output.length} chars</span>
-          </div>
-          <div className={styles.textareaWrapper}>
+        <Panel>
+          <PanelHeader label="Formatted">
+            <Badge>{output.length} chars</Badge>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={output}
@@ -178,13 +126,9 @@ export default function PrettyPrintPage(): React.ReactNode {
               placeholder="Formatted output appears here..."
               spellCheck={false}
             />
-            {output.length > 0 && !isIframe && (
-              <button className={styles.formatBtn} onClick={handleCopyOutput}>
-                Copy
-              </button>
-            )}
-          </div>
-        </div>
+            {output.length > 0 && <CopyButton value={output} variant="ghost" size="sm" className={styles.formatBtnCopy} />}
+          </PanelBody>
+        </Panel>
       </div>
 
       <hr className={styles.divider} />
@@ -196,19 +140,12 @@ export default function PrettyPrintPage(): React.ReactNode {
         >
           {urlTooLong ? "url too long to share" : url}
         </span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}${urlTooLong ? ` ${styles.copyBtnDisabled}` : ""}`}
-            onClick={handleCopy}
-            disabled={urlTooLong}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
+        <CopyButton value={url} disabled={urlTooLong} />
+        <Button variant="reset" onClick={handleReset}>
           Reset
-        </button>
+        </Button>
       </div>
+      </PageLayout>
     </div>
   );
 }

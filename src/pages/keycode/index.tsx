@@ -1,11 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
+import { useEffect, useState } from "react";
 import styles from "@/styles/keycode.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 
 interface KeyInfo {
   key: string;
@@ -27,13 +22,8 @@ const LOCATION_NAMES: Record<number, string> = {
 };
 
 export default function KeycodePage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(null);
   const [url, setUrl] = useState("");
-  const [copied, setCopied] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   useEffect(() => {
     setUrl(window.location.href); // eslint-disable-line react-hooks/set-state-in-effect
     const handleKeyDown = (e: KeyboardEvent): void => {
@@ -73,52 +63,21 @@ export default function KeycodePage(): React.ReactNode {
       : keyInfo.key
     : null;
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
+  const handleReset = (): void => {
+    const newUrl = `${window.location.origin}${window.location.pathname}`;
+    history.replaceState(null, "", newUrl);
+    setUrl(newUrl);
   };
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Keycode Inspector"
-        description="Inspect JavaScript keyboard event properties: keyCode, key, code, and modifiers for any key press. Free online keycode tool — no installation required."
+      <PageLayout
+        metaTitle="Keycode Inspector"
+        metaDescription="Inspect JavaScript keyboard event properties: keyCode, key, code, and modifiers for any key press. Free online keycode tool — no installation required."
         path="/keycode"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/keycode"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Keycode</h1>
-        <p className={styles.tagline}>
-          Press any key to inspect its JavaScript event properties
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Keycode"
+        tagline="Press any key to inspect its JavaScript event properties"
+      >
 
       <div className={styles.body}>
         <div className={styles.keyDisplay}>
@@ -177,20 +136,11 @@ export default function KeycodePage(): React.ReactNode {
         </div>
       </div>
 
+      </PageLayout>
+
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

@@ -1,11 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/color.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -314,18 +310,11 @@ function formatColor(color: RGBA, fmt: ColorFormat): string {
 }
 
 export default function ColorPage(): React.ReactNode {
-  const branding = useBranding();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [color, setColor] = useState<RGBA | null>(null);
-  const [copiedId, setCopiedId] = useState<ColorFormat | null>(null);
-  const [permalinkCopied, setPermalinkCopied] = useState(false);
   const [url, setUrl] = useState("");
   const [supportsEyeDropper, setSupportsEyeDropper] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const permalinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
   const colorPickerRef = useRef<HTMLInputElement>(null);
 
   const buildUrl = (val: string): string => {
@@ -383,30 +372,6 @@ export default function ColorPage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopyFormat = (id: ColorFormat): void => {
-    if (!color) return;
-    const value = formatColor(color, id);
-
-    void copyToClipboard(value).then(() => {
-      setCopiedId(id);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopiedId(null);
-      }, 1500);
-    });
-  };
-
-  const handleCopyPermalink = (): void => {
-    void copyToClipboard(url).then(() => {
-      setPermalinkCopied(true);
-      if (permalinkTimeoutRef.current)
-        clearTimeout(permalinkTimeoutRef.current);
-      permalinkTimeoutRef.current = setTimeout(() => {
-        setPermalinkCopied(false);
-      }, 1500);
-    });
-  };
-
   const hasError = input.trim().length > 0 && !color;
   const swatchColor = color
     ? `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`
@@ -430,40 +395,13 @@ export default function ColorPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Color Converter"
-        description="Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with live preview. Free online color converter — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="Color Converter"
+        metaDescription="Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with live preview. Free online color converter — no installation required. No data sent to servers."
         path="/color"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/color"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Color Converter</h1>
-        <p className={styles.tagline}>
-          Convert between HEX, RGB, RGBA, HSL, and OKLCH with live preview
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="Color Converter"
+        tagline="Convert between HEX, RGB, RGBA, HSL, and OKLCH with live preview"
+      >
 
       <div className={styles.previewRow}>
         <div
@@ -513,23 +451,22 @@ export default function ColorPage(): React.ReactNode {
           spellCheck={false}
         />
         {supportsEyeDropper && !isIframe && (
-          <button
-            className={styles.eyeDropperBtn}
+          <Button
+            variant="ghost"
             onClick={handleEyeDropper}
             title="Pick a color from anywhere on screen"
           >
             Eyedropper
-          </button>
+          </Button>
         )}
-        <button className={styles.resetBtn} onClick={handleReset}>
+        <Button variant="reset" onClick={handleReset}>
           Reset
-        </button>
+        </Button>
       </div>
 
       <div className={styles.outputGrid}>
         {FORMAT_LABELS.map(({ id, label }) => {
           const value = color ? formatColor(color, id) : "";
-          const isCopied = copiedId === id;
 
           return (
             <div key={id} className={styles.outputCard}>
@@ -545,15 +482,7 @@ export default function ColorPage(): React.ReactNode {
                 </div>
                 <div className={styles.cardBottom}>
                   <span className={styles.cardValue}>{value}</span>
-                  <button
-                    className={`${styles.copyBtn}${isCopied ? ` ${styles.copied}` : ""}`}
-                    onClick={() => {
-                      handleCopyFormat(id);
-                    }}
-                    disabled={!color}
-                  >
-                    {isCopied ? "Copied!" : "Copy"}
-                  </button>
+                  <CopyButton value={value} size="sm" disabled={!color} />
                 </div>
               </div>
             </div>
@@ -561,23 +490,11 @@ export default function ColorPage(): React.ReactNode {
         })}
       </div>
 
+      </PageLayout>
+
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${permalinkCopied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopyPermalink}
-          >
-            {permalinkCopied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
     </div>
   );
 }

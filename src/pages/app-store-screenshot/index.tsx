@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
-import Link from "next/link";
 import styles from "@/styles/app-store-screenshot.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { Button, PageLayout } from "@/components/ui";
 
 type Dimension =
   | "1242x2688"
@@ -73,7 +70,6 @@ function gradientCoords(w: number, h: number, angleDeg: number): number[] {
 }
 
 export default function AppStoreScreenshot(): React.ReactNode {
-  const branding = useBranding();
   const isIframe = useIsIframe();
 
   const [dim, setDim] = useState<Dimension>(() => {
@@ -310,37 +306,13 @@ export default function AppStoreScreenshot(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="App Store Screenshot Generator"
-        description="Compose device screenshots at exact Apple App Store dimensions and download ready-to-submit PNGs."
+      <PageLayout
+        metaTitle="App Store Screenshot Generator"
+        metaDescription="Compose device screenshots at exact Apple App Store dimensions and download ready-to-submit PNGs."
         path="/app-store-screenshot"
-        brandName={branding.name}
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link href="/docs/app-store-screenshot" className={styles.docsLink}>
-            <DocIcon className={styles.icon} />
-            docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>App Store Screenshot</h1>
-        <p className={styles.tagline}>
-          Compose screenshots at exact Apple App Store dimensions and export
-          ready-to-submit PNGs
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        h1="App Store Screenshot"
+        tagline="Compose screenshots at exact Apple App Store dimensions and export ready-to-submit PNGs"
+      >
 
       <div className={styles.layout}>
         <div className={styles.leftCol}>
@@ -557,10 +529,11 @@ export default function AppStoreScreenshot(): React.ReactNode {
       <hr className={styles.divider} />
 
       <div className={styles.footerRow}>
-        <button className={styles.resetBtn} onClick={handleReset}>
+        <Button variant="reset" onClick={handleReset}>
           Reset
-        </button>
+        </Button>
       </div>
+      </PageLayout>
     </div>
   );
 }

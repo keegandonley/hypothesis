@@ -1,22 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { ToolHead } from "@/components/ToolHead";
 import styles from "@/styles/urlencode.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import Link from "next/link";
-import { useBranding } from "@/lib/branding";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { ReferenceLinks } from "@/components/ReferenceLinks";
+import { Badge, Button, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 
 export default function UrlEncodePage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [decoded, setDecoded] = useState("");
   const [encoded, setEncoded] = useState("");
-  const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState("");
   const [uriMode, setUriMode] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const buildUrl = (dec: string, uri: boolean): string => {
     if (!dec) return `${window.location.origin}${window.location.pathname}`;
@@ -93,73 +83,29 @@ export default function UrlEncodePage(): React.ReactNode {
     setUrl(window.location.href);
   };
 
-  const handleCopy = (): void => {
-    void copyToClipboard(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    });
-  };
-
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="URL Encoder / Decoder"
-        description="Encode and decode URL components and query strings online. Free online URL encoder/decoder — no installation required. No data sent to servers."
+      <PageLayout
+        metaTitle="URL Encoder / Decoder"
+        metaDescription="Encode and decode URL components and query strings online. Free online URL encoder/decoder — no installation required. No data sent to servers."
         path="/urlencode"
-        brandName={branding.name}
-      />
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/urlencode"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>URL Encode</h1>
-        <p className={styles.tagline}>Encode and decode URL strings</p>
-        <ReferenceLinks
-          refs={[
-            { name: "MIME Types", slug: "mime-types" },
-            { name: "HTTP Headers", slug: "http-headers" },
-          ]}
-        />
-      </div>
-
-      <hr className={styles.divider} />
+        h1="URL Encode"
+        tagline="Encode and decode URL strings"
+        refs={[
+          { name: "MIME Types", slug: "mime-types" },
+          { name: "HTTP Headers", slug: "http-headers" },
+        ]}
+      >
 
       <div className={styles.panels}>
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>
-              {uriMode ? "URI" : "Decoded"}
-            </span>
-            <div className={styles.panelHeaderRight}>
-              <button
-                className={`${styles.toggleBtn}${uriMode ? ` ${styles.active}` : ""}`}
-                onClick={handleUriToggle}
-              >
-                URI Mode {uriMode ? "ON" : "OFF"}
-              </button>
-              <span className={styles.badge}>{decoded.length} chars</span>
-            </div>
-          </div>
-          <div className={styles.textareaWrapper}>
+        <Panel>
+          <PanelHeader label={uriMode ? "URI" : "Decoded"}>
+            <Button variant="toggle" active={uriMode} onClick={handleUriToggle}>
+              URI Mode {uriMode ? "ON" : "OFF"}
+            </Button>
+            <Badge>{decoded.length} chars</Badge>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={decoded}
@@ -169,15 +115,14 @@ export default function UrlEncodePage(): React.ReactNode {
               placeholder="Type or paste text here..."
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
 
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>
-            <span className={styles.panelLabel}>URL Encoded</span>
-            <span className={styles.badge}>{encoded.length} chars</span>
-          </div>
-          <div className={styles.textareaWrapper}>
+        <Panel>
+          <PanelHeader label="URL Encoded">
+            <Badge>{encoded.length} chars</Badge>
+          </PanelHeader>
+          <PanelBody>
             <textarea
               className={styles.textarea}
               value={encoded}
@@ -187,27 +132,14 @@ export default function UrlEncodePage(): React.ReactNode {
               placeholder="Paste encoded string here..."
               spellCheck={false}
             />
-          </div>
-        </div>
+          </PanelBody>
+        </Panel>
       </div>
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span className={styles.permalinkUrl}>{url}</span>
-        {!isIframe && (
-          <button
-            className={`${styles.copyBtn}${copied ? ` ${styles.copied}` : ""}`}
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        )}
-        <button className={styles.resetBtn} onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
+      </PageLayout>
     </div>
   );
 }
