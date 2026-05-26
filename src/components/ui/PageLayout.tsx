@@ -5,6 +5,7 @@ import { DocIcon } from "@/components/icons/doc";
 import { ReferenceLinks } from "@/components/ReferenceLinks";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { useWorkMode } from "@/lib/useWorkMode";
 import styles from "./PageLayout.module.css";
 
 interface Ref {
@@ -35,6 +36,7 @@ export function PageLayout({
 }: PageLayoutProps): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
+  const workMode = useWorkMode();
 
   return (
     <>
@@ -67,7 +69,7 @@ export function PageLayout({
         </div>
         <h1 className={styles.title}>{h1 ?? metaTitle}</h1>
         <p className={styles.tagline}>{tagline}</p>
-        {refs && <ReferenceLinks refs={refs} />}
+        {refs && !workMode && <ReferenceLinks refs={refs} />}
       </div>
       <hr className={styles.divider} />
       {children}
