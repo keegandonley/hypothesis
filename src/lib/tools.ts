@@ -538,6 +538,16 @@ export const tools: ToolItem[] = [
   },
   {
     kind: "tool",
+    name: "csp analyzer",
+    description:
+      "Parse, visualize, and audit a Content-Security-Policy — flag unsafe-inline, wildcards, missing directives, and clickjacking gaps. Paste a header or fetch one from any URL.",
+    href: "/csp",
+    docsHref: "/docs/csp",
+    tags: ["security", "web"],
+    allowMultipleInstances: true,
+  },
+  {
+    kind: "tool",
     name: "lorem ipsum",
     description:
       "Generate lorem ipsum placeholder text by words, sentences, or paragraphs with one click.",
