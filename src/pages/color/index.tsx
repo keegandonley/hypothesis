@@ -27,13 +27,19 @@ export default function ColorPage(): React.ReactNode {
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [color, setColor] = useState<RGBA | null>(null);
-  const [format, setFormat] = useState<ColorFormat>("hex6");
-
   const [url, setUrl] = useState("");
   const [supportsEyeDropper, setSupportsEyeDropper] = useState(false);
   const colorPickerRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const v = params.get("color");
+
+    if (v) {
+      setInput(v);
+      setColor(parseColor(v));
+    }
+
     setUrl(window.location.href);
     setSupportsEyeDropper("EyeDropper" in window);
   }, []);
@@ -46,7 +52,7 @@ export default function ColorPage(): React.ReactNode {
   const buildUrl = (val: string): string => {
     if (!val) return `${window.location.origin}${window.location.pathname}`;
 
-    return `${window.location.origin}${window.location.pathname}?value=${encodeURIComponent(val)}`;
+    return `${window.location.origin}${window.location.pathname}?color=${encodeURIComponent(val)}`;
   };
 
   const handleInputChange = (value: string): void => {
