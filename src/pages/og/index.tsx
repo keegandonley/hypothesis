@@ -1,64 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/og.module.css";
 import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
-
-interface OgData {
-  title: string;
-  description: string;
-  image: string;
-  url: string;
-  siteName: string;
-  type: string;
-  twitterCard: string;
-  twitterSite: string;
-}
-
-const DEFAULT: OgData = {
-  title: "",
-  description: "",
-  image: "",
-  url: "",
-  siteName: "",
-  type: "website",
-  twitterCard: "summary_large_image",
-  twitterSite: "",
-};
-
-const OG_TYPES = [
-  "website",
-  "article",
-  "profile",
-  "book",
-  "music.song",
-  "video.movie",
-];
-const TWITTER_CARDS = ["summary", "summary_large_image", "app", "player"];
-
-function buildTags(d: OgData): string {
-  const lines: string[] = [];
-  const add = (prop: string, val: string, isName = false): void => {
-    if (!val.trim()) return;
-    const attr = isName ? `name` : `property`;
-
-    lines.push(
-      `<meta ${attr}="${prop}" content="${val.replace(/"/g, "&quot;")}" />`,
-    );
-  };
-
-  add("og:title", d.title);
-  add("og:description", d.description);
-  add("og:image", d.image);
-  add("og:url", d.url);
-  add("og:site_name", d.siteName);
-  add("og:type", d.type);
-  add("twitter:card", d.twitterCard, true);
-  add("twitter:title", d.title, true);
-  add("twitter:description", d.description, true);
-  add("twitter:image", d.image, true);
-  if (d.twitterSite) add("twitter:site", d.twitterSite, true);
-
-  return lines.join("\n");
-}
+import { type OgData, DEFAULT, OG_TYPES, TWITTER_CARDS, buildTags } from "@/lib/og";
 
 export default function OgPage(): React.ReactNode {
   const [data, setData] = useState<OgData>(DEFAULT);
