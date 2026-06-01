@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import styles from "@/styles/pretty-print.module.css";
 import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody } from "@/components/ui";
-
-const URL_LIMIT = 2000;
+import { URL_LIMIT, formatJson } from "@/lib/pretty-print";
 
 export default function PrettyPrintPage(): React.ReactNode {
   const [input, setInput] = useState("");
@@ -15,19 +14,6 @@ export default function PrettyPrintPage(): React.ReactNode {
     if (!encoded) return `${window.location.origin}${window.location.pathname}`;
 
     return `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(encoded)}`;
-  };
-
-  const formatJson = (
-    value: string,
-  ): { output: string; valid: boolean | null } => {
-    if (value.length === 0) return { output: "", valid: null };
-    try {
-      const parsed: unknown = JSON.parse(value);
-
-      return { output: JSON.stringify(parsed, null, 2), valid: true };
-    } catch {
-      return { output: "", valid: false };
-    }
   };
 
   useEffect(() => {

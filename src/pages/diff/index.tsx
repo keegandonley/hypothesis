@@ -1,26 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "@/styles/diff.module.css";
-import { diffLines, diffWords, diffChars } from "diff";
 import { Button, PageLayout, PermalinkRow } from "@/components/ui";
-
-type Mode = "lines" | "words" | "chars";
-
-const MODES: { value: Mode; label: string }[] = [
-  { value: "lines", label: "Lines" },
-  { value: "words", label: "Words" },
-  { value: "chars", label: "Chars" },
-];
-
-function computeDiff(
-  original: string,
-  modified: string,
-  mode: Mode,
-): ReturnType<typeof diffLines> {
-  if (mode === "lines") return diffLines(original, modified);
-  if (mode === "words") return diffWords(original, modified);
-
-  return diffChars(original, modified);
-}
+import { Mode, MODES, computeDiff, countChanges } from "@/lib/diff";
 
 export default function DiffPage(): React.ReactNode {
   const [original, setOriginal] = useState("");
@@ -29,23 +10,7 @@ export default function DiffPage(): React.ReactNode {
   const [url, setUrl] = useState("");
 
   const changes = computeDiff(original, modified, mode);
-
-  const added = changes
-    .filter((c) => c.added)
-    .reduce((n, c) => {
-      if (mode === "lines")
-        return n + c.value.split("\n").filter((l) => l.length > 0).length;
-
-      return n + 1;
-    }, 0);
-  const removed = changes
-    .filter((c) => c.removed)
-    .reduce((n, c) => {
-      if (mode === "lines")
-        return n + c.value.split("\n").filter((l) => l.length > 0).length;
-
-      return n + 1;
-    }, 0);
+  const { added, removed } = countChanges(changes, mode);
 
   const buildUrl = (a: string, b: string, m: Mode): string => {
     if (!a && !b) return `${window.location.origin}${window.location.pathname}`;

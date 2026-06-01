@@ -1,31 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "@/styles/basic-auth.module.css";
 import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
-
-function encodeBasicAuth(username: string, password: string): string {
-  return btoa(`${username}:${password}`);
-}
-
-function decodeBasicAuth(
-  input: string,
-): { username: string; password: string } | null {
-  try {
-    const token = input.replace(/^Basic\s+/i, "").trim();
-
-    if (!token) return null;
-    const decoded = atob(token);
-    const colonIdx = decoded.indexOf(":");
-
-    if (colonIdx === -1) return { username: decoded, password: "" };
-
-    return {
-      username: decoded.slice(0, colonIdx),
-      password: decoded.slice(colonIdx + 1),
-    };
-  } catch {
-    return null;
-  }
-}
+import { encodeBasicAuth, decodeBasicAuth } from "@/lib/basic-auth";
 
 export default function BasicAuthPage(): React.ReactNode {
   const [mode, setMode] = useState<"encode" | "decode">("encode");

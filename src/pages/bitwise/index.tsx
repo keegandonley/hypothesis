@@ -2,54 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/bitwise.module.css";
 import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { copyToClipboard } from "@/lib/copyToClipboard";
-
-function toBin(n: number): string {
-  return (n >>> 0).toString(2).padStart(32, "0");
-}
-
-function formatBin(n: number): string {
-  const b = toBin(n);
-
-  // Group into 4-bit nibbles for readability
-  return b.replace(/(.{4})/g, "$1 ").trim();
-}
-
-interface Operation {
-  label: string;
-  key: string;
-  compute: (a: number, b: number) => number;
-  description: string;
-}
-
-const OPERATIONS: Operation[] = [
-  { label: "AND", key: "and", compute: (a, b) => a & b, description: "a & b" },
-  { label: "OR", key: "or", compute: (a, b) => a | b, description: "a | b" },
-  { label: "XOR", key: "xor", compute: (a, b) => a ^ b, description: "a ^ b" },
-  {
-    label: "NAND",
-    key: "nand",
-    compute: (a, b) => ~(a & b),
-    description: "~(a & b)",
-  },
-  {
-    label: "NOR",
-    key: "nor",
-    compute: (a, b) => ~(a | b),
-    description: "~(a | b)",
-  },
-  {
-    label: "SHL",
-    key: "shl",
-    compute: (a, _b) => a << 1,
-    description: "a << 1",
-  },
-  {
-    label: "SHR",
-    key: "shr",
-    compute: (a, _b) => a >> 1,
-    description: "a >> 1",
-  },
-];
+import { formatBin, Operation, OPERATIONS } from "@/lib/bitwise";
 
 export default function BitwisePage(): React.ReactNode {
   const [inputA, setInputA] = useState("60");

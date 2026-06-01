@@ -1,67 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/chmod.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
-type Perms = [number, number, number]; // [owner, group, other]
-
-const PRESETS: { label: string; mode: string }[] = [
-  { label: "644", mode: "644" },
-  { label: "664", mode: "664" },
-  { label: "755", mode: "755" },
-  { label: "700", mode: "700" },
-  { label: "777", mode: "777" },
-];
-
-function parseNumeric(raw: string): Perms | null {
-  const trimmed = raw.trim();
-
-  if (!/^[0-7]{3}$/.test(trimmed)) return null;
-
-  return trimmed.split("").map(Number) as Perms;
-}
-
-function parseSymbolic(raw: string): Perms | null {
-  const trimmed = raw.trim().toLowerCase();
-
-  if (!/^[rwx-]{9}$/.test(trimmed)) return null;
-  const groups = [
-    trimmed.slice(0, 3),
-    trimmed.slice(3, 6),
-    trimmed.slice(6, 9),
-  ];
-
-  return groups.map((g) => {
-    let n = 0;
-
-    if (g.startsWith("r")) n += 4;
-    if (g[1] === "w") n += 2;
-    if (g[2] === "x") n += 1;
-
-    return n;
-  }) as Perms;
-}
-
-function toSymbolic(perms: Perms): string {
-  return perms
-    .map((d) => {
-      const r = d & 4 ? "r" : "-";
-      const w = d & 2 ? "w" : "-";
-      const x = d & 1 ? "x" : "-";
-
-      return r + w + x;
-    })
-    .join("");
-}
-
-function toNumeric(perms: Perms): string {
-  return perms.join("");
-}
-
-function detectInput(raw: string): "numeric" | "symbolic" | "unknown" {
-  if (/^[0-7]{3}$/.test(raw.trim())) return "numeric";
-  if (/^[rwx-]{9}$/i.test(raw.trim())) return "symbolic";
-
-  return "unknown";
-}
+import { Perms, PRESETS, parseNumeric, parseSymbolic, toSymbolic, toNumeric, detectInput } from "@/lib/chmod";
 
 export default function ChmodPage(): React.ReactNode {
   const [input, setInput] = useState("");
@@ -81,7 +21,7 @@ export default function ChmodPage(): React.ReactNode {
     const mode = params.get("mode");
 
     if (mode) {
-      setInput(mode); // eslint-disable-line react-hooks/set-state-in-effect
+      setInput(mode);
 
       const p = parseNumeric(mode) ?? parseSymbolic(mode);
 

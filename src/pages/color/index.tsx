@@ -23,46 +23,17 @@ const FORMAT_LABELS: { id: ColorFormat; label: string }[] = [
   { id: "oklch", label: "OKLCH" },
 ];
 
-function formatColor(color: RGBA, fmt: ColorFormat): string {
-  switch (fmt) {
-    case "hex6":
-      return toHex6(color);
-    case "hex8":
-      return toHex8(color);
-    case "rgb":
-      return toRGB(color);
-    case "rgba":
-      return toRGBA(color);
-    case "hsl":
-      return toHSL(color);
-    case "oklch":
-      return toOKLCH(color);
-  }
-}
-
 export default function ColorPage(): React.ReactNode {
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [color, setColor] = useState<RGBA | null>(null);
+  const [format, setFormat] = useState<ColorFormat>("hex6");
+
   const [url, setUrl] = useState("");
   const [supportsEyeDropper, setSupportsEyeDropper] = useState(false);
   const colorPickerRef = useRef<HTMLInputElement>(null);
 
-  const buildUrl = (val: string): string => {
-    if (!val) return `${window.location.origin}${window.location.pathname}`;
-
-    return `${window.location.origin}${window.location.pathname}?color=${encodeURIComponent(val)}`;
-  };
-
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const v = params.get("color");
-
-    if (v) {
-      setInput(v); // eslint-disable-line react-hooks/set-state-in-effect
-      setColor(parseColor(v));
-    }
-
     setUrl(window.location.href);
     setSupportsEyeDropper("EyeDropper" in window);
   }, []);
@@ -71,6 +42,12 @@ export default function ColorPage(): React.ReactNode {
     if (!colorPickerRef.current) return;
     colorPickerRef.current.value = color ? toHex6(color) : "#000000";
   }, [color]);
+
+  const buildUrl = (val: string): string => {
+    if (!val) return `${window.location.origin}${window.location.pathname}`;
+
+    return `${window.location.origin}${window.location.pathname}?value=${encodeURIComponent(val)}`;
+  };
 
   const handleInputChange = (value: string): void => {
     setInput(value);

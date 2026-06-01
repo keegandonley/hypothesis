@@ -1,24 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/numbase.module.css";
 import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
-
-interface Values {
-  bin: string;
-  oct: string;
-  dec: string;
-  hex: string;
-}
-
-const empty: Values = { bin: "", oct: "", dec: "", hex: "" };
-
-function fromDecimal(n: number): Values {
-  return {
-    bin: n.toString(2),
-    oct: n.toString(8),
-    dec: Number.isInteger(n) ? n.toFixed(0) : n.toString(10),
-    hex: n.toString(16).toUpperCase(),
-  };
-}
+import { empty, fromDecimal, type Values } from "@/lib/numbase";
 
 export default function NumbasePage(): React.ReactNode {
   const [values, setValues] = useState<Values>(empty);

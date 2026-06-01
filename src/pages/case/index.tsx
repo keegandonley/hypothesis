@@ -2,74 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "@/styles/case.module.css";
 import { CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
-
-function splitWords(input: string): string[] {
-  return input
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
-    .replace(/[^a-zA-Z0-9]+/g, " ")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-}
-
-function toCamel(words: string[]): string {
-  return words
-    .map((w, i) =>
-      i === 0
-        ? w.toLowerCase()
-        : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(),
-    )
-    .join("");
-}
-
-function toPascal(words: string[]): string {
-  return words
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join("");
-}
-
-function toSnake(words: string[]): string {
-  return words.map((w) => w.toLowerCase()).join("_");
-}
-
-function toKebab(words: string[]): string {
-  return words.map((w) => w.toLowerCase()).join("-");
-}
-
-function toScreaming(words: string[]): string {
-  return words.map((w) => w.toUpperCase()).join("_");
-}
-
-function toTitle(words: string[]): string {
-  return words
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join(" ");
-}
-
-function toLower(words: string[]): string {
-  return words.map((w) => w.toLowerCase()).join(" ");
-}
-
-function toUpper(words: string[]): string {
-  return words.map((w) => w.toUpperCase()).join(" ");
-}
-
-function toDot(words: string[]): string {
-  return words.map((w) => w.toLowerCase()).join(".");
-}
-
-const CASES: { label: string; fn: (w: string[]) => string }[] = [
-  { label: "camelCase", fn: toCamel },
-  { label: "PascalCase", fn: toPascal },
-  { label: "snake_case", fn: toSnake },
-  { label: "kebab-case", fn: toKebab },
-  { label: "SCREAMING_SNAKE", fn: toScreaming },
-  { label: "Title Case", fn: toTitle },
-  { label: "lowercase", fn: toLower },
-  { label: "UPPERCASE", fn: toUpper },
-  { label: "dot.case", fn: toDot },
-];
+import { splitWords, CASES } from "@/lib/case";
 
 export default function CasePage(): React.ReactNode {
   const [input, setInput] = useState("");
@@ -79,7 +12,7 @@ export default function CasePage(): React.ReactNode {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("input");
 
-    if (v) setInput(v); // eslint-disable-line react-hooks/set-state-in-effect
+    if (v) setInput(v);
     setUrl(window.location.href);
   }, []);
 

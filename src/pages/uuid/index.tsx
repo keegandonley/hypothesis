@@ -1,16 +1,8 @@
 import { useEffect, useState } from "react";
 import styles from "@/styles/uuid.module.css";
-import { v1, v4, v7 } from "uuid";
 import { Badge, Button, CopyButton, PageLayout } from "@/components/ui";
 import { Panel, PanelHeader, PanelBody } from "@/components/ui/Panel";
-
-function generate(ver: 1 | 4 | 7): string {
-  if (ver === 1) return v1();
-
-  if (ver === 4) return v4();
-
-  return v7();
-}
+import { generate } from "@/lib/uuid";
 
 export default function UuidPage(): React.ReactNode {
   const [uuid, setUuid] = useState("");
