@@ -4,93 +4,11 @@ import { useIsIframe } from "@/lib/useIsIframe";
 import QRCode from "qrcode";
 import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
-
-type ECLevel = "L" | "M" | "Q" | "H";
-type QrMode = "text" | "wifi" | "vcard";
-type WifiSecurity = "WPA" | "WEP" | "nopass";
-
-const EC_LEVELS: ECLevel[] = ["L", "M", "Q", "H"];
-const EC_DESCRIPTIONS: Record<ECLevel, string> = {
-  L: "~7% correction",
-  M: "~15% correction",
-  Q: "~25% correction",
-  H: "~30% correction",
-};
-
-interface WifiState {
-  ssid: string;
-  password: string;
-  security: WifiSecurity;
-  hidden: boolean;
-}
-
-interface VCardState {
-  first: string;
-  last: string;
-  phone: string;
-  email: string;
-  org: string;
-  url: string;
-}
-
-const EMPTY_WIFI: WifiState = {
-  ssid: "",
-  password: "",
-  security: "WPA",
-  hidden: false,
-};
-const EMPTY_VCARD: VCardState = {
-  first: "",
-  last: "",
-  phone: "",
-  email: "",
-  org: "",
-  url: "",
-};
-
-function escapeWifi(s: string): string {
-  return s.replace(/([\\;,"])/g, "\\$1");
-}
-
-function buildWifiString(w: WifiState): string {
-  if (!w.ssid) return "";
-  const p =
-    w.security !== "nopass" && w.password ? `P:${escapeWifi(w.password)};` : "";
-
-  return `WIFI:T:${w.security};S:${escapeWifi(w.ssid)};${p}H:${w.hidden};;`;
-}
-
-function buildVCardString(v: VCardState): string {
-  const fn = [v.first, v.last].filter(Boolean).join(" ");
-
-  if (!fn && !v.phone && !v.email && !v.org && !v.url) return "";
-  const lines = ["BEGIN:VCARD", "VERSION:3.0"];
-
-  if (fn) {
-    lines.push(`FN:${fn}`);
-    lines.push(`N:${v.last};${v.first};;;`);
-  }
-
-  if (v.phone) lines.push(`TEL;TYPE=CELL:${v.phone}`);
-  if (v.email) lines.push(`EMAIL:${v.email}`);
-  if (v.org) lines.push(`ORG:${v.org}`);
-  if (v.url) lines.push(`URL:${v.url}`);
-  lines.push("END:VCARD");
-
-  return lines.join("\n");
-}
-
-function getQrString(
-  mode: QrMode,
-  text: string,
-  wifi: WifiState,
-  vcard: VCardState,
-): string {
-  if (mode === "text") return text;
-  if (mode === "wifi") return buildWifiString(wifi);
-
-  return buildVCardString(vcard);
-}
+import {
+  type ECLevel, type QrMode, type WifiState, type WifiSecurity, type VCardState,
+  EC_LEVELS, EC_DESCRIPTIONS, EMPTY_WIFI, EMPTY_VCARD,
+  buildWifiString, buildVCardString, getQrString,
+} from "@/lib/qr";
 
 export default function QrPage(): React.ReactNode {
   const isIframe = useIsIframe();
