@@ -62,3 +62,7 @@ Add this URL in App Store Connect under your app's **Xcode Cloud â†’ Settings â†
 ## Security
 
 Treat your device ID like a secret. Anyone who has it can send push notifications to your device. Don't share it publicly or include it in screenshots.
+
+## MCP integration
+
+Coding agents can send push notifications programmatically using the [MCP server](/docs/mcp). Configure your agent to connect to `https://hypothesis.sh/api/mcp/sse` and use the `send_push_notification` tool with your device ID.

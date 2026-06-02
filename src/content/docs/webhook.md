@@ -94,3 +94,7 @@ These limits apply to protect the service and keep it available for everyone.
 | Parameter | Description                             |
 | --------- | --------------------------------------- |
 | `s`       | Session ID for viewing a shared session |
+
+## MCP integration
+
+Coding agents can create webhook sessions and inspect events programmatically using the [MCP server](/docs/mcp). Connect to `https://hypothesis.sh/api/mcp/sse` and use the `create_webhook_session` and `list_webhook_events` tools.
