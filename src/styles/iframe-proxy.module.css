@@ -382,6 +382,12 @@
   margin-bottom: 12px;
 }
 
+.frameNameForm {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+}
+
 .frameNameLabel {
   font-size: 10px;
   font-weight: 700;

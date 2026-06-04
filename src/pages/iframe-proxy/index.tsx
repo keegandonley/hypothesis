@@ -43,6 +43,7 @@ export default function IframeProxyPage(): React.ReactNode {
   const [inputUrl, setInputUrl] = useState("");
   const [urlFromParam, setUrlFromParam] = useState(false);
   const [frameName, setFrameName] = useState("");
+  const [frameNameDraft, setFrameNameDraft] = useState("");
   const [inWorkMode, setInWorkMode] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -58,7 +59,9 @@ export default function IframeProxyPage(): React.ReactNode {
       setInputUrl(safeUrl);
     }
 
-    setFrameName(params.get("name") ?? "");
+    const initialName = params.get("name") ?? "";
+    setFrameName(initialName);
+    setFrameNameDraft(initialName);
     setDebug(isDebug);
     setInWorkMode(params.has("workMode"));
     setMounted(true);
@@ -103,6 +106,24 @@ export default function IframeProxyPage(): React.ReactNode {
       window.removeEventListener("message", handleMessage);
     };
   }, [debug]);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (frameName) {
+      params.set("name", frameName);
+    } else {
+      params.delete("name");
+    }
+
+    history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}?${params.toString()}`,
+    );
+  }, [frameName, mounted]);
 
   if (!mounted) {
     return null;
@@ -233,6 +254,7 @@ export default function IframeProxyPage(): React.ReactNode {
 
       {url && (
         <iframe
+          key={frameName}
           ref={iframeRef}
           src={url}
           name={frameName || undefined}
@@ -278,16 +300,27 @@ export default function IframeProxyPage(): React.ReactNode {
             <p className={styles.panelTagline}>Relaying iframe messages...</p>
             <div className={styles.frameNameRow}>
               <label className={styles.frameNameLabel}>frame name</label>
-              <input
-                className={styles.frameNameInput}
-                type="text"
-                placeholder="(none)"
-                value={frameName}
-                onChange={(e) => {
-                  setFrameName(e.target.value);
+              <form
+                className={styles.frameNameForm}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setFrameName(frameNameDraft);
                 }}
-                spellCheck={false}
-              />
+              >
+                <input
+                  className={styles.frameNameInput}
+                  type="text"
+                  placeholder="(none)"
+                  value={frameNameDraft}
+                  onChange={(e) => {
+                    setFrameNameDraft(e.target.value);
+                  }}
+                  onBlur={() => {
+                    setFrameName(frameNameDraft);
+                  }}
+                  spellCheck={false}
+                />
+              </form>
             </div>
             <span className={styles.messageCount}>
               {messages.length} {messages.length === 1 ? "message" : "messages"}
