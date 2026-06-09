@@ -108,6 +108,7 @@ describe("toDot", () => {
 describe("CASES", () => {
   it("has all 9 case conversions", () => {
     const words = splitWords("helloWorld");
+
     expect(CASES).toHaveLength(9);
     expect(CASES[0].fn(words)).toBe("helloWorld");
     expect(CASES[1].fn(words)).toBe("HelloWorld");

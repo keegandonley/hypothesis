@@ -50,6 +50,7 @@ describe("decodeBasicAuth", () => {
 
   it("handles colon in password", () => {
     const enc = encodeBasicAuth("user", "pass:word");
+
     expect(decodeBasicAuth(enc)).toEqual({
       username: "user",
       password: "pass:word",

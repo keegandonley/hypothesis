@@ -4,6 +4,7 @@ import { analyzePassword, formatCrackTime, STRENGTH_LABELS } from "@/lib/passwor
 describe("analyzePassword", () => {
   it("detects all character types in a complex password", () => {
     const analysis = analyzePassword("Abcd1234!");
+
     expect(analysis.hasUpper).toBe(true);
     expect(analysis.hasLower).toBe(true);
     expect(analysis.hasDigits).toBe(true);
@@ -12,16 +13,19 @@ describe("analyzePassword", () => {
 
   it("reports length correctly", () => {
     const analysis = analyzePassword("abc");
+
     expect(analysis.length).toBe(3);
   });
 
   it("classifies 'a' as very-weak", () => {
     const analysis = analyzePassword("a");
+
     expect(analysis.strength).toBe("very-weak");
   });
 
   it("classifies a very-strong password", () => {
     const analysis = analyzePassword("CorrectHorseBatteryStaple99!");
+
     expect(analysis.strength).toBe("very-strong");
   });
 
@@ -29,16 +33,19 @@ describe("analyzePassword", () => {
     const analysis = analyzePassword(
       "Tr0ub4dor&3WithAVeryLongPassphrase!!",
     );
+
     expect(analysis.strength).toBe("very-strong");
   });
 
   it("computes entropy > 0 for non-empty passwords", () => {
     const analysis = analyzePassword("hello");
+
     expect(analysis.entropy).toBeGreaterThan(0);
   });
 
   it("handles empty string", () => {
     const analysis = analyzePassword("");
+
     expect(analysis.entropy).toBe(0);
     expect(analysis.length).toBe(0);
     expect(analysis.strength).toBe("very-weak");

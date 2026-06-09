@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "@/styles/diff.module.css";
 import { Button, PageLayout, PermalinkRow } from "@/components/ui";
-import { Mode, MODES, computeDiff, countChanges } from "@/lib/diff";
+import { type Mode, MODES, computeDiff, countChanges } from "@/lib/diff";
 
 export default function DiffPage(): React.ReactNode {
   const [original, setOriginal] = useState("");

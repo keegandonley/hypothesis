@@ -96,6 +96,7 @@ describe("getDisplayChar", () => {
 describe("analyzeText", () => {
   it("analyzes a simple string", () => {
     const { chars, truncated } = analyzeText("ABC");
+
     expect(chars).toHaveLength(3);
     expect(truncated).toBe(false);
     expect(chars[0].char).toBe("A");
@@ -105,6 +106,7 @@ describe("analyzeText", () => {
 
   it("returns empty array for empty string", () => {
     const { chars } = analyzeText("");
+
     expect(chars).toEqual([]);
   });
 });

@@ -45,7 +45,7 @@ export function createMcpServer(req: NextApiRequest): McpServer {
     webhookTestingPrompt.description,
     webhookTestingPrompt.argsSchema,
     (args) => {
-      return webhookTestingPrompt.handler(args as { deviceId?: string });
+      return webhookTestingPrompt.handler(args);
     },
   );
 
@@ -54,7 +54,7 @@ export function createMcpServer(req: NextApiRequest): McpServer {
     cicdNotificationSetupPrompt.description,
     cicdNotificationSetupPrompt.argsSchema,
     (args) => {
-      return cicdNotificationSetupPrompt.handler(args as { deviceId: string });
+      return cicdNotificationSetupPrompt.handler(args);
     },
   );
 

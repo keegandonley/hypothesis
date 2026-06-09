@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "@/styles/bytes.module.css";
 import { CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
-import { BINARY_UNITS, DECIMAL_UNITS, formatValue, Mode } from "@/lib/bytes";
+import { BINARY_UNITS, DECIMAL_UNITS, formatValue, type Mode } from "@/lib/bytes";
 
 export default function BytesPage(): React.ReactNode {
   const [rawValue, setRawValue] = useState("");

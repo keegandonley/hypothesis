@@ -91,6 +91,7 @@ describe("toJsx", () => {
 
   it("handles empty input", () => {
     const result = toJsx("");
+
     expect(result).toContain("export default function Icon(props)");
     expect(result).toContain("return (");
   });

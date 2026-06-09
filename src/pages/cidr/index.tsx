@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/cidr.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
-import { CidrInfo, parseCidr, formatNumber } from "@/lib/cidr";
+import { type CidrInfo, parseCidr, formatNumber } from "@/lib/cidr";
 
 export default function CidrPage(): React.ReactNode {
   const [input, setInput] = useState("");

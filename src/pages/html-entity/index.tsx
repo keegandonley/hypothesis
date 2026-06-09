@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "@/styles/html-entity.module.css";
 import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
-import { encodeHtmlEntities, decodeHtmlEntities, EncodeMode } from "@/lib/html-entity";
+import { encodeHtmlEntities, decodeHtmlEntities, type EncodeMode } from "@/lib/html-entity";
 
 export default function HtmlEntityPage(): React.ReactNode {
   const [decoded, setDecoded] = useState("");

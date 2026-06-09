@@ -18,11 +18,13 @@ describe("pad", () => {
 describe("formatRelative", () => {
   it("formats past times", () => {
     const past = new Date(Date.now() - 60000);
+
     expect(formatRelative(past)).toMatch(/\d+ minute/);
   });
 
   it("formats future times", () => {
     const future = new Date(Date.now() + 60000);
+
     expect(formatRelative(future)).toMatch(/in \d+ minute/);
   });
 });
@@ -30,6 +32,7 @@ describe("formatRelative", () => {
 describe("formatRfc2822", () => {
   it("formats a known date", () => {
     const d = new Date("2024-01-15T12:30:00Z");
+
     expect(formatRfc2822(d)).toBe(
       "Mon, 15 Jan 2024 12:30:00 +0000",
     );
@@ -39,17 +42,20 @@ describe("formatRfc2822", () => {
 describe("parseInput", () => {
   it("parses unix milliseconds", () => {
     const input = String(Date.now());
+
     expect(parseInput(input)).not.toBeNull();
   });
 
   it("parses unix seconds (10-digit)", () => {
     const result = parseInput("1705312200");
+
     expect(result).not.toBeNull();
     expect(result!.getTime()).toBe(1705312200 * 1000);
   });
 
   it("parses ISO 8601 string", () => {
     const result = parseInput("2024-01-15T12:30:00Z");
+
     expect(result).not.toBeNull();
   });
 

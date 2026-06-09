@@ -42,6 +42,7 @@ describe("formatValue", () => {
 
   it("formats bytes directly", () => {
     const result = formatValue(1024, 1);
+
     expect(result.replace(/,/g, "")).toBe("1024");
   });
 
@@ -55,6 +56,7 @@ describe("formatValue", () => {
 
   it("handles fractional values", () => {
     const result = formatValue(1500, 1024);
+
     expect(result).toContain("1.46");
   });
 });

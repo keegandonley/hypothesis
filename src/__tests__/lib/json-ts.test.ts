@@ -32,6 +32,7 @@ describe("needsQuoting", () => {
 describe("jsonToTs", () => {
   it("converts a simple object", () => {
     const result = jsonToTs('{"name":"Alice","age":30}', "Root", false);
+
     expect(result).toContain("interface Root");
     expect(result).toContain("name: string");
     expect(result).toContain("age: number");
@@ -39,6 +40,7 @@ describe("jsonToTs", () => {
 
   it("adds optional markers when requested", () => {
     const result = jsonToTs('{"name":"Alice"}', "Root", true);
+
     expect(result).toContain("name?");
   });
 
@@ -48,6 +50,7 @@ describe("jsonToTs", () => {
       "Users",
       false,
     );
+
     expect(result).toContain("interface User");
     expect(result).toContain("type Users");
   });
@@ -58,6 +61,7 @@ describe("jsonToTs", () => {
       "Root",
       false,
     );
+
     expect(result).toContain("interface Address");
     expect(result).toContain("interface User");
     expect(result).toContain("interface Root");
@@ -65,26 +69,31 @@ describe("jsonToTs", () => {
 
   it("handles empty array", () => {
     const result = jsonToTs("[]", "Root", false);
+
     expect(result).toContain("type Root = unknown[]");
   });
 
   it("handles primitive root", () => {
     const result = jsonToTs('"hello"', "Root", false);
+
     expect(result).toContain("type Root = string");
   });
 
   it("handles numeric root", () => {
     const result = jsonToTs("42", "Root", false);
+
     expect(result).toContain("type Root = number");
   });
 
   it("handles null root", () => {
     const result = jsonToTs("null", "Root", false);
+
     expect(result).toContain("type Root = null");
   });
 
   it("handles mixed-type arrays", () => {
     const result = jsonToTs('[1, "hello", true]', "Root", false);
+
     expect(result).toContain("number | string | boolean");
   });
 });

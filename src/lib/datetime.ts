@@ -107,14 +107,17 @@ export function parseInput(value: string): Date | null {
 
     if (value.trim().length >= 13) {
       const d = new Date(n);
+
       if (!isNaN(d.getTime())) return d;
     } else {
       const d = new Date(n * 1000);
+
       if (!isNaN(d.getTime())) return d;
     }
   }
 
   const d = new Date(value);
+
   if (!isNaN(d.getTime())) return d;
 
   return null;

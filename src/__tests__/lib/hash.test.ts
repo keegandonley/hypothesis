@@ -4,11 +4,13 @@ import { md5, formatBytes, ALGOS, SHA_ALGOS } from "@/lib/hash";
 describe("md5", () => {
   it("hashes empty string", () => {
     const result = md5(new Uint8Array(0));
+
     expect(result).toBe("d41d8cd98f00b204e9800998ecf8427e");
   });
 
   it("hashes 'hello'", () => {
     const bytes = new TextEncoder().encode("hello");
+
     expect(md5(bytes)).toBe("5d41402abc4b2a76b9719d911017c592");
   });
 
@@ -16,11 +18,13 @@ describe("md5", () => {
     const bytes = new TextEncoder().encode(
       "The quick brown fox jumps over the lazy dog",
     );
+
     expect(md5(bytes)).toBe("9e107d9d372bb6826bd81d3542a419d6");
   });
 
   it("produces 32-character hex string", () => {
     const result = md5(new TextEncoder().encode("test"));
+
     expect(result).toHaveLength(32);
     expect(/^[0-9a-f]+$/.test(result)).toBe(true);
   });

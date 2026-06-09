@@ -413,6 +413,16 @@ export const experiments: ExperimentItem[] = [
     href: "/audio-streaming",
     docsHref: "/docs/audio-streaming",
   },
+  {
+    kind: "experiment",
+    id: "EXP-011",
+    name: "delay loading",
+    description:
+      "Defer the page load event by a configurable number of milliseconds — a slow-loading target for testing iframe load handling.",
+    href: "/delay-loading",
+    docsHref: "/docs/delay-loading",
+    allowMultipleInstances: true,
+  },
 ];
 
 export const tools: ToolItem[] = [

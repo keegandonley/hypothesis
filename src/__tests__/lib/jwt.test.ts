@@ -9,11 +9,13 @@ import {
 describe("base64urlEncode / base64urlDecode", () => {
   it("round-trips a string", () => {
     const original = '{"alg":"HS256"}';
+
     expect(base64urlDecode(base64urlEncode(original))).toBe(original);
   });
 
   it("produces URL-safe base64 (no + / =)", () => {
     const encoded = base64urlEncode("hello?world=test");
+
     expect(encoded).not.toContain("+");
     expect(encoded).not.toContain("/");
     expect(encoded).not.toContain("=");
@@ -29,6 +31,7 @@ describe("decodeJwt", () => {
     const token = `${header}.${payload}.fakesignature`;
 
     const result = decodeJwt(token);
+
     expect(result).not.toBeNull();
     expect(result!.header).toEqual({ alg: "HS256", typ: "JWT" });
     expect(result!.payload).toEqual({ sub: "123", name: "test" });
@@ -59,6 +62,7 @@ describe("getExpiryStatus", () => {
 
   it("returns 'valid' for future expiry", () => {
     const future = Date.now() / 1000 + 3600;
+
     expect(getExpiryStatus({ exp: future })).toBe("valid");
   });
 

@@ -133,6 +133,7 @@ describe("getPrivateRange", () => {
 describe("parseCidr", () => {
   it("parses 192.168.1.0/24", () => {
     const result = parseCidr("192.168.1.0/24")!;
+
     expect(result.networkAddress).toBe("192.168.1.0");
     expect(result.broadcastAddress).toBe("192.168.1.255");
     expect(result.subnetMask).toBe("255.255.255.0");
@@ -145,6 +146,7 @@ describe("parseCidr", () => {
 
   it("parses 10.0.0.0/8", () => {
     const result = parseCidr("10.0.0.0/8")!;
+
     expect(result.networkAddress).toBe("10.0.0.0");
     expect(result.broadcastAddress).toBe("10.255.255.255");
     expect(result.ipClass).toBe("A");
@@ -153,6 +155,7 @@ describe("parseCidr", () => {
 
   it("parses a single IP /32", () => {
     const result = parseCidr("192.168.1.1/32")!;
+
     expect(result.networkAddress).toBe("192.168.1.1");
     expect(result.broadcastAddress).toBe("192.168.1.1");
     expect(result.usableHosts).toBe(1);
@@ -162,6 +165,7 @@ describe("parseCidr", () => {
 
   it("parses /31 with no network/broadcast distinction for hosts", () => {
     const result = parseCidr("10.0.0.0/31")!;
+
     expect(result.usableHosts).toBe(2);
     expect(result.firstHost).toBe("10.0.0.0");
     expect(result.lastHost).toBe("10.0.0.1");
@@ -169,6 +173,7 @@ describe("parseCidr", () => {
 
   it("parses /0 as full range", () => {
     const result = parseCidr("0.0.0.0/0")!;
+
     expect(result.totalHosts).toBe(4294967296);
     expect(result.networkAddress).toBe("0.0.0.0");
     expect(result.broadcastAddress).toBe("255.255.255.255");
@@ -176,6 +181,7 @@ describe("parseCidr", () => {
 
   it("handles bare IP without prefix as /32", () => {
     const result = parseCidr("8.8.8.8")!;
+
     expect(result.prefix).toBe(32);
     expect(result.usableHosts).toBe(1);
   });
@@ -195,6 +201,7 @@ describe("parseCidr", () => {
 
   it("computes wildcard mask correctly", () => {
     const result = parseCidr("192.168.1.0/24")!;
+
     expect(result.wildcardMask).toBe("0.0.0.255");
   });
 });
@@ -202,6 +209,7 @@ describe("parseCidr", () => {
 describe("formatNumber", () => {
   it("formats with locale separators", () => {
     const val = formatNumber(4294967296);
+
     expect(val).toBeDefined();
     expect(typeof val).toBe("string");
   });

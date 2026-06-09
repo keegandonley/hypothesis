@@ -8,12 +8,14 @@ describe("computeResults", () => {
 
   it("finds all matches in single-line input", () => {
     const results = computeResults("\\d+", "g", "abc 123 def 456");
+
     expect(results).toHaveLength(1);
     expect(results[0].matchCount).toBe(2);
   });
 
   it("captures groups", () => {
     const results = computeResults("(\\w+) (\\d+)", "g", "abc 123");
+
     expect(results[0].groups).toContain("abc");
     expect(results[0].groups).toContain("123");
   });
@@ -24,6 +26,7 @@ describe("computeResults", () => {
 
   it("handles empty test input", () => {
     const results = computeResults("\\w+", "g", "");
+
     expect(results).toHaveLength(1);
     expect(results[0].input).toBe("");
     expect(results[0].matched).toBe(false);
@@ -31,6 +34,7 @@ describe("computeResults", () => {
 
   it("uses global flag regardless of input flags", () => {
     const results = computeResults("a", "", "aaa");
+
     expect(results[0].matchCount).toBe(3);
   });
 });
@@ -38,17 +42,20 @@ describe("computeResults", () => {
 describe("getPatternStatus", () => {
   it("returns ready for empty pattern", () => {
     const status = getPatternStatus("", "g", []);
+
     expect(status.type).toBe("badgeReady");
   });
 
   it("returns error for invalid pattern", () => {
     const status = getPatternStatus("[invalid", "g", []);
+
     expect(status.type).toBe("badgeError");
     expect(status.label).toContain("error:");
   });
 
   it("returns valid for valid pattern with no test input", () => {
     const status = getPatternStatus("\\d+", "g", [{ input: "", matched: false, matchCount: 0, groups: [] }]);
+
     expect(status.type).toBe("badge");
     expect(status.label).toBe("valid");
   });
@@ -56,6 +63,7 @@ describe("getPatternStatus", () => {
   it("shows match count", () => {
     const results = computeResults("\\d+", "g", "abc 123");
     const status = getPatternStatus("\\d+", "g", results);
+
     expect(status.type).toBe("badge");
     expect(status.label).toMatch(/\d+\/\d+ match/);
   });

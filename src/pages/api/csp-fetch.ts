@@ -136,7 +136,7 @@ export default async function handler(
     for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
       const safe = await assertSafeUrl(current);
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+      const timer = setTimeout(() => { controller.abort(); }, TIMEOUT_MS);
 
       try {
         response = await fetch(safe.toString(), {

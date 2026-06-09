@@ -30,6 +30,7 @@ describe("encodeHtmlEntities", () => {
 
   it("encodes non-ASCII without named entity as numeric", () => {
     const result = encodeHtmlEntities("\u{1F600}", "non-ascii");
+
     expect(result).toBe("&#55357;&#56832;");
   });
 });
@@ -61,6 +62,7 @@ describe("decodeHtmlEntities", () => {
 
   it("round-trips through encode special / decode", () => {
     const original = "<hello> & \"world\"";
+
     expect(decodeHtmlEntities(encodeHtmlEntities(original, "special"))).toBe(original);
   });
 });

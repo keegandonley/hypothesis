@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styles from "@/styles/regex.module.css";
 import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
-import { FLAGS, Flag, computeResults, getPatternStatus, flagTitle } from "@/lib/regex";
+import { FLAGS, type Flag, computeResults, getPatternStatus, flagTitle } from "@/lib/regex";
 
 export default function RegexPage(): React.ReactNode {
   const [pattern, setPattern] = useState("");

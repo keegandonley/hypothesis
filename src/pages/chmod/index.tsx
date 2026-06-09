@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/chmod.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
-import { Perms, PRESETS, parseNumeric, parseSymbolic, toSymbolic, toNumeric, detectInput } from "@/lib/chmod";
+import { type Perms, PRESETS, parseNumeric, parseSymbolic, toSymbolic, toNumeric, detectInput } from "@/lib/chmod";
 
 export default function ChmodPage(): React.ReactNode {
   const [input, setInput] = useState("");

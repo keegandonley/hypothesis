@@ -64,9 +64,11 @@ describe("convertFromPx", () => {
 
   it("round-trips through convertToPx", () => {
     const value = 16;
+
     for (const unit of UNITS) {
       const px = convertToPx(value, unit, DEFAULT_CONTEXT);
       const back = convertFromPx(px, unit, DEFAULT_CONTEXT);
+
       expect(back).toBeCloseTo(value, 5);
     }
   });

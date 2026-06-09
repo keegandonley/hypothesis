@@ -23,6 +23,7 @@ describe("LIGHTNESS", () => {
 describe("hexToOklch", () => {
   it("converts a known hex color", () => {
     const result = hexToOklch("#3b82f6");
+
     expect(result).not.toBeNull();
     expect(result![0]).toBeGreaterThan(0);
     expect(result![0]).toBeLessThan(1);
@@ -42,11 +43,13 @@ describe("hexToOklch", () => {
   it("strips hash prefix", () => {
     const withHash = hexToOklch("#ff0000");
     const withoutHash = hexToOklch("ff0000");
+
     expect(withHash).toEqual(withoutHash);
   });
 
   it("produces reasonable L value for red", () => {
     const result = hexToOklch("#ff0000");
+
     expect(result![0]).toBeCloseTo(0.63, 1);
   });
 });
@@ -54,6 +57,7 @@ describe("hexToOklch", () => {
 describe("oklchToHex", () => {
   it("oklchToHex produces a valid 6-digit hex string", () => {
     const result = oklchToHex(0.5, 0.2, 180);
+
     expect(result).toMatch(/^#[0-9a-fA-F]{6}$/);
   });
 
@@ -61,6 +65,7 @@ describe("oklchToHex", () => {
     const original = "#3b82f6";
     const lch = hexToOklch(original);
     const result = oklchToHex(lch![0], lch![1], lch![2]);
+
     expect(result).toMatch(/^#[0-9a-fA-F]{6}$/);
   });
 });
@@ -68,11 +73,13 @@ describe("oklchToHex", () => {
 describe("generateShades", () => {
   it("generates 11 shades for a valid color", () => {
     const shades = generateShades("#3b82f6");
+
     expect(shades).toHaveLength(11);
   });
 
   it("has correct step values", () => {
     const shades = generateShades("#3b82f6");
+
     expect(shades!.map((s) => s.step)).toEqual(STEPS);
   });
 

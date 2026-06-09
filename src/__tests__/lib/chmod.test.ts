@@ -119,9 +119,11 @@ describe("detectInput", () => {
 
 describe("round-trip", () => {
   const cases = ["755", "644", "777", "000", "700", "666"];
+
   for (const mode of cases) {
     it(`numeric ${mode} round-trips through symbolic`, () => {
       const perms = parseNumeric(mode)!;
+
       expect(parseSymbolic(toSymbolic(perms))).toEqual(perms);
     });
   }

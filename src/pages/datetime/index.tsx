@@ -114,8 +114,10 @@ export default function DateTimePage(): React.ReactNode {
     setLiveMode((prev) => {
       const next = !prev;
       const newUrl = buildUrl(next ? "" : input, next);
+
       history.replaceState(null, "", newUrl);
       setUrl(newUrl);
+
       return next;
     });
   };

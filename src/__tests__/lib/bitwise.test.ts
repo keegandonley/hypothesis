@@ -32,41 +32,49 @@ describe("formatBin", () => {
 describe("OPERATIONS", () => {
   it("computes AND", () => {
     const op = OPERATIONS.find((o) => o.key === "and")!;
+
     expect(op.compute(60, 13)).toBe(12);
   });
 
   it("computes OR", () => {
     const op = OPERATIONS.find((o) => o.key === "or")!;
+
     expect(op.compute(60, 13)).toBe(61);
   });
 
   it("computes XOR", () => {
     const op = OPERATIONS.find((o) => o.key === "xor")!;
+
     expect(op.compute(60, 13)).toBe(49);
   });
 
   it("computes NAND", () => {
     const op = OPERATIONS.find((o) => o.key === "nand")!;
+
     expect(op.compute(60, 13)).toBe(~(60 & 13));
   });
 
   it("computes NOR", () => {
     const op = OPERATIONS.find((o) => o.key === "nor")!;
+
     expect(op.compute(60, 13)).toBe(~(60 | 13));
   });
 
   it("computes SHL (shift left)", () => {
     const op = OPERATIONS.find((o) => o.key === "shl")!;
+
     expect(op.compute(3, 0)).toBe(6);
   });
 
   it("computes SHR (shift right)", () => {
     const op = OPERATIONS.find((o) => o.key === "shr")!;
+
     expect(op.compute(8, 0)).toBe(4);
   });
 
   it("has all expected operations", () => {
     const keys = OPERATIONS.map((o) => o.key);
+
     expect(keys).toEqual(["and", "or", "xor", "nand", "nor", "shl", "shr"]);
   });
 });

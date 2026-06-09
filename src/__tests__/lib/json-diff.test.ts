@@ -8,18 +8,21 @@ describe("jsonDiff", () => {
 
   it("detects changed primitive", () => {
     const diff = jsonDiff(1, 2);
+
     expect(diff).toHaveLength(1);
     expect(diff[0].type).toBe("changed");
   });
 
   it("detects type change", () => {
     const diff = jsonDiff("hello", 42);
+
     expect(diff).toHaveLength(1);
     expect(diff[0].type).toBe("type-changed");
   });
 
   it("detects added object keys", () => {
     const diff = jsonDiff({ a: 1 }, { a: 1, b: 2 });
+
     expect(diff).toHaveLength(1);
     expect(diff[0].type).toBe("added");
     expect(diff[0].path).toBe("b");
@@ -27,18 +30,21 @@ describe("jsonDiff", () => {
 
   it("detects removed object keys", () => {
     const diff = jsonDiff({ a: 1, b: 2 }, { a: 1 });
+
     expect(diff).toHaveLength(1);
     expect(diff[0].type).toBe("removed");
   });
 
   it("detects changed object key", () => {
     const diff = jsonDiff({ a: 1 }, { a: 2 });
+
     expect(diff).toHaveLength(1);
     expect(diff[0].type).toBe("changed");
   });
 
   it("detects added array elements", () => {
     const diff = jsonDiff([1], [1, 2]);
+
     expect(diff).toHaveLength(1);
     expect(diff[0].type).toBe("added");
     expect(diff[0].path).toBe("[1]");
@@ -46,12 +52,14 @@ describe("jsonDiff", () => {
 
   it("detects removed array elements", () => {
     const diff = jsonDiff([1, 2], [1]);
+
     expect(diff).toHaveLength(1);
     expect(diff[0].type).toBe("removed");
   });
 
   it("detects nested differences", () => {
     const diff = jsonDiff({ a: { b: 1 } }, { a: { b: 2 } });
+
     expect(diff).toHaveLength(1);
     expect(diff[0].path).toBe("a.b");
   });
@@ -66,12 +74,14 @@ describe("jsonDiff", () => {
 
   it("detects array vs object type change", () => {
     const diff = jsonDiff([1], { 0: 1 });
+
     expect(diff).toHaveLength(1);
     expect(diff[0].type).toBe("type-changed");
   });
 
   it("handles null values", () => {
     const diff = jsonDiff(null, null);
+
     expect(diff).toEqual([]);
   });
 });

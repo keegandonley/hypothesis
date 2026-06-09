@@ -75,6 +75,7 @@ describe("parseHex", () => {
 
   it("parses an 8-digit hex with alpha", () => {
     const result = parseHex("#ff000080")!;
+
     expect(result.r).toBe(255);
     expect(result.g).toBe(0);
     expect(result.b).toBe(0);
@@ -83,6 +84,7 @@ describe("parseHex", () => {
 
   it("returns full alpha for 8-digit hex ending in ff", () => {
     const result = parseHex("#ff0000ff")!;
+
     expect(result.a).toBeCloseTo(1, 5);
   });
 
@@ -125,6 +127,7 @@ describe("parseRGB", () => {
 
   it("clamps alpha above 1", () => {
     const result = parseRGB("rgba(0, 0, 0, 2)")!;
+
     expect(result.a).toBe(1);
   });
 
@@ -165,6 +168,7 @@ describe("hslToRgb", () => {
 
   it("converts mid-gray (0°, 0%, 50%)", () => {
     const [r, g, b] = hslToRgb(0, 0, 50);
+
     expect(r).toBe(g);
     expect(g).toBe(b);
     expect(r).toBeCloseTo(128, -1);
@@ -215,6 +219,7 @@ describe("parseHSL", () => {
   it("wraps hue values ≥ 360", () => {
     // 360° = 0° = red
     const result = parseHSL("hsl(360, 100%, 50%)")!;
+
     expect(result.r).toBe(255);
     expect(result.g).toBe(0);
     expect(result.b).toBe(0);
@@ -247,6 +252,7 @@ describe("linearize", () => {
   it("uses the gamma segment for larger values", () => {
     const cn = 128 / 255;
     const expected = Math.pow((cn + 0.055) / 1.055, 2.4);
+
     expect(linearize(128)).toBeCloseTo(expected, 8);
   });
 });
@@ -292,9 +298,11 @@ describe("linearRgbToXyz / xyzToLinearRgb", () => {
       [0.5, 0.5, 0.5],
       [0.2, 0.6, 0.9],
     ];
+
     for (const [r, g, b] of cases) {
       const [x, y, z] = linearRgbToXyz(r, g, b);
       const [rr, gg, bb] = xyzToLinearRgb(x, y, z);
+
       expect(rr).toBeCloseTo(r, 5);
       expect(gg).toBeCloseTo(g, 5);
       expect(bb).toBeCloseTo(b, 5);
@@ -313,9 +321,11 @@ describe("xyzToOklab / oklabToXyz", () => {
       [0.2, 0.1, 0.05],
       [0.0, 0.0, 0.0],
     ];
+
     for (const [x, y, z] of cases) {
       const [L, a, b] = xyzToOklab(x, y, z);
       const [xr, yr, zr] = oklabToXyz(L, a, b);
+
       expect(xr).toBeCloseTo(x, 5);
       expect(yr).toBeCloseTo(y, 5);
       expect(zr).toBeCloseTo(z, 5);
@@ -330,18 +340,21 @@ describe("xyzToOklab / oklabToXyz", () => {
 describe("rgbaToOklch", () => {
   it("black has near-zero L and C", () => {
     const [L, C] = rgbaToOklch({ r: 0, g: 0, b: 0, a: 1 });
+
     expect(L).toBeCloseTo(0, 4);
     expect(C).toBeCloseTo(0, 4);
   });
 
   it("white has L ≈ 1 and near-zero C", () => {
     const [L, C] = rgbaToOklch({ r: 255, g: 255, b: 255, a: 1 });
+
     expect(L).toBeCloseTo(1, 3);
     expect(C).toBeCloseTo(0, 3);
   });
 
   it("red has a hue near 29°", () => {
     const [, , H] = rgbaToOklch({ r: 255, g: 0, b: 0, a: 1 });
+
     expect(H).toBeCloseTo(29.23, 0);
   });
 
@@ -352,8 +365,10 @@ describe("rgbaToOklch", () => {
       { r: 0, g: 0, b: 255, a: 1 },
       { r: 128, g: 64, b: 200, a: 1 },
     ];
+
     for (const c of colors) {
       const [, , H] = rgbaToOklch(c);
+
       expect(H).toBeGreaterThanOrEqual(0);
       expect(H).toBeLessThan(360);
     }
@@ -369,6 +384,7 @@ describe("parseOKLCH", () => {
     const original = { r: 126, g: 200, b: 80, a: 1 };
     const str = toOKLCH(original);
     const parsed = parseOKLCH(str)!;
+
     expect(parsed.r).toBeCloseTo(original.r, -1);
     expect(parsed.g).toBeCloseTo(original.g, -1);
     expect(parsed.b).toBeCloseTo(original.b, -1);
@@ -378,6 +394,7 @@ describe("parseOKLCH", () => {
     const original = { r: 200, g: 100, b: 50, a: 0.7 };
     const str = toOKLCH(original);
     const parsed = parseOKLCH(str)!;
+
     expect(parsed.a).toBeCloseTo(0.7, 5);
   });
 
@@ -415,6 +432,7 @@ describe("parseColor", () => {
 
   it("dispatches to parseHSL for hsl() input", () => {
     const result = parseColor("hsl(240, 100%, 50%)")!;
+
     expect(result.b).toBe(255);
     expect(result.r).toBe(0);
     expect(result.g).toBe(0);
@@ -422,6 +440,7 @@ describe("parseColor", () => {
 
   it("dispatches to parseOKLCH for oklch() input", () => {
     const result = parseColor("oklch(0.5 0.1 180)");
+
     expect(result).not.toBeNull();
   });
 });
@@ -507,6 +526,7 @@ describe("rgbToHsl", () => {
 
   it("converts achromatic gray → saturation 0", () => {
     const [, s] = rgbToHsl(128, 128, 128);
+
     expect(s).toBe(0);
   });
 });
@@ -534,11 +554,13 @@ describe("toHSL", () => {
 describe("toOKLCH", () => {
   it("produces an oklch() string without alpha for opaque colors", () => {
     const result = toOKLCH({ r: 255, g: 0, b: 0, a: 1 });
+
     expect(result).toMatch(/^oklch\([\d.]+ [\d.]+ [\d.]+\)$/);
   });
 
   it("includes / alpha for semi-transparent colors", () => {
     const result = toOKLCH({ r: 255, g: 0, b: 0, a: 0.5 });
+
     expect(result).toContain("/ 0.5");
   });
 });
@@ -550,12 +572,12 @@ describe("toOKLCH", () => {
 describe("formatColor", () => {
   const red = { r: 255, g: 0, b: 0, a: 1 };
 
-  it("hex6", () => expect(formatColor(red, "hex6")).toBe("#ff0000"));
-  it("hex8", () => expect(formatColor(red, "hex8")).toBe("#ff0000ff"));
-  it("rgb", () => expect(formatColor(red, "rgb")).toBe("rgb(255, 0, 0)"));
-  it("rgba", () => expect(formatColor(red, "rgba")).toBe("rgba(255, 0, 0, 1)"));
-  it("hsl", () => expect(formatColor(red, "hsl")).toBe("hsl(0, 100%, 50%)"));
-  it("oklch", () => expect(formatColor(red, "oklch")).toMatch(/^oklch\(/));
+  it("hex6", () => { expect(formatColor(red, "hex6")).toBe("#ff0000"); });
+  it("hex8", () => { expect(formatColor(red, "hex8")).toBe("#ff0000ff"); });
+  it("rgb", () => { expect(formatColor(red, "rgb")).toBe("rgb(255, 0, 0)"); });
+  it("rgba", () => { expect(formatColor(red, "rgba")).toBe("rgba(255, 0, 0, 1)"); });
+  it("hsl", () => { expect(formatColor(red, "hsl")).toBe("hsl(0, 100%, 50%)"); });
+  it("oklch", () => { expect(formatColor(red, "oklch")).toMatch(/^oklch\(/); });
 });
 
 // ---------------------------------------------------------------------------
@@ -585,6 +607,7 @@ describe("round-trips", () => {
   it("hsl round-trip is within ±1 channel (rounding in HSL math)", () => {
     for (const c of testColors) {
       const result = parseColor(formatColor(c, "hsl"))!;
+
       expect(result.r).toBeCloseTo(c.r, -1);
       expect(result.g).toBeCloseTo(c.g, -1);
       expect(result.b).toBeCloseTo(c.b, -1);
@@ -594,6 +617,7 @@ describe("round-trips", () => {
   it("oklch round-trip is within ±1 channel (float pipeline)", () => {
     for (const c of testColors) {
       const result = parseColor(formatColor(c, "oklch"))!;
+
       expect(result.r).toBeCloseTo(c.r, -1);
       expect(result.g).toBeCloseTo(c.g, -1);
       expect(result.b).toBeCloseTo(c.b, -1);

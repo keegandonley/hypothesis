@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/cron.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
-import { EXAMPLES, NEXT_COUNT, ParseResult, parseCron, formatLocal, formatUtc } from "@/lib/cron";
+import { EXAMPLES, NEXT_COUNT, type ParseResult, parseCron, formatLocal, formatUtc } from "@/lib/cron";
 
 export default function CronPage(): React.ReactNode {
   const [input, setInput] = useState("");

@@ -24,6 +24,7 @@ const LOCATION_NAMES: Record<number, string> = {
 export default function KeycodePage(): React.ReactNode {
   const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(null);
   const [url, setUrl] = useState("");
+
   useEffect(() => {
     setUrl(window.location.href); // eslint-disable-line react-hooks/set-state-in-effect
     const handleKeyDown = (e: KeyboardEvent): void => {
@@ -65,6 +66,7 @@ export default function KeycodePage(): React.ReactNode {
 
   const handleReset = (): void => {
     const newUrl = `${window.location.origin}${window.location.pathname}`;
+
     history.replaceState(null, "", newUrl);
     setUrl(newUrl);
   };

@@ -60,6 +60,7 @@ export default function IframeProxyPage(): React.ReactNode {
     }
 
     const initialName = params.get("name") ?? "";
+
     setFrameName(initialName);
     setFrameNameDraft(initialName);
     setDebug(isDebug);

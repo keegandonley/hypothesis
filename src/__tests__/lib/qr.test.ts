@@ -39,6 +39,7 @@ describe("buildWifiString", () => {
       security: "WPA",
       hidden: false,
     });
+
     expect(result).toContain("WIFI:T:WPA;");
     expect(result).toContain("S:MyNetwork;");
     expect(result).toContain("P:secret123;");
@@ -52,6 +53,7 @@ describe("buildWifiString", () => {
       security: "nopass",
       hidden: false,
     });
+
     expect(result).not.toContain("P:");
     expect(result).toContain("T:nopass");
   });
@@ -67,6 +69,7 @@ describe("buildWifiString", () => {
       security: "WPA",
       hidden: false,
     });
+
     expect(result).toContain("S:Net\\;work");
   });
 });
@@ -81,6 +84,7 @@ describe("buildVCardString", () => {
       org: "Acme",
       url: "https://example.com",
     });
+
     expect(result).toContain("BEGIN:VCARD");
     expect(result).toContain("VERSION:3.0");
     expect(result).toContain("FN:Jane Doe");
@@ -101,6 +105,7 @@ describe("buildVCardString", () => {
       org: "",
       url: "",
     });
+
     expect(result).toContain("FN:Jane Doe");
     expect(result).not.toContain("TEL;");
   });
@@ -118,6 +123,7 @@ describe("buildVCardString", () => {
       org: "",
       url: "",
     });
+
     expect(result).toContain("FN:Doe");
     expect(result).toContain("N:Doe;;;");
   });
@@ -131,12 +137,14 @@ describe("getQrString", () => {
   it("returns wifi string for wifi mode", () => {
     const wifi = { ...EMPTY_WIFI, ssid: "Net" };
     const result = getQrString("wifi", "", wifi, EMPTY_VCARD);
+
     expect(result).toContain("WIFI:");
   });
 
   it("returns vcard string for vcard mode", () => {
     const vcard = { ...EMPTY_VCARD, first: "Jane", last: "Doe" };
     const result = getQrString("vcard", "", EMPTY_WIFI, vcard);
+
     expect(result).toContain("BEGIN:VCARD");
   });
 });
