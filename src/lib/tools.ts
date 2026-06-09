@@ -422,6 +422,7 @@ export const experiments: ExperimentItem[] = [
     href: "/delay-loading",
     docsHref: "/docs/delay-loading",
     allowMultipleInstances: true,
+    suppressMobile: true,
   },
 ];
 
