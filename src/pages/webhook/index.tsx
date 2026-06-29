@@ -82,6 +82,7 @@ export default function WebhookPage(): React.ReactNode {
   const idleCheckRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastEventReceivedAtRef = useRef<number>(Date.now());
   const currentSessionIdRef = useRef<string | null>(null);
+  const idleRef = useRef<boolean>(false);
 
   async function fetchEvents(sessionId: string): Promise<void> {
     const cursor = latestReceivedAtRef.current;
@@ -104,6 +105,34 @@ export default function WebhookPage(): React.ReactNode {
     }
   }
 
+  // Restart the event poller (2.5s) and heartbeat (60s) for a session.
+  // Kept in one place so the visibility handler can pause/resume them.
+  function startLoops(sessionId: string): void {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (heartbeatRef.current) clearInterval(heartbeatRef.current);
+
+    intervalRef.current = setInterval(() => {
+      void fetchEvents(sessionId);
+    }, 2500);
+    heartbeatRef.current = setInterval(() => {
+      void fetch("/api/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId }),
+      });
+    }, 60_000);
+  }
+
+  // Stop the polling + heartbeat loops without tearing down the session.
+  // Used when the tab is hidden or the session goes idle so we stop billing
+  // for background activity nobody is watching.
+  function stopLoops(): void {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (heartbeatRef.current) clearInterval(heartbeatRef.current);
+    intervalRef.current = null;
+    heartbeatRef.current = null;
+  }
+
   function startSession(
     sessionId?: string,
     {
@@ -119,6 +148,7 @@ export default function WebhookPage(): React.ReactNode {
     currentSessionIdRef.current = null;
     latestReceivedAtRef.current = null;
     lastEventReceivedAtRef.current = Date.now();
+    idleRef.current = false;
     setStatus("loading");
     setErrorMessage(null);
     setEvents([]);
@@ -174,22 +204,22 @@ export default function WebhookPage(): React.ReactNode {
         setSession(data);
         setStatus("ready");
         void fetchEvents(data.sessionId);
-        intervalRef.current = setInterval(() => {
-          void fetchEvents(data.sessionId);
-        }, 2500);
-        heartbeatRef.current = setInterval(() => {
-          void fetch("/api/session", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ sessionId: data.sessionId }),
-          });
-        }, 60_000);
+        // Don't start background loops if the tab is already hidden — the
+        // visibility handler will start them when the tab is focused.
+        if (!document.hidden) startLoops(data.sessionId);
+        // Guard against a leaked interval if two startSession calls race
+        // (e.g. rapid "New session" clicks) — an orphaned idle check could
+        // otherwise force a live session idle and stop its heartbeat.
+        if (idleCheckRef.current) clearInterval(idleCheckRef.current);
         idleCheckRef.current = setInterval(() => {
           if (Date.now() - lastEventReceivedAtRef.current > 30 * 60 * 1000) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            clearInterval(intervalRef.current!);
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            clearInterval(idleCheckRef.current!);
+            // Idle: stop polling AND the heartbeat (previously the heartbeat
+            // kept firing for the entire tab lifetime — days/weeks — billing
+            // compute for a session nobody was watching).
+            idleRef.current = true;
+            stopLoops();
+            if (idleCheckRef.current) clearInterval(idleCheckRef.current);
+            idleCheckRef.current = null;
             setStatus("idle");
           }
         }, 60_000);
@@ -212,7 +242,27 @@ export default function WebhookPage(): React.ReactNode {
       startSession(stored, { fromLocalStorage: !!stored });
     }
 
+    // Pause polling + heartbeat while the tab is hidden, resume on focus.
+    // A backgrounded webhook tab generated invocations indefinitely; this
+    // ties background activity to whether anyone is actually looking.
+    const handleVisibility = (): void => {
+      const sessionId = currentSessionIdRef.current;
+
+      if (!sessionId) return;
+
+      if (document.hidden) {
+        stopLoops();
+      } else if (!idleRef.current) {
+        // Catch up on anything missed while hidden, then resume the loops.
+        void fetchEvents(sessionId);
+        startLoops(sessionId);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+
     return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
       if (intervalRef.current) clearInterval(intervalRef.current);
       if (heartbeatRef.current) clearInterval(heartbeatRef.current);
       if (idleCheckRef.current) clearInterval(idleCheckRef.current);
