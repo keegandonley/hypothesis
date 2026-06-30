@@ -37,6 +37,44 @@ export default function DelayLoadingPage({
   const [draft, setDraft] = useState(String(delayMs));
   const [url, setUrl] = useState("");
 
+  // Register the service worker that delays the pixel client-side. On the very
+  // first visit the worker isn't controlling this document yet, so the SSR
+  // `/api/delay` request falls back to the (rarely hit) server route; the
+  // worker then intercepts every later navigation entirely in the browser — no
+  // serverless sleep. The one-time reload below is a backstop for browsers
+  // where `clients.claim()` hasn't taken control by the time the worker is
+  // ready (in Chromium, claim sets `controller` first, so the reload is
+  // skipped and control simply applies from the next navigation).
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+
+    if (navigator.serviceWorker.controller) {
+      sessionStorage.removeItem("delaySwReloaded");
+
+      return;
+    }
+
+    let cancelled = false;
+
+    navigator.serviceWorker
+      .register("/delay-sw.js")
+      .then(() => navigator.serviceWorker.ready)
+      .then(() => {
+        if (cancelled || navigator.serviceWorker.controller) return;
+        if (sessionStorage.getItem("delaySwReloaded") === "1") return;
+
+        sessionStorage.setItem("delaySwReloaded", "1");
+        window.location.reload();
+      })
+      .catch(() => {
+        // Service worker unavailable — the /api/delay fallback still works.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     const start = performance.now();
 
@@ -156,11 +194,12 @@ export default function DelayLoadingPage({
 
           <p className={styles.note}>
             A hidden image requests{" "}
-            <code className={styles.code}>/api/delay</code>, which the server
-            holds open for the configured time. The browser&rsquo;s{" "}
-            <code className={styles.code}>load</code> event &mdash; and any
-            parent iframe&rsquo;s <code className={styles.code}>onload</code>{" "}
-            &mdash; wait for it to settle.
+            <code className={styles.code}>/api/delay</code>, which a service
+            worker holds open client-side for the configured time. The
+            browser&rsquo;s <code className={styles.code}>load</code> event
+            &mdash; and any parent iframe&rsquo;s{" "}
+            <code className={styles.code}>onload</code> &mdash; wait for it to
+            settle. No serverless function stays open during the delay.
           </p>
         </div>
 

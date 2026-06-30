@@ -4,9 +4,13 @@ A target page whose **`load` event is genuinely deferred** by a configurable num
 
 ## How it works
 
-The page renders a hidden image pointing at `/api/delay?ms=<delay>`. That endpoint **delays the HTTP response** by the requested time before returning a 1×1 transparent GIF. Because the browser's `load` event waits for every sub-resource — including images — to settle, the document's `load` event (and any embedding iframe's `onload`) does not fire until the delay has elapsed.
+The page renders a hidden image pointing at `/api/delay?ms=<delay>`. A **service worker** intercepts that request and resolves it late — entirely in the browser — before returning a 1×1 transparent GIF. Because the browser's `load` event waits for every sub-resource — including images — to settle, the document's `load` event (and any embedding iframe's `onload`) does not fire until the delay has elapsed.
+
+Doing the wait in a service worker means **no serverless function is held open** during the delay. The previous implementation slept inside the `/api/delay` route, which billed provisioned memory for the entire idle wait on every request. That route still exists as a fallback for the first visit (before the worker is controlling the page) and for browsers without service-worker support.
 
 The image is non-render-blocking, so the page's UI and live countdown paint immediately while the load event is still pending. The image markup is server-rendered (via `getServerSideProps`) so the request starts during the initial document load rather than after hydration.
+
+> On your first visit the worker installs while the server fallback handles that one load; from the next visit onward every delay is served by the worker with zero server compute. (In browsers where the worker can't take control during the first load, the page reloads once as a backstop.)
 
 ## The `delay` query parameter
 
