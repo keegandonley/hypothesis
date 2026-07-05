@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import styles from "@/styles/html-entity.module.css";
 import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { encodeHtmlEntities, decodeHtmlEntities, type EncodeMode } from "@/lib/html-entity";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function HtmlEntityPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [decoded, setDecoded] = useState("");
   const [encoded, setEncoded] = useState("");
   const [url, setUrl] = useState("");
@@ -46,8 +48,8 @@ export default function HtmlEntityPage(): React.ReactNode {
     setEncoded(enc);
     const newUrl = buildUrl(value, encodeMode);
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrl(newUrl);
+    setUrl(newUrl);
   };
 
   const handleEncodedChange = (value: string): void => {
@@ -57,8 +59,8 @@ export default function HtmlEntityPage(): React.ReactNode {
     setDecoded(dec);
     const newUrl = buildUrl(dec, encodeMode);
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrl(newUrl);
+    setUrl(newUrl);
   };
 
   const handleModeChange = (mode: EncodeMode): void => {
@@ -68,8 +70,8 @@ export default function HtmlEntityPage(): React.ReactNode {
     setEncoded(enc);
     const newUrl = buildUrl(decoded, mode);
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrl(newUrl);
+    setUrl(newUrl);
   };
 
   const handleReset = (): void => {
@@ -78,8 +80,8 @@ export default function HtmlEntityPage(): React.ReactNode {
     setEncodeMode("special");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrlNow(newUrl);
+    setUrl(newUrl);
   };
 
   return (

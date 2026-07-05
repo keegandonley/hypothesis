@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import styles from "@/styles/basic-auth.module.css";
 import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { encodeBasicAuth, decodeBasicAuth } from "@/lib/basic-auth";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function BasicAuthPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [mode, setMode] = useState<"encode" | "decode">("encode");
 
   // encode state
@@ -59,7 +61,7 @@ export default function BasicAuthPage(): React.ReactNode {
     setTokenInput("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 
@@ -67,7 +69,7 @@ export default function BasicAuthPage(): React.ReactNode {
     setUsername(u);
     const newUrl = buildEncodeUrl(u);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -75,7 +77,7 @@ export default function BasicAuthPage(): React.ReactNode {
     setTokenInput(v);
     const newUrl = buildDecodeUrl(v);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -85,7 +87,7 @@ export default function BasicAuthPage(): React.ReactNode {
     setTokenInput("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 

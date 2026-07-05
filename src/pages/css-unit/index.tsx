@@ -3,8 +3,10 @@ import styles from "@/styles/css-unit.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { UNITS, DEFAULT_CONTEXT, type CSSUnit, type ConversionContext, convertToPx, convertFromPx, formatNumber } from "@/lib/css-unit";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function CssUnitPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [inputValue, setInputValue] = useState<string>("16");
   const [inputUnit, setInputUnit] = useState<CSSUnit>("px");
   const [context, setContext] = useState<ConversionContext>(DEFAULT_CONTEXT);
@@ -66,7 +68,7 @@ export default function CssUnitPage(): React.ReactNode {
   ): void => {
     const newUrl = buildUrl(value, unit, ctx);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -112,7 +114,7 @@ export default function CssUnitPage(): React.ReactNode {
     setContext(DEFAULT_CONTEXT);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 

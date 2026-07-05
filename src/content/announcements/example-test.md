@@ -8,7 +8,7 @@ highlights:
   - kind: tool
     href: /qr-decoder
   - kind: reference
-    href: /reference/http-status-codes
+    href: /references/http-status-codes
 ---
 
 ## Hello

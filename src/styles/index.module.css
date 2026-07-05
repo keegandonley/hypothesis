@@ -368,6 +368,22 @@
   border-radius: 2px;
 }
 
+/* docsLink variant for links sitting inline in the header tagline text */
+.taglineLink {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.viewAllRow {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pushEnd {
+  margin-left: auto;
+}
+
 .footer {
   margin-top: 64px;
   display: flex;

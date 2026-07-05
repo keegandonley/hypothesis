@@ -3,6 +3,7 @@ import styles from "@/styles/gist.module.css";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 const GIST_URL_RE = /^https?:\/\/gist\.github\.com\/[^/]+\/([a-f0-9]+)/i;
 
@@ -25,6 +26,7 @@ function buildPageUrl(url: string, file: string): string {
 }
 
 export default function GistPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const isIframe = useIsIframe();
   const [url, setUrl] = useState("");
   const [file, setFile] = useState("");
@@ -47,7 +49,7 @@ export default function GistPage(): React.ReactNode {
     setUrl(u);
     const next = buildPageUrl(u, file);
 
-    history.replaceState(null, "", next);
+    replaceUrl(next);
     setPageUrl(next);
   };
 
@@ -55,7 +57,7 @@ export default function GistPage(): React.ReactNode {
     setFile(f);
     const next = buildPageUrl(url, f);
 
-    history.replaceState(null, "", next);
+    replaceUrl(next);
     setPageUrl(next);
   };
 
@@ -69,7 +71,7 @@ export default function GistPage(): React.ReactNode {
     setIframeKey((k) => k + 1);
     const next = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", next);
+    replaceUrlNow(next);
     setPageUrl(next);
   };
 

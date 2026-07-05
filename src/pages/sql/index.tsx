@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/sql.module.css";
 import { format, type SqlLanguage } from "sql-formatter";
 import { Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 const DIALECTS: { value: SqlLanguage; label: string }[] = [
   { value: "sql", label: "SQL" },
@@ -14,6 +15,7 @@ const DIALECTS: { value: SqlLanguage; label: string }[] = [
 const PLACEHOLDER = `SELECT u.id, u.name, COUNT(o.id) AS order_count FROM users u LEFT JOIN orders o ON o.user_id = u.id WHERE u.created_at > '2024-01-01' GROUP BY u.id, u.name HAVING COUNT(o.id) > 0 ORDER BY order_count DESC LIMIT 25;`;
 
 export default function SqlPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [input, setInput] = useState("");
   const [dialect, setDialect] = useState<SqlLanguage>("sql");
   const [url, setUrl] = useState("");
@@ -68,7 +70,7 @@ export default function SqlPage(): React.ReactNode {
     setInput(text);
     const newUrl = buildUrl(text, dialect);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -76,7 +78,7 @@ export default function SqlPage(): React.ReactNode {
     setDialect(d);
     const newUrl = buildUrl(input, d);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -85,7 +87,7 @@ export default function SqlPage(): React.ReactNode {
     setDialect("sql");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 

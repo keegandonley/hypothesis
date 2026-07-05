@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
 import Link from "next/link";
 import styles from "@/styles/message-factory-viewer.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { ToolHead } from "@/components/ToolHead";
 import { PermalinkRow, CopyButton } from "@/components/ui";
 
 interface Action {
@@ -87,9 +87,11 @@ export default function ViewerPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — MESSAGE VIEWER`}</title>
-      </Head>
+      <ToolHead
+        title="Message Viewer"
+        description="Trigger postMessage actions to a parent frame from a configurable button panel, for testing message-driven pages."
+        path="/message-factory/viewer"
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>

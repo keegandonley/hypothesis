@@ -5,6 +5,7 @@ import styles from "@/styles/reference.module.css";
 import iStyles from "@/styles/ionicons.module.css";
 import { useBranding } from "@/lib/branding";
 import { IONICON_CATEGORIES } from "@/data/ionicons";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 const VARIANT_LABELS = [
   { suffix: "", label: "filled" },
@@ -26,6 +27,8 @@ export default function IoniconsPage(): React.ReactNode {
   );
   const [copiedName, setCopiedName] = useState<string | null>(null);
 
+  const { replaceUrl } = useUrlSync();
+
   function updateUrl(q: string, cat: string): void {
     const params = new URLSearchParams();
 
@@ -33,7 +36,7 @@ export default function IoniconsPage(): React.ReactNode {
     if (cat !== "all") params.set("cat", cat);
     const qs = params.toString();
 
-    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+    replaceUrl(qs ? `?${qs}` : window.location.pathname);
   }
 
   function handleSearch(value: string): void {

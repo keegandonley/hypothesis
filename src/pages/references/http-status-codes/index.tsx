@@ -5,6 +5,7 @@ import { type GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { STATUS_CODES, STATUS_CLASSES } from "@/data/http-status-codes";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export const getStaticProps: GetStaticProps = () => ({
   props: { statusCodes: STATUS_CODES, statusClasses: STATUS_CLASSES },
@@ -29,6 +30,8 @@ export default function HttpStatusCodesPage({
       : (new URLSearchParams(window.location.search).get("class") ?? "all"),
   );
 
+  const { replaceUrl } = useUrlSync();
+
   function updateUrl(q: string, cls: string): void {
     const params = new URLSearchParams();
 
@@ -36,7 +39,7 @@ export default function HttpStatusCodesPage({
     if (cls !== "all") params.set("class", cls);
     const qs = params.toString();
 
-    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+    replaceUrl(qs ? `?${qs}` : window.location.pathname);
   }
 
   function handleSearch(value: string): void {

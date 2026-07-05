@@ -3,8 +3,10 @@ import styles from "@/styles/datetime.module.css";
 import { Badge, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { FORMAT_ROWS, parseInput } from "@/lib/datetime";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function DateTimePage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [parsedDate, setParsedDate] = useState<Date | null>(null);
@@ -68,7 +70,7 @@ export default function DateTimePage(): React.ReactNode {
     setParsedDate(parseInput(value));
     const newUrl = buildUrl(value, liveMode);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -79,7 +81,7 @@ export default function DateTimePage(): React.ReactNode {
     setParsedDate(new Date(parseInt(now, 10)));
     const newUrl = buildUrl(now, liveMode);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -88,7 +90,7 @@ export default function DateTimePage(): React.ReactNode {
     setParsedDate(null);
     const newUrl = buildUrl("", liveMode);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 
@@ -115,7 +117,7 @@ export default function DateTimePage(): React.ReactNode {
       const next = !prev;
       const newUrl = buildUrl(next ? "" : input, next);
 
-      history.replaceState(null, "", newUrl);
+      replaceUrl(newUrl);
       setUrl(newUrl);
 
       return next;
@@ -177,7 +179,7 @@ export default function DateTimePage(): React.ReactNode {
         {!liveMode &&
           hasInput &&
           (isInvalid ? (
-            <Badge color="error">Invalid</Badge>
+            <Badge color="warn">Invalid</Badge>
           ) : (
             <Badge color="ready">Valid</Badge>
           ))}

@@ -11,6 +11,10 @@ interface Message {
   direction: "sent" | "received";
 }
 
+// Long debugging sessions can receive thousands of messages; keep the feed
+// bounded so re-renders and memory stay flat.
+const MAX_MESSAGES = 500;
+
 export default function MessagesPage(): React.ReactNode {
   const branding = useBranding();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -21,16 +25,18 @@ export default function MessagesPage(): React.ReactNode {
     const data = { action: branding.actionType, content: sendInput };
 
     window.parent.postMessage(data, "*");
-    setMessages((prev) => [
-      {
-        id: `${Date.now()}-${Math.random()}`,
-        timestamp: Date.now(),
-        data,
-        origin: window.location.origin,
-        direction: "sent",
-      },
-      ...prev,
-    ]);
+    setMessages((prev) =>
+      [
+        {
+          id: `${Date.now()}-${Math.random()}`,
+          timestamp: Date.now(),
+          data,
+          origin: window.location.origin,
+          direction: "sent" as const,
+        },
+        ...prev,
+      ].slice(0, MAX_MESSAGES),
+    );
   };
 
   useEffect(() => {
@@ -73,7 +79,6 @@ export default function MessagesPage(): React.ReactNode {
     }
 
     const handleMessage = (event: MessageEvent): void => {
-      console.log(event);
       const newMessage: Message = {
         id: `${Date.now()}-${Math.random()}`,
         timestamp: Date.now(),
@@ -82,7 +87,7 @@ export default function MessagesPage(): React.ReactNode {
         direction: "received",
       };
 
-      setMessages((prev) => [newMessage, ...prev]);
+      setMessages((prev) => [newMessage, ...prev].slice(0, MAX_MESSAGES));
     };
 
     window.addEventListener("message", handleMessage);

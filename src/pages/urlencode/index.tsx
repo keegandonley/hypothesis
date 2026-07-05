@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/urlencode.module.css";
 import { Badge, Button, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function UrlEncodePage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [decoded, setDecoded] = useState("");
   const [encoded, setEncoded] = useState("");
   const [url, setUrl] = useState("");
@@ -40,8 +42,8 @@ export default function UrlEncodePage(): React.ReactNode {
     setEncoded(enc);
     const newUrl = buildUrl(value, uriMode);
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrl(newUrl);
+    setUrl(newUrl);
   };
 
   const handleEncodedChange = (value: string): void => {
@@ -56,8 +58,8 @@ export default function UrlEncodePage(): React.ReactNode {
 
     const newUrl = buildUrl(decoded, uriMode);
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrl(newUrl);
+    setUrl(newUrl);
   };
 
   const handleUriToggle = (): void => {
@@ -69,8 +71,8 @@ export default function UrlEncodePage(): React.ReactNode {
     setEncoded(enc);
     const newUrl = buildUrl(decoded, next);
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrl(newUrl);
+    setUrl(newUrl);
   };
 
   const handleReset = (): void => {
@@ -79,8 +81,8 @@ export default function UrlEncodePage(): React.ReactNode {
     setUriMode(false);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrlNow(newUrl);
+    setUrl(newUrl);
   };
 
   return (

@@ -5,6 +5,7 @@ import styles from "@/styles/audio-streaming.module.css";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { MEDIA_FILES } from "@/data/media-files";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 interface Settings {
   src: string;
@@ -257,6 +258,7 @@ function logEntryClass(event: string): string {
 export default function AudioStreamingPage() {
   const isIframe = useIsIframe();
 
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [settings, setSettings] = useState<Settings>(DEFAULTS);
   const [initialized, setInitialized] = useState(false);
   const settingsRef = useRef<Settings>(DEFAULTS);
@@ -288,12 +290,8 @@ export default function AudioStreamingPage() {
 
   useEffect(() => {
     if (!initialized) return;
-    history.replaceState(
-      null,
-      "",
-      window.location.pathname + settingsToParams(settings),
-    );
-  }, [settings, initialized]);
+    replaceUrl(window.location.pathname + settingsToParams(settings));
+  }, [settings, initialized, replaceUrl]);
 
   const addLog = useCallback((event: string, detail: string) => {
     if (logQuietRef.current && NOISY_EVENTS.has(event as AudioEventName)) {
@@ -523,9 +521,9 @@ export default function AudioStreamingPage() {
 
   const handleReset = useCallback(() => {
     if (!confirm("Reset all settings?")) return;
-    history.replaceState(null, "", window.location.pathname);
+    replaceUrlNow(window.location.pathname);
     setSettings(DEFAULTS);
-  }, []);
+  }, [replaceUrlNow]);
 
   const upd = <K extends keyof Settings>(key: K, value: Settings[K]) =>
     setSettings((prev) => ({ ...prev, [key]: value }));

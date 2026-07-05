@@ -2,8 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/cidr.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { type CidrInfo, parseCidr, formatNumber } from "@/lib/cidr";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function CidrPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [input, setInput] = useState("");
   const [info, setInfo] = useState<CidrInfo | null>(null);
   const [error, setError] = useState(false);
@@ -40,7 +42,7 @@ export default function CidrPage(): React.ReactNode {
       setError(false);
       const newUrl = buildUrl("");
 
-      history.replaceState(null, "", newUrl);
+      replaceUrl(newUrl);
       setUrl(newUrl);
 
       return;
@@ -59,7 +61,7 @@ export default function CidrPage(): React.ReactNode {
     setError(false);
     const newUrl = buildUrl(trimmed);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -69,7 +71,7 @@ export default function CidrPage(): React.ReactNode {
     setError(false);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 
@@ -142,7 +144,7 @@ export default function CidrPage(): React.ReactNode {
           autoCapitalize="off"
           autoCorrect="off"
         />
-        {error && <Badge color="error">invalid</Badge>}
+        {error && <Badge color="warn">invalid</Badge>}
       </div>
 
       {info && (

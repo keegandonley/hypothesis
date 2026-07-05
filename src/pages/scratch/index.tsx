@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import LZString from "lz-string";
 import styles from "@/styles/scratch.module.css";
 import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function ScratchPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [text, setText] = useState("");
   const [url, setUrl] = useState("");
 
@@ -21,16 +23,16 @@ export default function ScratchPage(): React.ReactNode {
       ? `${window.location.origin}${window.location.pathname}?text=${LZString.compressToEncodedURIComponent(value)}`
       : `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrl(newUrl);
+    setUrl(newUrl);
   };
 
   const handleReset = (): void => {
     setText("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrlNow(newUrl);
+    setUrl(newUrl);
   };
 
   return (

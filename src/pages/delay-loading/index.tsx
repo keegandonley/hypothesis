@@ -57,7 +57,10 @@ export default function DelayLoadingPage({
     let cancelled = false;
 
     navigator.serviceWorker
-      .register("/delay-sw.js")
+      // Scope the worker to this page only — fetch events still fire for the
+      // /api/delay pixel (they cover every request *from* a controlled page),
+      // but the rest of the site stays uncontrolled with no SW hop.
+      .register("/delay-sw.js", { scope: "/delay-loading" })
       .then(() => navigator.serviceWorker.ready)
       .then(() => {
         if (cancelled || navigator.serviceWorker.controller) return;
@@ -184,7 +187,7 @@ export default function DelayLoadingPage({
               </>
             ) : (
               <>
-                <Badge color="error">loading</Badge>
+                <Badge color="warn">loading</Badge>
                 <span className={styles.statusText}>
                   deferring load &mdash; {(remainingMs / 1000).toFixed(1)}s left
                 </span>

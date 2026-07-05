@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styles from "@/styles/svg-jsx.module.css";
 import { Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 import { toJsx } from "@/lib/svg-jsx";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 const PLACEHOLDER = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <circle cx="12" cy="12" r="10" />
@@ -10,6 +11,7 @@ const PLACEHOLDER = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="
 </svg>`;
 
 export default function SvgJsxPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [input, setInput] = useState("");
   const [url, setUrl] = useState("");
 
@@ -46,7 +48,7 @@ export default function SvgJsxPage(): React.ReactNode {
     setInput(text);
     const newUrl = buildUrl(text);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -54,7 +56,7 @@ export default function SvgJsxPage(): React.ReactNode {
     setInput("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 

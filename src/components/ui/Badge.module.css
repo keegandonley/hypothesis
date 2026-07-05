@@ -14,7 +14,7 @@
   color: var(--accent);
 }
 
-.error {
+.warn {
   background-color: #fbbf2418;
   border: 1px solid #fbbf2433;
   color: #fbbf24;

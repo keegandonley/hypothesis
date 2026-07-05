@@ -9,6 +9,7 @@ import {
   TAG_COLORS,
   type AnyItem,
 } from "@/lib/tools";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 interface Segment {
   text: string;
@@ -225,6 +226,7 @@ function saveToStorage(tabs: Tab[], activeTabId: string | null): void {
 
 export default function DashboardPage(): React.ReactNode {
   const branding = useBranding();
+  const { replaceUrl } = useUrlSync();
 
   const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
@@ -351,8 +353,8 @@ export default function DashboardPage(): React.ReactNode {
       ? `${window.location.origin}/work?q=${encodeURIComponent(query)}`
       : `${window.location.origin}/work`;
 
-    history.replaceState(null, "", newUrl);
-  }, [query]);
+    replaceUrl(newUrl);
+  }, [query, replaceUrl]);
 
   // Reset selection when query changes
   useEffect(() => {

@@ -10,6 +10,7 @@ import {
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 import { analyzeCsp, SEVERITY_ORDER, type Severity } from "@/lib/csp";
 import type { CspFetchResult } from "../api/csp-fetch";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 const SEVERITY_LABEL: Record<Severity, string> = {
   high: "High",
@@ -28,6 +29,7 @@ const SAMPLE =
   "default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline'; img-src *";
 
 export default function CspPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [policy, setPolicy] = useState("");
   const [permalink, setPermalink] = useState("");
   const [fetchUrl, setFetchUrl] = useState("");
@@ -55,7 +57,7 @@ export default function CspPage(): React.ReactNode {
     setPolicy(value);
     const next = buildUrl(value);
 
-    history.replaceState(null, "", next);
+    replaceUrl(next);
     setPermalink(next);
   };
 
@@ -66,7 +68,7 @@ export default function CspPage(): React.ReactNode {
     setFetchStatus("idle");
     const next = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", next);
+    replaceUrlNow(next);
     setPermalink(next);
   };
 
@@ -296,7 +298,7 @@ export default function CspPage(): React.ReactNode {
                         ))
                       )}
                     </div>
-                    {d.duplicate && <Badge color="error">duplicate</Badge>}
+                    {d.duplicate && <Badge color="warn">duplicate</Badge>}
                   </div>
                 ))}
               </div>

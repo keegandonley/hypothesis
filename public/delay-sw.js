@@ -31,6 +31,15 @@ self.addEventListener("install", () => {
 });
 
 self.addEventListener("activate", (event) => {
+  // Migration: this worker used to be registered at the root scope, which
+  // controlled (and added a fetch hop to) every page on the origin. The page
+  // now registers it scoped to /delay-loading; if this instance finds itself
+  // activated at the old root scope — an existing install picking up this
+  // updated script on its routine update check — it removes itself.
+  if (self.registration.scope === `${self.location.origin}/`) {
+    event.waitUntil(self.registration.unregister());
+    return;
+  }
   event.waitUntil(self.clients.claim());
 });
 

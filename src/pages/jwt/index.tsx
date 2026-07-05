@@ -3,8 +3,10 @@ import styles from "@/styles/jwt.module.css";
 import { Badge, Button, Panel, PanelHeader, PanelBody, PageLayout, PermalinkRow } from "@/components/ui";
 import { decodeJwt, getExpiryStatus, generateJwt } from "@/lib/jwt";
 import type { JwtParts } from "@/lib/jwt";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function JwtPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [token, setToken] = useState("");
   const [decoded, setDecoded] = useState<JwtParts | null>(null);
   const [error, setError] = useState(false);
@@ -55,7 +57,7 @@ export default function JwtPage(): React.ReactNode {
 
     const newUrl = buildUrl(value.trim());
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -71,7 +73,7 @@ export default function JwtPage(): React.ReactNode {
     setError(false);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 
@@ -95,7 +97,7 @@ export default function JwtPage(): React.ReactNode {
       <div className={styles.inputPanel}>
         <PanelHeader label="Token">
           {hasToken && error && (
-            <Badge color="error">malformed</Badge>
+            <Badge color="warn">malformed</Badge>
           )}
           {hasToken && !error && decoded && (
             <Badge>{token.trim().length} chars</Badge>

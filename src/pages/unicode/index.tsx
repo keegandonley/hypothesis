@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import styles from "@/styles/unicode.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { MAX_CODEPOINTS, analyzeText } from "@/lib/unicode";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function UnicodePage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [text, setText] = useState("");
   const [url, setUrl] = useState("");
 
@@ -39,7 +41,7 @@ export default function UnicodePage(): React.ReactNode {
     setText(value);
     const newUrl = buildUrl(value);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -47,7 +49,7 @@ export default function UnicodePage(): React.ReactNode {
     setText("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 

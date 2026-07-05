@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/app-store-screenshot.module.css";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { Button, PageLayout } from "@/components/ui";
+import { PageLayout, PermalinkRow } from "@/components/ui";
+import { useUrlSync } from "@/lib/useUrlSync";
 import {
   type Dimension, DIMS, DIM_KEYS, MAX_PREVIEW_H, gradientCoords,
 } from "@/lib/app-store-screenshot";
@@ -33,6 +34,7 @@ function buildUrl(
 }
 
 export default function AppStoreScreenshot(): React.ReactNode {
+  const { replaceUrl } = useUrlSync();
   const isIframe = useIsIframe();
 
   const [dim, setDim] = useState<Dimension>(() => {
@@ -98,10 +100,11 @@ export default function AppStoreScreenshot(): React.ReactNode {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [url, setUrl] = useState("");
 
   // Sync URL on state change
   useEffect(() => {
-    const url = buildUrl(
+    const newUrl = buildUrl(
       dim,
       bgColor,
       scale,
@@ -112,7 +115,8 @@ export default function AppStoreScreenshot(): React.ReactNode {
       gradientAngle,
     );
 
-    history.replaceState(null, "", url);
+    replaceUrl(newUrl);
+    setUrl(newUrl); // eslint-disable-line react-hooks/set-state-in-effect
   }, [
     dim,
     bgColor,
@@ -122,6 +126,7 @@ export default function AppStoreScreenshot(): React.ReactNode {
     gradientEnabled,
     bgColor2,
     gradientAngle,
+    replaceUrl,
   ]);
 
   // Redraw canvas on any relevant state change
@@ -491,11 +496,7 @@ export default function AppStoreScreenshot(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.footerRow}>
-        <Button variant="reset" onClick={handleReset}>
-          Reset
-        </Button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} />
       </PageLayout>
     </div>
   );

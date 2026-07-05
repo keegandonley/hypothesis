@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import styles from "@/styles/regex.module.css";
 import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { FLAGS, type Flag, computeResults, getPatternStatus, flagTitle } from "@/lib/regex";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function RegexPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [pattern, setPattern] = useState("");
   const [flags, setFlags] = useState<Record<Flag, boolean>>({
     g: true,
@@ -63,8 +65,8 @@ export default function RegexPage(): React.ReactNode {
   const updateUrl = (p: string, f: string, s: string): void => {
     const newUrl = buildUrl(p, f, s);
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrl(newUrl);
+    setUrl(newUrl);
   };
 
   const handlePatternChange = (value: string): void => {
@@ -92,7 +94,7 @@ export default function RegexPage(): React.ReactNode {
     setTestInput("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(window.location.href);
   };
 

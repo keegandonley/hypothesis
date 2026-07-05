@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/base64.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { Panel, PanelHeader, PanelBody, PanelLabel } from "@/components/ui/Panel";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 type Tab = "text" | "image";
 
 export default function Base64Page(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [plain, setPlain] = useState("");
   const [encoded, setEncoded] = useState("");
   const [url, setUrl] = useState("");
@@ -86,8 +88,8 @@ export default function Base64Page(): React.ReactNode {
     setEncoded(enc);
     const newUrl = buildUrl(enc, jsonMode);
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrl(newUrl);
+    setUrl(newUrl);
   };
 
   const handleEncodedChange = (value: string): void => {
@@ -105,8 +107,8 @@ export default function Base64Page(): React.ReactNode {
     if (jsonMode) validateJson(decoded);
     const newUrl = buildUrl(value, jsonMode);
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrl(newUrl);
+    setUrl(newUrl);
   };
 
   const handleFormat = (): void => {
@@ -127,8 +129,8 @@ export default function Base64Page(): React.ReactNode {
     else setJsonValid(null);
     const newUrl = buildUrl(encoded, next);
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrlNow(newUrl);
+    setUrl(newUrl);
   };
 
   const handlePlainKeyDown = (
@@ -180,8 +182,8 @@ export default function Base64Page(): React.ReactNode {
     setJsonValid(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrlNow(newUrl);
+    setUrl(newUrl);
   };
 
   const handleTabChange = (next: Tab): void => {
@@ -191,7 +193,7 @@ export default function Base64Page(): React.ReactNode {
         ? `${window.location.origin}${window.location.pathname}?tab=image`
         : buildUrl(encoded, jsonMode);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 
@@ -291,7 +293,7 @@ export default function Base64Page(): React.ReactNode {
                 (jsonValid ? (
                   <Badge>valid</Badge>
                 ) : (
-                  <Badge color="error">invalid</Badge>
+                  <Badge color="warn">invalid</Badge>
                 ))
               ) : (
                 <Badge>{plain.length} chars</Badge>

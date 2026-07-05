@@ -5,6 +5,7 @@ import { type GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { PERMISSION_GROUPS } from "@/data/ios-permissions";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export const getStaticProps: GetStaticProps = () => ({
   props: { groups: PERMISSION_GROUPS },
@@ -27,6 +28,8 @@ export default function IosPermissionsPage({
       : (new URLSearchParams(window.location.search).get("grp") ?? "all"),
   );
 
+  const { replaceUrl } = useUrlSync();
+
   function updateUrl(q: string, grp: string): void {
     const params = new URLSearchParams();
 
@@ -34,7 +37,7 @@ export default function IosPermissionsPage({
     if (grp !== "all") params.set("grp", grp);
     const qs = params.toString();
 
-    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+    replaceUrl(qs ? `?${qs}` : window.location.pathname);
   }
 
   function handleSearch(value: string): void {

@@ -3,8 +3,10 @@ import styles from "@/styles/bitwise.module.css";
 import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { formatBin, Operation, OPERATIONS } from "@/lib/bitwise";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function BitwisePage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [inputA, setInputA] = useState("60");
   const [inputB, setInputB] = useState("13");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -48,7 +50,7 @@ export default function BitwisePage(): React.ReactNode {
     setInputA(val);
     const newUrl = buildUrl(val, inputB);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -56,7 +58,7 @@ export default function BitwisePage(): React.ReactNode {
     setInputB(val);
     const newUrl = buildUrl(inputA, val);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -65,7 +67,7 @@ export default function BitwisePage(): React.ReactNode {
     setInputB("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 

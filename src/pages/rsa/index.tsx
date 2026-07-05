@@ -3,10 +3,12 @@ import styles from "@/styles/rsa.module.css";
 import { CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { Panel, PanelHeader, PanelBody } from "@/components/ui/Panel";
 import { arrayBufferToBase64, base64ToArrayBuffer, wrapPem, parsePemBody } from "@/lib/rsa";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 // ── Page ───────────────────────────────────────────────────────────────────────
 
 export default function RsaPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
 
 
   // Key pair
@@ -221,7 +223,7 @@ export default function RsaPage(): React.ReactNode {
       setCiphertextFromUrl(false);
       const newUrl = buildUrl(b64);
 
-      history.replaceState(null, "", newUrl);
+      replaceUrl(newUrl);
       setUrl(newUrl);
     } finally {
       setEncrypting(false);
@@ -308,7 +310,7 @@ export default function RsaPage(): React.ReactNode {
     setWrongPrivKeyPem("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   }
 

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/markdown.module.css";
 import { marked } from "marked";
 import { Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 type ViewMode = "preview" | "html";
 
@@ -25,6 +26,7 @@ const greet = (name) => \`Hello, \${name}!\`;
 `;
 
 export default function MarkdownPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [input, setInput] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("preview");
   const [url, setUrl] = useState("");
@@ -62,7 +64,7 @@ export default function MarkdownPage(): React.ReactNode {
     setInput(text);
     const newUrl = buildUrl(text);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -70,7 +72,7 @@ export default function MarkdownPage(): React.ReactNode {
     setInput("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 

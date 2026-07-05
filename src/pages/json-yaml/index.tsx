@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import styles from "@/styles/json-yaml.module.css";
 import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { dump, load } from "js-yaml";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function JsonYamlPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [json, setJson] = useState("");
   const [yaml, setYaml] = useState("");
   const [jsonError, setJsonError] = useState(false);
@@ -49,8 +51,10 @@ export default function JsonYamlPage(): React.ReactNode {
     if (!value.trim()) {
       setYaml("");
       setJsonError(false);
-      history.replaceState(null, "", window.location.pathname);
-      setUrl(window.location.href);
+      const newUrl = `${window.location.origin}${window.location.pathname}`;
+
+      replaceUrl(newUrl);
+      setUrl(newUrl);
 
       return;
     }
@@ -62,9 +66,10 @@ export default function JsonYamlPage(): React.ReactNode {
       setYaml(yamlOut);
       setJsonError(false);
       const params = new URLSearchParams({ json: encodeURIComponent(value) });
+      const newUrl = `${window.location.origin}${window.location.pathname}?${params}`;
 
-      history.replaceState(null, "", `?${params}`);
-      setUrl(window.location.href);
+      replaceUrl(newUrl);
+      setUrl(newUrl);
     } catch {
       setJsonError(true);
     }
@@ -75,8 +80,10 @@ export default function JsonYamlPage(): React.ReactNode {
     if (!value.trim()) {
       setJson("");
       setYamlError(false);
-      history.replaceState(null, "", window.location.pathname);
-      setUrl(window.location.href);
+      const newUrl = `${window.location.origin}${window.location.pathname}`;
+
+      replaceUrl(newUrl);
+      setUrl(newUrl);
 
       return;
     }
@@ -88,9 +95,10 @@ export default function JsonYamlPage(): React.ReactNode {
       setJson(jsonOut);
       setYamlError(false);
       const params = new URLSearchParams({ yaml: encodeURIComponent(value) });
+      const newUrl = `${window.location.origin}${window.location.pathname}?${params}`;
 
-      history.replaceState(null, "", `?${params}`);
-      setUrl(window.location.href);
+      replaceUrl(newUrl);
+      setUrl(newUrl);
     } catch {
       setYamlError(true);
     }
@@ -101,8 +109,10 @@ export default function JsonYamlPage(): React.ReactNode {
     setYaml("");
     setJsonError(false);
     setYamlError(false);
-    history.replaceState(null, "", window.location.pathname);
-    setUrl(window.location.href);
+    const newUrl = `${window.location.origin}${window.location.pathname}`;
+
+    replaceUrlNow(newUrl);
+    setUrl(newUrl);
   }
 
   return (
@@ -119,7 +129,7 @@ export default function JsonYamlPage(): React.ReactNode {
         <Panel>
           <PanelHeader label="JSON">
             {jsonError && (
-              <Badge color="error">invalid json</Badge>
+              <Badge color="warn">invalid json</Badge>
             )}
           </PanelHeader>
           <PanelBody>
@@ -139,7 +149,7 @@ export default function JsonYamlPage(): React.ReactNode {
         <Panel>
           <PanelHeader label="YAML">
             {yamlError && (
-              <Badge color="error">invalid yaml</Badge>
+              <Badge color="warn">invalid yaml</Badge>
             )}
           </PanelHeader>
           <PanelBody>

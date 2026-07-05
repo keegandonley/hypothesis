@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styles from "@/styles/text-stats.module.css";
 import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { DEFAULT_WPM, analyzeText } from "@/lib/text-stats";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function TextStatsPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [text, setText] = useState("");
   const [wpm, setWpm] = useState(DEFAULT_WPM);
   const [url, setUrl] = useState("");
 
-  const stats = analyzeText(text, wpm);
+  // Full-text analysis is O(text); skip it on renders that only touch URL state.
+  const stats = useMemo(() => analyzeText(text, wpm), [text, wpm]);
 
   const buildUrl = (txt: string, wordsPerMin: number): string => {
     if (!txt) return `${window.location.origin}${window.location.pathname}`;
@@ -48,7 +51,7 @@ export default function TextStatsPage(): React.ReactNode {
     setText(value);
     const newUrl = buildUrl(value, wpm);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -56,7 +59,7 @@ export default function TextStatsPage(): React.ReactNode {
     setWpm(value);
     const newUrl = buildUrl(text, value);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -65,7 +68,7 @@ export default function TextStatsPage(): React.ReactNode {
     setWpm(DEFAULT_WPM);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 

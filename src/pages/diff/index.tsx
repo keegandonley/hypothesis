@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import styles from "@/styles/diff.module.css";
 import { Button, PageLayout, PermalinkRow } from "@/components/ui";
 import { type Mode, MODES, computeDiff, countChanges } from "@/lib/diff";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function DiffPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [original, setOriginal] = useState("");
   const [modified, setModified] = useState("");
   const [mode, setMode] = useState<Mode>("lines");
@@ -24,7 +26,7 @@ export default function DiffPage(): React.ReactNode {
   const syncUrl = (a: string, b: string, m: Mode): void => {
     const newUrl = buildUrl(a, b, m);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -76,7 +78,7 @@ export default function DiffPage(): React.ReactNode {
     setMode("lines");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 

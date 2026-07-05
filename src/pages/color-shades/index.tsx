@@ -4,8 +4,10 @@ import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { generateShades, isDark } from "@/lib/color-shades";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function ColorShadesPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const isIframe = useIsIframe();
   const [color, setColor] = useState("#3b82f6");
   const [pageUrl, setPageUrl] = useState("");
@@ -31,7 +33,7 @@ export default function ColorShadesPage(): React.ReactNode {
     if (/^#[0-9a-fA-F]{6}$/.test(val)) {
       const newUrl = buildUrl(val);
 
-      history.replaceState(null, "", newUrl);
+      replaceUrl(newUrl);
       setPageUrl(newUrl);
     }
   };
@@ -40,7 +42,7 @@ export default function ColorShadesPage(): React.ReactNode {
     setColor(val);
     const newUrl = buildUrl(val);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setPageUrl(newUrl);
   };
 
@@ -48,7 +50,7 @@ export default function ColorShadesPage(): React.ReactNode {
     setColor("#3b82f6");
     const newUrl = buildUrl("#3b82f6");
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setPageUrl(newUrl);
   };
 

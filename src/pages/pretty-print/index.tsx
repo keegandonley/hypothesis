@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import styles from "@/styles/pretty-print.module.css";
-import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody } from "@/components/ui";
+import { Badge, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { URL_LIMIT, formatJson } from "@/lib/pretty-print";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function PrettyPrintPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [jsonValid, setJsonValid] = useState<boolean | null>(null);
@@ -50,7 +52,7 @@ export default function PrettyPrintPage(): React.ReactNode {
     const encoded = value ? btoa(unescape(encodeURIComponent(value))) : "";
     const newUrl = buildUrl(encoded);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
     setUrlTooLong(newUrl.length > URL_LIMIT);
   };
@@ -61,7 +63,7 @@ export default function PrettyPrintPage(): React.ReactNode {
     setJsonValid(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
     setUrlTooLong(false);
   };
@@ -84,7 +86,7 @@ export default function PrettyPrintPage(): React.ReactNode {
               <Badge>valid</Badge>
             )}
             {jsonValid === false && (
-              <Badge color="error">invalid</Badge>
+              <Badge color="warn">invalid</Badge>
             )}
           </PanelHeader>
           <PanelBody>
@@ -119,18 +121,7 @@ export default function PrettyPrintPage(): React.ReactNode {
 
       <hr className={styles.divider} />
 
-      <div className={styles.permalinkRow} data-permalink-row>
-        <span className={styles.fieldLabel}>Permalink</span>
-        <span
-          className={`${styles.permalinkUrl}${urlTooLong ? ` ${styles.permalinkDisabled}` : ""}`}
-        >
-          {urlTooLong ? "url too long to share" : url}
-        </span>
-        <CopyButton value={url} disabled={urlTooLong} />
-        <Button variant="reset" onClick={handleReset}>
-          Reset
-        </Button>
-      </div>
+      <PermalinkRow url={url} onReset={handleReset} tooLong={urlTooLong} />
       </PageLayout>
     </div>
   );

@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/json-ts.module.css";
 import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { jsonToTs } from "@/lib/json-ts";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function JsonTsPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [jsonInput, setJsonInput] = useState("");
   const [tsOutput, setTsOutput] = useState("");
   const [rootName, setRootName] = useState("Root");
@@ -71,7 +73,7 @@ export default function JsonTsPage(): React.ReactNode {
     compute(value, rootName, optional);
     const newUrl = buildUrl(value, rootName, optional);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -80,7 +82,7 @@ export default function JsonTsPage(): React.ReactNode {
     compute(jsonInput, value, optional);
     const newUrl = buildUrl(jsonInput, value, optional);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -91,7 +93,7 @@ export default function JsonTsPage(): React.ReactNode {
     compute(jsonInput, rootName, next);
     const newUrl = buildUrl(jsonInput, rootName, next);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -103,7 +105,7 @@ export default function JsonTsPage(): React.ReactNode {
     setJsonValid(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 
@@ -125,7 +127,7 @@ export default function JsonTsPage(): React.ReactNode {
             ) : jsonValid ? (
               <Badge>valid</Badge>
             ) : (
-              <Badge color="error">invalid</Badge>
+              <Badge color="warn">invalid</Badge>
             )}
           </PanelHeader>
           <PanelBody>

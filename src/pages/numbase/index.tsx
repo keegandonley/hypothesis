@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/numbase.module.css";
 import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { empty, fromDecimal, type Values } from "@/lib/numbase";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function NumbasePage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [values, setValues] = useState<Values>(empty);
   const [errorField, setErrorField] = useState<keyof Values | null>(null);
   const [url, setUrl] = useState("");
@@ -49,7 +51,7 @@ export default function NumbasePage(): React.ReactNode {
       setErrorField(null);
       const newUrl = buildUrl("");
 
-      history.replaceState(null, "", newUrl);
+      replaceUrl(newUrl);
       setUrl(newUrl);
 
       return;
@@ -70,7 +72,7 @@ export default function NumbasePage(): React.ReactNode {
     setValues({ ...next, [field]: raw.toUpperCase() });
     const newUrl = buildUrl(next.dec);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -79,7 +81,7 @@ export default function NumbasePage(): React.ReactNode {
     setErrorField(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 
@@ -141,7 +143,7 @@ export default function NumbasePage(): React.ReactNode {
             <Panel key={field}>
               <PanelHeader label={label}>
                 {isError ? (
-                  <Badge color="error">invalid</Badge>
+                  <Badge color="warn">invalid</Badge>
                 ) : val ? (
                   <Badge>{val.length} digits</Badge>
                 ) : (

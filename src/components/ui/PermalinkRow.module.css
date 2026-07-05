@@ -31,3 +31,9 @@
   text-overflow: ellipsis;
   font-family: var(--font-mono);
 }
+
+.urlTooLong {
+  color: var(--muted);
+  font-style: italic;
+  opacity: 0.6;
+}

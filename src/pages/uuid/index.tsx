@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import styles from "@/styles/uuid.module.css";
-import { Badge, Button, CopyButton, PageLayout } from "@/components/ui";
+import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { Panel, PanelHeader, PanelBody } from "@/components/ui/Panel";
 import { generate } from "@/lib/uuid";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function UuidPage(): React.ReactNode {
+  const { replaceUrlNow } = useUrlSync();
   const [uuid, setUuid] = useState("");
   const [version, setVersion] = useState<1 | 4 | 7>(4);
+  const [url, setUrl] = useState("");
 
   const buildUrl = (ver: number): string => {
     const params = new URLSearchParams({ version: String(ver) });
@@ -23,8 +26,11 @@ export default function UuidPage(): React.ReactNode {
 
     setVersion(ver); // eslint-disable-line react-hooks/set-state-in-effect
     setUuid(generate(ver));
-    history.replaceState(null, "", buildUrl(ver));
-  }, []);
+    const newUrl = buildUrl(ver);
+
+    replaceUrlNow(newUrl);
+    setUrl(newUrl);
+  }, [replaceUrlNow]);
 
   const handleRegenerate = (): void => {
     setUuid(generate(version));
@@ -33,7 +39,19 @@ export default function UuidPage(): React.ReactNode {
   const handleVersionChange = (ver: 1 | 4 | 7): void => {
     setVersion(ver);
     setUuid(generate(ver));
-    history.replaceState(null, "", buildUrl(ver));
+    const newUrl = buildUrl(ver);
+
+    replaceUrlNow(newUrl);
+    setUrl(newUrl);
+  };
+
+  const handleReset = (): void => {
+    setVersion(4);
+    setUuid(generate(4));
+    const newUrl = `${window.location.origin}${window.location.pathname}`;
+
+    replaceUrlNow(newUrl);
+    setUrl(newUrl);
   };
 
   return (
@@ -64,7 +82,7 @@ export default function UuidPage(): React.ReactNode {
             {version === 4 ? (
               <Badge color="blue">v{version}</Badge>
             ) : (
-              <Badge color="error">v{version}</Badge>
+              <Badge color="warn">v{version}</Badge>
             )}
           </PanelHeader>
           <PanelBody className={styles.uuidBody}>
@@ -79,13 +97,15 @@ export default function UuidPage(): React.ReactNode {
         </Panel>
       </div>
 
-      <hr className={styles.divider} />
-
       <div className={styles.bottomRow}>
         <Button variant="copy" onClick={handleRegenerate}>
           Regenerate
         </Button>
       </div>
+
+      <hr className={styles.divider} />
+
+      <PermalinkRow url={url} onReset={handleReset} />
       </PageLayout>
     </div>
   );

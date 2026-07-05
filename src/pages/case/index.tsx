@@ -3,8 +3,10 @@ import styles from "@/styles/case.module.css";
 import { CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 import { splitWords, CASES } from "@/lib/case";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function CasePage(): React.ReactNode {
+  const { replaceUrl } = useUrlSync();
   const [input, setInput] = useState("");
   const [url, setUrl] = useState("");
 
@@ -22,9 +24,11 @@ export default function CasePage(): React.ReactNode {
 
     if (value) params.set("input", value);
     const qs = params.toString();
+    const base = `${window.location.origin}${window.location.pathname}`;
+    const newUrl = qs ? `${base}?${qs}` : base;
 
-    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
-    setUrl(window.location.href);
+    replaceUrl(newUrl);
+    setUrl(newUrl);
   }
 
   const words = splitWords(input);

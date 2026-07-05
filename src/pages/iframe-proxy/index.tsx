@@ -16,6 +16,9 @@ interface RelayedMessage {
 }
 
 const DEBUG_BAR_HEIGHT = 36;
+// Long frame-proxy debugging sessions can relay thousands of messages; keep
+// the debug feed bounded so re-renders and memory stay flat.
+const MAX_MESSAGES = 500;
 
 function validateIframeUrl(rawUrl: string | null): string | null {
   if (!rawUrl) return null;
@@ -74,29 +77,33 @@ export default function IframeProxyPage(): React.ReactNode {
         iframeRef.current?.contentWindow?.postMessage(event.data, "*");
 
         if (debug) {
-          setMessages((prev) => [
-            {
-              id: `${Date.now()}-${Math.random()}`,
-              timestamp: Date.now(),
-              data: event.data as unknown,
-              direction: "parent-to-frame",
-            },
-            ...prev,
-          ]);
+          setMessages((prev) =>
+            [
+              {
+                id: `${Date.now()}-${Math.random()}`,
+                timestamp: Date.now(),
+                data: event.data as unknown,
+                direction: "parent-to-frame" as const,
+              },
+              ...prev,
+            ].slice(0, MAX_MESSAGES),
+          );
         }
       } else if (event.source === iframeRef.current?.contentWindow) {
         window.parent.postMessage(event.data, "*");
 
         if (debug) {
-          setMessages((prev) => [
-            {
-              id: `${Date.now()}-${Math.random()}`,
-              timestamp: Date.now(),
-              data: event.data as unknown,
-              direction: "frame-to-parent",
-            },
-            ...prev,
-          ]);
+          setMessages((prev) =>
+            [
+              {
+                id: `${Date.now()}-${Math.random()}`,
+                timestamp: Date.now(),
+                data: event.data as unknown,
+                direction: "frame-to-parent" as const,
+              },
+              ...prev,
+            ].slice(0, MAX_MESSAGES),
+          );
         }
       }
     };

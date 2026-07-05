@@ -378,11 +378,3 @@
   padding: 20px 0;
 }
 
-/* Footer */
-
-.footerRow {
-  display: flex;
-  justify-content: flex-end;
-}
-
-

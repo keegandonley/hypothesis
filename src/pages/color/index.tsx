@@ -11,6 +11,7 @@ import {
   toHex6,
   toRGB,
 } from "@/lib/color";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -24,6 +25,7 @@ const FORMAT_LABELS: { id: ColorFormat; label: string }[] = [
 ];
 
 export default function ColorPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [color, setColor] = useState<RGBA | null>(null);
@@ -62,7 +64,7 @@ export default function ColorPage(): React.ReactNode {
     setColor(parsed);
     const newUrl = buildUrl(value.trim());
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -82,7 +84,7 @@ export default function ColorPage(): React.ReactNode {
     setColor(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 

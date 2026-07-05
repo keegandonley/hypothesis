@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/og.module.css";
 import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { type OgData, DEFAULT, OG_TYPES, TWITTER_CARDS, buildTags } from "@/lib/og";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function OgPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [data, setData] = useState<OgData>(DEFAULT);
   const [pageUrl, setPageUrl] = useState("");
 
@@ -44,7 +46,7 @@ export default function OgPage(): React.ReactNode {
     setData(next);
     const newUrl = buildUrl(next);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setPageUrl(newUrl);
   };
 
@@ -54,7 +56,7 @@ export default function OgPage(): React.ReactNode {
     setData(DEFAULT);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setPageUrl(newUrl);
   };
 

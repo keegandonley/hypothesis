@@ -1,7 +1,9 @@
 import React from "react";
 import styles from "./Badge.module.css";
 
-type BadgeColor = "accent" | "error" | "blue" | "ready";
+// "warn" is the amber problem/attention tone — distinct from the red
+// --danger tokens used by destructive actions.
+type BadgeColor = "accent" | "warn" | "blue" | "ready";
 
 interface BadgeProps {
   children: React.ReactNode;

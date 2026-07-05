@@ -3,8 +3,10 @@ import styles from "@/styles/lorem.module.css";
 import { Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 import { generate } from "@/lib/lorem";
 import type { UnitType } from "@/lib/lorem";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function LoremPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [type, setType] = useState<UnitType>("paragraphs");
   const [count, setCount] = useState(3);
   const [output, setOutput] = useState("");
@@ -37,16 +39,16 @@ export default function LoremPage(): React.ReactNode {
     setOutput(generate(t, c));
     const initialUrl = buildUrl(t, c);
 
-    history.replaceState(null, "", initialUrl);
+    replaceUrlNow(initialUrl);
     setUrl(initialUrl);
-  }, []);
+  }, [replaceUrlNow]);
 
   const handleTypeChange = (t: UnitType): void => {
     setType(t);
     setOutput(generate(t, count));
     const newUrl = buildUrl(t, count);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -57,7 +59,7 @@ export default function LoremPage(): React.ReactNode {
     setOutput(generate(type, clamped));
     const newUrl = buildUrl(type, clamped);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -70,7 +72,7 @@ export default function LoremPage(): React.ReactNode {
     setOutput(generate(t, c));
     const newUrl = buildUrl(t, c);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 

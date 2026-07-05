@@ -30,6 +30,16 @@ In debug mode without a `url` param, the page can be used as a standalone tool â
 /iframe-proxy?debug=true
 ```
 
+### `name`
+
+Sets the `name` attribute on the embedded iframe. The embedded page sees it as `window.name`, and it makes the frame targetable (e.g. `target="<name>"` on links or `window.open(url, "<name>")` from the parent).
+
+```
+/iframe-proxy?url=https://example.com&debug=true&name=my-frame
+```
+
+In debug mode the panel includes a **frame name** field â€” changing it updates the URL and remounts the iframe, since the `name` attribute only applies on creation. The value is kept in the URL so a named setup is shareable.
+
 ## Message Relay
 
 All `postMessage` traffic is intercepted and forwarded:

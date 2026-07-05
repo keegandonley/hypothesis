@@ -1,50 +1,66 @@
-import { useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import styles from "@/styles/json-diff.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
-import { jsonDiff, formatValue, DIFF_LABELS, type DiffType, type DiffEntry } from "@/lib/json-diff";
+import { jsonDiff, DIFF_LABELS, formatValue, type DiffType, type DiffEntry } from "@/lib/json-diff";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function JsonDiffPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [left, setLeft] = useState("");
   const [right, setRight] = useState("");
   const [leftError, setLeftError] = useState("");
   const [rightError, setRightError] = useState("");
   const [url, setUrl] = useState("");
 
-  let diff: DiffEntry[] = [];
-  let canDiff = false;
-  let leftParsed: unknown;
-  let rightParsed: unknown;
-  let leftOk = false;
-  let rightOk = false;
+  // Defer the diff inputs so typing stays responsive on large documents: the
+  // keystroke renders immediately and the parse+diff runs at deferred priority.
+  const deferredLeft = useDeferredValue(left);
+  const deferredRight = useDeferredValue(right);
 
-  if (left) {
-    try {
-      leftParsed = JSON.parse(left);
-      leftOk = true;
-    } catch {
-      leftOk = false;
+  const { diff, canDiff } = useMemo(() => {
+    let leftParsed: unknown;
+    let rightParsed: unknown;
+    let leftOk = false;
+    let rightOk = false;
+
+    if (deferredLeft) {
+      try {
+        leftParsed = JSON.parse(deferredLeft);
+        leftOk = true;
+      } catch {
+        leftOk = false;
+      }
     }
-  }
 
-  if (right) {
-    try {
-      rightParsed = JSON.parse(right);
-      rightOk = true;
-    } catch {
-      rightOk = false;
+    if (deferredRight) {
+      try {
+        rightParsed = JSON.parse(deferredRight);
+        rightOk = true;
+      } catch {
+        rightOk = false;
+      }
     }
-  }
 
-  canDiff = (left.length > 0 || right.length > 0) && leftOk && rightOk;
-  if (canDiff) diff = jsonDiff(leftParsed, rightParsed);
+    const ok =
+      (deferredLeft.length > 0 || deferredRight.length > 0) && leftOk && rightOk;
 
-  const counts = {
-    added: diff.filter((d) => d.type === "added").length,
-    removed: diff.filter((d) => d.type === "removed").length,
-    changed: diff.filter(
-      (d) => d.type === "changed" || d.type === "type-changed",
-    ).length,
-  };
+    return {
+      diff: ok ? jsonDiff(leftParsed, rightParsed) : ([] as DiffEntry[]),
+      canDiff: ok,
+    };
+  }, [deferredLeft, deferredRight]);
+
+  const counts = useMemo(() => {
+    const acc = { added: 0, removed: 0, changed: 0 };
+
+    for (const d of diff) {
+      if (d.type === "added") acc.added++;
+      else if (d.type === "removed") acc.removed++;
+      else if (d.type === "changed" || d.type === "type-changed") acc.changed++;
+    }
+
+    return acc;
+  }, [diff]);
 
   const buildUrl = (l: string, r: string): string => {
     if (!l && !r) return `${window.location.origin}${window.location.pathname}`;
@@ -80,7 +96,7 @@ export default function JsonDiffPage(): React.ReactNode {
   const syncUrl = (l: string, r: string): void => {
     const newUrl = buildUrl(l, r);
 
-    history.replaceState(null, "", newUrl);
+    replaceUrl(newUrl);
     setUrl(newUrl);
   };
 
@@ -123,7 +139,7 @@ export default function JsonDiffPage(): React.ReactNode {
     setRightError("");
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 
@@ -176,7 +192,7 @@ export default function JsonDiffPage(): React.ReactNode {
         <div className={styles.diffPanel}>
           <div className={styles.diffHeader}>
             <span className={styles.diffTitle}>Differences</span>
-            {canDiff && (
+            {canDiff && !leftError && !rightError && (
               <div className={styles.diffSummary}>
                 {counts.added > 0 && (
                   <Badge className={styles.badgeAdded}>
@@ -217,7 +233,7 @@ export default function JsonDiffPage(): React.ReactNode {
                 No differences found — the two JSON values are identical
               </span>
             )}
-            {diff.map((entry, i) => (
+            {!leftError && !rightError && diff.map((entry, i) => (
               <div
                 key={i}
                 className={`${styles.diffEntry} ${styles[entry.type]}`}

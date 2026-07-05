@@ -5,6 +5,7 @@ import { type GetStaticProps } from "next";
 import styles from "@/styles/reference.module.css";
 import { useBranding } from "@/lib/branding";
 import { TIMEZONES, TZ_GROUPS, type TzGroup } from "@/data/timezones";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export const getStaticProps: GetStaticProps = () => ({
   props: { timezones: TIMEZONES, tzGroups: TZ_GROUPS },
@@ -76,6 +77,8 @@ export default function TimezonesPage({
     };
   }, []);
 
+  const { replaceUrl } = useUrlSync();
+
   function updateUrl(q: string, grp: ActiveGroup): void {
     const params = new URLSearchParams();
 
@@ -83,7 +86,7 @@ export default function TimezonesPage({
     if (grp !== "all") params.set("grp", grp);
     const qs = params.toString();
 
-    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+    replaceUrl(qs ? `?${qs}` : window.location.pathname);
   }
 
   function handleSearch(value: string): void {

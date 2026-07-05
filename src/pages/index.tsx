@@ -81,20 +81,17 @@ function formatReleaseDate(slug: string): string {
   return `${months[month - 1]} ${parseInt(parts[2], 10)}, ${parts[0]}`;
 }
 
-/* eslint-disable-next-line @typescript-eslint/require-await -- GetServerSideProps must return Promise */
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const host = req.headers.host ?? "hypothesis.sh";
-  const hostname = host.split(":")[0];
-  const branding = getBranding(hostname);
-  const protocol = req.headers["x-forwarded-proto"] ?? "https";
-  const baseUrl = `${String(protocol)}://${host}`;
+// Release files only change per deploy, so read them once per server
+// instance instead of on every request.
+let cachedReleasesList: ReleaseEntry[] | null = null;
 
-  let releasesList: ReleaseEntry[] = [];
+function getLatestRelease(): ReleaseEntry[] {
+  if (cachedReleasesList) return cachedReleasesList;
 
   try {
     const files = fs.readdirSync(RELEASES_DIR).filter((f) => f.endsWith(".md"));
 
-    releasesList = files
+    const releasesList = files
       .map((file) => {
         const slug = file.replace(/\.md$/, "");
         const raw = fs.readFileSync(path.join(RELEASES_DIR, file), "utf-8");
@@ -111,7 +108,25 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       })
       .sort((a, b) => b.date.localeCompare(a.date))
       .slice(0, 1);
-  } catch {}
+
+    cachedReleasesList = releasesList;
+
+    return releasesList;
+  } catch {
+    // Don't cache the failure — retry on the next request.
+    return [];
+  }
+}
+
+/* eslint-disable-next-line @typescript-eslint/require-await -- GetServerSideProps must return Promise */
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  const host = req.headers.host ?? "hypothesis.sh";
+  const hostname = host.split(":")[0];
+  const branding = getBranding(hostname);
+  const protocol = req.headers["x-forwarded-proto"] ?? "https";
+  const baseUrl = `${String(protocol)}://${host}`;
+
+  const releasesList = getLatestRelease();
 
   return {
     props: {
@@ -390,8 +405,7 @@ export default function HomePage({
             {/* {branding.tagline}{" | "} */}
             <Link
               href="/docs/multi-domain"
-              className={styles.docsLink}
-              style={{ display: "inline-flex", verticalAlign: "middle" }}
+              className={`${styles.docsLink} ${styles.taglineLink}`}
             >
               <DocIcon />
               docs
@@ -399,12 +413,7 @@ export default function HomePage({
             {" · "}
             <Link
               href="/work"
-              className={styles.docsLink}
-              style={{
-                display: "inline-flex",
-                verticalAlign: "middle",
-                gap: "4px",
-              }}
+              className={`${styles.docsLink} ${styles.taglineLink}`}
             >
               enter work mode
             </Link>
@@ -545,13 +554,7 @@ export default function HomePage({
                 />
               ))}
             </div>
-            <div
-              style={{
-                marginTop: "8px",
-                display: "flex",
-                justifyContent: "flex-end",
-              }}
-            >
+            <div className={styles.viewAllRow}>
               <Link href="/release-notes" className={styles.docsLink}>
                 View all release notes →
               </Link>
@@ -704,9 +707,7 @@ function ExperimentCard({
         <div className={styles.cardMain}>
           <div className={styles.cardBodyRow}>
             {id && <Badge>{id}</Badge>}
-            <div className={styles.arrow} style={{ marginLeft: "auto" }}>
-              →
-            </div>
+            <div className={`${styles.arrow} ${styles.pushEnd}`}>→</div>
           </div>
           <div className={styles.cardBody}>
             <div className={styles.cardName}>{name}</div>
@@ -757,11 +758,7 @@ function ExperimentCard({
             ))}
           </div>
         )}
-        {id && compact && (
-          <Badge style={{ marginLeft: "auto" }}>
-            {id}
-          </Badge>
-        )}
+        {id && compact && <Badge className={styles.pushEnd}>{id}</Badge>}
       </div>
     </div>
   );

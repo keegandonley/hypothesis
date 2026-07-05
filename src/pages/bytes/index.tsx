@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import styles from "@/styles/bytes.module.css";
 import { CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { BINARY_UNITS, DECIMAL_UNITS, formatValue, type Mode } from "@/lib/bytes";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function BytesPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [rawValue, setRawValue] = useState("");
   const [selectedUnit, setSelectedUnit] = useState("B");
   const [mode, setMode] = useState<Mode>("binary");
@@ -28,9 +30,11 @@ export default function BytesPage(): React.ReactNode {
     if (u !== "B") params.set("unit", u);
     if (m !== "binary") params.set("mode", m);
     const qs = params.toString();
+    const base = `${window.location.origin}${window.location.pathname}`;
+    const newUrl = qs ? `${base}?${qs}` : base;
 
-    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
-    setUrl(window.location.href);
+    replaceUrl(newUrl);
+    setUrl(newUrl);
   }
 
   function handleValue(v: string): void {
@@ -157,8 +161,10 @@ export default function BytesPage(): React.ReactNode {
         setRawValue("");
         setSelectedUnit("B");
         setMode("binary");
-        history.replaceState(null, "", window.location.pathname);
-        setUrl(window.location.href);
+        const newUrl = `${window.location.origin}${window.location.pathname}`;
+
+        replaceUrlNow(newUrl);
+        setUrl(newUrl);
       }} />
     </div>
   );

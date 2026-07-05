@@ -6,16 +6,15 @@ import { type GetStaticPaths, type GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import styles from "@/styles/docs.module.css";
 import { useBranding } from "@/lib/branding";
+import { experiments } from "@/lib/tools";
 import React from "react";
 
 const DOCS_DIR = path.join(process.cwd(), "src/content/docs");
-const EXPERIMENT_SLUGS = new Set([
-  "iframe-proxy",
-  "message-stream",
-  "message-factory",
-  "webhook",
-  "rsa",
-]);
+// Derived from the registry so docs labels never drift from the homepage
+// grouping (href may carry default query params, e.g. /iframe-proxy?debug=true).
+const EXPERIMENT_SLUGS = new Set(
+  experiments.map((e) => e.href.split("?")[0].replace(/^\//, "")),
+);
 
 export const getStaticPaths: GetStaticPaths = () => {
   const files = fs.readdirSync(DOCS_DIR);

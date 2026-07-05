@@ -9,8 +9,10 @@ import {
   EC_LEVELS, EC_DESCRIPTIONS, EMPTY_WIFI, EMPTY_VCARD,
   buildWifiString, buildVCardString, getQrString,
 } from "@/lib/qr";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function QrPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const isIframe = useIsIframe();
 
   const [mode, setMode] = useState<QrMode>("text");
@@ -23,8 +25,13 @@ export default function QrPage(): React.ReactNode {
   const [svgContent, setSvgContent] = useState("");
   const [error, setError] = useState("");
   const [pageUrl, setPageUrl] = useState("");
+  // Monotonic id per generation: QRCode.toString is async, so a slow render
+  // kicked off by an earlier keystroke must not overwrite a newer one.
+  const generateSeqRef = useRef(0);
 
   const generateQR = async (text: string, ec: ECLevel): Promise<void> => {
+    const seq = ++generateSeqRef.current;
+
     if (!text.trim()) {
       setSvgContent("");
       setError("");
@@ -40,9 +47,11 @@ export default function QrPage(): React.ReactNode {
         color: { dark: "#f0ede8", light: "#13131a" },
       });
 
+      if (seq !== generateSeqRef.current) return;
       setSvgContent(svg);
       setError("");
     } catch (e) {
+      if (seq !== generateSeqRef.current) return;
       setSvgContent("");
       setError(e instanceof Error ? e.message : "Failed to generate QR code");
     }
@@ -101,7 +110,7 @@ export default function QrPage(): React.ReactNode {
       void generateQR(buildWifiString(w), ec);
       const url = buildUrl("wifi", ec, "", w, EMPTY_VCARD);
 
-      history.replaceState(null, "", url);
+      replaceUrlNow(url);
       setPageUrl(url);
     } else if (modeParam === "vcard") {
       const vc: VCardState = {
@@ -118,7 +127,7 @@ export default function QrPage(): React.ReactNode {
       void generateQR(buildVCardString(vc), ec);
       const url = buildUrl("vcard", ec, "", EMPTY_WIFI, vc);
 
-      history.replaceState(null, "", url);
+      replaceUrlNow(url);
       setPageUrl(url);
     } else {
       const v = params.get("value") ?? "https://hypothesis.sh";
@@ -127,12 +136,15 @@ export default function QrPage(): React.ReactNode {
       void generateQR(v, ec);
       const url = buildUrl("text", ec, v, EMPTY_WIFI, EMPTY_VCARD);
 
-      history.replaceState(null, "", url);
+      replaceUrlNow(url);
       setPageUrl(url);
     }
+    // replaceUrlNow is a stable useCallback; this mount effect runs once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleModeChange = (newMode: QrMode): void => {
+    generateSeqRef.current++; // invalidate any in-flight generation
     setMode(newMode);
     setSvgContent("");
     setError("");
@@ -141,7 +153,7 @@ export default function QrPage(): React.ReactNode {
     setVcard(EMPTY_VCARD);
     const url = buildUrl(newMode, ecLevel, "", EMPTY_WIFI, EMPTY_VCARD);
 
-    history.replaceState(null, "", url);
+    replaceUrlNow(url);
     setPageUrl(url);
   };
 
@@ -150,7 +162,7 @@ export default function QrPage(): React.ReactNode {
     void generateQR(v, ecLevel);
     const url = buildUrl("text", ecLevel, v, wifi, vcard);
 
-    history.replaceState(null, "", url);
+    replaceUrl(url);
     setPageUrl(url);
   };
 
@@ -161,7 +173,7 @@ export default function QrPage(): React.ReactNode {
     void generateQR(buildWifiString(next), ecLevel);
     const url = buildUrl("wifi", ecLevel, "", next, vcard);
 
-    history.replaceState(null, "", url);
+    replaceUrl(url);
     setPageUrl(url);
   };
 
@@ -172,7 +184,7 @@ export default function QrPage(): React.ReactNode {
     void generateQR(buildVCardString(next), ecLevel);
     const url = buildUrl("vcard", ecLevel, "", wifi, next);
 
-    history.replaceState(null, "", url);
+    replaceUrl(url);
     setPageUrl(url);
   };
 
@@ -181,11 +193,12 @@ export default function QrPage(): React.ReactNode {
     void generateQR(getQrString(mode, value, wifi, vcard), ec);
     const url = buildUrl(mode, ec, value, wifi, vcard);
 
-    history.replaceState(null, "", url);
+    replaceUrl(url);
     setPageUrl(url);
   };
 
   const handleReset = (): void => {
+    generateSeqRef.current++; // invalidate any in-flight generation
     setSvgContent("");
     setError("");
     setValue("");
@@ -193,7 +206,7 @@ export default function QrPage(): React.ReactNode {
     setVcard(EMPTY_VCARD);
     const url = buildUrl(mode, ecLevel, "", EMPTY_WIFI, EMPTY_VCARD);
 
-    history.replaceState(null, "", url);
+    replaceUrlNow(url);
     setPageUrl(url);
   };
 

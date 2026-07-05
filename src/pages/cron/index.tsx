@@ -2,8 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/cron.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
 import { EXAMPLES, NEXT_COUNT, type ParseResult, parseCron, formatLocal, formatUtc } from "@/lib/cron";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function CronPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [input, setInput] = useState("");
   const [result, setResult] = useState<ParseResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -43,7 +45,7 @@ export default function CronPage(): React.ReactNode {
       setErrorMsg(null);
       const newUrl = buildUrl("");
 
-      history.replaceState(null, "", newUrl);
+      replaceUrl(newUrl);
       setUrl(newUrl);
 
       return;
@@ -56,7 +58,7 @@ export default function CronPage(): React.ReactNode {
       setErrorMsg(null);
       const newUrl = buildUrl(trimmed);
 
-      history.replaceState(null, "", newUrl);
+      replaceUrl(newUrl);
       setUrl(newUrl);
     } else if (r.error !== "empty") {
       setResult(null);
@@ -75,7 +77,7 @@ export default function CronPage(): React.ReactNode {
     setErrorMsg(null);
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 
@@ -107,7 +109,7 @@ export default function CronPage(): React.ReactNode {
           autoCapitalize="off"
           autoCorrect="off"
         />
-        {errorMsg && <Badge color="error">invalid</Badge>}
+        {errorMsg && <Badge color="warn">invalid</Badge>}
       </div>
 
       <div className={styles.examplesRow}>

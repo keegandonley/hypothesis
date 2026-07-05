@@ -11,8 +11,10 @@ import {
   analyzePassword,
   generatePasswords,
 } from "@/lib/password";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function PasswordPage(): React.ReactNode {
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const isIframe = useIsIframe();
 
   const [mode, setMode] = useState<"generate" | "check">("generate");
@@ -61,8 +63,10 @@ export default function PasswordPage(): React.ReactNode {
       count: String(c),
     });
 
-    history.replaceState(null, "", `?${params}`);
-    setUrl(window.location.href);
+    const newUrl = `${window.location.origin}${window.location.pathname}?${params}`;
+
+    replaceUrl(newUrl);
+    setUrl(newUrl);
   }
 
   useEffect(() => {
@@ -72,7 +76,7 @@ export default function PasswordPage(): React.ReactNode {
       setMode("check"); // eslint-disable-line react-hooks/set-state-in-effect
       const checkUrl = `${window.location.origin}${window.location.pathname}?mode=check`;
 
-      history.replaceState(null, "", checkUrl);
+      replaceUrlNow(checkUrl);
       setUrl(checkUrl);
 
       return;
@@ -92,7 +96,7 @@ export default function PasswordPage(): React.ReactNode {
     if (s !== null) setSymbols(s === "1");
     if (c) setCount(Number(c));
     setUrl(window.location.href);
-  }, []);
+  }, [replaceUrlNow]);
 
   function handleModeChange(newMode: "generate" | "check"): void {
     setMode(newMode);
@@ -100,7 +104,7 @@ export default function PasswordPage(): React.ReactNode {
     if (newMode === "check") {
       const checkUrl = `${window.location.origin}${window.location.pathname}?mode=check`;
 
-      history.replaceState(null, "", checkUrl);
+      replaceUrlNow(checkUrl);
       setUrl(checkUrl);
     } else {
       updateUrl(length, upper, lower, digits, symbols, count);
@@ -164,8 +168,10 @@ export default function PasswordPage(): React.ReactNode {
     setSymbols(false);
     setCount(5);
     setPasswords([]);
-    history.replaceState(null, "", window.location.pathname);
-    setUrl(window.location.href);
+    const newUrl = `${window.location.origin}${window.location.pathname}`;
+
+    replaceUrlNow(newUrl);
+    setUrl(newUrl);
   }
 
   const noCharset = !upper && !lower && !digits && !symbols;

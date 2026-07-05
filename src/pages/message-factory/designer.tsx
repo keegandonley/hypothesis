@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import Head from "next/head";
 import Link from "next/link";
 import styles from "@/styles/message-factory-designer.module.css";
 import { DocIcon } from "@/components/icons/doc";
+import { ToolHead } from "@/components/ToolHead";
 import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { Badge, PermalinkRow, CopyButton } from "@/components/ui";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 interface Action {
   id: string;
@@ -94,6 +95,7 @@ export default function DesignerPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
   const [actions, setActions] = useState<(Action & { _key: string })[]>([]);
+  const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [url, setUrl] = useState("");
   const [viewerUrl, setViewerUrl] = useState("");
 
@@ -124,8 +126,8 @@ export default function DesignerPage(): React.ReactNode {
   const syncUrl = (next: (Action & { _key: string })[]): void => {
     const newUrl = buildUrl(next);
 
-    history.replaceState(null, "", newUrl);
-    setUrl(window.location.href);
+    replaceUrl(newUrl);
+    setUrl(newUrl);
     setViewerUrl(buildViewerUrl(next));
   };
 
@@ -160,16 +162,18 @@ export default function DesignerPage(): React.ReactNode {
     setActions([]);
     const newUrl = buildBaseUrl();
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
     setViewerUrl(`${window.location.origin}/message-factory/viewer`);
   };
 
   return (
     <div className={styles.page}>
-      <Head>
-        <title>{`${branding.name.toUpperCase()} — MESSAGE DESIGNER`}</title>
-      </Head>
+      <ToolHead
+        title="Message Designer"
+        description="Build arrays of postMessage actions with shareable permalinks for testing message-driven pages."
+        path="/message-factory/designer"
+      />
 
       <div className={styles.header}>
         <div className={styles.eyebrow} data-eyebrow>
@@ -252,7 +256,7 @@ export default function DesignerPage(): React.ReactNode {
                 <label className={styles.fieldLabel}>
                   payload
                   {!isValidJson(action.payload) && (
-                    <Badge color="error">invalid json</Badge>
+                    <Badge color="warn">invalid json</Badge>
                   )}
                 </label>
                 <textarea
