@@ -10,10 +10,10 @@ The hypothesis.sh MCP (Model Context Protocol) server lets AI coding agents send
 
 Add the hypothesis MCP server to your agent's configuration:
 
-### Claude Desktop
+### Claude Code
 
 ```bash
-claude mcp add hypothesis --transport sse https://hypothesis.sh/api/mcp/sse
+claude mcp add hypothesis --transport http https://hypothesis.sh/api/mcp
 ```
 
 ### Cursor
@@ -24,7 +24,7 @@ Add to your `.cursor/mcp.json`:
 {
   "mcpServers": {
     "hypothesis": {
-      "url": "https://hypothesis.sh/api/mcp/sse"
+      "url": "https://hypothesis.sh/api/mcp"
     }
   }
 }
@@ -32,13 +32,15 @@ Add to your `.cursor/mcp.json`:
 
 ### Other MCP Clients
 
-Any MCP-compatible client can connect to:
+The server speaks the Streamable HTTP transport. Any MCP-compatible client can connect to:
 
 ```
-https://hypothesis.sh/api/mcp/sse
+https://hypothesis.sh/api/mcp
 ```
 
 No authentication required.
+
+> **Using the old SSE endpoint?** `https://hypothesis.sh/api/mcp/sse` (`--transport sse`) is **deprecated but still works** — existing clients keep functioning. It's slower and less efficient than Streamable HTTP, so migrate to `https://hypothesis.sh/api/mcp` with the `http` transport when you can.
 
 ## Available Tools
 
@@ -50,11 +52,11 @@ Send a push notification to a pre-registered iOS device.
 
 **Parameters:**
 
-| Parameter | Type   | Required | Description                                      |
-| --------- | ------ | -------- | ------------------------------------------------ |
-| deviceId  | string | yes      | Device ID from the hypothesis.sh iOS app         |
-| title     | string | yes      | Notification title                               |
-| body      | string | yes      | Notification body text                           |
+| Parameter | Type   | Required | Description                              |
+| --------- | ------ | -------- | ---------------------------------------- |
+| deviceId  | string | yes      | Device ID from the hypothesis.sh iOS app |
+| title     | string | yes      | Notification title                       |
+| body      | string | yes      | Notification body text                   |
 
 **Example:**
 
@@ -103,10 +105,10 @@ List recent webhook events received by a session.
 
 **Parameters:**
 
-| Parameter | Type   | Required | Description                                          |
-| --------- | ------ | -------- | ---------------------------------------------------- |
-| sessionId | string | yes      | Session ID returned by create_webhook_session        |
-| limit     | number | no       | Maximum events to return (default: 50, max: 200)     |
+| Parameter | Type   | Required | Description                                      |
+| --------- | ------ | -------- | ------------------------------------------------ |
+| sessionId | string | yes      | Session ID returned by create_webhook_session    |
+| limit     | number | no       | Maximum events to return (default: 50, max: 200) |
 
 **Example:**
 

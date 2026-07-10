@@ -65,4 +65,4 @@ Treat your device ID like a secret. Anyone who has it can send push notification
 
 ## MCP integration
 
-Coding agents can send push notifications programmatically using the [MCP server](/docs/mcp). Configure your agent to connect to `https://hypothesis.sh/api/mcp/sse` and use the `send_push_notification` tool with your device ID.
+Coding agents can send push notifications programmatically using the [MCP server](/docs/mcp). Configure your agent to connect to `https://hypothesis.sh/api/mcp` and use the `send_push_notification` tool with your device ID.
