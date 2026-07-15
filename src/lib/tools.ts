@@ -424,6 +424,15 @@ export const experiments: ExperimentItem[] = [
     allowMultipleInstances: true,
     suppressMobile: true,
   },
+  {
+    kind: "experiment",
+    id: "EXP-012",
+    name: "httptest",
+    description:
+      "An httpbin-compatible request & response service — inspect headers, force status codes, and test auth, redirects, cookies, and delays.",
+    href: "/httptest",
+    docsHref: "/docs/httptest",
+  },
 ];
 
 export const tools: ToolItem[] = [

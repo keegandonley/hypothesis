@@ -1,0 +1,273 @@
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 28px 28px;
+  font-family: var(--font-mono);
+  color: var(--text);
+  padding: 20px;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0 0 16px;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.hint {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.code {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 1px 5px;
+  font-size: 11px;
+}
+
+.baseRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.baseUrl {
+  font-size: 13px;
+  color: var(--accent);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.columns {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.catalog {
+  max-height: 640px;
+  display: flex;
+  flex-direction: column;
+}
+
+.catalogBody {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.groupLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  padding: 4px 0;
+}
+
+.endpoint {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 7px 9px;
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  color: var(--text);
+}
+
+.endpoint:hover {
+  background-color: var(--bg);
+  border-color: var(--border);
+}
+
+.selected {
+  background-color: var(--bg);
+  border-color: var(--accent);
+}
+
+.endpointPath {
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.endpointDesc {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.runner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.requestRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.select,
+.input {
+  padding: 8px 10px;
+  background-color: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.select {
+  cursor: pointer;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+}
+
+.select:focus,
+.input:focus,
+.textarea:focus {
+  box-shadow: inset 0 0 0 1px var(--accent);
+  border-color: var(--accent);
+}
+
+.prefix {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.textarea {
+  min-height: 90px;
+  padding: 10px;
+  background-color: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  resize: vertical;
+}
+
+.error {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  background-color: var(--card-bg);
+  color: var(--text);
+  font-size: 12px;
+}
+
+.responsePanel {
+  min-width: 0;
+}
+
+.responseBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.responseHeaders {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.headerLine {
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  min-width: 0;
+}
+
+.headerKey {
+  color: var(--muted);
+  flex-shrink: 0;
+  min-width: 150px;
+}
+
+.headerValue {
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.pre {
+  margin: 0;
+  max-height: 380px;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 860px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+
+  .catalog {
+    max-height: 300px;
+  }
+
+  .requestRow {
+    flex-wrap: wrap;
+  }
+
+  .input {
+    flex-basis: 100%;
+  }
+
+  .headerKey {
+    min-width: 110px;
+  }
+}

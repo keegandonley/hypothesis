@@ -71,6 +71,7 @@ export const getStaticProps: GetStaticProps = ({ params }) => {
 type Node =
   | { type: "h1" | "h2" | "h3"; text: string }
   | { type: "p"; text: string }
+  | { type: "blockquote"; text: string }
   | { type: "ul"; items: string[] }
   | { type: "ol"; items: string[] }
   | { type: "pre"; lang: string; code: string }
@@ -116,6 +117,24 @@ function parseMarkdown(md: string): Node[] {
     if (line.startsWith("# ")) {
       nodes.push({ type: "h1", text: line.slice(2) });
       i++;
+      continue;
+    }
+
+    // Blockquote callout. Consecutive "> " lines are one callout; a blank line
+    // ends it. Without this they rendered as paragraphs beginning with a
+    // literal ">".
+    if (line.startsWith("> ") || line === ">") {
+      const quoteLines: string[] = [];
+
+      while (
+        i < lines.length &&
+        (lines[i].startsWith("> ") || lines[i] === ">")
+      ) {
+        quoteLines.push(lines[i].replace(/^>\s?/, ""));
+        i++;
+      }
+
+      nodes.push({ type: "blockquote", text: quoteLines.join(" ").trim() });
       continue;
     }
 
@@ -296,6 +315,12 @@ function MarkdownContent({
               <p key={i}>
                 <Inline text={node.text} />
               </p>
+            );
+          case "blockquote":
+            return (
+              <blockquote key={i} className={styles.callout}>
+                <Inline text={node.text} />
+              </blockquote>
             );
           case "ul":
             return (
