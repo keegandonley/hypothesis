@@ -440,10 +440,10 @@ Content-Length: 104
 {"Cache-Control":"no-cache","Content-Length":"104","Content-Type":"application/json","X-Custom":"hello"}
 ```
 
-Two behaviors look like bugs and aren't — both match httpbin exactly:
+Two behaviors look like bugs and aren't:
 
-- **Params are _added_, not substituted.** `?Content-Type=text/html` leaves **two** `Content-Type` headers, and the body reports an array: `{"Content-Type": ["application/json", "text/html"]}`.
-- **Repeated params repeat the header.** `?a=1&a=2` emits two `a:` lines and reports `"a": ["1","2"]`.
+- **Repeated params repeat the header.** `?a=1&a=2` emits two `a:` lines and reports `"a": ["1","2"]` — matching httpbin exactly.
+- **Params are _added_ to `Content-Type`, not substituted.** `?Content-Type=text/html` reports an array in the body — `{"Content-Type": ["application/json", "text/html"]}` — just as httpbin does. On the wire, though, only `text/html` arrives: the CDN collapses duplicate `Content-Type` to the last value. See [Differences](#differences-from-httpbinorg).
 
 The body reports its own `Content-Length` — so writing that number changes the body's length. The value is resolved by re-serializing to a fixpoint, exactly as httpbin does, and always matches the bytes actually sent.
 
@@ -539,6 +539,7 @@ This is a **TypeScript port of httpbin's core surface**, not the Flask app. Know
 - **Multipart bodies are not decoded.** `multipart/form-data` lands in `data` as raw text with `files` empty; real httpbin populates `files`. Form-encoded and JSON bodies behave identically.
 - **`/json`, `/html`, and `/xml` can return `304 Not Modified`** to a conditional `If-None-Match` request, because the framework attaches an `ETag` to static bodies. Real httpbin sets no `ETag` and always returns `200`. Rarely hit in practice — every response is `no-store`, so a well-behaved cache never revalidates — and the reflection endpoints are immune, since echoing `If-None-Match` into the body changes the body and the tag never matches.
 - **`/response-headers` is sandboxed** (see the note above) and **won't emit a duplicate `Content-Length`**: real httpbin honors `?Content-Length=999` with a _second, conflicting_ header, which is response-smuggling material rather than a testable behavior. The body still reports what you asked for; only the true length is sent. Real httpbin also returns `500` on a CRLF-bearing value; this returns `400`.
+- **`/response-headers` can't emit a duplicate `Content-Type` or `ETag`.** Ask for `?Content-Type=text/html` and the body reports the array httpbin reports, but only the last value reaches the wire. The handler does set both — a bare Node server given the same `setHeader` call writes two `Content-Type:` lines — so this is the CDN in front of the function collapsing singleton headers, and it can't be fixed in the handler. It applies only to `Content-Type` and `ETag`; `?a=1&a=2`, and duplicate `Set-Cookie`, `Vary`, and `Content-Language`, all reach the client intact.
 - **`/delay` caps at 10 seconds**, matching httpbin's own limit. Each delayed request holds a serverless function open, so the ceiling is enforced, not advisory.
 - **JSON key order differs.** Real httpbin sorts keys (Flask's `jsonify`); this returns a fixed but unsorted order. JSON objects are unordered — every key and value matches.
 - **A `__proto__` query param or request header won't round-trip.** Next.js strips `__proto__` from the query string, and Node's HTTP parser drops a `__proto__` request header — both before this handler runs. A `__proto__` _cookie_ round-trips correctly. Real httpbin, backed by a Python dict, reflects all three.

@@ -195,12 +195,14 @@ export default function HttptestPage(): React.ReactNode {
       >
         <div className={styles.body}>
           <div className={styles.baseRow}>
-            <span className={styles.label}>base url</span>
-            <code className={styles.baseUrl}>{baseUrl}</code>
-            <CopyButton value={baseUrl} />
+            <div className={styles.baseDetails}>
+              <span className={styles.label}>service endpoint</span>
+              <code className={styles.baseUrl}>{baseUrl}</code>
+            </div>
             <span className={styles.hint}>
               swap <code className={styles.code}>httpbin.org</code> for this
             </span>
+            <CopyButton value={baseUrl} />
           </div>
 
           <div className={styles.columns}>
@@ -224,10 +226,16 @@ export default function HttptestPage(): React.ReactNode {
                           );
                         }}
                         title={endpoint.description}
+                        aria-pressed={path === endpoint.example}
                       >
-                        <code className={styles.endpointPath}>
-                          {endpoint.path}
-                        </code>
+                        <span className={styles.endpointTopline}>
+                          <span className={styles.endpointMethod}>
+                            {endpoint.methods.join(" · ")}
+                          </span>
+                          <code className={styles.endpointPath}>
+                            {endpoint.path}
+                          </code>
+                        </span>
                         <span className={styles.endpointDesc}>
                           {endpoint.description}
                         </span>
@@ -239,86 +247,120 @@ export default function HttptestPage(): React.ReactNode {
             </Panel>
 
             <div className={styles.runner}>
-              <div className={styles.requestRow}>
-                <select
-                  className={styles.select}
-                  value={method}
-                  onChange={(e) => {
-                    handleMethodChange(e.target.value as Method);
-                  }}
-                  aria-label="HTTP method"
-                >
-                  {METHODS.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
-                <span className={styles.prefix}>{HTTPTEST_BASE}</span>
-                <input
-                  className={styles.input}
-                  value={path}
-                  onChange={(e) => {
-                    handlePathChange(e.target.value);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") void handleSend();
-                  }}
-                  spellCheck={false}
-                  aria-label="Request path"
-                />
-                <Button
-                  variant="primary"
-                  onClick={() => void handleSend()}
-                  disabled={pending}
-                  status={pending ? "pending" : "idle"}
-                >
-                  Send
-                </Button>
-              </div>
+              <Panel className={styles.requestPanel}>
+                <PanelHeader label="request">
+                  <span className={styles.hint}>Enter to send</span>
+                </PanelHeader>
+                <PanelBody className={styles.requestBody}>
+                  <div className={styles.requestRow}>
+                    <select
+                      className={styles.select}
+                      value={method}
+                      onChange={(e) => {
+                        handleMethodChange(e.target.value as Method);
+                      }}
+                      aria-label="HTTP method"
+                    >
+                      {METHODS.map((m) => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))}
+                    </select>
+                    <div className={styles.urlField}>
+                      <span className={styles.prefix}>{HTTPTEST_BASE}</span>
+                      <input
+                        className={styles.input}
+                        value={path}
+                        onChange={(e) => {
+                          handlePathChange(e.target.value);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") void handleSend();
+                        }}
+                        spellCheck={false}
+                        aria-label="Request path"
+                      />
+                    </div>
+                    <Button
+                      variant="primary"
+                      onClick={() => void handleSend()}
+                      disabled={pending}
+                      status={pending ? "pending" : "idle"}
+                    >
+                      Send
+                    </Button>
+                  </div>
 
-              {BODY_METHODS.includes(method) && (
-                <textarea
-                  className={styles.textarea}
-                  value={requestBody}
-                  onChange={(e) => {
-                    setRequestBody(e.target.value);
-                  }}
-                  placeholder='Request body (sent as application/json), e.g. {"hello":"world"}'
-                  spellCheck={false}
-                  aria-label="Request body"
-                />
-              )}
+                  {BODY_METHODS.includes(method) && (
+                    <div className={styles.payload}>
+                      <label
+                        className={styles.payloadLabel}
+                        htmlFor="request-body"
+                      >
+                        JSON body
+                      </label>
+                      <textarea
+                        id="request-body"
+                        className={styles.textarea}
+                        value={requestBody}
+                        onChange={(e) => {
+                          setRequestBody(e.target.value);
+                        }}
+                        placeholder='{"hello":"world"}'
+                        spellCheck={false}
+                      />
+                    </div>
+                  )}
+                </PanelBody>
+              </Panel>
 
               {error && <div className={styles.error}>{error}</div>}
 
-              {response && (
-                <Panel className={styles.responsePanel}>
-                  <PanelHeader label="response">
-                    <Badge color={statusColor(response.status)}>
-                      {response.status} {response.statusText}
-                    </Badge>
-                    <span className={styles.hint}>
-                      {response.durationMs} ms
-                    </span>
-                  </PanelHeader>
+              <Panel className={styles.responsePanel}>
+                <PanelHeader label="response">
+                  {response && (
+                    <>
+                      <Badge color={statusColor(response.status)}>
+                        {response.status} {response.statusText}
+                      </Badge>
+                      <span className={styles.hint}>
+                        {response.durationMs} ms
+                      </span>
+                    </>
+                  )}
+                </PanelHeader>
+                {response ? (
                   <PanelBody className={styles.responseBody}>
-                    <div className={styles.responseHeaders}>
-                      {response.headers.map(([key, value]) => (
-                        <div key={key} className={styles.headerLine}>
-                          <span className={styles.headerKey}>{key}</span>
-                          <span className={styles.headerValue}>{value}</span>
-                        </div>
-                      ))}
+                    <div className={styles.responseSection}>
+                      <span className={styles.sectionLabel}>headers</span>
+                      <div className={styles.responseHeaders}>
+                        {response.headers.map(([key, value]) => (
+                          <div key={key} className={styles.headerLine}>
+                            <span className={styles.headerKey}>{key}</span>
+                            <span className={styles.headerValue}>{value}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <pre className={styles.pre}>
-                      {response.binaryBytes !== null
-                        ? `<${response.binaryBytes} bytes of binary data>`
-                        : response.body || "<empty body>"}
-                    </pre>
+                    <div className={styles.responseSection}>
+                      <span className={styles.sectionLabel}>body</span>
+                      <pre className={styles.pre}>
+                        {response.binaryBytes !== null
+                          ? `<${response.binaryBytes} bytes of binary data>`
+                          : response.body || "<empty body>"}
+                      </pre>
+                    </div>
                   </PanelBody>
-                </Panel>
-              )}
+                ) : (
+                  <div className={styles.emptyResponse}>
+                    <span className={styles.emptyPrompt}>Ready to inspect</span>
+                    <span>
+                      Choose an endpoint or enter a path, then send a request.
+                    </span>
+                  </div>
+                )}
+              </Panel>
             </div>
           </div>
         </div>
