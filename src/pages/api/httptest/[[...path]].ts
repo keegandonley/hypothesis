@@ -368,6 +368,34 @@ export default async function handler(
         return;
       }
 
+      // Retry-After is the one query param /status honors, so retry/backoff
+      // logic can be tested against a real 429 or 503. Arbitrary
+      // param-to-header echo is deliberately NOT supported here: it would open
+      // redirects via ?Location= on a 3xx and break response framing via
+      // ?Content-Length= on the empty body. Echoing headers is
+      // /response-headers' job, and only ever at 200.
+      // First match wins on duplicate/mixed-case params — same first-wins
+      // convention as URLSearchParams.get(), and it fails closed (a bad first
+      // value 400s rather than falling through to a later one).
+      const retryAfter = [...url.searchParams.entries()].find(
+        ([name]) => name.toLowerCase() === "retry-after",
+      )?.[1];
+
+      if (retryAfter !== undefined) {
+        // Delta-seconds only — the HTTP-date form is valid per RFC 9110 but
+        // date values would need CRLF screening, and clients testing backoff
+        // parse the integer form.
+        if (!/^\d+$/.test(retryAfter)) {
+          res.status(400).json({
+            error: "Retry-After must be a non-negative integer (seconds).",
+          });
+
+          return;
+        }
+
+        res.setHeader("Retry-After", retryAfter);
+      }
+
       // httpbin returns an empty body for /status — the code is the payload.
       res.status(code).end();
 

@@ -447,7 +447,7 @@ export const HTTPTEST_ENDPOINTS: HttptestEndpoint[] = [
     example: "/status/418",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     description:
-      "Responds with the given status code. Comma-separated picks one at random.",
+      "Responds with the given status code. Comma-separated picks one at random. ?Retry-After=n sets that header on the response.",
     group: "status",
   },
   {

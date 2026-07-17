@@ -223,6 +223,19 @@ curl -o /dev/null -w '%{http_code}\n' \
      https://hypothesis.sh/api/httptest/status/200,200,500
 ```
 
+Add a `Retry-After` query param to get that header alongside the status — the missing piece for testing `Retry-After`-aware backoff against a real `429` or `503`:
+
+```bash
+curl -i 'https://hypothesis.sh/api/httptest/status/429?Retry-After=2'
+```
+
+```http
+HTTP/1.1 429 Too Many Requests
+Retry-After: 2
+```
+
+The param name is matched case-insensitively; the value must be plain digits (delta-seconds) — anything else, including the RFC 9110 HTTP-date form, is a `400`. `Retry-After` is the **only** query param `/status` honors. It deliberately does not echo arbitrary params as headers: that's [`/response-headers`](#getpost-response-headers)' job, and only ever at `200`.
+
 Accepts `100`–`599`. Anything else — `/status/999`, `/status/abc` — is a `400`, **not** a clamp: answering with a status you never asked for is worse than an error.
 
 ## Response formats
