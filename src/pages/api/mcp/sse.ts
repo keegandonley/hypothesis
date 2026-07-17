@@ -1,21 +1,21 @@
-/* eslint-disable @typescript-eslint/no-deprecated -- This route intentionally
-   keeps the deprecated SSE transport alive for backwards compatibility while
-   clients migrate to the Streamable HTTP endpoint at /api/mcp. */
 import type { NextApiRequest, NextApiResponse } from "next";
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
-import { createMcpServer } from "@/lib/mcp/server";
 
-// DEPRECATED SSE transport, kept working for backwards compatibility.
+// RETIRED SSE transport.
 //
-// This is the legacy MCP transport. It holds a Fluid function instance open for
-// the entire client session (billing provisioned memory for the whole idle
-// duration) and keeps sessions in an in-memory Map that doesn't survive across
-// Fluid instances — i.e. it is the compute drain the Streamable HTTP endpoint
-// at `/api/mcp` was built to replace.
+// This route used to hold a Fluid function instance open for an entire client
+// session, billing provisioned memory for the whole idle duration. It is now a
+// tombstone: it never opens a stream and never constructs an MCP server, so it
+// costs nothing to keep around.
 //
-// It stays available only so already-configured clients keep working during
-// migration. New clients should use `/api/mcp` (`--transport http`). Remove
-// this route once every SSE client has been migrated.
+// It exists only to give already-configured SSE clients a legible error instead
+// of a bare 404. Delete this file once the logging below goes quiet.
+//
+// The live endpoint is `/api/mcp` (Streamable HTTP, `--transport http`).
+
+// The handler never reads `req.body`, and leaving Next's body parser on would
+// let a malformed or oversized POST short-circuit to a generic 400/413 inside
+// `apiResolver` — skipping the 410 and, more importantly, the straggler logging
+// this route exists for. Off means every request reaches the handler.
 export const config = {
   api: {
     bodyParser: false,
@@ -24,58 +24,31 @@ export const config = {
 
 const SUCCESSOR_ENDPOINT = "/api/mcp";
 
-const transports = new Map<string, SSEServerTransport>();
-
-// Signal deprecation on every response (RFC 8594) and point clients at the
-// successor endpoint, without breaking the connection.
-function markDeprecated(req: NextApiRequest, res: NextApiResponse): void {
-  res.setHeader("Deprecation", "true");
-  res.setHeader("Link", `<${SUCCESSOR_ENDPOINT}>; rel="successor-version"`);
-  // Log usage so remaining SSE clients can be found and migrated.
-  console.warn(
-    `[mcp] deprecated SSE transport used (${req.method}) ua=${
-      req.headers["user-agent"] ?? "unknown"
-    } — migrate to ${SUCCESSOR_ENDPOINT} (Streamable HTTP)`,
-  );
-}
-
-export default async function handler(
+export default function handler(
   req: NextApiRequest,
   res: NextApiResponse,
-): Promise<void> {
-  markDeprecated(req, res);
+): void {
+  // Log stragglers so they can be identified and migrated before this route is
+  // deleted outright.
+  console.warn(
+    `[mcp] retired SSE transport hit (${req.method}) ua=${
+      req.headers["user-agent"] ?? "unknown"
+    } — reconnect to ${SUCCESSOR_ENDPOINT} (Streamable HTTP)`,
+  );
 
-  if (req.method === "GET") {
-    const transport = new SSEServerTransport("/api/mcp/sse", res);
-
-    transports.set(transport.sessionId, transport);
-
-    transport.onclose = () => {
-      transports.delete(transport.sessionId);
-    };
-
-    const server = createMcpServer(req);
-
-    await server.connect(transport);
-
-    return;
-  }
-
-  if (req.method === "POST") {
-    const sessionId = req.query.sessionId as string;
-    const transport = transports.get(sessionId);
-
-    if (!transport) {
-      res.status(404).json({ error: "Session not found" });
-
-      return;
-    }
-
-    await transport.handlePostMessage(req, res);
-
-    return;
-  }
-
-  res.setHeader("Allow", ["GET", "POST"]);
-  res.status(405).json({ error: "Method not allowed" });
+  // Point clients at the replacement (RFC 8594). No `Allow` header: no method
+  // works here, so this is 410 rather than 405.
+  res.setHeader("Link", `<${SUCCESSOR_ENDPOINT}>; rel="successor-version"`);
+  res.status(410).json({
+    jsonrpc: "2.0",
+    error: {
+      code: -32000,
+      message:
+        "The SSE transport at /api/mcp/sse has been retired. Reconnect using " +
+        "the Streamable HTTP transport at /api/mcp — e.g. `claude mcp add " +
+        "hypothesis --transport http https://hypothesis.sh/api/mcp`. See " +
+        "https://hypothesis.sh/docs/mcp for details.",
+    },
+    id: null,
+  });
 }

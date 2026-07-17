@@ -40,7 +40,7 @@ https://hypothesis.sh/api/mcp
 
 No authentication required.
 
-> **Using the old SSE endpoint?** `https://hypothesis.sh/api/mcp/sse` (`--transport sse`) is **deprecated but still works** — existing clients keep functioning. It's slower and less efficient than Streamable HTTP, so migrate to `https://hypothesis.sh/api/mcp` with the `http` transport when you can.
+> **Using the old SSE endpoint?** `https://hypothesis.sh/api/mcp/sse` (`--transport sse`) has been **retired** and now returns `410 Gone`. Remove the old configuration and re-add the server with the `http` transport command above.
 
 ## Available Tools
 

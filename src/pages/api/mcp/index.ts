@@ -6,10 +6,10 @@ import { createMcpServer } from "@/lib/mcp/server";
 //
 // Each request spins up a fresh server + transport, returns a single buffered
 // JSON response (`enableJsonResponse`), and tears everything down — no
-// connection is ever held open. This is the preferred replacement for the
-// deprecated SSE transport (`/api/mcp/sse`, still available for existing
-// clients), which pinned a Fluid function instance open for the entire client
-// session and billed provisioned memory for the whole idle duration.
+// connection is ever held open. This replaced the SSE transport at
+// `/api/mcp/sse` (now retired, returns 410), which pinned a Fluid function
+// instance open for the entire client session and billed provisioned memory for
+// the whole idle duration.
 //
 // Stateless mode (`sessionIdGenerator: undefined`) is also the only correct
 // choice under Fluid Compute: the old SSE handler kept sessions in an in-memory
