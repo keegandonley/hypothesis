@@ -5,7 +5,7 @@ describe("parseCron", () => {
   it("parses 'every minute'", () => {
     const result = parseCron("* * * * *");
 
-    if ("error" in result && result.error !== null) return;
+    if (result.error !== null) return;
     expect(result.description).toBeDefined();
     expect(result.nextRuns).toHaveLength(NEXT_COUNT);
   });
@@ -13,14 +13,14 @@ describe("parseCron", () => {
   it("parses 'daily at midnight'", () => {
     const result = parseCron("0 0 * * *");
 
-    if ("error" in result) return;
+    if (result.error !== null) return;
     expect(result.nextRuns.length).toBe(NEXT_COUNT);
   });
 
   it("parses 'weekdays at 9 AM'", () => {
     const result = parseCron("0 9 * * 1-5");
 
-    if ("error" in result) return;
+    if (result.error !== null) return;
     expect(result.nextRuns.length).toBe(NEXT_COUNT);
   });
 

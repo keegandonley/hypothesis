@@ -6,7 +6,7 @@ import { type GetStaticPaths, type GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import styles from "@/styles/docs.module.css";
 import { useBranding } from "@/lib/branding";
-import { experiments } from "@/lib/tools";
+import { allItems, experiments } from "@/lib/tools";
 import React from "react";
 
 const DOCS_DIR = path.join(process.cwd(), "src/content/docs");
@@ -62,8 +62,13 @@ export const getStaticProps: GetStaticProps = ({ params }) => {
       ? "experiment"
       : "tool"
     : null;
+  // Prefer the registry href so the docs link inherits any default query params
+  // the homepage uses (e.g. /iframe-proxy?debug=true).
+  const itemHref =
+    allItems.find((item) => item.href.split("?")[0] === `/${slug}`)?.href ??
+    `/${slug}`;
 
-  return { props: { slug, content, description, itemLabel } };
+  return { props: { slug, content, description, itemLabel, itemHref } };
 };
 
 // ── Markdown renderer ──────────────────────────────────────────────────────────
@@ -391,11 +396,13 @@ export default function DocsPage({
   content,
   description,
   itemLabel,
+  itemHref,
 }: {
   slug: string;
   content: string;
   description: string;
   itemLabel: "tool" | "experiment" | null;
+  itemHref: string;
 }): React.ReactNode {
   const branding = useBranding();
   const router = useRouter();
@@ -438,7 +445,7 @@ export default function DocsPage({
                 {branding.name}
               </Link>
               {itemLabel && (
-                <Link href={`/${slug}`} className={styles.toolLink}>
+                <Link href={itemHref} className={styles.toolLink}>
                   open {itemLabel}{" "}
                   <span style={{ letterSpacing: 0, marginBottom: "3px" }}>
                     →
