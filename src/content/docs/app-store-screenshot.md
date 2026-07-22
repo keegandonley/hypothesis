@@ -1,6 +1,6 @@
 # App Store Screenshot Generator
 
-Compose device screenshots at exact Apple App Store dimensions and export ready-to-submit PNGs — entirely in your browser with no uploads to any server.
+Compose device screenshots at exact Apple App Store dimensions and export ready-to-submit PNGs - entirely in your browser with no uploads to any server.
 
 ## Supported Dimensions
 
@@ -19,14 +19,14 @@ Apple requires at least one screenshot in the 6.5" or 6.7" size for App Store su
 
 ## Usage
 
-1. **Select dimensions** — pick portrait or landscape for the target device class
-2. **Choose a background color** — the color fills the canvas behind your screenshot
-3. **Adjust scale** — control what percentage of the canvas your screenshot occupies (40–100%)
-4. **Upload your screenshot** — drag and drop or click to browse; PNG, JPEG, and WebP are supported
-5. **Download** — click "Download PNG" to save the composited image at exact App Store dimensions
+1. **Select dimensions** - pick portrait or landscape for the target device class
+2. **Choose a background color** - the color fills the canvas behind your screenshot
+3. **Adjust scale** - control what percentage of the canvas your screenshot occupies (40–100%)
+4. **Upload your screenshot** - drag and drop or click to browse; PNG, JPEG, and WebP are supported
+5. **Download** - click "Download PNG" to save the composited image at exact App Store dimensions
 
 ## Notes
 
-- All processing happens in the browser — your images are never sent to any server
+- All processing happens in the browser - your images are never sent to any server
 - The downloaded PNG is at the exact pixel dimensions required by App Store Connect
 - The on-screen preview is scaled down to fit your viewport; the download is full-resolution

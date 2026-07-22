@@ -1,6 +1,6 @@
 # JSON Diff
 
-Compare two JSON structures and see exactly what changed — added keys, removed keys, and changed values — with a recursive structural diff.
+Compare two JSON structures and see exactly what changed - added keys, removed keys, and changed values - with a recursive structural diff.
 
 ## How it works
 
@@ -27,7 +27,7 @@ items[0].name            → array index + key path
 This is a **structural** diff, not a text diff. It understands JSON structure:
 
 - Reordering object keys doesn't appear as a change (objects are unordered)
-- Array order matters — `[1,2]` vs `[2,1]` shows two changes
+- Array order matters - `[1,2]` vs `[2,1]` shows two changes
 
 ## Permalinks
 

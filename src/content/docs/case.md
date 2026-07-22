@@ -22,4 +22,4 @@ Input text is split into words by detecting boundaries: spaces, underscores, hyp
 
 ## Permalink
 
-The input is encoded in the URL query string (`?input=...`), making it easy to share a specific conversion.
+The input is encoded in the URL query string (`?input=...`) so you can share a specific conversion.

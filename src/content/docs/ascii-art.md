@@ -1,10 +1,10 @@
 # ASCII Art
 
-Convert images to ASCII art entirely in your browser using the Canvas API. No uploads, no server — pixel sampling and rendering happen locally.
+Convert images to ASCII art entirely in your browser using the Canvas API. No uploads, no server - pixel sampling and rendering happen locally.
 
 ## Usage
 
-1. Drop an image onto the drop zone, or click to browse — or switch to **URL** mode and paste a public image URL
+1. Drop an image onto the drop zone, or click to browse - or switch to **URL** mode and paste a public image URL
 2. The ASCII art generates immediately in the output panel
 3. Adjust the controls to tune the result
 4. Click **Copy** in the output panel to copy the text to your clipboard
@@ -17,12 +17,12 @@ Convert images to ASCII art entirely in your browser using the Canvas API. No up
 | ------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | **Width**     | Number of character columns in the output (20–200). More columns = more detail but smaller characters when displayed.      |
 | **Chars**     | Character set used to represent pixel density. Simple (10 chars), Detailed (70 chars), or Blocks (Unicode block elements). |
-| **Invert**    | When on, bright pixels map to dense characters — good for dark backgrounds (default). Turn off for printing on white.      |
+| **Invert**    | When on, bright pixels map to dense characters - good for dark backgrounds (default). Turn off for printing on white.      |
 | **Grayscale** | Strips color before sampling, which often produces more consistent tonal gradients.                                        |
 
 ### Image adjustments
 
-Applied before sampling — changes are reflected live in the image preview.
+Applied before sampling - changes are reflected live in the image preview.
 
 | Control        | Default | Description                                                                                                            |
 | -------------- | ------- | ---------------------------------------------------------------------------------------------------------------------- |
@@ -124,4 +124,4 @@ Each pixel's luminance is computed using the Rec. 709 perceptual weights (R×0.2
 
 ## URL mode and CORS
 
-When using URL mode, the image is fetched with `crossOrigin: "anonymous"`. This requires the host server to send an `Access-Control-Allow-Origin: *` header — most CDNs and stock photo hosts do not, which will produce a load error. Use file upload mode as a fallback.
+When using URL mode, the image is fetched with `crossOrigin: "anonymous"`. This requires the host server to send an `Access-Control-Allow-Origin: *` header - most CDNs and stock photo hosts do not, which will produce a load error. Use file upload mode as a fallback.

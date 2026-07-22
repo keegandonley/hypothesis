@@ -36,5 +36,5 @@ export default function Icon(props) {
 
 ## Limitations
 
-- Inline `<style>` blocks are not converted — move styles to CSS or use `className`
+- Inline `<style>` blocks are not converted - move styles to CSS or use `className`
 - JavaScript event handlers in SVG (rare) are left as-is and may need manual adjustment

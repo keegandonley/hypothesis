@@ -4,7 +4,7 @@ Connect coding agents to hypothesis.sh for mobile push notifications and webhook
 
 ## Overview
 
-The hypothesis.sh MCP (Model Context Protocol) server lets AI coding agents send push notifications to your iOS device and test webhook integrations. Agents can create webhook sessions, receive HTTP requests, and verify delivery — all through natural language commands.
+The hypothesis.sh MCP (Model Context Protocol) server lets AI coding agents send push notifications to your iOS device and test webhook integrations. Agents can create webhook sessions, receive HTTP requests, and verify delivery - all through natural language commands.
 
 ## Configuration
 
@@ -120,11 +120,11 @@ Show me the webhook events for session 55bc106c-49d4-4d8f-aec9-e801fdc3ede5
 
 Returns a JSON array of events, each containing:
 
-- `method` — HTTP verb (GET, POST, etc.)
-- `headers` — Request headers
-- `payload` — Parsed JSON body (if applicable)
-- `rawBody` — Raw body text (if not JSON)
-- `receivedAt` — ISO 8601 timestamp
+- `method` - HTTP verb (GET, POST, etc.)
+- `headers` - Request headers
+- `payload` - Parsed JSON body (if applicable)
+- `rawBody` - Raw body text (if not JSON)
+- `receivedAt` - ISO 8601 timestamp
 
 ## Prompt Templates
 
@@ -191,7 +191,7 @@ When your agent encounters a 410 error:
 2. Update your webhook URL in your test configuration
 3. Continue testing
 
-The `webhook-testing` prompt template includes guidance on handling session expiry gracefully.
+The `webhook-testing` prompt template includes guidance on handling session expiry.
 
 ## Rate Limits
 
@@ -246,7 +246,7 @@ The device ID isn't registered. Install the hypothesis.sh iOS app and open it to
 
 ### Push notification fails with APNS error
 
-Check that the server has APNS environment variables configured (APNS_KEY_ID, APNS_TEAM_ID, APNS_KEY_P8, APNS_BUNDLE_ID). This is typically only an issue in local development — production deployments have these configured.
+Check that the server has APNS environment variables configured (APNS_KEY_ID, APNS_TEAM_ID, APNS_KEY_P8, APNS_BUNDLE_ID). This is typically only an issue in local development - production deployments have these configured.
 
 ### Webhook returns 410 Gone
 
@@ -265,5 +265,5 @@ You've exceeded the 500 requests per hour limit. Wait for the rolling hour windo
 
 ## Related Documentation
 
-- [Push Test](/docs/push-test) — Manual push notification testing tool
-- [Webhook](/docs/webhook) — Browser-based webhook inspection tool
+- [Push Test](/docs/push-test) - Manual push notification testing tool
+- [Webhook](/docs/webhook) - Browser-based webhook inspection tool

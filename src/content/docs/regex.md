@@ -4,7 +4,7 @@ Test regular expressions against strings with live match results and shareable p
 
 ## Overview
 
-`regex` is a browser-based regular expression tester. Enter a pattern and a set of test strings to see which lines match, how many matches were found, and what capture groups were extracted — all computed live with no server involved. The full state is encoded in the URL so results are easy to share.
+`regex` is a browser-based regular expression tester. Enter a pattern and a set of test strings to see which lines match, how many matches were found, and what capture groups were extracted - all computed live with no server involved. The full state is encoded in the URL so results are easy to share.
 
 ## Pattern
 
@@ -12,9 +12,9 @@ Type a pattern into the **Pattern** panel. The input is displayed between `/` de
 
 The panel header shows one of three states:
 
-- **valid** — the pattern compiles and no test strings have been entered yet
-- **N/M match** — N of M non-empty test strings matched
-- **error: \<message\>** — the pattern is not a valid regular expression
+- **valid** - the pattern compiles and no test strings have been entered yet
+- **N/M match** - N of M non-empty test strings matched
+- **error: \<message\>** - the pattern is not a valid regular expression
 
 Patterns are compiled using the browser's built-in `RegExp` constructor. Any pattern accepted by `new RegExp(pattern, flags)` is valid.
 
@@ -48,7 +48,7 @@ When no pattern is entered, or when the pattern is invalid, the results panel sh
 
 ## Permalinks
 
-The URL updates live as you type — no button required. All state is encoded into a single `v` query parameter as a Base64-encoded JSON object:
+The URL updates live as you type - no button required. All state is encoded into a single `v` query parameter as a Base64-encoded JSON object:
 
 ```
 /regex?v=<base64>
@@ -68,4 +68,4 @@ Use the **Reset** button to clear the pattern, test strings, and all flags (rese
 
 ## See also
 
-- [Regex Syntax](/references/regex-syntax) — anchors, character classes, quantifiers, groups, lookaheads, flags, and escape sequences
+- [Regex Syntax](/references/regex-syntax) - anchors, character classes, quantifiers, groups, lookaheads, flags, and escape sequences

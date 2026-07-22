@@ -4,16 +4,16 @@ Convert timestamps and dates between many formats at once with live sync and sha
 
 ## Overview
 
-`datetime` is a browser-based date and time converter. Enter any timestamp or date string and all twelve output formats update instantly. No server involved — everything runs in the browser using the built-in `Date` API.
+`datetime` is a browser-based date and time converter. Enter any timestamp or date string and all twelve output formats update instantly. No server involved - everything runs in the browser using the built-in `Date` API.
 
 ## Input formats
 
 The parser accepts any of the following:
 
-- **Unix seconds** — a 10-digit integer, e.g. `1705312200`
-- **Unix milliseconds** — a 13-digit (or longer) integer, e.g. `1705312200000`
-- **ISO 8601** — e.g. `2024-01-15T10:30:00Z` or `2024-01-15T10:30:00.000Z`
-- **Any string parseable by `new Date()`** — e.g. `January 15 2024`, `Mon Jan 15 2024 10:30:00 GMT+0000`
+- **Unix seconds** - a 10-digit integer, e.g. `1705312200`
+- **Unix milliseconds** - a 13-digit (or longer) integer, e.g. `1705312200000`
+- **ISO 8601** - e.g. `2024-01-15T10:30:00Z` or `2024-01-15T10:30:00.000Z`
+- **Any string parseable by `new Date()`** - e.g. `January 15 2024`, `Mon Jan 15 2024 10:30:00 GMT+0000`
 
 For pure integer inputs, the parser uses digit count to decide the interpretation:
 
@@ -62,11 +62,11 @@ Turn live mode off to return to manual input. The previous input value is restor
 
 ## Relative live mode
 
-The **Relative** row has its own **Live OFF / Live ON** toggle. When enabled, only the relative value updates — every second — while all other rows remain anchored to the parsed date.
+The **Relative** row has its own **Live OFF / Live ON** toggle. When enabled, only the relative value updates - every second - while all other rows remain anchored to the parsed date.
 
 This is useful for watching a fixed timestamp age in real time without updating the rest of the grid.
 
-When global live mode is on, the relative live toggle shows **Live Unavailable** and is disabled — global live refreshes all rows continuously, so the relative time is always 0 seconds.
+When global live mode is on, the relative live toggle shows **Live Unavailable** and is disabled - global live refreshes all rows continuously, so the relative time is always 0 seconds.
 
 ## Copying values
 
@@ -76,7 +76,7 @@ Each row has a **Copy** button. Click it to copy that row's value to your clipbo
 
 The URL updates live as you type. A single query parameter is used:
 
-- `value` — the raw input string as entered
+- `value` - the raw input string as entered
 
 ### Example permalinks
 

@@ -1,6 +1,6 @@
 # bitwise
 
-Visualize bitwise operations on two integers — AND, OR, XOR, NAND, NOR, and left/right shifts — with binary and decimal output side by side.
+Visualize bitwise operations on two integers - AND, OR, XOR, NAND, NOR, and left/right shifts - with binary and decimal output side by side.
 
 ## Overview
 

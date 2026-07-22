@@ -4,7 +4,7 @@ Generate Open Graph and Twitter Card `<meta>` tags for any web page. Fill in the
 
 ## What are Open Graph tags?
 
-Open Graph (OG) tags are `<meta>` tags in your HTML `<head>` that control how a page appears when shared on social platforms — the title, image, and description shown in link previews on Twitter/X, LinkedIn, Slack, iMessage, and more.
+Open Graph (OG) tags are `<meta>` tags in your HTML `<head>` that control how a page appears when shared on social platforms - the title, image, and description shown in link previews on Twitter/X, LinkedIn, Slack, iMessage, and more.
 
 ## Fields
 

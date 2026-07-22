@@ -7,15 +7,15 @@ Compress PNG, JPEG, and WebP images with server-side processing using [sharp](ht
 1. Drag image files onto the drop zone, or click to browse
 2. Select an output format (PNG, WebP, or AVIF)
 3. Files are uploaded to temporary storage and compressed automatically
-4. Download each compressed file — the original is deleted from storage after compression
+4. Download each compressed file - the original is deleted from storage after compression
 
 ## Output Formats
 
 | Format   | Best for                                                       |
 | -------- | -------------------------------------------------------------- |
 | **PNG**  | Lossless compression, transparency, screenshots                |
-| **WebP** | Lossy compression, ~80% quality — great balance for web images |
-| **AVIF** | Maximum compression, ~50% quality — smallest file sizes        |
+| **WebP** | Lossy compression, ~80% quality - great balance for web images |
+| **AVIF** | Maximum compression, ~50% quality - smallest file sizes        |
 
 ## Notes
 
@@ -32,4 +32,4 @@ To prevent abuse, uploads are rate-limited per IP address:
 
 ## See also
 
-- [MIME Types](/references/mime-types) — Content-Type values for image formats including PNG, JPEG, WebP, and AVIF
+- [MIME Types](/references/mime-types) - Content-Type values for image formats including PNG, JPEG, WebP, and AVIF

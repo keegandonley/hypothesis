@@ -1,6 +1,6 @@
 # color
 
-Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with a live preview swatch — entirely in your browser with no server involved.
+Convert color values between HEX, RGB, RGBA, HSL, and OKLCH with a live preview swatch - entirely in your browser with no server involved.
 
 ## Overview
 
@@ -28,7 +28,7 @@ A **format badge** next to the swatch shows which format was detected from the i
 
 ## Eyedropper
 
-On supported browsers (Chromium-based: Chrome, Edge, Arc, etc.), an **Eyedropper** button appears in the input row. Clicking it activates the browser's native screen color picker — move the crosshair over any pixel on screen and click to sample it. The picked color is loaded into the tool exactly as if you had typed it.
+On supported browsers (Chromium-based: Chrome, Edge, Arc, etc.), an **Eyedropper** button appears in the input row. Clicking it activates the browser's native screen color picker - move the crosshair over any pixel on screen and click to sample it. The picked color is loaded into the tool exactly as if you had typed it.
 
 The button is hidden in unsupported browsers (Firefox, Safari) and when the tool is embedded in an iframe.
 
@@ -36,12 +36,12 @@ The button is hidden in unsupported browsers (Firefox, Safari) and when the tool
 
 Six cards display the color in every supported format:
 
-- **HEX 6** — `#rrggbb` (alpha is dropped)
-- **HEX 8** — `#rrggbbaa` (alpha encoded as the last two hex digits)
-- **RGB** — `rgb(r, g, b)`
-- **RGBA** — `rgba(r, g, b, a)`
-- **HSL** — `hsl(h, s%, l%)` or `hsla(...)` when alpha < 1
-- **OKLCH** — `oklch(L C H)` — a perceptually uniform format from the CSS Color 4 spec
+- **HEX 6** - `#rrggbb` (alpha is dropped)
+- **HEX 8** - `#rrggbbaa` (alpha encoded as the last two hex digits)
+- **RGB** - `rgb(r, g, b)`
+- **RGBA** - `rgba(r, g, b, a)`
+- **HSL** - `hsl(h, s%, l%)` or `hsla(...)` when alpha < 1
+- **OKLCH** - `oklch(L C H)` - a perceptually uniform format from the CSS Color 4 spec
 
 Each card has a **Copy** button that copies the formatted value to your clipboard. The button briefly shows **Copied!** to confirm.
 
@@ -68,5 +68,5 @@ All math runs client-side. No data leaves your browser.
 
 Every color you enter is reflected into the URL as `?color=<encoded-value>`. You can share or bookmark these URLs to reopen the converter with the same color pre-filled.
 
-- **Copy** — copies the current permalink to your clipboard
-- **Reset** — clears the input and removes the URL parameter
+- **Copy** - copies the current permalink to your clipboard
+- **Reset** - clears the input and removes the URL parameter

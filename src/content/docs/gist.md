@@ -4,7 +4,7 @@ Serve a public GitHub Gist's raw file content via a stable URL.
 
 ## Overview
 
-`/api/gist` fetches a public GitHub Gist by URL and returns the file content with the correct `Content-Type`. The primary use case is hosting ephemeral HTML snippets — paste a gist URL into the query param and share the proxy URL instead.
+`/api/gist` fetches a public GitHub Gist by URL and returns the file content with the correct `Content-Type`. The primary use case is hosting ephemeral HTML snippets - paste a gist URL into the query param and share the proxy URL instead.
 
 The [gist tool at `/gist`](/gist) provides an interactive UI: enter a Gist URL and optional filename, preview the output in an iframe, and copy the proxy URL directly.
 
@@ -38,7 +38,7 @@ curl "https://hypothesis.sh/api/gist?url=https://gist.github.com/octocat/abc123&
 
 ## Content-Type
 
-The `Content-Type` response header is set from the file's detected type as reported by the GitHub API. An HTML file returns `text/html`, a JSON file returns `application/json`, and so on — so browsers will render or display the content appropriately.
+The `Content-Type` response header is set from the file's detected type as reported by the GitHub API. An HTML file returns `text/html`, a JSON file returns `application/json`, and so on - so browsers will render or display the content appropriately.
 
 ## Caching
 
@@ -48,7 +48,7 @@ Responses are cached for 60 seconds (`Cache-Control: public, max-age=60`). Updat
 
 - **Public gists only.** Private gists return a 404.
 - **No authentication.** Requests to the GitHub API are unauthenticated and subject to GitHub's anonymous rate limits (60 requests/hour per IP).
-- The gist content is fetched on each (uncached) request — this is not a permanent hosting solution.
+- The gist content is fetched on each (uncached) request - this is not a permanent hosting solution.
 
 ## Error responses
 

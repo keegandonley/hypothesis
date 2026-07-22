@@ -28,7 +28,7 @@ Convert a value between byte units with binary (base-1024) or decimal (base-1000
 
 ## Binary vs. decimal
 
-Operating systems typically report storage in binary units (Windows uses KiB/MiB but labels them KB/MB), while disk manufacturers use decimal units. A "1 TB" hard drive contains 1,000,000,000,000 bytes — which is about 931 GiB.
+Operating systems typically report storage in binary units (Windows uses KiB/MiB but labels them KB/MB), while disk manufacturers use decimal units. A "1 TB" hard drive contains 1,000,000,000,000 bytes - which is about 931 GiB.
 
 ## Permalink
 

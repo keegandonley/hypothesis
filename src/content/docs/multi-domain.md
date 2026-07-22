@@ -1,6 +1,6 @@
 # multi-domain support
 
-The app is available on multiple domains, to facilitate cross-domain testing and experimentation.
+The app is available on multiple domains for cross-domain testing and experimentation.
 
 ## Supported domains
 
@@ -11,9 +11,9 @@ The app is available on multiple domains, to facilitate cross-domain testing and
 
 ## What changes per domain
 
-- **Site name** — displayed in the page title and header
-- **Domain label** — shown in headers and links
-- **Message action type** — the `type` field used in outgoing `postMessage` events (e.g. `hypothesis-test`, `conclusion-test`, `falsify-test`, `observation-test`)
+- **Site name** - displayed in the page title and header
+- **Domain label** - shown in headers and links
+- **Message action type** - the `type` field used in outgoing `postMessage` events (e.g. `hypothesis-test`, `conclusion-test`, `falsify-test`, `observation-test`)
 
 All other behaviour is identical across domains.
 
@@ -23,7 +23,7 @@ The tools are available inside a native mobile app. The app embeds individual to
 
 ## Work mode
 
-Work mode is a stripped-down rendering of a tool page intended for embedding — either in the `/work` multi-tab workspace or in the mobile app.
+Work mode is a stripped-down rendering of a tool page intended for embedding - either in the `/work` multi-tab workspace or in the mobile app.
 
 **Activation:** append `?workMode=1` to any tool URL. The page detects this at load time and adds the `work-mode` class to `<html>`.
 

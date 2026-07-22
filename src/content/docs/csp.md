@@ -6,11 +6,11 @@ Parse, visualize, and audit a `Content-Security-Policy` header, then optionally 
 
 CSP analyzer takes a Content-Security-Policy header value and breaks it into three views:
 
-- **Audit** — security findings ranked High → Medium → Low → Info, each with an explanation and remediation.
-- **Effective policy** — what actually applies to each resource type after `default-src` fallback resolution.
-- **Directives** — the raw parsed directives and their source lists.
+- **Audit** - security findings ranked High → Medium → Low → Info, each with an explanation and remediation.
+- **Effective policy** - what actually applies to each resource type after `default-src` fallback resolution.
+- **Directives** - the raw parsed directives and their source lists.
 
-The parsing and audit run **entirely in your browser**. The only server interaction is the optional "Fetch from URL" feature (see below), which retrieves a remote header — analysis still happens client-side.
+The parsing and audit run **entirely in your browser**. The only server interaction is the optional "Fetch from URL" feature (see below), which retrieves a remote header - analysis still happens client-side.
 
 ## Pasting a policy
 
@@ -20,7 +20,7 @@ Paste a header value into the **Policy** box. You can paste either the bare valu
 default-src 'self'; script-src 'self' 'unsafe-inline'
 ```
 
-…or the full header line — a leading `Content-Security-Policy:` (or `Content-Security-Policy-Report-Only:`) prefix is stripped automatically.
+…or the full header line - a leading `Content-Security-Policy:` (or `Content-Security-Policy-Report-Only:`) prefix is stripped automatically.
 
 Click **Sample** to load an intentionally flawed policy and see the audit in action.
 
@@ -50,11 +50,11 @@ Hygiene:
 
 ## Effective policy
 
-CSP has a subtlety that trips people up: most **fetch directives** (`script-src`, `img-src`, `connect-src`, …) fall back to `default-src` when omitted — but `base-uri`, `form-action`, and `frame-ancestors` **do not**. The Effective policy table resolves each directive and labels how its value was derived:
+Most **fetch directives** (`script-src`, `img-src`, `connect-src`, …) fall back to `default-src` when omitted, but `base-uri`, `form-action`, and `frame-ancestors` **do not**. The Effective policy table resolves each directive and labels how its value was derived:
 
-- **explicit** — the directive was set directly
-- **via default-src** — inherited from `default-src`
-- **unrestricted** — neither set, so the browser applies no restriction
+- **explicit** - the directive was set directly
+- **via default-src** - inherited from `default-src`
+- **unrestricted** - neither set, so the browser applies no restriction
 
 ## Fetch from URL
 
@@ -63,9 +63,9 @@ Browsers cannot read another site's response headers from client-side JavaScript
 The fetch endpoint is hardened against SSRF:
 
 - Only `http`/`https` URLs are allowed.
-- Requests to `localhost`, private, loopback, link-local, and cloud-metadata addresses are refused — including after DNS resolution and on every redirect hop.
+- Requests to `localhost`, private, loopback, link-local, and cloud-metadata addresses are refused - including after DNS resolution and on every redirect hop.
 - Redirects are capped and re-validated at each hop; requests time out quickly.
-- Only response **headers** are read — the response body is never fetched or returned.
+- Only response **headers** are read - the response body is never fetched or returned.
 
 ## Permalinks
 

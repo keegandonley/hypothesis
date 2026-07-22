@@ -4,7 +4,7 @@ Encode and decode URL strings with live sync and shareable permalinks.
 
 ## Overview
 
-`urlencode` is a browser-based percent-encoder/decoder. Type in either the **Decoded** or **URL Encoded** panel and the other updates instantly. No server involved — everything runs in the browser using the built-in `encodeURIComponent` / `decodeURIComponent` APIs.
+`urlencode` is a browser-based percent-encoder/decoder. Type in either the **Decoded** or **URL Encoded** panel and the other updates instantly. No server involved - everything runs in the browser using the built-in `encodeURIComponent` / `decodeURIComponent` APIs.
 
 ## Encoding
 
@@ -55,10 +55,10 @@ URI mode state is saved in the permalink (`?mode=uri`), so sharing or reloading 
 
 ## Permalinks
 
-The URL updates live as you type — no button required. Two query parameters are used:
+The URL updates live as you type - no button required. Two query parameters are used:
 
-- `value` — the raw decoded text (the browser percent-encodes it naturally in the URL)
-- `mode` — set to `uri` when URI mode is active (omitted in default component mode)
+- `value` - the raw decoded text (the browser percent-encodes it naturally in the URL)
+- `mode` - set to `uri` when URI mode is active (omitted in default component mode)
 
 Share or bookmark the URL to return to the same content. Both panels and URI mode are restored on load.
 
@@ -82,5 +82,5 @@ Use the **Reset** button to clear both panels, turn off URI mode, and return the
 
 ## See also
 
-- [MIME Types](/references/mime-types) — Content-Type values for text, images, audio, video, fonts, and more
-- [HTTP Headers](/references/http-headers) — request and response headers including `Content-Type`, `Accept`, and encoding fields
+- [MIME Types](/references/mime-types) - Content-Type values for text, images, audio, video, fonts, and more
+- [HTTP Headers](/references/http-headers) - request and response headers including `Content-Type`, `Accept`, and encoding fields

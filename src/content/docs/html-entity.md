@@ -4,7 +4,7 @@ Encode and decode HTML entities for safe display in web pages with multiple enco
 
 ## Overview
 
-`html-entity` is a browser-based HTML entity encoder and decoder. Type in either the **Decoded Text** or **HTML Entities** panel and the other updates instantly. No server involved — everything runs in your browser using JavaScript character mapping and entity tables.
+`html-entity` is a browser-based HTML entity encoder and decoder. Type in either the **Decoded Text** or **HTML Entities** panel and the other updates instantly. No server involved - everything runs in your browser using JavaScript character mapping and entity tables.
 
 ## Encoding
 
@@ -27,7 +27,7 @@ This is the most common mode for safely escaping user input in HTML contexts.
 Encodes only characters outside the ASCII range (0-127), leaving standard English characters unchanged. Non-ASCII characters are encoded to either named entities (e.g. `é` → `&eacute;`) or numeric entities (e.g. `⚡` → `&#9889;`) depending on availability.
 
 **All Characters**  
-Encodes all special HTML characters plus all non-ASCII characters. This provides maximum compatibility for systems that require full entity encoding.
+Encodes all special HTML characters plus all non-ASCII characters. Use it for systems that require full entity encoding.
 
 ## Decoding
 
@@ -35,15 +35,15 @@ Type or paste HTML entities into the **HTML Entities** panel. The **Decoded Text
 
 The decoder supports:
 
-- **Named entities** — `&amp;`, `&lt;`, `&eacute;`, `&copy;`, etc.
-- **Decimal numeric entities** — `&#38;`, `&#233;`, `&#169;`
-- **Hexadecimal numeric entities** — `&#x26;`, `&#xe9;`, `&#xa9;`
+- **Named entities** - `&amp;`, `&lt;`, `&eacute;`, `&copy;`, etc.
+- **Decimal numeric entities** - `&#38;`, `&#233;`, `&#169;`
+- **Hexadecimal numeric entities** - `&#x26;`, `&#xe9;`, `&#xa9;`
 
 If the input contains an unrecognized entity, it remains unchanged rather than causing errors.
 
 ## Entity Support
 
-This tool includes comprehensive HTML5 named entity support, covering:
+The tool supports 2000+ HTML5 named entities, including:
 
 - Basic HTML entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`)
 - Latin characters with diacritics (`&agrave;`, `&eacute;`, `&ntilde;`)
@@ -51,14 +51,13 @@ This tool includes comprehensive HTML5 named entity support, covering:
 - Mathematical symbols (`&plusmn;`, `&times;`, `&divide;`, `&infin;`)
 - Greek letters and mathematical operators (`&alpha;`, `&sum;`, `&int;`)
 - Arrows and special characters (`&larr;`, `&copy;`, `&trade;`)
-- And many more (2000+ entities supported)
 
 ## Permalinks
 
-The URL updates live as you type — no button required. Two query parameters are used:
+The URL updates live as you type - no button required. Two query parameters are used:
 
-- `value` — the raw decoded text
-- `mode` — the encoding mode: `special` (default), `ascii`, or `all`
+- `value` - the raw decoded text
+- `mode` - the encoding mode: `special` (default), `ascii`, or `all`
 
 Share or bookmark the URL to return to the same content. Both panels and the selected mode are restored on load.
 
@@ -90,4 +89,4 @@ Use the **Reset** button to clear both panels, reset to special mode, and return
 
 ## See also
 
-- [ASCII Table](/references/ascii) — all 128 ASCII characters with decimal, hex, octal, and descriptions
+- [ASCII Table](/references/ascii) - all 128 ASCII characters with decimal, hex, octal, and descriptions
