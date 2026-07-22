@@ -3,34 +3,10 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { sendApnsNotification } from "@/lib/apns";
 import { getPushTokenByDeviceId } from "@/lib/push-tokens";
 import { insertPushNotification } from "@/lib/push-notifications";
+import { readRawBody, PayloadTooLargeError } from "@/lib/raw-body";
 import { track } from "@vercel/analytics/server";
 
 export const config = { api: { bodyParser: false } };
-
-const MAX_BODY_BYTES = 1_048_576;
-
-function readBody(req: NextApiRequest): Promise<string> {
-  return new Promise((resolve, reject) => {
-    let data = "";
-    let byteLength = 0;
-
-    req.on("data", (chunk: Buffer) => {
-      byteLength += chunk.byteLength;
-      if (byteLength > MAX_BODY_BYTES) {
-        req.destroy();
-        reject(new Error("PAYLOAD_TOO_LARGE"));
-
-        return;
-      }
-
-      data += chunk.toString();
-    });
-    req.on("end", () => {
-      resolve(data);
-    });
-    req.on("error", reject);
-  });
-}
 
 interface VercelEvent {
   type: string;
@@ -100,9 +76,14 @@ export default async function handler(
   let rawBody: string;
 
   try {
-    rawBody = await readBody(req);
+    // Single-pass UTF-8 decode: for valid UTF-8 bodies (Vercel sends JSON)
+    // the string round-trips losslessly into the HMAC below.
+    rawBody = await readRawBody(req);
   } catch (e) {
-    if ((e as Error).message === "PAYLOAD_TOO_LARGE") {
+    if (e instanceof PayloadTooLargeError) {
+      // Only tear the socket down once the 413 has actually flushed —
+      // destroying earlier resets the connection before the client sees it.
+      res.once("finish", () => req.destroy());
       res.status(413).json({ error: "payload too large" });
 
       return;

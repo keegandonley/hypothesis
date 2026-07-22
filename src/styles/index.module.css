@@ -180,6 +180,12 @@
   border-color: var(--tag-color);
 }
 
+/* Keyboard-only focus ring — these buttons otherwise have no focus affordance */
+.tagButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .tagButtonActive {
   color: var(--tag-color);
   border-color: var(--tag-color);

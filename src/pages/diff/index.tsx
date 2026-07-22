@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useDeferredValue, useEffect, useMemo, useState } from "react";
 import styles from "@/styles/diff.module.css";
 import { Button, PageLayout, PermalinkRow } from "@/components/ui";
 import { type Mode, MODES, computeDiff, countChanges } from "@/lib/diff";
@@ -11,8 +11,18 @@ export default function DiffPage(): React.ReactNode {
   const [mode, setMode] = useState<Mode>("lines");
   const [url, setUrl] = useState("");
 
-  const changes = computeDiff(original, modified, mode);
-  const { added, removed } = countChanges(changes, mode);
+  // Defer the diff inputs so typing stays responsive on large documents:
+  // the keystroke renders immediately and the (potentially expensive,
+  // especially in chars mode) diff runs at deferred priority — same
+  // pattern as json-diff.
+  const deferredOriginal = useDeferredValue(original);
+  const deferredModified = useDeferredValue(modified);
+
+  const { changes, added, removed } = useMemo(() => {
+    const changes = computeDiff(deferredOriginal, deferredModified, mode);
+
+    return { changes, ...countChanges(changes, mode) };
+  }, [deferredOriginal, deferredModified, mode]);
 
   const buildUrl = (a: string, b: string, m: Mode): string => {
     if (!a && !b) return `${window.location.origin}${window.location.pathname}`;

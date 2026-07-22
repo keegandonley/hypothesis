@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import styles from "@/styles/regex.module.css";
-import { Badge, Button, CopyButton, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
+import { Badge, Button, PageLayout, Panel, PanelHeader, PanelBody, PermalinkRow } from "@/components/ui";
 import { FLAGS, type Flag, computeResults, getPatternStatus, flagTitle } from "@/lib/regex";
 import { useUrlSync } from "@/lib/useUrlSync";
 
@@ -98,8 +98,20 @@ export default function RegexPage(): React.ReactNode {
     setUrl(window.location.href);
   };
 
-  const results = computeResults(pattern, flagStr, testInput);
-  const status = getPatternStatus(pattern, flagStr, results);
+  // Defer regex execution so typing stays responsive on large inputs or
+  // slow patterns: the keystroke renders immediately and the match run
+  // happens at deferred priority (same pattern as json-diff).
+  const deferredPattern = useDeferredValue(pattern);
+  const deferredFlagStr = useDeferredValue(flagStr);
+  const deferredTestInput = useDeferredValue(testInput);
+
+  const results = useMemo(
+    () => computeResults(deferredPattern, deferredFlagStr, deferredTestInput),
+    [deferredPattern, deferredFlagStr, deferredTestInput],
+  );
+  // Derive status from the same deferred values so it never disagrees with
+  // the results it describes.
+  const status = getPatternStatus(deferredPattern, deferredFlagStr, results);
   const lineCount = testInput.split("\n").length;
 
   return (
@@ -136,16 +148,19 @@ export default function RegexPage(): React.ReactNode {
           <span className={styles.regexSlash}>/</span>
           <div className={styles.flagsGroup}>
             {FLAGS.map((flag) => (
-              <button
+              <Button
                 key={flag}
-                className={`${styles.flagBtn}${flags[flag] ? ` ${styles.flagActive}` : ""}`}
+                variant="tab"
+                size="xs"
+                className={styles.flagBtn}
+                active={flags[flag]}
                 onClick={() => {
                   handleFlagToggle(flag);
                 }}
                 title={flagTitle(flag)}
               >
                 {flag}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -182,6 +197,9 @@ export default function RegexPage(): React.ReactNode {
             ) : status.type === "badgeError" ? (
               <div className={styles.emptyState}>
                 Fix the pattern error to see results
+                {/* status.label carries the actual SyntaxError message —
+                    surface it so users don't have to guess what's wrong */}
+                <div className={styles.emptyStateDetail}>{status.label}</div>
               </div>
             ) : results.filter((r) => r.input !== "").length === 0 ? (
               <div className={styles.emptyState}>

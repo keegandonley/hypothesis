@@ -50,6 +50,11 @@
   margin-top: 20px;
 }
 
+/* Focus replacement for the stripped outline (inset ring, as in base64). */
+.uuidDisplay:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
 
 
 .copyOverlay {

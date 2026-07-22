@@ -103,7 +103,7 @@
 }
 
 .statRemoved {
-  color: #f87171;
+  color: var(--danger);
   text-decoration: none;
 }
 
@@ -145,8 +145,8 @@
 }
 
 .removed {
-  background-color: rgba(248, 113, 113, 0.18);
-  color: #f87171;
+  background-color: var(--danger-subtle);
+  color: var(--danger);
   text-decoration: line-through;
   border-radius: 2px;
 }

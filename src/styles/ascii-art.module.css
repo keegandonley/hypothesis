@@ -264,7 +264,7 @@
 
 .urlError {
   font-size: 10px;
-  color: #ef4444;
+  color: var(--danger);
   letter-spacing: 0.04em;
 }
 

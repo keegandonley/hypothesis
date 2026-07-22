@@ -1,6 +1,5 @@
 import { PageLayout } from "@/components/ui";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import styles from "@/styles/message-factory.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { Badge } from "@/components/ui";
@@ -64,10 +63,12 @@ function SubExperimentCard({
   href: string;
   docsHref: string;
 }): React.ReactNode {
-  const router = useRouter();
-
   return (
-    <div className={styles.card} onClick={() => router.push(href)}>
+    <div className={styles.card}>
+      {/* Overlay anchor (homepage ExperimentCard pattern): the whole card is
+          one focusable link instead of a click handler on a div, so keyboard
+          and screen-reader users can activate it. */}
+      <Link href={href} className={styles.cardLink} aria-label={name} />
       <div className={styles.cardMain}>
         <Badge>{id}</Badge>
         <div className={styles.cardBody}>
@@ -77,13 +78,7 @@ function SubExperimentCard({
         <div className={styles.arrow}>→</div>
       </div>
       <div className={styles.cardFooter}>
-        <Link
-          href={docsHref}
-          className={styles.docsLink}
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
+        <Link href={docsHref} className={styles.docsLink}>
           <DocIcon />
           docs
         </Link>

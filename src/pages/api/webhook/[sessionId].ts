@@ -3,6 +3,7 @@ import { getSession } from "@/lib/session";
 import { insertEvent, countRecentEvents } from "@/lib/events";
 import { sendWebhookPushNotification } from "@/lib/webhook-push";
 import { incrementStat } from "@/lib/stats";
+import { readRawBody, PayloadTooLargeError } from "@/lib/raw-body";
 import { track } from "@vercel/analytics/server";
 
 export const config = { api: { bodyParser: false } };
@@ -12,31 +13,6 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "*",
 };
-
-const MAX_BODY_BYTES = 1_048_576; // 1MB
-
-function readBody(req: NextApiRequest): Promise<string> {
-  return new Promise((resolve, reject) => {
-    let data = "";
-    let byteLength = 0;
-
-    req.on("data", (chunk: Buffer) => {
-      byteLength += chunk.byteLength;
-      if (byteLength > MAX_BODY_BYTES) {
-        req.destroy();
-        reject(new Error("PAYLOAD_TOO_LARGE"));
-
-        return;
-      }
-
-      data += chunk.toString();
-    });
-    req.on("end", () => {
-      resolve(data);
-    });
-    req.on("error", reject);
-  });
-}
 
 export default async function handler(
   req: NextApiRequest,
@@ -122,9 +98,12 @@ export default async function handler(
     let bodyText: string;
 
     try {
-      bodyText = await readBody(req);
+      bodyText = await readRawBody(req);
     } catch (err) {
-      if (err instanceof Error && err.message === "PAYLOAD_TOO_LARGE") {
+      if (err instanceof PayloadTooLargeError) {
+        // Only tear the socket down once the 413 has actually flushed —
+        // destroying earlier resets the connection before the client sees it.
+        res.once("finish", () => req.destroy());
         res.status(413).json({ error: "payload too large: max 1MB" });
 
         return;

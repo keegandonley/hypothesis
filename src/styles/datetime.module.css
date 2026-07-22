@@ -51,43 +51,6 @@
   border-color: var(--accent);
 }
 
-.nowBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 10px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    border-color 0.15s,
-    color 0.15s;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.nowBtn:hover {
-  border-color: var(--accent-border);
-  color: var(--accent);
-}
-
-.nowBtn:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-
-.nowBtnActive {
-  border-color: var(--accent-border);
-  color: var(--accent);
-}
-
 .conversionGrid {
   flex: 1;
   overflow-y: auto;

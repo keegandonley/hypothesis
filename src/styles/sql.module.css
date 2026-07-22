@@ -26,6 +26,13 @@
   margin-bottom: 16px;
 }
 
+/* Collapse to one column on narrow screens/embeds (matches base64). */
+@media (max-width: 640px) {
+  .panels {
+    grid-template-columns: 1fr;
+  }
+}
+
 .panelHeaderOverride {
   gap: 8px;
   flex-wrap: wrap;
@@ -52,6 +59,11 @@
   opacity: 0.3;
 }
 
+/* Focus replacement for the stripped outline (inset ring, as in base64). */
+.textarea:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
 .output {
   color: var(--text);
 }
@@ -59,7 +71,7 @@
 .errorMsg {
   padding: 14px;
   font-size: 12px;
-  color: #f87171;
+  color: var(--danger);
   line-height: 1.5;
 }
 

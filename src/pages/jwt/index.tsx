@@ -79,6 +79,12 @@ export default function JwtPage(): React.ReactNode {
 
   const expiryStatus = getExpiryStatus(decoded?.payload ?? null);
   const hasToken = token.length > 0;
+  const malformed = hasToken && error;
+  // decodeJwt fails for two distinct reasons; diagnose the right one.
+  const malformedMessage =
+    token.trim().split(".").length !== 3
+      ? "Not a valid JWT — expected three dot-separated segments (header.payload.signature)"
+      : "Token could not be decoded — segments are not valid base64url/JSON";
 
   return (
     <div className={styles.page}>
@@ -123,13 +129,13 @@ export default function JwtPage(): React.ReactNode {
         <Panel>
           <PanelHeader label="Header" />
           <div className={styles.outputWrapper}>
-            <pre className={styles.output}>
-              {decoded?.header
-                ? JSON.stringify(decoded.header, null, 2)
-                : hasToken && error
-                  ? ""
-                  : ""}
-            </pre>
+            {malformed ? (
+              <div className={styles.outputError}>{malformedMessage}</div>
+            ) : (
+              <pre className={styles.output}>
+                {decoded?.header ? JSON.stringify(decoded.header, null, 2) : ""}
+              </pre>
+            )}
           </div>
         </Panel>
 
@@ -145,18 +151,28 @@ export default function JwtPage(): React.ReactNode {
               ))}
           </PanelHeader>
           <div className={styles.outputWrapper}>
-            <pre className={styles.output}>
-              {decoded?.payload ? JSON.stringify(decoded.payload, null, 2) : ""}
-            </pre>
+            {malformed ? (
+              <div className={styles.outputError}>Token is malformed</div>
+            ) : (
+              <pre className={styles.output}>
+                {decoded?.payload
+                  ? JSON.stringify(decoded.payload, null, 2)
+                  : ""}
+              </pre>
+            )}
           </div>
         </Panel>
 
         <Panel>
           <PanelHeader label="Signature" />
           <div className={styles.outputWrapper}>
-            <pre className={`${styles.output} ${styles.outputMuted}`}>
-              {decoded?.signature ?? ""}
-            </pre>
+            {malformed ? (
+              <div className={styles.outputError}>Token is malformed</div>
+            ) : (
+              <pre className={`${styles.output} ${styles.outputMuted}`}>
+                {decoded?.signature ?? ""}
+              </pre>
+            )}
           </div>
         </Panel>
       </div>

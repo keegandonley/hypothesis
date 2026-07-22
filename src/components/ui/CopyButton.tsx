@@ -1,7 +1,7 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "./Button";
 import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { useCanCopy } from "@/lib/useCanCopy";
 
 type ButtonVariant = "copy" | "reset" | "tab" | "toggle" | "ghost";
 
@@ -20,11 +20,20 @@ export function CopyButton({
   className = "",
   disabled = false,
 }: CopyButtonProps): React.ReactNode {
-  const isIframe = useIsIframe();
+  const canCopy = useCanCopy();
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  if (isIframe) return null;
+  useEffect(
+    () => () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    },
+    [],
+  );
+
+  // Hidden when the embedding host doesn't (provably) allow clipboard
+  // writes — a visible-but-failing Copy button is worse than none.
+  if (!canCopy) return null;
 
   const handleClick = (): void => {
     void copyToClipboard(value).then(() => {

@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "@/styles/color-shades.module.css";
-import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
-import { copyToClipboard } from "@/lib/copyToClipboard";
+import { Button, PageLayout, PermalinkRow } from "@/components/ui";
+import { useCopyFeedback } from "@/lib/useCopyFeedback";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { generateShades, isDark } from "@/lib/color-shades";
 import { useUrlSync } from "@/lib/useUrlSync";
@@ -11,9 +11,10 @@ export default function ColorShadesPage(): React.ReactNode {
   const isIframe = useIsIframe();
   const [color, setColor] = useState("#3b82f6");
   const [pageUrl, setPageUrl] = useState("");
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [copiedAll, setCopiedAll] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { copiedKey, copy } = useCopyFeedback<number | "all">();
+
+  const copiedIndex = typeof copiedKey === "number" ? copiedKey : null;
+  const copiedAll = copiedKey === "all";
 
   const shades = generateShades(color);
 
@@ -55,13 +56,7 @@ export default function ColorShadesPage(): React.ReactNode {
   };
 
   const handleCopyShade = (hex: string, i: number): void => {
-    void copyToClipboard(hex).then(() => {
-      setCopiedIndex(i);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopiedIndex(null);
-      }, 1200);
-    });
+    copy(i, hex);
   };
 
   const handleCopyAll = (): void => {
@@ -69,15 +64,8 @@ export default function ColorShadesPage(): React.ReactNode {
     const tailwindPalette = shades
       .map(({ step, hex }) => `  ${step}: "${hex}"`)
       .join(",\n");
-    const text = `{\n${tailwindPalette}\n}`;
 
-    void copyToClipboard(text).then(() => {
-      setCopiedAll(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopiedAll(false);
-      }, 1500);
-    });
+    copy("all", `{\n${tailwindPalette}\n}`);
   };
 
   return (

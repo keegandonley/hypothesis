@@ -3,6 +3,8 @@ import styles from "@/styles/base64.module.css";
 import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { Panel, PanelHeader, PanelBody, PanelLabel } from "@/components/ui/Panel";
 import { useUrlSync } from "@/lib/useUrlSync";
+import { useFileDrop } from "@/lib/useFileDrop";
+import { formatBytesCompact } from "@/lib/bytes";
 
 type Tab = "text" | "image";
 
@@ -19,7 +21,6 @@ export default function Base64Page(): React.ReactNode {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageDataUrl, setImageDataUrl] = useState<string>("");
   const [imageBase64, setImageBase64] = useState<string>("");
-  const [imageDragging, setImageDragging] = useState(false);
   const [imageError, setImageError] = useState<string>("");
   const imageFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -204,9 +205,9 @@ export default function Base64Page(): React.ReactNode {
       return;
     }
 
-    if (file.size / (1024 * 1024) > 5) {
+    if (file.size > 5 * 1024 * 1024) {
       setImageError(
-        `Warning: large file (${(file.size / 1024 / 1024).toFixed(1)} MB). Output may be very long.`,
+        `Warning: large file (${formatBytesCompact(file.size)}). Output may be very long.`,
       );
     } else {
       setImageError("");
@@ -225,22 +226,10 @@ export default function Base64Page(): React.ReactNode {
     reader.readAsDataURL(file);
   };
 
-  const handleImageDrop = (e: React.DragEvent): void => {
-    e.preventDefault();
-    setImageDragging(false);
-    const file = e.dataTransfer.files[0];
-
-    if (file) handleImageFile(file);
-  };
-
-  const handleImageDragOver = (e: React.DragEvent): void => {
-    e.preventDefault();
-    setImageDragging(true);
-  };
-
-  const handleImageDragLeave = (): void => {
-    setImageDragging(false);
-  };
+  const { dragging: imageDragging, dropHandlers: imageDropHandlers } =
+    useFileDrop((files) => {
+      handleImageFile(files[0]);
+    });
 
   const handleImageFileInput = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -350,9 +339,7 @@ export default function Base64Page(): React.ReactNode {
             </PanelHeader>
             <div
               className={`${styles.imageDropZone}${imageDragging ? ` ${styles.imageDropZoneDragging}` : ""}`}
-              onDrop={handleImageDrop}
-              onDragOver={handleImageDragOver}
-              onDragLeave={handleImageDragLeave}
+              {...imageDropHandlers}
               onClick={() => imageFileInputRef.current?.click()}
               role="button"
               tabIndex={0}

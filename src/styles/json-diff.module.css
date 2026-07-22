@@ -62,7 +62,7 @@
 
 .error {
   font-size: 10px;
-  color: #f87171;
+  color: var(--danger);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -128,9 +128,9 @@
 }
 
 .badgeRemoved {
-  background: #f8717118;
-  border-color: #f8717133;
-  color: #f87171;
+  background: var(--danger-subtle);
+  border-color: var(--danger-border);
+  color: var(--danger);
 }
 
 .badgeChanged {
@@ -186,7 +186,7 @@
   color: #22c55e;
 }
 .removed .diffBadge {
-  color: #f87171;
+  color: var(--danger);
 }
 .changed .diffBadge {
   color: #fbbf24;
@@ -213,7 +213,7 @@
 
 .diffOld {
   font-size: 12px;
-  color: #f87171;
+  color: var(--danger);
   word-break: break-all;
 }
 

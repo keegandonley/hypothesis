@@ -38,7 +38,7 @@
 }
 
 .error {
-  color: #f87171;
+  color: var(--danger);
   font-weight: 400;
   font-size: 14px;
 }

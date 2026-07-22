@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import styles from "@/styles/message-factory-designer.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { ToolHead } from "@/components/ToolHead";
-import { useBranding } from "@/lib/branding";
 import { useIsIframe } from "@/lib/useIsIframe";
-import { Badge, PermalinkRow, CopyButton } from "@/components/ui";
+import {
+  Badge,
+  Button,
+  PageLayout,
+  PermalinkRow,
+  CopyButton,
+} from "@/components/ui";
 import { useUrlSync } from "@/lib/useUrlSync";
 
 interface Action {
@@ -83,6 +85,10 @@ function isValidJson(s: string): boolean {
   }
 }
 
+// Beyond this, the permalink stops being reliably shareable (browser/proxy
+// URL limits), so PermalinkRow disables copying via its tooLong prop.
+const MAX_SHAREABLE_URL_LENGTH = 2000;
+
 let actionIdCounter = 0;
 
 function newAction(): Action & { _key: string } {
@@ -92,7 +98,6 @@ function newAction(): Action & { _key: string } {
 }
 
 export default function DesignerPage(): React.ReactNode {
-  const branding = useBranding();
   const isIframe = useIsIframe();
   const [actions, setActions] = useState<(Action & { _key: string })[]>([]);
   const { replaceUrl, replaceUrlNow } = useUrlSync();
@@ -169,39 +174,16 @@ export default function DesignerPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Message Designer"
-        description="Build arrays of postMessage actions with shareable permalinks for testing message-driven pages."
+      {/* path is the parent tool: docs only exist at /docs/message-factory
+          (no nested docs route), and PageLayout derives its docs link from
+          path. Matches the docs link this page had before PageLayout. */}
+      <PageLayout
+        metaTitle="Message Designer"
+        metaDescription="Build arrays of postMessage actions with shareable permalinks for testing message-driven pages."
         path="/message-factory/designer"
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/message-factory"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Message Designer</h1>
-        <p className={styles.tagline}>
-          Build arrays of postMessage actions with shareable permalinks.
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        docsPath="/message-factory"
+        tagline="Build arrays of postMessage actions with shareable permalinks."
+      >
 
       {/* Actions list */}
       <div className={styles.actionsList}>
@@ -214,19 +196,26 @@ export default function DesignerPage(): React.ReactNode {
           <div key={action._key} className={styles.actionCard}>
             <div className={styles.actionCardHeader}>
               <span className={styles.actionIndex}>action {idx + 1}</span>
-              <button
-                className={styles.removeBtn}
+              <Button
+                variant="reset"
+                size="xs"
                 onClick={() => {
                   handleRemove(action._key);
                 }}
               >
                 Remove
-              </button>
+              </Button>
             </div>
             <div className={styles.actionFields}>
               <div className={styles.fieldRow}>
-                <label className={styles.fieldLabel}>name</label>
+                <label
+                  className={styles.fieldLabel}
+                  htmlFor={`action-name-${action._key}`}
+                >
+                  name
+                </label>
                 <input
+                  id={`action-name-${action._key}`}
                   type="text"
                   className={styles.fieldInput}
                   value={action.name}
@@ -239,8 +228,14 @@ export default function DesignerPage(): React.ReactNode {
                 />
               </div>
               <div className={styles.fieldRow}>
-                <label className={styles.fieldLabel}>id</label>
+                <label
+                  className={styles.fieldLabel}
+                  htmlFor={`action-id-${action._key}`}
+                >
+                  id
+                </label>
                 <input
+                  id={`action-id-${action._key}`}
                   type="text"
                   className={styles.fieldInput}
                   value={action.id}
@@ -253,13 +248,17 @@ export default function DesignerPage(): React.ReactNode {
                 />
               </div>
               <div className={styles.fieldRow}>
-                <label className={styles.fieldLabel}>
+                <label
+                  className={styles.fieldLabel}
+                  htmlFor={`action-payload-${action._key}`}
+                >
                   payload
                   {!isValidJson(action.payload) && (
                     <Badge color="warn">invalid json</Badge>
                   )}
                 </label>
                 <textarea
+                  id={`action-payload-${action._key}`}
                   className={styles.payloadTextarea}
                   value={action.payload}
                   onChange={(e) => {
@@ -274,13 +273,17 @@ export default function DesignerPage(): React.ReactNode {
         ))}
       </div>
 
-      <button className={styles.addBtn} onClick={handleAdd}>
+      <Button variant="copy" onClick={handleAdd}>
         + Add Action
-      </button>
+      </Button>
 
       <hr className={styles.divider} />
 
-      <PermalinkRow url={url} onReset={handleReset} />
+      <PermalinkRow
+        url={url}
+        onReset={handleReset}
+        tooLong={url.length > MAX_SHAREABLE_URL_LENGTH}
+      />
 
       {/* Open Viewer row */}
       <div className={styles.viewerRow}>
@@ -306,6 +309,7 @@ export default function DesignerPage(): React.ReactNode {
           </a>
         </div>
       </div>
+      </PageLayout>
     </div>
   );
 }

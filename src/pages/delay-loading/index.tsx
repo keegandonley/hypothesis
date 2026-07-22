@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import type { GetServerSideProps } from "next";
 import styles from "@/styles/delay-loading.module.css";
 import { Badge, Button, PageLayout, PermalinkRow } from "@/components/ui";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 const MAX_DELAY_MS = 60000;
 const DEFAULT_DELAY_MS = 3000;
@@ -31,6 +32,7 @@ export const getServerSideProps: GetServerSideProps<DelayLoadingProps> = (
 export default function DelayLoadingPage({
   delayMs,
 }: DelayLoadingProps): React.ReactNode {
+  const { replaceUrlNow } = useUrlSync();
   const [loaded, setLoaded] = useState(false);
   const [loadedAfterMs, setLoadedAfterMs] = useState<number | null>(null);
   const [remainingMs, setRemainingMs] = useState(delayMs);
@@ -84,11 +86,7 @@ export default function DelayLoadingPage({
     const permalink = `${window.location.origin}${window.location.pathname}?delay=${delayMs}`;
 
     setUrl(permalink); // eslint-disable-line react-hooks/set-state-in-effect
-    history.replaceState(
-      null,
-      "",
-      `${window.location.pathname}?delay=${delayMs}`,
-    );
+    replaceUrlNow(`${window.location.pathname}?delay=${delayMs}`);
 
     const markLoaded = (): void => {
       const elapsed = Math.round(performance.now() - start);
@@ -118,7 +116,7 @@ export default function DelayLoadingPage({
       window.removeEventListener("load", markLoaded);
       window.clearInterval(interval);
     };
-  }, [delayMs]);
+  }, [delayMs, replaceUrlNow]);
 
   const handleApply = (): void => {
     const next = clampDelay(parseInt(draft, 10));

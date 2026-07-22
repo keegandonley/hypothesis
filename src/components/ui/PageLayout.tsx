@@ -17,6 +17,12 @@ interface PageLayoutProps {
   metaTitle: string;
   metaDescription: string;
   path: string;
+  /**
+   * Docs route when it differs from `path` — subpages like
+   * /message-factory/designer keep their own canonical URL (from `path`)
+   * while linking to the parent tool's docs page.
+   */
+  docsPath?: string;
   h1?: string;
   tagline: string;
   children: React.ReactNode;
@@ -28,6 +34,7 @@ export function PageLayout({
   metaTitle,
   metaDescription,
   path,
+  docsPath,
   h1,
   tagline,
   children,
@@ -58,7 +65,7 @@ export function PageLayout({
           </Link>
           {"·"}
           <Link
-            href={`/docs${path}`}
+            href={`/docs${docsPath ?? path}`}
             className={styles.docsLink}
             target="_blank"
             rel="noopener noreferrer"

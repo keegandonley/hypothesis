@@ -267,17 +267,18 @@ export default function QrPage(): React.ReactNode {
             <PanelHeader label="Input">
               <div className={styles.modeTabs} role="tablist">
                 {(["text", "wifi", "vcard"] as QrMode[]).map((m) => (
-                  <button
+                  <Button
                     key={m}
+                    variant="tab"
                     role="tab"
                     aria-selected={mode === m}
-                    className={`${styles.modeTab}${mode === m ? ` ${styles.modeTabActive}` : ""}`}
+                    active={mode === m}
                     onClick={() => {
                       handleModeChange(m);
                     }}
                   >
                     {m === "text" ? "Text" : m === "wifi" ? "WiFi" : "vCard"}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </PanelHeader>

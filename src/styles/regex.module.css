@@ -78,31 +78,16 @@
   flex-shrink: 0;
 }
 
-.flagBtn {
+/* Fine-tunes the kit tab Button: regex flags are case-sensitive letters
+   (i is not I), so the kit's uppercase transform must be undone; also keeps
+   the original compact chip metrics. Descendant selector so specificity
+   beats the kit's classes regardless of CSS order. */
+.flagsGroup .flagBtn {
   padding: 3px 7px;
-  background: transparent;
-  border: 1px solid var(--border);
   border-radius: 4px;
-  font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 700;
-  color: var(--muted);
-  cursor: pointer;
-  transition:
-    border-color 0.15s,
-    color 0.15s,
-    background-color 0.15s;
-}
-
-.flagBtn:hover {
-  border-color: var(--accent-border);
-  color: var(--accent);
-}
-
-.flagBtn.flagActive {
-  background-color: var(--accent-subtle);
-  border-color: var(--accent-border);
-  color: var(--accent);
+  letter-spacing: normal;
+  text-transform: none;
 }
 
 /* Two-column layout for test strings + results */
@@ -134,6 +119,14 @@
   color: var(--muted);
   font-size: 11px;
   text-align: center;
+}
+
+/* The raw SyntaxError text shown under the empty-state line */
+.emptyStateDetail {
+  margin-top: 6px;
+  font-size: 10px;
+  opacity: 0.8;
+  word-break: break-word;
 }
 
 .resultRow {

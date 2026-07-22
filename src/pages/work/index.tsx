@@ -244,6 +244,13 @@ export default function DashboardPage(): React.ReactNode {
     activeTabIdRef.current = activeTabId;
   }, [activeTabId]);
 
+  // Same for tabs: handleMessage validates incoming tabIds against live tabs
+  const tabsRef = useRef<Tab[]>([]);
+
+  useEffect(() => {
+    tabsRef.current = tabs;
+  }, [tabs]);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
@@ -290,12 +297,36 @@ export default function DashboardPage(): React.ReactNode {
     inputRef.current?.focus();
   }, []);
 
-  // Handle postMessages from embedded tools
+  // Handle postMessages from embedded tools.
+  //
+  // Trust model: tabs are same-origin tool pages, but a tab can host
+  // iframe-proxy, whose whole purpose is to transparently relay messages
+  // from arbitrary third-party pages up to us — with our own origin on the
+  // event. So origin checks alone are not enough: privileged actions also
+  // require the sender to prove it knows its tab's randomUUID tabId, which
+  // a relayed third-party page never learns.
   useEffect(() => {
+    // Deliberately accepts any live tab, not just the active one:
+    // backgrounded tabs stay mounted (display:none) and may legitimately
+    // finish a click-initiated copy after the user switches tabs.
+    function isLiveTabId(tabId: unknown): tabId is string {
+      return (
+        typeof tabId === "string" &&
+        tabsRef.current.some((t) => t.id === tabId)
+      );
+    }
+
     function handleMessage(e: MessageEvent): void {
+      // Tool tabs are always same-origin; drop anything else outright.
+      if (e.origin !== window.location.origin) return;
+
       const msg = e.data as Record<string, unknown>;
 
-      if (msg.type === "clipboard-write" && typeof msg.text === "string") {
+      if (
+        msg.type === "clipboard-write" &&
+        typeof msg.text === "string" &&
+        isLiveTabId(msg.tabId)
+      ) {
         void navigator.clipboard.writeText(msg.text);
       }
 
@@ -307,9 +338,21 @@ export default function DashboardPage(): React.ReactNode {
       if (
         msg.type === "url-update" &&
         typeof msg.url === "string" &&
-        msg.tabId
+        isLiveTabId(msg.tabId)
       ) {
-        const { url, tabId } = msg as unknown as { url: string; tabId: string };
+        const { url, tabId } = msg as { url: string; tabId: string };
+
+        // Persist only same-origin URLs: this value is written to
+        // localStorage and restored as a tab src on the next load.
+        let parsed: URL;
+
+        try {
+          parsed = new URL(url);
+        } catch {
+          return;
+        }
+
+        if (parsed.origin !== window.location.origin) return;
 
         setTabs((prev) => {
           const next = prev.map((t) =>
