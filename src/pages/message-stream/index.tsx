@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Badge, PageLayout } from "@/components/ui";
+import { Badge, Button, CopyButton, PageLayout } from "@/components/ui";
 import styles from "@/styles/message-stream.module.css";
 import { useBranding } from "@/lib/branding";
+import { formatTimeWithMs } from "@/lib/datetime";
 
 interface Message {
   id: string;
@@ -19,9 +20,23 @@ export default function MessagesPage(): React.ReactNode {
   const branding = useBranding();
   const [messages, setMessages] = useState<Message[]>([]);
   const [context, setContext] = useState<Record<string, unknown> | null>(null);
+  // A malformed ?context= param used to fail silently (console only); this
+  // drives a visible notice so the sender knows their payload was dropped.
+  const [contextDecodeFailed, setContextDecodeFailed] = useState(false);
   const [sendInput, setSendInput] = useState("");
+  // While paused, messages keep collecting into state (nothing is dropped)
+  // but the list renders from this frozen snapshot so the card being
+  // inspected doesn't get pushed down mid-read.
+  const [pausedSnapshot, setPausedSnapshot] = useState<Message[] | null>(null);
+
+  const paused = pausedSnapshot !== null;
+  const visibleMessages = pausedSnapshot ?? messages;
 
   const handleSend = (): void => {
+    // An accidental empty send looks like a no-op and posts a blank payload
+    // consumers then have to filter out; the button is disabled too.
+    if (!sendInput.trim()) return;
+
     const data = { action: branding.actionType, content: sendInput };
 
     window.parent.postMessage(data, "*");
@@ -37,6 +52,17 @@ export default function MessagesPage(): React.ReactNode {
         ...prev,
       ].slice(0, MAX_MESSAGES),
     );
+    setSendInput("");
+  };
+
+  const handleTogglePause = (): void => {
+    setPausedSnapshot(paused ? null : messages);
+  };
+
+  const handleClear = (): void => {
+    setMessages([]);
+    // Clearing implies "start fresh", so it also resumes the live feed.
+    setPausedSnapshot(null);
   };
 
   useEffect(() => {
@@ -75,6 +101,7 @@ export default function MessagesPage(): React.ReactNode {
         setContext(JSON.parse(decodedContext) as Record<string, unknown>);
       } catch (ex) {
         console.error("Context could not be decoded", ex);
+        setContextDecodeFailed(true);
       }
     }
 
@@ -108,8 +135,11 @@ export default function MessagesPage(): React.ReactNode {
       >
 
       <div className={styles.sendSection}>
-        <div className={styles.fieldLabel}>Send to Parent</div>
+        <label className={styles.fieldLabel} htmlFor="ms-send-input">
+          Send to Parent
+        </label>
         <input
+          id="ms-send-input"
           type="text"
           className={styles.sendInput}
           value={sendInput}
@@ -121,9 +151,13 @@ export default function MessagesPage(): React.ReactNode {
           }}
           placeholder="Enter message content..."
         />
-        <button className={styles.sendBtn} onClick={handleSend}>
+        <Button
+          size="sm"
+          onClick={handleSend}
+          disabled={!sendInput.trim()}
+        >
           Send Message
-        </button>
+        </Button>
       </div>
 
       <hr className={styles.divider} />
@@ -135,11 +169,42 @@ export default function MessagesPage(): React.ReactNode {
         </div>
       )}
 
+      {contextDecodeFailed && (
+        <div className={styles.contextBlock}>
+          <div className={styles.fieldLabel}>Context</div>
+          <div className={styles.contextError}>
+            context param could not be decoded
+          </div>
+        </div>
+      )}
+
+      <div className={styles.listHeader}>
+        <span className={styles.listMeta}>
+          Newest first
+          {messages.length >= MAX_MESSAGES && ` · showing latest ${MAX_MESSAGES}`}
+          {paused &&
+            ` · paused (${messages.length - visibleMessages.length} new)`}
+        </span>
+        <div className={styles.listControls}>
+          <Button variant="ghost" size="xs" onClick={handleTogglePause}>
+            {paused ? "Resume" : "Pause"}
+          </Button>
+          <Button
+            variant="reset"
+            size="xs"
+            onClick={handleClear}
+            disabled={messages.length === 0}
+          >
+            Clear
+          </Button>
+        </div>
+      </div>
+
       <div className={styles.list}>
-        {messages.length === 0 ? (
+        {visibleMessages.length === 0 ? (
           <div className={styles.empty}>No messages received yet</div>
         ) : (
-          messages.map((message, index) => (
+          visibleMessages.map((message, index) => (
             <div
               key={message.id}
               className={`${styles.card} ${message.direction === "sent" ? styles.cardSent : styles.cardReceived}`}
@@ -147,7 +212,7 @@ export default function MessagesPage(): React.ReactNode {
               <div className={styles.cardHeader}>
                 <div className={styles.cardHeaderLeft}>
                   <div className={styles.cardIndex}>
-                    #{messages.length - index}
+                    #{visibleMessages.length - index}
                   </div>
                   <div
                     className={`${styles.directionBadge} ${message.direction === "sent" ? styles.directionSent : styles.directionReceived}`}
@@ -155,8 +220,15 @@ export default function MessagesPage(): React.ReactNode {
                     {message.direction === "sent" ? "↑ sent" : "↓ received"}
                   </div>
                 </div>
-                <div className={styles.cardTime}>
-                  {new Date(message.timestamp).toLocaleTimeString()}
+                <div className={styles.cardHeaderRight}>
+                  <div className={styles.cardTime}>
+                    {formatTimeWithMs(new Date(message.timestamp))}
+                  </div>
+                  <CopyButton
+                    value={JSON.stringify(message.data, null, 2)}
+                    variant="ghost"
+                    size="xs"
+                  />
                 </div>
               </div>
 

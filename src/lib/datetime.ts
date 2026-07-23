@@ -8,6 +8,13 @@ export function pad(n: number, digits = 2): string {
   return String(n).padStart(digits, "0");
 }
 
+/** "12:04:31.482" — millisecond precision for ordering bursts of events. */
+export function formatTimeWithMs(d: Date): string {
+  return (
+    d.toLocaleTimeString("en-US", { hour12: false }) + "." + pad(d.getMilliseconds(), 3)
+  );
+}
+
 export function formatRelative(d: Date): string {
   const diffMs = d.getTime() - Date.now();
   const abs = Math.abs(diffMs);

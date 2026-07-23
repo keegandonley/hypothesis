@@ -23,8 +23,8 @@ These hold across every endpoint unless noted otherwise.
 
 |                  |                                                                                                                                                            |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **CORS**         | Wide open — `Access-Control-Allow-Origin: *`, all methods, all headers. Browser clients work with no proxy. `OPTIONS` preflight returns `204`.             |
-| **Caching**      | `Cache-Control: no-store`. A cached answer would defeat the point. (One exception: `/response-headers` lets you overwrite it — that's the endpoint's job.) |
+| **CORS**         | Wide open - `Access-Control-Allow-Origin: *`, all methods, all headers. Browser clients work with no proxy. `OPTIONS` preflight returns `204`.             |
+| **Caching**      | `Cache-Control: no-store`. A cached answer would defeat the point. (One exception: `/response-headers` lets you overwrite it - that's the endpoint's job.) |
 | **Wrong method** | `405` with an `Allow` header listing what's accepted.                                                                                                      |
 | **Unknown path** | `404` with a JSON error.                                                                                                                                   |
 | **Body limit**   | 1 MB. Larger returns `413`.                                                                                                                                |
@@ -49,7 +49,7 @@ curl https://hypothesis.sh/api/httptest/nope
 
 ## The explorer
 
-The [`/httptest`](/httptest) page lists every endpoint and fires real requests from your browser — status, timing, response headers, and body. Pick from the catalog or type any path. `POST`/`PUT`/`PATCH`/`DELETE` reveal a body field sent as `application/json`. Binary responses are summarized by length rather than rendered as mojibake.
+The [`/httptest`](/httptest) page lists every endpoint and fires real requests from your browser - status, timing, response headers, and body. Pick from the catalog or type any path. `POST`/`PUT`/`PATCH`/`DELETE` reveal a body field sent as `application/json`. Binary responses are summarized by length rather than rendered as mojibake.
 
 The current method and path live in the URL, so a specific request is shareable:
 
@@ -81,7 +81,7 @@ curl 'https://hypothesis.sh/api/httptest/get?foo=bar&foo=baz'
 }
 ```
 
-A param given once is a string; **repeated params become an array** — the quickest way to check how your client serializes lists.
+A param given once is a string; **repeated params become an array** - the quickest way to check how your client serializes lists.
 
 ### `POST /post` · `PUT /put` · `PATCH /patch` · `DELETE /delete`
 
@@ -108,7 +108,7 @@ curl -X POST -H 'Content-Type: application/json' \
 }
 ```
 
-**A form body** populates `form` and leaves `data` empty — repeats become arrays here too:
+**A form body** populates `form` and leaves `data` empty - repeats become arrays here too:
 
 ```bash
 curl -X POST -d 'x=1&x=2&y=3' https://hypothesis.sh/api/httptest/post
@@ -123,7 +123,7 @@ curl -X POST -d 'x=1&x=2&y=3' https://hypothesis.sh/api/httptest/post
 }
 ```
 
-**Unparseable JSON** is not an error — you get the raw `data` and a `null` `json`, so you can see exactly what you sent:
+**Unparseable JSON** is not an error - you get the raw `data` and a `null` `json`, so you can see exactly what you sent:
 
 ```bash
 curl -X POST -H 'Content-Type: application/json' -d '{oops' \
@@ -134,9 +134,9 @@ curl -X POST -H 'Content-Type: application/json' -d '{oops' \
 { "data": "{oops", "json": null }
 ```
 
-`/put`, `/patch`, and `/delete` behave identically to `/post` — only the method changes.
+`/put`, `/patch`, and `/delete` behave identically to `/post` - only the method changes.
 
-> `multipart/form-data` is **not** decoded — it lands in `data` as raw text and `files` stays empty. This is the one deliberate parity gap; see [Differences](#differences-from-httpbinorg).
+> `multipart/form-data` is **not** decoded - it lands in `data` as raw text and `files` stays empty. This is the one deliberate parity gap; see [Differences](#differences-from-httpbinorg).
 
 ## Request inspection
 
@@ -179,7 +179,7 @@ curl -A 'my-client/2.1' https://hypothesis.sh/api/httptest/user-agent
 { "user-agent": "my-client/2.1" }
 ```
 
-### `/anything/*` — any method, any path
+### `/anything/*` - any method, any path
 
 The catch-all. Accepts `GET`, `POST`, `PUT`, `PATCH`, `DELETE` on **any** trailing path, and adds `method` to the full reflection. Reach for it when you want one endpoint that never 405s.
 
@@ -204,7 +204,7 @@ curl -X PATCH -H 'Content-Type: application/json' -d '{"k":"v"}' \
 
 ## Status codes
 
-### `/status/:codes` — all methods
+### `/status/:codes` - all methods
 
 Responds with the status you name. The body is empty; the status line **is** the payload.
 
@@ -216,14 +216,14 @@ curl -i https://hypothesis.sh/api/httptest/status/418
 HTTP/1.1 418 I'm a Teapot
 ```
 
-Give a comma-separated list to have one picked at random — useful for exercising retry logic against a flaky-looking endpoint:
+Give a comma-separated list to have one picked at random - useful for exercising retry logic against a flaky-looking endpoint:
 
 ```bash
 curl -o /dev/null -w '%{http_code}\n' \
      https://hypothesis.sh/api/httptest/status/200,200,500
 ```
 
-Add a `Retry-After` query param to get that header alongside the status — the missing piece for testing `Retry-After`-aware backoff against a real `429` or `503`:
+Add a `Retry-After` query param to get that header alongside the status - the missing piece for testing `Retry-After`-aware backoff against a real `429` or `503`:
 
 ```bash
 curl -i 'https://hypothesis.sh/api/httptest/status/429?Retry-After=2'
@@ -234,9 +234,9 @@ HTTP/1.1 429 Too Many Requests
 Retry-After: 2
 ```
 
-The param name is matched case-insensitively; the value must be plain digits (delta-seconds) — anything else, including the RFC 9110 HTTP-date form, is a `400`. `Retry-After` is the **only** query param `/status` honors. It deliberately does not echo arbitrary params as headers: that's [`/response-headers`](#getpost-response-headers)' job, and only ever at `200`.
+The param name is matched case-insensitively; the value must be plain digits (delta-seconds) - anything else, including the RFC 9110 HTTP-date form, is a `400`. `Retry-After` is the **only** query param `/status` honors. It deliberately does not echo arbitrary params as headers: that's [`/response-headers`](#getpost-response-headers)' job, and only ever at `200`.
 
-Accepts `100`–`599`. Anything else — `/status/999`, `/status/abc` — is a `400`, **not** a clamp: answering with a status you never asked for is worse than an error.
+Accepts `100`–`599`. Anything else - `/status/999`, `/status/abc` - is a `400`, **not** a clamp: answering with a status you never asked for is worse than an error.
 
 ## Response formats
 
@@ -271,7 +271,7 @@ curl https://hypothesis.sh/api/httptest/json
 
 ### `GET /html`
 
-A small HTML document (`text/html; charset=utf-8`) — a Moby-Dick excerpt.
+A small HTML document (`text/html; charset=utf-8`) - a Moby-Dick excerpt.
 
 ```bash
 curl https://hypothesis.sh/api/httptest/html
@@ -319,7 +319,7 @@ curl https://hypothesis.sh/api/httptest/uuid
 
 ## Dynamic data
 
-### `/delay/:n` — all methods
+### `/delay/:n` - all methods
 
 Responds after `n` seconds with the `/get` shape. **Max 10 seconds**; higher values clamp rather than error.
 
@@ -329,7 +329,7 @@ curl -o /dev/null -w '%{http_code} in %{time_total}s\n' \
 # 200 in 2.003790s
 ```
 
-The obvious use — prove your client's timeout actually fires:
+The obvious use - prove your client's timeout actually fires:
 
 ```bash
 curl --max-time 1 https://hypothesis.sh/api/httptest/delay/5
@@ -359,7 +359,7 @@ curl -s https://hypothesis.sh/api/httptest/stream/3
 {"args":{},"headers":{...},"origin":"203.0.113.7","url":"...","id":2}
 ```
 
-> The response is `application/json` but is **not** a single JSON document — parse it line by line.
+> The response is `application/json` but is **not** a single JSON document - parse it line by line.
 
 ## Redirects
 
@@ -391,7 +391,7 @@ curl -sL --max-redirs 2 -o /dev/null https://hypothesis.sh/api/httptest/redirect
 
 ## Auth
 
-Nothing here is a real secret — the expected credentials arrive **in the request URL**. These exist to exercise a client's auth handling, not to protect anything.
+Nothing here is a real secret - the expected credentials arrive **in the request URL**. These exist to exercise a client's auth handling, not to protect anything.
 
 ### `GET /basic-auth/:user/:passwd`
 
@@ -416,11 +416,11 @@ curl -u user:passwd https://hypothesis.sh/api/httptest/basic-auth/user/passwd
 { "authenticated": true, "user": "user" }
 ```
 
-Any user/password pair works — they're taken from the path, so `/basic-auth/ada/hunter2` expects `ada:hunter2`.
+Any user/password pair works - they're taken from the path, so `/basic-auth/ada/hunter2` expects `ada:hunter2`.
 
 ### `GET /bearer`
 
-Any non-empty Bearer token is accepted and echoed back — the point is the header handling, not the token.
+Any non-empty Bearer token is accepted and echoed back - the point is the header handling, not the token.
 
 ```bash
 curl -H 'Authorization: Bearer tok_abc123' https://hypothesis.sh/api/httptest/bearer
@@ -455,14 +455,14 @@ Content-Length: 104
 
 Two behaviors look like bugs and aren't:
 
-- **Repeated params repeat the header.** `?a=1&a=2` emits two `a:` lines and reports `"a": ["1","2"]` — matching httpbin exactly.
-- **Params are _added_ to `Content-Type`, not substituted.** `?Content-Type=text/html` reports an array in the body — `{"Content-Type": ["application/json", "text/html"]}` — just as httpbin does. On the wire, though, only `text/html` arrives: the CDN collapses duplicate `Content-Type` to the last value. See [Differences](#differences-from-httpbinorg).
+- **Repeated params repeat the header.** `?a=1&a=2` emits two `a:` lines and reports `"a": ["1","2"]` - matching httpbin exactly.
+- **Params are _added_ to `Content-Type`, not substituted.** `?Content-Type=text/html` reports an array in the body - `{"Content-Type": ["application/json", "text/html"]}` - just as httpbin does. On the wire, though, only `text/html` arrives: the CDN collapses duplicate `Content-Type` to the last value. See [Differences](#differences-from-httpbinorg).
 
-The body reports its own `Content-Length` — so writing that number changes the body's length. The value is resolved by re-serializing to a fixpoint, exactly as httpbin does, and always matches the bytes actually sent.
+The body reports its own `Content-Length` - so writing that number changes the body's length. The value is resolved by re-serializing to a fixpoint, exactly as httpbin does, and always matches the bytes actually sent.
 
 Unusable header names or values are rejected with `400`.
 
-> **This endpoint is sandboxed.** It lets a caller put arbitrary bytes in the body _and_ set `Content-Type`, so `?Content-Type=text/html&x=<script>…` is a live XSS on real httpbin. httpbin.org gets away with that as a sacrificial domain; this one shares an origin with every other tool here, so responses carry `Content-Security-Policy: sandbox`. Scripts can't execute, every header you asked for is still set, and programmatic clients see no difference. The header is added after the body is built, so it isn't reflected — the same way httpbin's own CORS headers aren't.
+> **This endpoint is sandboxed.** It lets a caller put arbitrary bytes in the body _and_ set `Content-Type`, so `?Content-Type=text/html&x=<script>…` is a live XSS on real httpbin. httpbin.org gets away with that as a sacrificial domain; this one shares an origin with every other tool here, so responses carry `Content-Security-Policy: sandbox`. Scripts can't execute, every header you asked for is still set, and programmatic clients see no difference. The header is added after the body is built, so it isn't reflected - the same way httpbin's own CORS headers aren't.
 
 ## Cookies
 
@@ -512,7 +512,7 @@ curl -sLb jar.txt -c jar.txt 'https://hypothesis.sh/api/httptest/cookies/delete?
 
 ## Index
 
-`GET /api/httptest` returns a machine-readable catalog of every endpoint — this stands in for httpbin's Swagger landing page.
+`GET /api/httptest` returns a machine-readable catalog of every endpoint - this stands in for httpbin's Swagger landing page.
 
 ```bash
 curl https://hypothesis.sh/api/httptest
@@ -543,19 +543,19 @@ curl https://hypothesis.sh/api/httptest
 | `/status/:codes` | `100`–`599` | **`400`**    |
 | Request body     | 1 MB        | **`413`**    |
 
-Sizes and durations clamp, matching httpbin. Status codes don't — see [Status codes](#status-codes).
+Sizes and durations clamp, matching httpbin. Status codes don't - see [Status codes](#status-codes).
 
 ## Differences from httpbin.org
 
 This is a **TypeScript port of httpbin's core surface**, not the Flask app. Known deviations, all verified against `psf/httpbin` 0.10.4 running locally:
 
 - **Multipart bodies are not decoded.** `multipart/form-data` lands in `data` as raw text with `files` empty; real httpbin populates `files`. Form-encoded and JSON bodies behave identically.
-- **`/json`, `/html`, and `/xml` can return `304 Not Modified`** to a conditional `If-None-Match` request, because the framework attaches an `ETag` to static bodies. Real httpbin sets no `ETag` and always returns `200`. Rarely hit in practice — every response is `no-store`, so a well-behaved cache never revalidates — and the reflection endpoints are immune, since echoing `If-None-Match` into the body changes the body and the tag never matches.
+- **`/json`, `/html`, and `/xml` can return `304 Not Modified`** to a conditional `If-None-Match` request, because the framework attaches an `ETag` to static bodies. Real httpbin sets no `ETag` and always returns `200`. Rarely hit in practice - every response is `no-store`, so a well-behaved cache never revalidates - and the reflection endpoints are immune, since echoing `If-None-Match` into the body changes the body and the tag never matches.
 - **`/response-headers` is sandboxed** (see the note above) and **won't emit a duplicate `Content-Length`**: real httpbin honors `?Content-Length=999` with a _second, conflicting_ header, which is response-smuggling material rather than a testable behavior. The body still reports what you asked for; only the true length is sent. Real httpbin also returns `500` on a CRLF-bearing value; this returns `400`.
-- **`/response-headers` can't emit a duplicate `Content-Type` or `ETag`.** Ask for `?Content-Type=text/html` and the body reports the array httpbin reports, but only the last value reaches the wire. The handler does set both — a bare Node server given the same `setHeader` call writes two `Content-Type:` lines — so this is the CDN in front of the function collapsing singleton headers, and it can't be fixed in the handler. It applies only to `Content-Type` and `ETag`; `?a=1&a=2`, and duplicate `Set-Cookie`, `Vary`, and `Content-Language`, all reach the client intact.
+- **`/response-headers` can't emit a duplicate `Content-Type` or `ETag`.** Ask for `?Content-Type=text/html` and the body reports the array httpbin reports, but only the last value reaches the wire. The handler does set both - a bare Node server given the same `setHeader` call writes two `Content-Type:` lines - so this is the CDN in front of the function collapsing singleton headers, and it can't be fixed in the handler. It applies only to `Content-Type` and `ETag`; `?a=1&a=2`, and duplicate `Set-Cookie`, `Vary`, and `Content-Language`, all reach the client intact.
 - **`/delay` caps at 10 seconds**, matching httpbin's own limit. Each delayed request holds a serverless function open, so the ceiling is enforced, not advisory.
-- **JSON key order differs.** Real httpbin sorts keys (Flask's `jsonify`); this returns a fixed but unsorted order. JSON objects are unordered — every key and value matches.
-- **A `__proto__` query param or request header won't round-trip.** Next.js strips `__proto__` from the query string, and Node's HTTP parser drops a `__proto__` request header — both before this handler runs. A `__proto__` _cookie_ round-trips correctly. Real httpbin, backed by a Python dict, reflects all three.
+- **JSON key order differs.** Real httpbin sorts keys (Flask's `jsonify`); this returns a fixed but unsorted order. JSON objects are unordered - every key and value matches.
+- **A `__proto__` query param or request header won't round-trip.** Next.js strips `__proto__` from the query string, and Node's HTTP parser drops a `__proto__` request header - both before this handler runs. A `__proto__` _cookie_ round-trips correctly. Real httpbin, backed by a Python dict, reflects all three.
 - **Not implemented:** `/gzip`, `/brotli`, `/deflate`, `/image/*`, `/robots.txt`, `/deny`, `/links/:n`, `/range/:n`, `/drip`, `/digest-auth`, `/forms/post`, `/cache`, `/etag/:tag`, `/base64/:value`, `/relative-redirect/:n`, `/absolute-redirect/:n`, `/redirect-to?url=`.
 
-> Why a port and not the real thing? [postmanlabs/httpbin](https://github.com/postmanlabs/httpbin) has not had a commit to `master` since **November 2018** and no longer imports on a modern install — `core.py` still does `from werkzeug.wrappers import BaseResponse`, which Werkzeug removed in 2.1.0. The maintained descendant is [psf/httpbin](https://github.com/psf/httpbin) (what `pip install httpbin` actually gives you), but running Flask here would mean adding a Python toolchain and restructuring the Vercel deploy config around [Services](https://vercel.com/docs/services). A focused TypeScript port keeps the whole thing in one handler with no new runtime.
+> Why a port and not the real thing? [postmanlabs/httpbin](https://github.com/postmanlabs/httpbin) has not had a commit to `master` since **November 2018** and no longer imports on a modern install - `core.py` still does `from werkzeug.wrappers import BaseResponse`, which Werkzeug removed in 2.1.0. The maintained descendant is [psf/httpbin](https://github.com/psf/httpbin) (what `pip install httpbin` actually gives you), but running Flask here would mean adding a Python toolchain and restructuring the Vercel deploy config around [Services](https://vercel.com/docs/services). A focused TypeScript port keeps the whole thing in one handler with no new runtime.

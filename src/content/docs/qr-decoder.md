@@ -4,7 +4,7 @@ Decode QR codes using your device camera. Available in the [hypothesis.sh compan
 
 ## Overview
 
-Point your camera at any QR code and the decoded contents appear instantly — no shutter press required. The decoder runs entirely on-device; nothing is uploaded or sent to a server.
+Point your camera at any QR code and the decoded contents appear instantly - no shutter press required. The decoder runs entirely on-device; nothing is uploaded or sent to a server.
 
 This tool is exclusive to the mobile app. There is no web version, since browser camera access is less reliable than the native scanner and most QR decoding happens away from a desk anyway.
 
@@ -12,10 +12,10 @@ This tool is exclusive to the mobile app. There is no web version, since browser
 
 Any standard QR code payload, including:
 
-- **URLs** — with a one-tap option to open the link
-- **Plain text** — copyable to the clipboard
-- **WiFi credentials** — codes in `WIFI:T:...;S:...;P:...;;` format, like those produced by the [qr code generator](/docs/qr)
-- **Contact cards** — vCard payloads
+- **URLs** - with a one-tap option to open the link
+- **Plain text** - copyable to the clipboard
+- **WiFi credentials** - codes in `WIFI:T:...;S:...;P:...;;` format, like those produced by the [qr code generator](/docs/qr)
+- **Contact cards** - vCard payloads
 
 ## Round-tripping with the qr code tool
 

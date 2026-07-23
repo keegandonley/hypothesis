@@ -9,7 +9,7 @@ Edit either panel and the other updates instantly:
 - **JSON → YAML**: parsed with the built-in `JSON.parse`, serialized with `js-yaml`'s `dump`
 - **YAML → JSON**: parsed with `js-yaml`'s `load`, serialized with `JSON.stringify` (2-space indent)
 
-Invalid input is flagged inline — the other panel retains its last valid state.
+Invalid input is flagged inline - the other panel retains its last valid state.
 
 ## Supported YAML features
 

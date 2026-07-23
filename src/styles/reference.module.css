@@ -380,9 +380,9 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #f87171;
-  background-color: #f8717118;
-  border: 1px solid #f8717133;
+  color: var(--danger);
+  background-color: var(--danger-subtle);
+  border: 1px solid var(--danger-border);
   border-radius: 3px;
   padding: 1px 6px;
   line-height: 1.6;

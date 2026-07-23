@@ -4,7 +4,9 @@
   --card-bg: #13131a;
   --border: #1e1e2e;
   --text: #f0ede8;
-  --muted: #5a5a6e;
+  /* Same desaturated-violet family, lightened from #5a5a6e (~2.9:1 on --bg,
+     below WCAG AA) to clear 4.5:1 for the labels/taglines/hints it styles. */
+  --muted: #8f8fa3;
   --font-mono:
     "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace;
   --danger: #ef4444;

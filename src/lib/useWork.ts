@@ -1,5 +1,25 @@
 import { useEffect } from "react";
 
+// The tabId /work issued to this embed, captured at mount. It doubles as an
+// auth token for privileged messages (clipboard-write): /work only honors
+// them when the sender proves it knows its own randomUUID tabId — a page
+// merely relayed through iframe-proxy never sees it.
+let workTabId = "";
+
+export function getWorkTabId(): string {
+  if (workTabId) return workTabId;
+
+  // Lazy fallback for calls that land before _app's useWork effect has
+  // cached the value (child effects fire before parent effects). After a
+  // replaceState strips the param this returns "", so the cached value
+  // above is the reliable source for the rest of the session.
+  try {
+    return new URLSearchParams(window.location.search).get("tabId") ?? "";
+  } catch {
+    return "";
+  }
+}
+
 export function useWork(): void {
   useEffect(() => {
     if (window.name !== "work-embed") return;
@@ -7,6 +27,8 @@ export function useWork(): void {
     // Capture tabId from URL at mount time (before any replaceState strips it)
     const tabId =
       new URLSearchParams(window.location.search).get("tabId") ?? "";
+
+    workTabId = tabId;
 
     function onKeyDown(e: KeyboardEvent): void {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {

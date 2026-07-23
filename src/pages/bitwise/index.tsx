@@ -1,17 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "@/styles/bitwise.module.css";
-import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
-import { copyToClipboard } from "@/lib/copyToClipboard";
-import { formatBin, Operation, OPERATIONS } from "@/lib/bitwise";
+import { PageLayout, PermalinkRow } from "@/components/ui";
+import { useCopyFeedback } from "@/lib/useCopyFeedback";
+import { formatBin, OPERATIONS } from "@/lib/bitwise";
 import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function BitwisePage(): React.ReactNode {
   const { replaceUrl, replaceUrlNow } = useUrlSync();
   const [inputA, setInputA] = useState("60");
   const [inputB, setInputB] = useState("13");
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const { copiedKey, copy: handleCopy } = useCopyFeedback();
   const [url, setUrl] = useState("");
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const parseInput = (val: string): number | null => {
     if (val.trim() === "" || val.trim() === "-") return null;
@@ -71,15 +70,6 @@ export default function BitwisePage(): React.ReactNode {
     setUrl(newUrl);
   };
 
-  const handleCopy = (key: string, value: string): void => {
-    void copyToClipboard(value).then(() => {
-      setCopiedKey(key);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => {
-        setCopiedKey(null);
-      }, 1500);
-    });
-  };
 
   return (
     <div className={styles.page}>

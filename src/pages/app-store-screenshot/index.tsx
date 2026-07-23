@@ -3,6 +3,7 @@ import styles from "@/styles/app-store-screenshot.module.css";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { PageLayout, PermalinkRow } from "@/components/ui";
 import { useUrlSync } from "@/lib/useUrlSync";
+import { useFileDrop } from "@/lib/useFileDrop";
 import {
   type Dimension, DIMS, DIM_KEYS, MAX_PREVIEW_H, gradientCoords,
 } from "@/lib/app-store-screenshot";
@@ -96,7 +97,6 @@ export default function AppStoreScreenshot(): React.ReactNode {
     return ang ? Number(ang) : 145;
   });
 
-  const [dragging, setDragging] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -226,22 +226,9 @@ export default function AppStoreScreenshot(): React.ReactNode {
     e.target.value = "";
   };
 
-  const handleDrop = (e: React.DragEvent): void => {
-    e.preventDefault();
-    setDragging(false);
-    const file = e.dataTransfer.files[0];
-
-    if (file) handleFile(file);
-  };
-
-  const handleDragOver = (e: React.DragEvent): void => {
-    e.preventDefault();
-    setDragging(true);
-  };
-
-  const handleDragLeave = (): void => {
-    setDragging(false);
-  };
+  const { dragging, dropHandlers } = useFileDrop((files) => {
+    handleFile(files[0]);
+  });
 
   const handleDownload = (): void => {
     const canvas = canvasRef.current;
@@ -422,9 +409,7 @@ export default function AppStoreScreenshot(): React.ReactNode {
 
           <div
             className={`${styles.dropZone}${dragging ? ` ${styles.dragging}` : ""}`}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
+            {...dropHandlers}
             onClick={() => fileInputRef.current?.click()}
             tabIndex={0}
             onKeyDown={(e) =>

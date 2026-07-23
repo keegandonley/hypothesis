@@ -1,7 +1,15 @@
+import { getWorkTabId } from "@/lib/useWork";
+
 export function copyToClipboard(text: string): Promise<void> {
   try {
     if (window.name === "work-embed" && window.self !== window.top) {
-      window.parent.postMessage({ type: "clipboard-write", text }, "*");
+      // tabId proves this message comes from a real /work tab: /work rejects
+      // clipboard-write without it, since iframe-proxy transparently relays
+      // arbitrary third-party messages that must not reach the clipboard.
+      window.parent.postMessage(
+        { type: "clipboard-write", text, tabId: getWorkTabId() },
+        "*",
+      );
 
       return Promise.resolve();
     }

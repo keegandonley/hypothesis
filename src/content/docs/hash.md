@@ -1,6 +1,6 @@
 # hash
 
-Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 cryptographic hashes from any text or file — entirely in your browser with no server involved.
+Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 cryptographic hashes from any text or file - entirely in your browser with no server involved.
 
 ## Overview
 
@@ -8,9 +8,9 @@ This tool computes all five algorithm outputs simultaneously. SHA hashing uses t
 
 ## Modes
 
-**Text** — type or paste any string and all five hashes update live.
+**Text** - type or paste any string and all five hashes update live.
 
-**File** — drop a file onto the drop zone (or click to browse) and the tool reads the raw bytes and hashes the full file contents. The filename and size are shown for confirmation. Any file type and size supported by the browser is accepted.
+**File** - drop a file onto the drop zone (or click to browse) and the tool reads the raw bytes and hashes the full file contents. The filename and size are shown for confirmation. Any file type and size supported by the browser is accepted.
 
 ## Supported Algorithms
 
@@ -26,10 +26,10 @@ MD5 and SHA-1 are cryptographically broken and should not be used for security p
 
 ## Use Cases
 
-- **File verification** — confirm a downloaded file's SHA-256 matches the publisher's checksum
-- **Checksums** — verify that a string or file matches an expected hash
-- **API signatures** — quickly inspect what a signing payload hashes to
-- **Security research** — test inputs against known hash values
+- **File verification** - confirm a downloaded file's SHA-256 matches the publisher's checksum
+- **Checksums** - verify that a string or file matches an expected hash
+- **API signatures** - quickly inspect what a signing payload hashes to
+- **Security research** - test inputs against known hash values
 
 ## Copying
 
@@ -39,7 +39,7 @@ Each algorithm row has an individual **Copy** button that copies just that hash 
 
 In **Text** mode, the input is reflected into the URL as `?value=<encoded>` so you can share or bookmark it with the same text pre-filled.
 
-- **Copy** — copies the current permalink to your clipboard
-- **Reset** — clears the input and removes the URL parameter
+- **Copy** - copies the current permalink to your clipboard
+- **Reset** - clears the input and removes the URL parameter
 
 File mode does not produce a permalink since a file cannot be encoded in a URL.

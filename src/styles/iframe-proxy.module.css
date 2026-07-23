@@ -208,6 +208,34 @@
   background-size: 28px 28px;
 }
 
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.listMeta {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+
+.listControls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.messageHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .messageList {
   display: flex;
   flex-direction: column;
@@ -294,7 +322,10 @@
   font-size: 11px;
   line-height: 1.5;
   margin: 0;
-  white-space: pre;
+  /* pre-wrap + break-all (matching webhook's .detailCode): long single-line
+     values like frameIds/tokens wrap instead of clipping in the 320px panel. */
+  white-space: pre-wrap;
+  word-break: break-all;
   border: 1px solid var(--border);
 }
 
@@ -419,6 +450,38 @@
   border-color: var(--accent);
 }
 
+/* Below ~820px the fixed 320px side panel would starve the proxied frame
+   (e.g. at 700px the page under test got ~350px), so the panel becomes a
+   sliding drawer much earlier than the phone-layout tweaks below. */
+@media (max-width: 820px) {
+  .iframeDebug {
+    left: 0;
+    width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .backdrop {
+    display: block;
+  }
+
+  .panel {
+    width: min(85vw, 400px);
+    right: 0;
+    bottom: 0;
+    top: 0 !important;
+    border-radius: 0;
+    border-right: none;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+    z-index: 10001;
+  }
+
+  .panelOpen {
+    transform: translateX(0);
+  }
+}
+
 @media (max-width: 640px) {
   .topBar {
     flex-wrap: wrap;
@@ -429,11 +492,7 @@
 
   .iframeDebug {
     top: 84px;
-    left: 0;
-    width: 100%;
     height: calc(100% - 84px - 12px);
-    border-radius: 0;
-    box-shadow: none;
   }
 
   .topBarBrand {
@@ -465,25 +524,5 @@
   .urlInlineInput {
     font-size: 13px;
     color: var(--text);
-  }
-
-  .backdrop {
-    display: block;
-  }
-
-  .panel {
-    width: 85vw;
-    right: 0;
-    bottom: 0;
-    top: 0 !important;
-    border-radius: 0;
-    border-right: none;
-    transform: translateX(100%);
-    transition: transform 0.25s ease;
-    z-index: 10001;
-  }
-
-  .panelOpen {
-    transform: translateX(0);
   }
 }

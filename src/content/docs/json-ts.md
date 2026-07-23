@@ -8,8 +8,8 @@ Paste any valid JSON into the left panel. TypeScript interfaces are generated im
 
 ## Options
 
-- **Root name** — sets the name of the top-level interface (default: `Root`).
-- **Optional fields** — when enabled, all fields get a `?` modifier (e.g. `name?: string`).
+- **Root name** - sets the name of the top-level interface (default: `Root`).
+- **Optional fields** - when enabled, all fields get a `?` modifier (e.g. `name?: string`).
 
 ## How it works
 

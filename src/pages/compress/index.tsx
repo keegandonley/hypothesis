@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { upload } from "@vercel/blob/client";
 import styles from "@/styles/compress.module.css";
 import { Button, PageLayout } from "@/components/ui";
+import { formatBytesCompact as formatBytes } from "@/lib/bytes";
+import { useFileDrop } from "@/lib/useFileDrop";
 type OutputFormat = "png" | "webp" | "avif";
 
 const FORMAT_QUALITY_DEFAULTS: Record<OutputFormat, number> = {
@@ -21,13 +23,6 @@ interface FileEntry {
   error?: string;
 }
 
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-}
-
 function savings(
   original: number,
   compressed: number,
@@ -41,7 +36,6 @@ export default function CompressPage(): React.ReactNode {
   const [entries, setEntries] = useState<FileEntry[]>([]);
   const [format, setFormat] = useState<OutputFormat>("png");
   const [quality, setQuality] = useState(FORMAT_QUALITY_DEFAULTS.png);
-  const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const processingRef = useRef(false);
   const queueRef = useRef<string[]>([]);
@@ -160,26 +154,28 @@ export default function CompressPage(): React.ReactNode {
     });
   };
 
+  const { dragging, dropHandlers } = useFileDrop(addFiles);
+
   useEffect(() => {
     setQuality(FORMAT_QUALITY_DEFAULTS[format]); // eslint-disable-line react-hooks/set-state-in-effect
   }, [format]);
 
-  const handleDrop = (e: React.DragEvent): void => {
-    e.preventDefault();
-    setDragging(false);
-    const files = Array.from(e.dataTransfer.files);
+  // Revoke outstanding download blob URLs on unmount — handleClear only
+  // covers the explicit clear path, so navigating away would leak them.
+  const entriesRef = useRef<FileEntry[]>([]);
 
-    addFiles(files);
-  };
+  useEffect(() => {
+    entriesRef.current = entries;
+  }, [entries]);
 
-  const handleDragOver = (e: React.DragEvent): void => {
-    e.preventDefault();
-    setDragging(true);
-  };
-
-  const handleDragLeave = (): void => {
-    setDragging(false);
-  };
+  useEffect(
+    () => () => {
+      entriesRef.current.forEach((e) => {
+        if (e.downloadUrl) URL.revokeObjectURL(e.downloadUrl);
+      });
+    },
+    [],
+  );
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const files = Array.from(e.target.files ?? []);
@@ -267,9 +263,7 @@ export default function CompressPage(): React.ReactNode {
 
       <div
         className={`${styles.dropZone}${dragging ? ` ${styles.dragging}` : ""}`}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
+        {...dropHandlers}
         onClick={() => fileInputRef.current?.click()}
         role="button"
         tabIndex={0}

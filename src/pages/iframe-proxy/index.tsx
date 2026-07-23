@@ -4,9 +4,11 @@ import styles from "@/styles/iframe-proxy.module.css";
 import { DocIcon } from "@/components/icons/doc";
 import { LogIcon } from "@/components/icons/log";
 import { useBranding } from "@/lib/branding";
-import { Badge } from "@/components/ui";
+import { Badge, Button, CopyButton } from "@/components/ui";
 import { ToolHead } from "@/components/ToolHead";
 import { useIsIframe } from "@/lib/useIsIframe";
+import { useUrlSync } from "@/lib/useUrlSync";
+import { formatTimeWithMs } from "@/lib/datetime";
 
 interface RelayedMessage {
   id: string;
@@ -38,6 +40,7 @@ function validateIframeUrl(rawUrl: string | null): string | null {
 export default function IframeProxyPage(): React.ReactNode {
   const branding = useBranding();
   const isIframe = useIsIframe();
+  const { replaceUrlNow } = useUrlSync();
   const [url, setUrl] = useState<string | null>(null);
   const [debug, setDebug] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -48,7 +51,15 @@ export default function IframeProxyPage(): React.ReactNode {
   const [frameName, setFrameName] = useState("");
   const [frameNameDraft, setFrameNameDraft] = useState("");
   const [inWorkMode, setInWorkMode] = useState(false);
+  // While paused, relayed messages keep collecting into state (relaying is
+  // never interrupted) but the log renders from this frozen snapshot.
+  const [pausedSnapshot, setPausedSnapshot] = useState<RelayedMessage[] | null>(
+    null,
+  );
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  const paused = pausedSnapshot !== null;
+  const visibleMessages = pausedSnapshot ?? messages;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -126,12 +137,10 @@ export default function IframeProxyPage(): React.ReactNode {
       params.delete("name");
     }
 
-    history.replaceState(
-      null,
-      "",
-      `${window.location.pathname}?${params.toString()}`,
-    );
-  }, [frameName, mounted]);
+    // frameName only changes on submit/blur (drafts live in frameNameDraft),
+    // so an immediate write is safe and correct here.
+    replaceUrlNow(`${window.location.pathname}?${params.toString()}`);
+  }, [frameName, mounted, replaceUrlNow]);
 
   if (!mounted) {
     return null;
@@ -155,11 +164,7 @@ export default function IframeProxyPage(): React.ReactNode {
     const params = new URLSearchParams(window.location.search);
 
     params.set("url", validated);
-    history.replaceState(
-      null,
-      "",
-      `${window.location.pathname}?${params.toString()}`,
-    );
+    replaceUrlNow(`${window.location.pathname}?${params.toString()}`);
   };
 
   return (
@@ -201,7 +206,9 @@ export default function IframeProxyPage(): React.ReactNode {
         <div className={styles.topBar}>
           <Badge>proxied url</Badge>
           {urlFromParam ? (
-            <span className={styles.urlText}>{url}</span>
+            <span className={styles.urlText} title={url ?? undefined}>
+              {url}
+            </span>
           ) : (
             <form
               className={styles.urlInlineForm}
@@ -307,7 +314,12 @@ export default function IframeProxyPage(): React.ReactNode {
             <h1 className={styles.panelTitle}>iframe proxy</h1>
             <p className={styles.panelTagline}>Relaying iframe messages...</p>
             <div className={styles.frameNameRow}>
-              <label className={styles.frameNameLabel}>frame name</label>
+              <label
+                className={styles.frameNameLabel}
+                htmlFor="proxy-frame-name"
+              >
+                frame name
+              </label>
               <form
                 className={styles.frameNameForm}
                 onSubmit={(e) => {
@@ -316,6 +328,7 @@ export default function IframeProxyPage(): React.ReactNode {
                 }}
               >
                 <input
+                  id="proxy-frame-name"
                   className={styles.frameNameInput}
                   type="text"
                   placeholder="(none)"
@@ -335,11 +348,43 @@ export default function IframeProxyPage(): React.ReactNode {
             </span>
           </div>
           <div className={styles.panelBody}>
+            <div className={styles.listHeader}>
+              <span className={styles.listMeta}>
+                Newest first
+                {messages.length >= MAX_MESSAGES &&
+                  ` · showing latest ${MAX_MESSAGES}`}
+                {paused &&
+                  ` · paused (${messages.length - visibleMessages.length} new)`}
+              </span>
+              <div className={styles.listControls}>
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  onClick={() => {
+                    setPausedSnapshot(paused ? null : messages);
+                  }}
+                >
+                  {paused ? "Resume" : "Pause"}
+                </Button>
+                <Button
+                  variant="reset"
+                  size="xs"
+                  onClick={() => {
+                    setMessages([]);
+                    // Clearing implies "start fresh", so also resume live.
+                    setPausedSnapshot(null);
+                  }}
+                  disabled={messages.length === 0}
+                >
+                  Clear
+                </Button>
+              </div>
+            </div>
             <div className={styles.messageList}>
-              {messages.length === 0 ? (
+              {visibleMessages.length === 0 ? (
                 <div className={styles.emptyState}>No messages relayed yet</div>
               ) : (
-                messages.map((message, index) => {
+                visibleMessages.map((message, index) => {
                   const isDown = message.direction === "parent-to-frame";
 
                   return (
@@ -347,7 +392,7 @@ export default function IframeProxyPage(): React.ReactNode {
                       <div className={styles.messageCardHeader}>
                         <div className={styles.messageCardMeta}>
                           <div className={styles.messageIndex}>
-                            #{messages.length - index}
+                            #{visibleMessages.length - index}
                           </div>
                           <div
                             className={`${styles.directionBadge} ${isDown ? styles.directionDown : styles.directionUp}`}
@@ -355,8 +400,15 @@ export default function IframeProxyPage(): React.ReactNode {
                             {isDown ? "↓ parent → frame" : "↑ frame → parent"}
                           </div>
                         </div>
-                        <div className={styles.messageTime}>
-                          {new Date(message.timestamp).toLocaleTimeString()}
+                        <div className={styles.messageHeaderRight}>
+                          <div className={styles.messageTime}>
+                            {formatTimeWithMs(new Date(message.timestamp))}
+                          </div>
+                          <CopyButton
+                            value={JSON.stringify(message.data, null, 2)}
+                            variant="ghost"
+                            size="xs"
+                          />
                         </div>
                       </div>
 

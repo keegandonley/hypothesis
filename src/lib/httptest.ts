@@ -11,8 +11,9 @@ export const MAX_BYTES = 100 * 1024;
 export const MAX_STREAM_LINES = 100;
 /** Redirect chains beyond this are a client's problem, not a useful test. */
 export const MAX_REDIRECTS = 10;
-/** Matches the /api/webhook cap — enough for any realistic test payload. */
-export const MAX_BODY_BYTES = 1_048_576;
+// Raw-body reading moved to the neutral shared module so the webhook routes
+// can reuse it; re-exported here to preserve this module's public surface.
+export { MAX_BODY_BYTES, PayloadTooLargeError, readRawBody } from "./raw-body";
 
 export type QueryValue = string | string[];
 export type QueryMap = Record<string, QueryValue>;
@@ -153,65 +154,6 @@ export function parseBody(raw: string, contentType: string): ParsedBody {
   return { ...empty, data: raw };
 }
 
-export class PayloadTooLargeError extends Error {
-  constructor() {
-    super(`Request body exceeds ${MAX_BODY_BYTES} bytes.`);
-    this.name = "PayloadTooLargeError";
-  }
-}
-
-export function readRawBody(req: NextApiRequest): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    let byteLength = 0;
-    let settled = false;
-
-    const cleanup = (): void => {
-      req.off("data", onData);
-      req.off("end", onEnd);
-      req.off("error", onError);
-    };
-
-    const onData = (chunk: Buffer): void => {
-      byteLength += chunk.byteLength;
-
-      if (byteLength > MAX_BODY_BYTES) {
-        settled = true;
-        cleanup();
-        // Pause rather than destroy: `req` and `res` share one socket, so
-        // tearing it down here would reset the connection before the caller
-        // could send its 413. The caller destroys it once that has flushed.
-        req.pause();
-        reject(new PayloadTooLargeError());
-
-        return;
-      }
-
-      chunks.push(chunk);
-    };
-
-    const onEnd = (): void => {
-      if (settled) return;
-      settled = true;
-      cleanup();
-      // Decode once over the whole body. Decoding per chunk would mangle any
-      // multi-byte character straddling a chunk boundary (~64KB) into U+FFFD —
-      // silent corruption in a service whose contract is verbatim reflection.
-      resolve(Buffer.concat(chunks).toString("utf8"));
-    };
-
-    const onError = (err: Error): void => {
-      if (settled) return;
-      settled = true;
-      cleanup();
-      reject(err);
-    };
-
-    req.on("data", onData);
-    req.on("end", onEnd);
-    req.on("error", onError);
-  });
-}
 
 /**
  * Clamp an integer path segment, returning null when unparseable. Clamping (not

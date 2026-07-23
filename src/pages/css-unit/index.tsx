@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "@/styles/css-unit.module.css";
-import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
-import { copyToClipboard } from "@/lib/copyToClipboard";
+import { Badge, PageLayout, PermalinkRow } from "@/components/ui";
+import { useCopyFeedback } from "@/lib/useCopyFeedback";
 import { UNITS, DEFAULT_CONTEXT, type CSSUnit, type ConversionContext, convertToPx, convertFromPx, formatNumber } from "@/lib/css-unit";
 import { useUrlSync } from "@/lib/useUrlSync";
 
@@ -10,9 +10,8 @@ export default function CssUnitPage(): React.ReactNode {
   const [inputValue, setInputValue] = useState<string>("16");
   const [inputUnit, setInputUnit] = useState<CSSUnit>("px");
   const [context, setContext] = useState<ConversionContext>(DEFAULT_CONTEXT);
-  const [copiedUnit, setCopiedUnit] = useState<string | null>(null);
+  const { copiedKey: copiedUnit, copy: copyUnit } = useCopyFeedback();
   const [url, setUrl] = useState("");
-  const copyUnitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const buildUrl = (
     value: string,
@@ -99,13 +98,7 @@ export default function CssUnitPage(): React.ReactNode {
   };
 
   const handleCardCopy = (unit: string, value: string): void => {
-    void copyToClipboard(value).then(() => {
-      setCopiedUnit(unit);
-      if (copyUnitTimeoutRef.current) clearTimeout(copyUnitTimeoutRef.current);
-      copyUnitTimeoutRef.current = setTimeout(() => {
-        setCopiedUnit(null);
-      }, 1500);
-    });
+    copyUnit(unit, value);
   };
 
   const handleReset = (): void => {

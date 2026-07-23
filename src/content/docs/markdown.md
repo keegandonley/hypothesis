@@ -4,8 +4,8 @@ Convert Markdown to HTML with a live preview. Paste or type Markdown on the left
 
 ## View modes
 
-- **Preview** — rendered HTML displayed as a styled document
-- **HTML** — the raw HTML source output, ready to copy and embed
+- **Preview** - rendered HTML displayed as a styled document
+- **HTML** - the raw HTML source output, ready to copy and embed
 
 ## Supported syntax
 

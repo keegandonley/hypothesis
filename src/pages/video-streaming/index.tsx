@@ -622,11 +622,35 @@ export default function VideoStreamingPage(): React.ReactNode {
     });
   }, []);
 
+  // Two-step in-page confirm replacing the native confirm() dialog: first
+  // click arms the button, second click resets. Auto-disarms after 3s or on
+  // blur so an armed button can't linger and get clicked by accident later.
+  const [resetArmed, setResetArmed] = useState(false);
+  const resetDisarmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  const disarmReset = useCallback(() => {
+    if (resetDisarmTimerRef.current) clearTimeout(resetDisarmTimerRef.current);
+    resetDisarmTimerRef.current = null;
+    setResetArmed(false);
+  }, []);
+
   const handleReset = useCallback(() => {
-    if (!confirm("Reset all settings?")) return;
+    if (!resetArmed) {
+      setResetArmed(true);
+      resetDisarmTimerRef.current = setTimeout(() => {
+        resetDisarmTimerRef.current = null;
+        setResetArmed(false);
+      }, 3000);
+
+      return;
+    }
+
+    disarmReset();
     replaceUrlNow(window.location.pathname);
     setSettings(DEFAULTS);
-  }, [replaceUrlNow]);
+  }, [resetArmed, disarmReset, replaceUrlNow]);
 
   const upd = <K extends keyof Settings>(key: K, value: Settings[K]): void => {
     setSettings((prev) => ({ ...prev, [key]: value }));
@@ -980,8 +1004,12 @@ export default function VideoStreamingPage(): React.ReactNode {
           </div>
 
           <div className={styles.btnRow}>
-            <Button variant="ghost" onClick={handleReset}>
-              Reset settings
+            <Button
+              variant={resetArmed ? "reset" : "ghost"}
+              onClick={handleReset}
+              onBlur={disarmReset}
+            >
+              {resetArmed ? "Confirm reset?" : "Reset settings"}
             </Button>
             {!isIframe && (
               <Button variant="ghost" onClick={handleExport}>

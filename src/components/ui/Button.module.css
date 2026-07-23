@@ -19,6 +19,12 @@
   cursor: default;
 }
 
+/* Keyboard-only focus ring in the theme accent (mouse clicks don't show it). */
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .content {
   visibility: visible;
 }

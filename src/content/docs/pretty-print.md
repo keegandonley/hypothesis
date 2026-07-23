@@ -4,7 +4,7 @@ Format and validate JSON with live pretty-printing and shareable permalinks.
 
 ## Overview
 
-`pretty-print` is a browser-based JSON formatter. Paste raw JSON into the **Input** panel and the **Formatted** panel instantly shows it indented with 2-space nesting. Validation runs on every keystroke with no server involved — everything uses the browser's built-in `JSON.parse`.
+`pretty-print` is a browser-based JSON formatter. Paste raw JSON into the **Input** panel and the **Formatted** panel instantly shows it indented with 2-space nesting. Validation runs on every keystroke with no server involved - everything uses the browser's built-in `JSON.parse`.
 
 ## Input
 
@@ -18,11 +18,11 @@ The formatted output updates on every keystroke. If the input is empty or invali
 
 ## Formatted output
 
-The **Formatted** panel is read-only and shows the pretty-printed result of `JSON.stringify(parsed, null, 2)`. A **Copy** button appears in the bottom-right corner of the panel when there is output — click it to copy the formatted JSON to your clipboard.
+The **Formatted** panel is read-only and shows the pretty-printed result of `JSON.stringify(parsed, null, 2)`. A **Copy** button appears in the bottom-right corner of the panel when there is output - click it to copy the formatted JSON to your clipboard.
 
 ## Permalinks
 
-The URL updates live as you type — no button required. The current input is base64-encoded and stored in a single `v` query parameter:
+The URL updates live as you type - no button required. The current input is base64-encoded and stored in a single `v` query parameter:
 
 ```
 /pretty-print?v=<base64>

@@ -6,7 +6,7 @@ Encode and decode base64 strings with live sync and shareable permalinks. Also e
 
 `base64` is a browser-based encoder/decoder. It has two modes, switchable via the **TEXT** / **IMAGE** tabs at the top of the tool.
 
-No server involved — everything runs in the browser.
+No server involved - everything runs in the browser.
 
 ## Text tab
 
@@ -28,9 +28,9 @@ If the input is not valid base64, the plain text field is cleared rather than sh
 
 Toggle **JSON Mode** in the Plain Text panel header to enable JSON-specific features:
 
-- **Validation badge** — shows `valid` or `invalid` next to the toggle as you type.
-- **Format button** — pretty-prints the JSON with 2-space indentation. Only enabled when the content is valid JSON.
-- **Tab indentation** — pressing Tab inserts 2 spaces at the cursor; Shift+Tab removes up to 2 leading spaces from the current line.
+- **Validation badge** - shows `valid` or `invalid` next to the toggle as you type.
+- **Format button** - pretty-prints the JSON with 2-space indentation. Only enabled when the content is valid JSON.
+- **Tab indentation** - pressing Tab inserts 2 spaces at the cursor; Shift+Tab removes up to 2 leading spaces from the current line.
 
 JSON mode state is saved in the permalink (`?json=1`), so sharing or reloading the URL restores JSON mode automatically.
 
@@ -38,8 +38,8 @@ JSON mode state is saved in the permalink (`?json=1`), so sharing or reloading t
 
 Drop any image file onto the drop zone (or click to browse) to base64-encode it. Two read-only outputs are provided:
 
-- **Raw Base64** — the bare base64 string, suitable for APIs or custom `data:` URI construction.
-- **Data URL** — the full `data:<mime>;base64,...` string, ready to drop into an `<img src>`, CSS `background-image`, or anywhere a data URL is accepted.
+- **Raw Base64** - the bare base64 string, suitable for APIs or custom `data:` URI construction.
+- **Data URL** - the full `data:<mime>;base64,...` string, ready to drop into an `<img src>`, CSS `background-image`, or anywhere a data URL is accepted.
 
 Both outputs have a **Copy** button. Files over 5 MB are accepted but will produce very large output strings.
 
@@ -49,9 +49,9 @@ The URL updates live as you type (text tab) or switch tabs (image tab).
 
 Query parameters used:
 
-- `value` — the current base64-encoded string (text tab only)
-- `json` — set to `1` when JSON mode is active (text tab only)
-- `tab` — set to `image` when the image tab is active
+- `value` - the current base64-encoded string (text tab only)
+- `json` - set to `1` when JSON mode is active (text tab only)
+- `tab` - set to `image` when the image tab is active
 
 Image content is not saved to the URL (files are too large), so reloading on the image tab restores the tab state but not the image itself.
 

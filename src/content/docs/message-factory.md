@@ -4,7 +4,7 @@ Design and trigger postMessage actions with an interactive viewer and designer.
 
 ## Overview
 
-`message-factory` is a two-part tool for working with `postMessage` across frames. The **designer** lets you compose a set of named actions and generate a shareable URL. The **viewer** loads those actions and renders a button for each one — clicking a button fires the corresponding `postMessage` to the parent frame.
+`message-factory` is a two-part tool for working with `postMessage` across frames. The **designer** lets you compose a set of named actions and generate a shareable URL. The **viewer** loads those actions and renders a button for each one - clicking a button fires the corresponding `postMessage` to the parent frame.
 
 The typical workflow: build your action set in the designer, copy the viewer link, and embed that viewer URL in an iframe inside whatever page you are testing.
 
@@ -16,13 +16,13 @@ Build arrays of postMessage actions and generate shareable permalinks.
 
 Each action has three fields:
 
-- **name** — the button label shown in the viewer
-- **id** — the identifier sent as part of the message payload
-- **payload** — a JSON object merged into the message. Must be valid JSON; an `invalid json` badge appears if it is not.
+- **name** - the button label shown in the viewer
+- **id** - the identifier sent as part of the message payload
+- **payload** - a JSON object merged into the message. Must be valid JSON; an `invalid json` badge appears if it is not.
 
 ### URL encoding
 
-Actions are serialized to a base64-encoded JSON string and stored in the `?actions=` query parameter. The URL updates live as you type — copy it at any point to share the current state.
+Actions are serialized to a base64-encoded JSON string and stored in the `?actions=` query parameter. The URL updates live as you type - copy it at any point to share the current state.
 
 ### Viewer link
 

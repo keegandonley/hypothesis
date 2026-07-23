@@ -1,10 +1,10 @@
 # Color Shades
 
-Generate an 11-step color scale from any hex color — matching the `50, 100, 200 … 900, 950` steps used by Tailwind CSS and most design systems.
+Generate an 11-step color scale from any hex color - matching the `50, 100, 200 … 900, 950` steps used by Tailwind CSS and most design systems.
 
 ## How it works
 
-The scale is generated in **OKLCH** color space, which is perceptually uniform. This means the visual difference between adjacent steps looks consistent across the full range — unlike HSL-based approaches which tend to produce muddy midtones.
+The scale is generated in **OKLCH** color space, which is perceptually uniform. This means the visual difference between adjacent steps looks consistent across the full range - unlike HSL-based approaches which tend to produce muddy midtones.
 
 ## Steps
 

@@ -124,8 +124,10 @@
   background-color: var(--bg);
   padding: 6px 10px;
   border-radius: 4px;
-  overflow-x: auto;
-  white-space: nowrap;
+  /* Wrap rather than clip: long origins/URLs must stay fully visible inside
+     narrow embed iframes where a horizontal scrollbar is easy to miss. */
+  overflow-wrap: break-word;
+  word-break: break-all;
   border: 1px solid var(--border);
 }
 
@@ -138,7 +140,10 @@
   font-size: 11px;
   line-height: 1.6;
   margin: 0;
-  white-space: pre;
+  /* pre-wrap + break-all (matching webhook's .detailCode): long single-line
+     values like frameIds/tokens wrap instead of clipping in narrow iframes. */
+  white-space: pre-wrap;
+  word-break: break-all;
   border: 1px solid var(--border);
   font-family: var(--font-mono);
 }
@@ -167,27 +172,47 @@
   border-color: var(--accent);
 }
 
-.sendBtn {
+.sendSection > button {
   align-self: flex-start;
-  padding: 6px 14px;
-  background-color: var(--accent-subtle);
-  border: 1px solid var(--accent-border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--accent);
-  text-transform: uppercase;
-  cursor: pointer;
 }
 
-.sendBtn:hover {
-  background-color: var(--accent-hover);
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.listMeta {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+}
+
+.listControls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cardHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .contextBlock {
   margin-bottom: 12px;
+}
+
+/* Notice shown when a ?context= param can't be base64/JSON decoded */
+.contextError {
+  font-size: 11px;
+  color: var(--danger);
+  letter-spacing: 0.04em;
 }
 
 

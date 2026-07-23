@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/datetime.module.css";
-import { Badge, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
-import { useIsIframe } from "@/lib/useIsIframe";
+import { Badge, Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { FORMAT_ROWS, parseInput } from "@/lib/datetime";
 import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function DateTimePage(): React.ReactNode {
   const { replaceUrl, replaceUrlNow } = useUrlSync();
-  const isIframe = useIsIframe();
   const [input, setInput] = useState("");
   const [parsedDate, setParsedDate] = useState<Date | null>(null);
   const [liveMode, setLiveMode] = useState(false);
@@ -159,19 +157,21 @@ export default function DateTimePage(): React.ReactNode {
           autoComplete="off"
           disabled={liveMode}
         />
-        <button
-          className={styles.nowBtn}
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={handleNow}
           disabled={liveMode}
         >
           Now
-        </button>
-        <button
-          className={`${styles.nowBtn}${liveMode ? ` ${styles.nowBtnActive}` : ""}`}
+        </Button>
+        <Button
+          variant="toggle"
+          active={liveMode}
           onClick={handleLiveToggle}
         >
           Live {liveMode ? "ON" : "OFF"}
-        </button>
+        </Button>
         {liveMode && <Badge color="ready">Live</Badge>}
         {!liveMode && !hasInput && (
           <Badge color="blue">Ready</Badge>
@@ -200,15 +200,16 @@ export default function DateTimePage(): React.ReactNode {
               )}
                   <div className={styles.rowActions}>
                     {isRelativeRow && (
-                      <button
-                        className={`${styles.nowBtn}${relativeLive && !liveMode ? ` ${styles.nowBtnActive}` : ""}`}
+                      <Button
+                        variant="toggle"
+                        active={relativeLive && !liveMode}
                         onClick={liveMode ? undefined : handleRelativeLiveToggle}
                         disabled={liveMode}
                       >
                         {liveMode
                           ? "Live Unavailable"
                           : `Live ${relativeLive ? "ON" : "OFF"}`}
-                      </button>
+                      </Button>
                     )}
                     <CopyButton
                       value={value ?? ""}

@@ -1,6 +1,6 @@
 # Text Diff
 
-Compare two blocks of text side by side and see exactly what changed — additions highlighted in green, deletions in red with strikethrough.
+Compare two blocks of text side by side and see exactly what changed - additions highlighted in green, deletions in red with strikethrough.
 
 ## Usage
 

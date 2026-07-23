@@ -1,6 +1,6 @@
 # Basic Auth
 
-Generate and decode HTTP Basic Authentication headers — entirely in your browser, no server involved.
+Generate and decode HTTP Basic Authentication headers - entirely in your browser, no server involved.
 
 ## How it works
 
@@ -12,9 +12,9 @@ Authorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ=
 
 ## Modes
 
-**Encode** — enter a username and password to produce the `Authorization` header and the raw Base64 token. The password field has a show/hide toggle.
+**Encode** - enter a username and password to produce the `Authorization` header and the raw Base64 token. The password field has a show/hide toggle.
 
-**Decode** — paste a full `Authorization: Basic ...` header, a `Basic <token>` value, or just the bare Base64 token. The tool strips the prefix, decodes the token, and shows the username and password separately. The decoded password is masked by default with a show/hide toggle.
+**Decode** - paste a full `Authorization: Basic ...` header, a `Basic <token>` value, or just the bare Base64 token. The tool strips the prefix, decodes the token, and shows the username and password separately. The decoded password is masked by default with a show/hide toggle.
 
 If the input cannot be decoded as valid Base64, the input field turns red.
 
@@ -38,7 +38,7 @@ curl -u username:password https://example.com/api
 ## Security notes
 
 - Basic Auth transmits credentials with every request. Always use it over HTTPS.
-- The Base64 encoding is **not encryption** — anyone who intercepts the header can decode it instantly.
+- The Base64 encoding is **not encryption** - anyone who intercepts the header can decode it instantly.
 - Avoid storing Basic Auth URLs (which embed credentials in the URL) in browser history or logs.
 
 ## Permalinks

@@ -3,16 +3,16 @@ import styles from "@/styles/ascii-art.module.css";
 import { useIsIframe } from "@/lib/useIsIframe";
 import { Button, CopyButton, PageLayout } from "@/components/ui";
 import { Panel, PanelHeader, PanelBody } from "@/components/ui/Panel";
+import { useFileDrop } from "@/lib/useFileDrop";
 import {
   CHAR_SETS, type CharSetKey, type ImageAdjustments,
-  DEFAULT_ADJ, applySharpen, renderAscii, loadImage,
+  DEFAULT_ADJ, renderAscii, loadImage,
 } from "@/lib/ascii-art";
 
 export default function AsciiArtPage(): React.ReactNode {
   const isIframe = useIsIframe();
 
   const [inputMode, setInputMode] = useState<"file" | "url">("file");
-  const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [urlInput, setUrlInput] = useState("");
@@ -136,22 +136,9 @@ export default function AsciiArtPage(): React.ReactNode {
     reader.readAsDataURL(file);
   };
 
-  const handleDrop = (e: React.DragEvent): void => {
-    e.preventDefault();
-    setDragging(false);
-    const file = e.dataTransfer.files[0];
-
-    if (file) handleFile(file);
-  };
-
-  const handleDragOver = (e: React.DragEvent): void => {
-    e.preventDefault();
-    setDragging(true);
-  };
-
-  const handleDragLeave = (): void => {
-    setDragging(false);
-  };
+  const { dragging, dropHandlers } = useFileDrop((files) => {
+    handleFile(files[0]);
+  });
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
@@ -394,9 +381,7 @@ export default function AsciiArtPage(): React.ReactNode {
           {inputMode === "file" ? (
             <div
               className={`${styles.dropZone}${dragging ? ` ${styles.dragging}` : ""}`}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
+              {...dropHandlers}
               onClick={() => fileInputRef.current?.click()}
               role="button"
               tabIndex={0}

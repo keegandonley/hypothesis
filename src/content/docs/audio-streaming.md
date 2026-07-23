@@ -1,6 +1,6 @@
 # audio streaming
 
-Test and inspect HTML `<audio>` element behavior with full telemetry — buffering, events, readyState, and playback state — all in the browser.
+Test and inspect HTML `<audio>` element behavior with full telemetry - buffering, events, readyState, and playback state - all in the browser.
 
 ## Settings
 
@@ -8,8 +8,8 @@ Test and inspect HTML `<audio>` element behavior with full telemetry — bufferi
 
 Settings are tagged **rebuild** or **live**:
 
-- **rebuild** — changing these requires clicking "Load / Reload" or "Rebuild" to take effect. They are applied when the `<audio>` element is created. Includes: `src`, `preload`, `crossorigin`, `autoplay`.
-- **live** — applied immediately to the existing `<audio>` element without a rebuild. Includes: `loop`, `muted`, `controls`, `disableRemotePlayback`, `playbackRate`, `volume`, `controlsList`.
+- **rebuild** - changing these requires clicking "Load / Reload" or "Rebuild" to take effect. They are applied when the `<audio>` element is created. Includes: `src`, `preload`, `crossorigin`, `autoplay`.
+- **live** - applied immediately to the existing `<audio>` element without a rebuild. Includes: `loop`, `muted`, `controls`, `disableRemotePlayback`, `playbackRate`, `volume`, `controlsList`.
 
 ## Player controls
 
@@ -24,9 +24,9 @@ Settings are tagged **rebuild** or **live**:
 
 Three bars visualize the browser's time ranges for the current audio:
 
-- **buffered** — portions of the media that have been downloaded
-- **seekable** — portions the browser will allow seeking to
-- **played** — portions that have already been played
+- **buffered** - portions of the media that have been downloaded
+- **seekable** - portions the browser will allow seeking to
+- **played** - portions that have already been played
 
 The vertical line shows `currentTime`.
 

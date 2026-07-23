@@ -4,7 +4,7 @@ Convert between CSS units: px, rem, em, %, vh, vw, pt, cm, mm, in with adjustabl
 
 ## Overview
 
-`css-unit` is a browser-based CSS unit converter that lets you convert between 10 different CSS measurement units in real time. Enter a value in any unit, and instantly see the equivalent values in all other units. The tool accounts for context like base font size and viewport dimensions, making conversions accurate to your specific use case.
+`css-unit` is a browser-based CSS unit converter that lets you convert between 10 different CSS measurement units in real time. Enter a value in any unit and see the equivalent values in all other units. Conversions account for context: base font size and viewport dimensions.
 
 ## Supported Units
 
@@ -30,8 +30,6 @@ All conversions use pixels (`px`) as an intermediate value:
 1. Your input value is converted to pixels
 2. Pixels are then converted to each target unit
 
-This ensures consistent, accurate conversions across all unit types.
-
 ## Context Settings
 
 Some CSS units are context-dependent. Adjust these values to match your specific use case:
@@ -55,13 +53,13 @@ Values are automatically formatted to 4 decimal places maximum, with trailing ze
 
 ## Permalinks
 
-The URL updates live as you type — no button required. Query parameters used:
+The URL updates live as you type - no button required. Query parameters used:
 
-- `value` — the numeric input value
-- `unit` — the selected unit (px, rem, em, etc.)
-- `base` — base font size in pixels
-- `vw` — viewport width in pixels
-- `vh` — viewport height in pixels
+- `value` - the numeric input value
+- `unit` - the selected unit (px, rem, em, etc.)
+- `base` - base font size in pixels
+- `vw` - viewport width in pixels
+- `vh` - viewport height in pixels
 
 Share or bookmark the URL to return to the same conversion with all context preserved.
 
@@ -85,12 +83,12 @@ Use the **Reset** button to clear the input, reset to default context values (16
 
 ## Common Use Cases
 
-- **Responsive design** — convert between px and relative units (rem, em, %)
-- **Mobile development** — see how vw/vh units scale on different screen sizes
-- **Accessibility** — verify rem/em sizes at different base font sizes
-- **Design systems** — maintain consistent spacing across different unit systems
-- **Print styles** — convert web units (px) to print units (pt, cm, mm, in)
-- **Learning** — understand relationships between different CSS units
+- **Responsive design** - convert between px and relative units (rem, em, %)
+- **Mobile development** - see how vw/vh units scale on different screen sizes
+- **Accessibility** - verify rem/em sizes at different base font sizes
+- **Design systems** - maintain consistent spacing across different unit systems
+- **Print styles** - convert web units (px) to print units (pt, cm, mm, in)
+- **Learning** - understand relationships between different CSS units
 
 ## Tips
 
@@ -102,4 +100,4 @@ Use the **Reset** button to clear the input, reset to default context values (16
 
 ## See also
 
-- [CSS Selectors](/references/css-selectors) — all selector types with descriptions, examples, and specificity values
+- [CSS Selectors](/references/css-selectors) - all selector types with descriptions, examples, and specificity values

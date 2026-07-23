@@ -4,7 +4,7 @@ Inspect incoming HTTP requests in real time with a personal webhook URL.
 
 ## Overview
 
-`webhook` gives you a unique URL that accepts any HTTP request and displays it instantly in your browser. Send a request from curl, a CI job, a third-party service, or anywhere else — the method, headers, and body appear in the panel within seconds. No account required.
+`webhook` gives you a unique URL that accepts any HTTP request and displays it instantly in your browser. Send a request from curl, a CI job, a third-party service, or anywhere else - the method, headers, and body appear in the panel within seconds. No account required.
 
 ## Your webhook URL
 
@@ -20,9 +20,9 @@ The URL accepts **GET, POST, PUT, PATCH, and DELETE** requests. CORS is fully op
 
 Every request sent to your webhook URL is captured and displayed in the panel. Each entry shows:
 
-- **Method** — HTTP verb (GET, POST, etc.)
-- **Headers** — all request headers
-- **Body** — the request body, if present
+- **Method** - HTTP verb (GET, POST, etc.)
+- **Headers** - all request headers
+- **Body** - the request body, if present
 
 **Body parsing:** If the request body is valid JSON, it is parsed and displayed as formatted JSON. If the body is not valid JSON, it is stored and shown as raw text.
 
@@ -32,14 +32,14 @@ The panel polls for new requests every **2.5 seconds**.
 
 ## curl helper
 
-The curl panel generates a ready-to-run curl command pointed at your webhook URL. Use the method toggle to switch between GET, POST, PUT, PATCH, and DELETE — the command updates automatically.
+The curl panel generates a ready-to-run curl command pointed at your webhook URL. Use the method toggle to switch between GET, POST, PUT, PATCH, and DELETE - the command updates automatically.
 
-- **Copy** — copies the curl command to your clipboard.
-- **Send request** — fires the request directly from your browser using `fetch`. POST, PUT, and PATCH requests include a `Content-Type: application/json` body of `{"hello":"world"}`. The button shows "Sending…" while in-flight and "Sent!" or "Error" once complete.
+- **Copy** - copies the curl command to your clipboard.
+- **Send request** - fires the request directly from your browser using `fetch`. POST, PUT, and PATCH requests include a `Content-Type: application/json` body of `{"hello":"world"}`. The button shows "Sending…" while in-flight and "Sent!" or "Error" once complete.
 
 ## Sessions
 
-A session is created automatically on your first visit and its ID is saved in `localStorage`. Returning to the page restores the same session and resumes capturing requests — no setup needed.
+A session is created automatically on your first visit and its ID is saved in `localStorage`. Returning to the page restores the same session and resumes capturing requests - no setup needed.
 
 Click **New session** to discard the current session and start fresh with a new URL.
 
@@ -67,15 +67,15 @@ If you navigate away or close the tab, heartbeats stop. After **5 minutes of ina
 
 ## Session idle timeout
 
-The UI also tracks inactivity independently. If **no requests are received for 30 minutes**, the page enters an idle state and displays a prompt to re-activate the session. Clicking **Re-activate session** resumes polling and resets the idle timer. This only affects the browser UI — the underlying session remains on the server.
+The UI also tracks inactivity independently. If **no requests are received for 30 minutes**, the page enters an idle state and displays a prompt to re-activate the session. Clicking **Re-activate session** resumes polling and resets the idle timer. This only affects the browser UI - the underlying session remains on the server.
 
 ## Session expiry and cleanup
 
 There are two distinct inactivity thresholds:
 
-1. **Webhook receiver timeout — 5 minutes.** If no heartbeat has been seen for 5 minutes, the server returns `410 Gone` for any new requests to that webhook URL. The session still exists; it just stops accepting requests until the page is open again.
+1. **Webhook receiver timeout - 5 minutes.** If no heartbeat has been seen for 5 minutes, the server returns `410 Gone` for any new requests to that webhook URL. The session still exists; it just stops accepting requests until the page is open again.
 
-2. **Database cleanup — 1 hour.** Webhook sessions (those without an associated device ID) that have been inactive for more than 1 hour are permanently deleted. Native app sessions are excluded from cleanup. This runs daily at **02:00 UTC**.
+2. **Database cleanup - 1 hour.** Webhook sessions (those without an associated device ID) that have been inactive for more than 1 hour are permanently deleted. Native app sessions are excluded from cleanup. This runs daily at **02:00 UTC**.
 
 While the webhook page is open, the 60-second heartbeat resets both clocks, so neither threshold is reached during normal use.
 
@@ -83,11 +83,11 @@ While the webhook page is open, the 60-second heartbeat resets both clocks, so n
 
 These limits apply to protect the service and keep it available for everyone.
 
-**Session creation** — a maximum of **3 sessions** can be created per IP address within any 10-minute window. Restoring an existing session (via `localStorage` or `?s=`) does not count against this limit.
+**Session creation** - a maximum of **3 sessions** can be created per IP address within any 10-minute window. Restoring an existing session (via `localStorage` or `?s=`) does not count against this limit.
 
-**Requests per session** — each webhook URL accepts a maximum of **500 requests per hour**. Requests beyond this limit receive `HTTP 429 Too Many Requests`. The counter resets on a rolling hourly basis.
+**Requests per session** - each webhook URL accepts a maximum of **500 requests per hour**. Requests beyond this limit receive `HTTP 429 Too Many Requests`. The counter resets on a rolling hourly basis.
 
-**Request body size** — incoming request bodies are capped at **1 MB**. Requests with a larger body receive `HTTP 413 Content Too Large`.
+**Request body size** - incoming request bodies are capped at **1 MB**. Requests with a larger body receive `HTTP 413 Content Too Large`.
 
 ## URL state
 

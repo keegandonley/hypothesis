@@ -18,7 +18,7 @@ Set to `true` to pre-populate the view with a sample message. Useful for checkin
 
 ### `context`
 
-A base64-encoded JSON string displayed as a separate "Context" block above the message feed. Use this to pass identifying information into the embedded page — for example, which test case or environment loaded it.
+A base64-encoded JSON string displayed as a separate "Context" block above the message feed. Use this to pass identifying information into the embedded page - for example, which test case or environment loaded it.
 
 ```
 /message-stream?context=eyJ0ZXN0IjoidHJ1ZSJ9
@@ -39,19 +39,19 @@ The page includes a text field for sending test messages to the parent frame. En
 { action: "<domain>-test", content: "<your input>" }
 ```
 
-The `action` value matches the current domain — e.g. `hypothesis-test` on hypothesis.sh, `conclusion-test` on conclusion.sh, `falsify-test` on falsify.sh, or `observation-test` on observation.sh.
+The `action` value matches the current domain - e.g. `hypothesis-test` on hypothesis.sh, `conclusion-test` on conclusion.sh, `falsify-test` on falsify.sh, or `observation-test` on observation.sh.
 
-Sent messages appear in the feed alongside received messages, clearly labeled so you can follow the full conversation.
+Sent messages appear in the feed alongside received messages, labeled by direction.
 
 ## Message Feed
 
 Each message is shown as a card with:
 
-- **Direction badge** — `↓ received` (green) for messages from the parent, `↑ sent` (blue) for messages sent to the parent
-- **Index** — sequential number in reverse order (newest first)
-- **Timestamp** — local time of receipt or send
-- **Origin** — the `event.origin` of the sender (for received messages, your own origin for sent)
-- **Data** — the full payload as formatted JSON
+- **Direction badge** - `↓ received` (green) for messages from the parent, `↑ sent` (blue) for messages sent to the parent
+- **Index** - sequential number in reverse order (newest first)
+- **Timestamp** - local time of receipt or send
+- **Origin** - the `event.origin` of the sender (for received messages, your own origin for sent)
+- **Data** - the full payload as formatted JSON
 
 Messages accumulate for the lifetime of the page. There is no cap or auto-clear.
 

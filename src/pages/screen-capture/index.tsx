@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PageLayout } from "@/components/ui";
 import styles from "@/styles/screen-capture.module.css";
 import { configs, useBranding } from "@/lib/branding";
@@ -17,6 +17,20 @@ export default function ScreenCapturePage(): React.ReactNode {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
+  // Every capture creates a blob URL that would otherwise live until the
+  // tab closes. Revoke on unmount: the opened tab keeps its already-loaded
+  // bitmap; only reloading that tab afterwards would miss the URL.
+  const objectUrlsRef = useRef<string[]>([]);
+
+  useEffect(
+    () => () => {
+      objectUrlsRef.current.forEach((u) => {
+        URL.revokeObjectURL(u);
+      });
+    },
+    [],
+  );
+
   const altDomains = ALL_DOMAINS.filter((d) => d !== branding.domain).slice(
     0,
     2,
@@ -29,6 +43,7 @@ export default function ScreenCapturePage(): React.ReactNode {
       const blob = await captureTab({ mimeType: "image/png" });
       const url = URL.createObjectURL(blob);
 
+      objectUrlsRef.current.push(url);
       window.open(url, "_blank");
       setStatus("idle");
     } catch (err: unknown) {

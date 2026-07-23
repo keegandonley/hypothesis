@@ -1,14 +1,14 @@
 # text stats
 
-Analyze text statistics: character count, word count, reading time, and word frequency analysis — entirely in your browser.
+Analyze text statistics: character count, word count, reading time, and word frequency analysis - entirely in your browser.
 
 ## Overview
 
-`text-stats` is a comprehensive text analysis tool that provides real-time statistics about your text. Type or paste any content into the text area and instantly see detailed metrics including character counts, word counts, time estimates, and frequency analysis. All processing happens in your browser — no text is sent to any server.
+`text-stats` computes live statistics for any text. Type or paste content into the text area and every metric updates as you type. All processing happens in your browser - no text is sent to any server.
 
 ## Core Statistics
 
-The tool provides 10 essential text metrics:
+The tool shows 10 metrics:
 
 **Characters**  
 Total number of characters including spaces, punctuation, and special characters.
@@ -60,32 +60,20 @@ Words are:
 - Stripped of non-alphanumeric characters
 - Sorted by frequency (most common first)
 
-This is useful for:
-
-- Identifying overused words in writing
-- Spotting keyword density for SEO
-- Finding repetitive patterns in text
-- Analyzing vocabulary diversity
+Use it to spot overused words in a draft or check keyword density for SEO.
 
 ## Character Frequency
 
 The **Character Frequency** section shows the top 20 most common characters (excluding spaces, newlines, and tabs) and their occurrence counts.
 
-Characters are sorted by frequency and displayed with their exact count.
-
-This is useful for:
-
-- Analyzing character distribution
-- Spotting encoding issues or unusual characters
-- Understanding text patterns
-- Data validation and sanitization tasks
+Characters are sorted by frequency and displayed with their exact count. Use it to spot encoding issues or unusual characters in data.
 
 ## Permalinks
 
-The URL updates live as you type — no button required. Query parameters used:
+The URL updates live as you type - no button required. Query parameters used:
 
-- `v` — base64-encoded text content (to safely include special characters in URLs)
-- `wpm` — reading speed in words per minute (omitted if 250, the default)
+- `v` - base64-encoded text content (to safely include special characters in URLs)
+- `wpm` - reading speed in words per minute (omitted if 250, the default)
 
 Share or bookmark the URL to return to the same text with all stats instantly computed.
 
@@ -109,14 +97,14 @@ Use the **Reset** button to clear the text, reset reading speed to 250 WPM, and 
 
 ## Common Use Cases
 
-- **Writing** — track word count and reading time for articles, blog posts, and essays
-- **Content marketing** — analyze keyword frequency and content length
-- **Editing** — identify overused words and improve vocabulary diversity
-- **Academic work** — meet word count requirements and estimate reading time
-- **SEO** — analyze keyword density and content statistics
-- **Accessibility** — estimate how long content takes to read or speak
-- **Data analysis** — examine character distribution and text patterns
-- **Social media** — stay within character limits (Twitter, Instagram, etc.)
+- **Writing** - track word count and reading time for articles, blog posts, and essays
+- **Content marketing** - analyze keyword frequency and content length
+- **Editing** - identify overused words and improve vocabulary diversity
+- **Academic work** - meet word count requirements and estimate reading time
+- **SEO** - analyze keyword density and content statistics
+- **Accessibility** - estimate how long content takes to read or speak
+- **Data analysis** - examine character distribution and text patterns
+- **Social media** - stay within character limits (Twitter, Instagram, etc.)
 
 ## Tips
 

@@ -76,35 +76,6 @@
   gap: 4px;
 }
 
-.modeTab {
-  padding: 2px 10px;
-  background-color: transparent;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    background-color 0.15s,
-    color 0.15s,
-    border-color 0.15s;
-}
-
-.modeTab:hover:not(.modeTabActive) {
-  color: var(--text);
-  border-color: var(--text);
-}
-
-.modeTabActive {
-  background-color: var(--accent-subtle);
-  border-color: var(--accent-border);
-  color: var(--accent);
-}
-
 /* Structured form */
 
 .form {
@@ -311,7 +282,7 @@
 
 .errorMsg {
   font-size: 11px;
-  color: #ef4444;
+  color: var(--danger);
   padding: 16px;
   text-align: center;
 }

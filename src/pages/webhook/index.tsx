@@ -5,6 +5,7 @@ import styles from "@/styles/webhook.module.css";
 import { Button, CopyButton } from "@/components/ui";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 import type { WebhookEvent } from "@/lib/events";
+import { formatTimeWithMs } from "@/lib/datetime";
 
 interface Session {
   sessionId: string;
@@ -405,9 +406,16 @@ export default function WebhookPage(): React.ReactNode {
                 <div className={styles.emptyState}>waiting for requests...</div>
               ) : (
                 events.map((event) => (
-                  <div
+                  <button
                     key={event.id}
+                    type="button"
                     className={`${styles.eventRow}${selectedEvent?.id === event.id ? ` ${styles.selected}` : ""}`}
+                    aria-expanded={selectedEvent?.id === event.id}
+                    aria-controls={
+                      selectedEvent?.id === event.id
+                        ? "webhook-event-detail"
+                        : undefined
+                    }
                     onClick={() => {
                       setSelectedEvent(
                         selectedEvent?.id === event.id ? null : event,
@@ -423,15 +431,18 @@ export default function WebhookPage(): React.ReactNode {
                     <span className={styles.eventMeta}>
                       {event.headers["content-type"] ?? ""}
                     </span>
-                    <span className={styles.eventTime}>
+                    <span
+                      className={styles.eventTime}
+                      title={formatTimeWithMs(new Date(event.receivedAt))}
+                    >
                       {relativeTime(event.receivedAt)}
                     </span>
-                  </div>
+                  </button>
                 ))
               )}
             </div>
             {selectedEvent && (
-              <div className={styles.eventDetail}>
+              <div id="webhook-event-detail" className={styles.eventDetail}>
                 {["authorization", "cookie", "x-api-key"].some(
                   (h) => h in selectedEvent.headers,
                 ) && (

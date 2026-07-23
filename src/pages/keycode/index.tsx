@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import styles from "@/styles/keycode.module.css";
-import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
+import { PageLayout, PermalinkRow } from "@/components/ui";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 interface KeyInfo {
   key: string;
@@ -22,6 +23,7 @@ const LOCATION_NAMES: Record<number, string> = {
 };
 
 export default function KeycodePage(): React.ReactNode {
+  const { replaceUrlNow } = useUrlSync();
   const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(null);
   const [url, setUrl] = useState("");
 
@@ -67,7 +69,7 @@ export default function KeycodePage(): React.ReactNode {
   const handleReset = (): void => {
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
   };
 

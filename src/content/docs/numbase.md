@@ -4,7 +4,7 @@ Convert integers between binary, octal, decimal, and hex with live sync and shar
 
 ## Overview
 
-`number base` is a browser-based integer base converter. Type a number into any of the four panels and all others update instantly. No server involved — everything runs in the browser using JavaScript's built-in `parseInt` and `Number.prototype.toString`.
+`number base` is a browser-based integer base converter. Type a number into any of the four panels and all others update instantly. No server involved - everything runs in the browser using JavaScript's built-in `parseInt` and `Number.prototype.toString`.
 
 Supports non-negative integers up to `Number.MAX_SAFE_INTEGER` (2⁵³ − 1).
 
@@ -16,10 +16,10 @@ The tool shows four panels side by side:
 | ------- | ---- | ------ |
 | Binary  | 2    | `0b`   |
 | Octal   | 8    | `0o`   |
-| Decimal | 10   | —      |
+| Decimal | 10   | -      |
 | Hex     | 16   | `0x`   |
 
-Edit any panel — the other three update on every keystroke. Hex output is always uppercase (`FF`, not `ff`).
+Edit any panel - the other three update on every keystroke. Hex output is always uppercase (`FF`, not `ff`).
 
 ## Conversion
 
@@ -44,7 +44,7 @@ If you type characters that are invalid for the selected base (e.g. `2` in a bin
 
 The URL updates live as you type. One query parameter is used:
 
-- `value` — the current value as a decimal integer
+- `value` - the current value as a decimal integer
 
 ```
 /numbase?value=255

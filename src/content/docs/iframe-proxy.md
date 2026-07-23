@@ -4,7 +4,7 @@ Proxy iframes securely with full event handling and introspection for debugging.
 
 ## Overview
 
-`iframe-proxy` embeds any target URL inside a transparent iframe and relays `postMessage` events bidirectionally between the parent window and the embedded frame. It acts as a pass-through bridge — all messages flow through without modification, while the debug panel gives you full visibility into what's being sent.
+`iframe-proxy` embeds any target URL inside a transparent iframe and relays `postMessage` events bidirectionally between the parent window and the embedded frame. It is a pass-through bridge - messages flow through without modification, and the debug panel logs each relayed message.
 
 ## Query Parameters
 
@@ -24,7 +24,7 @@ Set to `true` to enable debug mode. When active, the iframe is inset from the ed
 /iframe-proxy?url=https://example.com&debug=true
 ```
 
-In debug mode without a `url` param, the page can be used as a standalone tool — just type a URL into the top bar to get started:
+In debug mode without a `url` param, the page works as a standalone tool - type a URL into the top bar:
 
 ```
 /iframe-proxy?debug=true
@@ -38,16 +38,16 @@ Sets the `name` attribute on the embedded iframe. The embedded page sees it as `
 /iframe-proxy?url=https://example.com&debug=true&name=my-frame
 ```
 
-In debug mode the panel includes a **frame name** field — changing it updates the URL and remounts the iframe, since the `name` attribute only applies on creation. The value is kept in the URL so a named setup is shareable.
+In debug mode the panel includes a **frame name** field - changing it updates the URL and remounts the iframe, since the `name` attribute only applies on creation. The value is kept in the URL so a named setup is shareable.
 
 ## Message Relay
 
 All `postMessage` traffic is intercepted and forwarded:
 
-- **parent → frame** — messages from the parent window are forwarded into the embedded iframe
-- **frame → parent** — messages from the iframe are forwarded up to the parent window
+- **parent → frame** - messages from the parent window are forwarded into the embedded iframe
+- **frame → parent** - messages from the iframe are forwarded up to the parent window
 
-Messages are forwarded with `*` as the target origin. This is intentional for a debugging proxy — do not use in contexts where origin validation is required.
+Messages are forwarded with `*` as the target origin. This is intentional for a debugging proxy - do not use in contexts where origin validation is required.
 
 ## Debug Panel
 

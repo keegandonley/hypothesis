@@ -258,9 +258,9 @@
 }
 
 .result.error {
-  border-color: rgba(239, 68, 68, 0.3);
-  background: rgba(239, 68, 68, 0.05);
-  color: #ef4444;
+  border-color: var(--danger-border);
+  background: var(--danger-subtle);
+  color: var(--danger);
 }
 
 @media (max-width: 640px) {

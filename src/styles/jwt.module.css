@@ -33,13 +33,13 @@
 .badgeExpired {
   display: inline-block;
   padding: 2px 7px;
-  background-color: #ef444418;
-  border: 1px solid #ef444433;
+  background-color: var(--danger-subtle);
+  border: 1px solid var(--danger-border);
   border-radius: 4px;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: #ef4444;
+  color: var(--danger);
   text-transform: uppercase;
 }
 
@@ -131,6 +131,14 @@
 
 .outputMuted {
   color: var(--muted);
+}
+
+/* Explanation shown in panel bodies when the token can't be decoded */
+.outputError {
+  padding: 12px 14px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--danger);
 }
 
 

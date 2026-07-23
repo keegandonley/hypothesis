@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/hash.module.css";
-import { CopyButton, PageLayout, PermalinkRow, Panel, PanelHeader } from "@/components/ui";
-import { SHA_ALGOS, ALGOS, hashBytes, hashText, formatBytes } from "@/lib/hash";
+import { Button, CopyButton, PageLayout, PermalinkRow, PanelHeader } from "@/components/ui";
+import { ALGOS, hashBytes, hashText, formatBytes } from "@/lib/hash";
 import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function HashPage(): React.ReactNode {
@@ -109,26 +109,28 @@ export default function HashPage(): React.ReactNode {
       <div className={styles.inputPanel}>
         <PanelHeader label="Input">
             <div className={styles.modeTabs} role="tablist">
-            <button
+            <Button
+              variant="tab"
               role="tab"
               aria-selected={mode === "text"}
-              className={`${styles.modeTab}${mode === "text" ? ` ${styles.modeTabActive}` : ""}`}
+              active={mode === "text"}
               onClick={() => {
                 handleModeChange("text");
               }}
             >
               Text
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="tab"
               role="tab"
               aria-selected={mode === "file"}
-              className={`${styles.modeTab}${mode === "file" ? ` ${styles.modeTabActive}` : ""}`}
+              active={mode === "file"}
               onClick={() => {
                 handleModeChange("file");
               }}
             >
               File
-            </button>
+            </Button>
           </div>
         </PanelHeader>
         {mode === "text" ? (
@@ -145,6 +147,15 @@ export default function HashPage(): React.ReactNode {
           <div
             className={`${styles.dropZone}${isDragging ? ` ${styles.dropZoneDragging}` : ""}`}
             onClick={() => fileInputRef.current?.click()}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                // preventDefault stops Space from scrolling the page
+                e.preventDefault();
+                fileInputRef.current?.click();
+              }
+            }}
             onDragOver={(e) => {
               e.preventDefault();
               setIsDragging(true);

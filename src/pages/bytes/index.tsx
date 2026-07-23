@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "@/styles/bytes.module.css";
-import { CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { BINARY_UNITS, DECIMAL_UNITS, formatValue, type Mode } from "@/lib/bytes";
 import { useUrlSync } from "@/lib/useUrlSync";
 
@@ -108,26 +108,28 @@ export default function BytesPage(): React.ReactNode {
 
       <div className={styles.modeRow}>
         <span className={styles.modeLabel}>Base</span>
-        <button
-          className={`${styles.modeBtn} ${mode === "binary" ? styles.modeBtnActive : ""}`}
+        <Button
+          variant="tab"
+          active={mode === "binary"}
           onClick={() => {
             handleMode("binary");
           }}
         >
           Binary (1024)
-        </button>
-        <button
-          className={`${styles.modeBtn} ${mode === "decimal" ? styles.modeBtnActive : ""}`}
+        </Button>
+        <Button
+          variant="tab"
+          active={mode === "decimal"}
           onClick={() => {
             handleMode("decimal");
           }}
         >
           Decimal (1000)
-        </button>
+        </Button>
       </div>
 
       <div className={styles.table}>
-        {units.map((u, idx) => {
+        {units.map((u) => {
           const display = bytes !== null ? formatValue(bytes, u.factor) : "—";
           const isActive = u.unit === selectedUnit;
 

@@ -18,6 +18,22 @@ export const DECIMAL_UNITS = [
   { unit: "PB", name: "Petabytes", factor: 1000 ** 5 },
 ];
 
+/** "532 B", "1.4 KB", "2.35 MB" — compact auto-scaled size label. */
+export function formatBytesCompact(bytes: number): string {
+  let unit = DECIMAL_UNITS[0];
+
+  for (const u of DECIMAL_UNITS) {
+    if (bytes >= u.factor) unit = u;
+    else break;
+  }
+
+  if (unit.factor === 1) return `${bytes} B`;
+
+  const n = bytes / unit.factor;
+
+  return `${n.toFixed(n >= 100 ? 0 : n >= 10 ? 1 : 2)} ${unit.unit}`;
+}
+
 export function formatValue(bytes: number, factor: number): string {
   const n = bytes / factor;
 

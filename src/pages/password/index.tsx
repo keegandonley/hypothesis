@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import styles from "@/styles/password.module.css";
 import { copyToClipboard } from "@/lib/copyToClipboard";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
+import { useCanCopy } from "@/lib/useCanCopy";
+import { Button, CopyButton, PageLayout, PermalinkRow } from "@/components/ui";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
 import {
   STRENGTH_FILL,
@@ -15,7 +15,7 @@ import { useUrlSync } from "@/lib/useUrlSync";
 
 export default function PasswordPage(): React.ReactNode {
   const { replaceUrl, replaceUrlNow } = useUrlSync();
-  const isIframe = useIsIframe();
+  const canCopy = useCanCopy();
 
   const [mode, setMode] = useState<"generate" | "check">("generate");
 
@@ -187,34 +187,39 @@ export default function PasswordPage(): React.ReactNode {
       >
 
       <div className={styles.modeTabs} role="tablist">
-        <button
+        <Button
+          variant="tab"
           role="tab"
           aria-selected={mode === "generate"}
-          className={`${styles.modeTab}${mode === "generate" ? ` ${styles.modeTabActive}` : ""}`}
+          active={mode === "generate"}
           onClick={() => {
             handleModeChange("generate");
           }}
         >
           Generate
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="tab"
           role="tab"
           aria-selected={mode === "check"}
-          className={`${styles.modeTab}${mode === "check" ? ` ${styles.modeTabActive}` : ""}`}
+          active={mode === "check"}
           onClick={() => {
             handleModeChange("check");
           }}
         >
           Check
-        </button>
+        </Button>
       </div>
 
       {mode === "generate" && (
         <>
           <div className={styles.controls}>
             <div className={styles.controlRow}>
-              <span className={styles.controlLabel}>Length</span>
+              <label className={styles.controlLabel} htmlFor="pw-length">
+                Length
+              </label>
               <input
+                id="pw-length"
                 className={styles.slider}
                 type="range"
                 min={4}
@@ -276,23 +281,29 @@ export default function PasswordPage(): React.ReactNode {
             <div className={styles.controlRow}>
               <span className={styles.controlLabel}>Count</span>
               <div className={styles.countGroup}>
-                <button
+                <Button
+                  variant="ghost"
+                  size="xs"
                   className={styles.countBtn}
+                  aria-label="Fewer passwords"
                   onClick={() => {
                     setCountAndSync(Math.max(1, count - 1));
                   }}
                 >
                   −
-                </button>
+                </Button>
                 <span className={styles.countValue}>{count}</span>
-                <button
+                <Button
+                  variant="ghost"
+                  size="xs"
                   className={styles.countBtn}
+                  aria-label="More passwords"
                   onClick={() => {
                     setCountAndSync(Math.min(20, count + 1));
                   }}
                 >
                   +
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -303,9 +314,15 @@ export default function PasswordPage(): React.ReactNode {
             </div>
           ) : (
             <div className={styles.generateRow}>
-              <button className={styles.generateBtn} onClick={generate}>
+              {/* variant="copy" (accent) because this is the action that
+                  produces the tool's output */}
+              <Button
+                variant="copy"
+                className={styles.generateBtn}
+                onClick={generate}
+              >
                 Generate
-              </button>
+              </Button>
             </div>
           )}
 
@@ -326,18 +343,20 @@ export default function PasswordPage(): React.ReactNode {
         <>
           <Panel>
             <PanelHeader label="Password">
-              <button
-                className={styles.showHideBtn}
+              <Button
+                variant="ghost"
+                size="xs"
                 onClick={() => {
                   setShowCheckPw((v) => !v);
                 }}
                 type="button"
               >
                 {showCheckPw ? "hide" : "show"}
-              </button>
+              </Button>
             </PanelHeader>
             <input
               type={showCheckPw ? "text" : "password"}
+              aria-label="Password to analyze"
               className={styles.checkInput}
               value={checkInput}
               onChange={(e) => {
@@ -423,13 +442,10 @@ export default function PasswordPage(): React.ReactNode {
       <hr className={styles.divider} />
 
       <PermalinkRow url={url} onReset={handleReset} />
-      {!isIframe && mode === "generate" && passwords.length > 0 && (
-        <button
-          className={`${styles.copyAllBtn} ${copiedAll ? styles.copied : ""}`}
-          onClick={handleCopyAll}
-        >
-          {copiedAll ? "Copied!" : "Copy all"}
-        </button>
+      {canCopy && mode === "generate" && passwords.length > 0 && (
+        <Button variant="copy" copied={copiedAll} onClick={handleCopyAll}>
+          Copy all
+        </Button>
       )}
       </PageLayout>
     </div>

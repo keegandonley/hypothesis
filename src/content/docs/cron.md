@@ -42,8 +42,8 @@ Enter a standard 5-field cron expression:
 
 ## Output
 
-- **Description** — Plain English summary of the schedule
-- **Next 10 runs** — Upcoming run times in both local timezone and UTC
+- **Description** - Plain English summary of the schedule
+- **Next 10 runs** - Upcoming run times in both local timezone and UTC
 
 ## Permalink
 
@@ -55,5 +55,5 @@ Clears the expression and removes the URL parameter.
 
 ## See also
 
-- [Exit Codes](/references/exit-codes) — standard Unix/Linux process exit codes and their meanings
-- [Unix Signals](/references/unix-signals) — signal numbers, names, and default actions for POSIX signals
+- [Exit Codes](/references/exit-codes) - standard Unix/Linux process exit codes and their meanings
+- [Unix Signals](/references/unix-signals) - signal numbers, names, and default actions for POSIX signals

@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import styles from "@/styles/message-factory-viewer.module.css";
-import { DocIcon } from "@/components/icons/doc";
-import { useBranding } from "@/lib/branding";
-import { useIsIframe } from "@/lib/useIsIframe";
-import { ToolHead } from "@/components/ToolHead";
-import { PermalinkRow, CopyButton } from "@/components/ui";
+import { PageLayout, PermalinkRow } from "@/components/ui";
+import { useUrlSync } from "@/lib/useUrlSync";
 
 interface Action {
   id: string;
@@ -37,9 +33,8 @@ function decodeActions(raw: string): Action[] {
 }
 
 export default function ViewerPage(): React.ReactNode {
-  const branding = useBranding();
-  const isIframe = useIsIframe();
   const [actions, setActions] = useState<Action[]>([]);
+  const { replaceUrlNow } = useUrlSync();
   const [url, setUrl] = useState("");
   const [designerUrl, setDesignerUrl] = useState("");
   const [sentKeys, setSentKeys] = useState<Record<number, boolean>>({});
@@ -79,7 +74,9 @@ export default function ViewerPage(): React.ReactNode {
   const handleReset = (): void => {
     const newUrl = `${window.location.origin}${window.location.pathname}`;
 
-    history.replaceState(null, "", newUrl);
+    // replaceUrlNow cancels any pending debounced write before writing, so a
+    // stale URL can't land after the reset.
+    replaceUrlNow(newUrl);
     setUrl(newUrl);
     setActions([]);
     setDesignerUrl(`${window.location.origin}/message-factory/designer`);
@@ -87,39 +84,16 @@ export default function ViewerPage(): React.ReactNode {
 
   return (
     <div className={styles.page}>
-      <ToolHead
-        title="Message Viewer"
-        description="Trigger postMessage actions to a parent frame from a configurable button panel, for testing message-driven pages."
+      {/* path is the parent tool: docs only exist at /docs/message-factory
+          (no nested docs route), and PageLayout derives its docs link from
+          path. Matches the docs link this page had before PageLayout. */}
+      <PageLayout
+        metaTitle="Message Viewer"
+        metaDescription="Trigger postMessage actions to a parent frame from a configurable button panel, for testing message-driven pages."
         path="/message-factory/viewer"
-      />
-
-      <div className={styles.header}>
-        <div className={styles.eyebrow} data-eyebrow>
-          <Link
-            href="/"
-            target={isIframe ? "_blank" : undefined}
-            rel={isIframe ? "noopener noreferrer" : undefined}
-            className={styles.domainLink}
-          >
-            {branding.domain}
-          </Link>
-          {"·"}
-          <Link
-            href="/docs/message-factory"
-            className={styles.docsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <DocIcon className={styles.icon} /> docs
-          </Link>
-        </div>
-        <h1 className={styles.title}>Message Viewer</h1>
-        <p className={styles.tagline}>
-          Click a button to trigger a postMessage to the parent frame.
-        </p>
-      </div>
-
-      <hr className={styles.divider} />
+        docsPath="/message-factory"
+        tagline="Click a button to trigger a postMessage to the parent frame."
+      >
 
       {/* Action buttons */}
       <div className={styles.buttonGrid}>
@@ -142,7 +116,11 @@ export default function ViewerPage(): React.ReactNode {
               }}
             >
               {action.name || action.id || `action ${idx + 1}`}
-              <span className={styles.sentOverlay}>sent ✓</span>
+              {/* Decorative flash; hidden from AT so idle buttons don't
+                  announce a permanent "sent" */}
+              <span className={styles.sentOverlay} aria-hidden="true">
+                sent ✓
+              </span>
             </button>
           ))
         )}
@@ -162,6 +140,7 @@ export default function ViewerPage(): React.ReactNode {
           </div>
         </>
       )}
+      </PageLayout>
     </div>
   );
 }
