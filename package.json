@@ -25,6 +25,7 @@
     "@vercel/edge-config": "^1.4.3",
     "@vercel/kv": "^3.0.0",
     "@vercel/og": "^0.11.1",
+    "@vercel/speed-insights": "^2.0.0",
     "cron-parser": "^5.5.0",
     "cronstrue": "^3.13.0",
     "diff": "^8.0.3",
