@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getPushTokenByDeviceId } from "@/lib/push-tokens";
-import { sendApnsNotification, type ApnsOptions } from "@/lib/apns";
+import { sendPushNotification, type PushOptions } from "@/lib/push";
 import { insertPushNotification } from "@/lib/push-notifications";
 import { track } from "@vercel/analytics/server";
 
@@ -81,7 +81,7 @@ export default async function handler(
     querySandbox ??
     process.env.APNS_PRODUCTION !== "true";
 
-  const options: ApnsOptions = {};
+  const options: PushOptions = {};
   const subtitle = bodyParams.subtitle ?? querySubtitle;
 
   if (subtitle) options.subtitle = subtitle;
@@ -125,7 +125,11 @@ export default async function handler(
       return;
     }
 
-    const result = await sendApnsNotification(
+    // Per-device APNs topic (null falls back to APNS_BUNDLE_ID inside).
+    options.bundleId = record.bundleId;
+
+    const result = await sendPushNotification(
+      record.platform,
       record.token,
       title.trim(),
       body.trim(),
@@ -141,6 +145,7 @@ export default async function handler(
       subtitle: options.subtitle ?? null,
       data: data ?? null,
       apnsId: result.apnsId ?? null,
+      providerMessageId: result.messageId ?? null,
       success: result.ok,
     }).catch((err: unknown) => {
       console.error("[push/send] failed to record notification", err);

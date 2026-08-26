@@ -45,7 +45,7 @@ export default function PrivacyPage(): React.ReactNode {
             conclusion.sh, falsify.sh, and observation.sh (collectively,
             &quot;the Service&quot;), as well as any associated mobile
             applications. It describes what data is collected, how it is used,
-            and your rights with respect to that data. Last updated: May 5,
+            and your rights with respect to that data. Last updated: August 25,
             2026.
           </p>
 
@@ -112,8 +112,13 @@ export default function PrivacyPage(): React.ReactNode {
               A randomly generated device identifier (UUID) created on your
               device
             </li>
-            <li>Your device push token issued by the platform (Apple APNs)</li>
-            <li>The platform name (e.g. &quot;ios&quot;)</li>
+            <li>
+              Your device push token issued by the platform (Apple APNs on iOS,
+              Google Firebase Cloud Messaging on Android)
+            </li>
+            <li>
+              The platform name (e.g. &quot;ios&quot; or &quot;android&quot;)
+            </li>
           </ul>
           <p>
             This data is used solely to route push notifications to your device.
@@ -157,10 +162,27 @@ export default function PrivacyPage(): React.ReactNode {
 
           <h3>Apple Push Notification Service (APNs)</h3>
           <p>
-            Push notifications are delivered via Apple&apos;s APNs
-            infrastructure. When a notification is sent, your push token is
+            Push notifications to iOS devices are delivered via Apple&apos;s
+            APNs infrastructure. When a notification is sent, your push token is
             transmitted to Apple&apos;s servers. See Apple&apos;s privacy
             documentation for details on how APNs handles this data.
+          </p>
+
+          <h3>Google Firebase Cloud Messaging (FCM)</h3>
+          <p>
+            Push notifications to Android devices are delivered via
+            Google&apos;s Firebase Cloud Messaging infrastructure. Your Android
+            push token is issued by Google, and when a notification is sent that
+            token and the notification content are transmitted to Google&apos;s
+            servers. See{" "}
+            <a
+              href="https://firebase.google.com/support/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              firebase.google.com/support/privacy
+            </a>{" "}
+            for details on how Firebase handles this data.
           </p>
 
           <h2>Data Retention and Deletion</h2>

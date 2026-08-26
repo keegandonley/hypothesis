@@ -61,3 +61,32 @@
   letter-spacing: 0.1em;
   margin: 0;
 }
+
+.androidHeading {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text);
+  margin: 0;
+}
+
+.androidNote {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+  text-align: center;
+  margin: 0;
+}
+
+.androidAltLink {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.androidAltLink:hover {
+  text-decoration: underline;
+}

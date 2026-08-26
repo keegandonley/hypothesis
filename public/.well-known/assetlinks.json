@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.keegancodes.hypothesis",
+      "sha256_cert_fingerprints": [
+        "REPLACE_ME_UPLOAD_CERT_SHA256_NO_ANDROID_KEYSTORE_EXISTS_YET",
+        "REPLACE_ME_PLAY_APP_SIGNING_CERT_SHA256_NOT_ENROLLED_IN_PLAY_YET"
+      ]
+    }
+  }
+]

@@ -20,11 +20,17 @@ export async function insertPushNotification(params: {
   body: string;
   subtitle?: string | null;
   data?: object | null;
+  // APNs-only, and deliberately so: the shipped iOS client reads `apnsId` off
+  // /api/native/notifications and cannot be updated retroactively, so this
+  // column's iOS behavior must not change. FCM sends leave it null.
   apnsId?: string | null;
+  // Provider-neutral id: the APNs id on iOS, the FCM message name on Android.
+  // Requires migration 005_android_push.sql (adds provider_message_id).
+  providerMessageId?: string | null;
   success: boolean;
 }): Promise<void> {
   await pool.query(
-    "INSERT INTO push_notifications (device_id, title, body, subtitle, data, apns_id, success) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+    "INSERT INTO push_notifications (device_id, title, body, subtitle, data, apns_id, provider_message_id, success) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
     [
       params.deviceId,
       params.title,
@@ -34,6 +40,7 @@ export async function insertPushNotification(params: {
         ? JSON.stringify(params.data)
         : null,
       params.apnsId ?? null,
+      params.providerMessageId ?? null,
       params.success,
     ],
   );

@@ -12,7 +12,13 @@ export interface PushToken {
   deviceId: string;
   token: string | null;
   platform: string;
-  sandbox: boolean;
+  // APNs-only: the APNs delivery environment. NULL for Android, whose FCM
+  // registration tokens are scoped to a Firebase project and have no
+  // sandbox/production split to record.
+  sandbox: boolean | null;
+  // Per-device APNs topic; null for devices registered before topics were
+  // stored (the sender falls back to the APNS_BUNDLE_ID env var).
+  bundleId: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -67,24 +73,26 @@ export async function upsertPushToken(
   deviceId: string,
   token: string,
   platform: string,
-  sandbox: boolean,
+  sandbox: boolean | null,
   deviceSecret?: string,
+  bundleId?: string,
 ): Promise<void> {
   if (!deviceSecret) {
     // No secret provided — legacy client. Allow the upsert unconditionally
     // but only if no secret is set yet (preserves security once a device is secured).
     const result = await pool.query<{ is_new: boolean }>(
-      `INSERT INTO push_tokens (device_id, token, platform, sandbox)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO push_tokens (device_id, token, platform, sandbox, bundle_id)
+       VALUES ($1, $2, $3, $4, $5)
        ON CONFLICT (device_id)
        DO UPDATE SET
          token = EXCLUDED.token,
          platform = EXCLUDED.platform,
          sandbox = EXCLUDED.sandbox,
+         bundle_id = COALESCE(EXCLUDED.bundle_id, push_tokens.bundle_id),
          updated_at = NOW()
        WHERE push_tokens.secret IS NULL
        RETURNING (xmax = 0) AS is_new`,
-      [deviceId, token, platform, sandbox],
+      [deviceId, token, platform, sandbox, bundleId ?? null],
     );
 
     if (result.rows[0]?.is_new) {
@@ -118,26 +126,27 @@ export async function upsertPushToken(
 
     await pool.query(
       `UPDATE push_tokens
-       SET token = $2, platform = $3, sandbox = $4, updated_at = NOW()
+       SET token = $2, platform = $3, sandbox = $4, bundle_id = COALESCE($5, bundle_id), updated_at = NOW()
        WHERE device_id = $1`,
-      [deviceId, token, platform, sandbox],
+      [deviceId, token, platform, sandbox, bundleId ?? null],
     );
   } else {
     // New device or legacy row without a secret — insert or migrate by hashing the secret now.
     const hashed = await hashSecret(deviceSecret);
 
     const result = await pool.query<{ is_new: boolean }>(
-      `INSERT INTO push_tokens (device_id, token, platform, sandbox, secret)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO push_tokens (device_id, token, platform, sandbox, secret, bundle_id)
+       VALUES ($1, $2, $3, $4, $5, $6)
        ON CONFLICT (device_id)
        DO UPDATE SET
          token = EXCLUDED.token,
          platform = EXCLUDED.platform,
          sandbox = EXCLUDED.sandbox,
          secret = EXCLUDED.secret,
+         bundle_id = COALESCE(EXCLUDED.bundle_id, push_tokens.bundle_id),
          updated_at = NOW()
        RETURNING (xmax = 0) AS is_new`,
-      [deviceId, token, platform, sandbox, hashed],
+      [deviceId, token, platform, sandbox, hashed, bundleId ?? null],
     );
 
     if (result.rows[0]?.is_new) {
@@ -157,7 +166,8 @@ interface PushTokenRow {
   device_id: string;
   token: string | null;
   platform: string;
-  sandbox: boolean;
+  sandbox: boolean | null;
+  bundle_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -166,7 +176,7 @@ export async function getPushTokenByDeviceId(
   deviceId: string,
 ): Promise<PushToken | null> {
   const result: QueryResult<PushTokenRow> = await pool.query(
-    "SELECT id, device_id, token, platform, sandbox, created_at, updated_at FROM push_tokens WHERE device_id = $1",
+    "SELECT id, device_id, token, platform, sandbox, bundle_id, created_at, updated_at FROM push_tokens WHERE device_id = $1",
     [deviceId],
   );
 
@@ -179,6 +189,7 @@ export async function getPushTokenByDeviceId(
     token: row.token ?? null,
     platform: row.platform,
     sandbox: row.sandbox,
+    bundleId: row.bundle_id ?? null,
     createdAt: new Date(row.created_at).toISOString(),
     updatedAt: new Date(row.updated_at).toISOString(),
   };

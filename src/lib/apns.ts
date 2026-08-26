@@ -46,6 +46,10 @@ export interface ApnsOptions {
   subtitle?: string;
   sound?: string | null;
   badge?: number;
+  // Per-device APNs topic (the device's app bundle id). Falls back to the
+  // APNS_BUNDLE_ID env var for legacy devices registered before topics were
+  // stored per device.
+  bundleId?: string | null;
 }
 
 export function sendApnsNotification(
@@ -57,7 +61,7 @@ export function sendApnsNotification(
   sandbox: boolean = process.env.APNS_PRODUCTION !== "true",
 ): Promise<ApnsResult> {
   /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- validated by deployment */
-  const bundleId = process.env.APNS_BUNDLE_ID!;
+  const bundleId = options?.bundleId ?? process.env.APNS_BUNDLE_ID!;
 
   const alert: Record<string, string> = { title, body };
 

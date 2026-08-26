@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { getLatestActiveAnnouncement } from "@/lib/announcements";
+import {
+  getLatestActiveAnnouncement,
+  parseAnnouncementPlatform,
+} from "@/lib/announcements";
 import { verifyDeviceSecret } from "@/lib/push-tokens";
 
 const UUID_RE =
@@ -16,7 +19,10 @@ export default async function handler(
     return;
   }
 
-  const { deviceId } = req.query as { deviceId?: string };
+  const { deviceId, platform: platformParam } = req.query as {
+    deviceId?: string;
+    platform?: string;
+  };
 
   if (!deviceId || !UUID_RE.test(deviceId)) {
     res.status(400).json({ error: "deviceId must be a valid UUID" });
@@ -36,8 +42,12 @@ export default async function handler(
     return;
   }
 
+  // Optional. Clients that omit it (every version shipped so far) get the
+  // pre-Android behavior: newest announcement, bare minVersion, no targeting.
+  const platform = parseAnnouncementPlatform(platformParam);
+
   try {
-    const announcement = getLatestActiveAnnouncement();
+    const announcement = getLatestActiveAnnouncement(platform);
 
     if (!announcement) {
       res.status(204).end();

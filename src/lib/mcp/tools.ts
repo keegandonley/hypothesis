@@ -1,13 +1,20 @@
 import { z } from "zod";
 import { getPushTokenByDeviceId } from "../push-tokens";
-import { sendApnsNotification } from "../apns";
+import { sendPushNotification } from "../push";
 import { createSession } from "../session";
 import { getEvents } from "../events";
 import type { NextApiRequest } from "next";
 
+// Header lookups by arbitrary key are typed string | string[] | undefined; a
+// repeated header arrives as an array. Take the first value.
+function firstHeader(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
 function getBaseUrl(req: NextApiRequest): string {
-  const proto = req.headers["x-forwarded-proto"] ?? "https";
-  const host = req.headers["x-forwarded-host"] ?? req.headers.host;
+  const proto = firstHeader(req.headers["x-forwarded-proto"]) ?? "https";
+  const host =
+    firstHeader(req.headers["x-forwarded-host"]) ?? req.headers.host ?? "";
 
   return `${proto}://${host}`;
 }
@@ -67,12 +74,13 @@ export const sendPushNotificationTool = {
     }
 
     try {
-      const result = await sendApnsNotification(
+      const result = await sendPushNotification(
+        device.platform,
         device.token,
         title,
         body,
         undefined,
-        undefined,
+        { bundleId: device.bundleId },
         device.sandbox,
       );
 
@@ -92,7 +100,7 @@ export const sendPushNotificationTool = {
         content: [
           {
             type: "text" as const,
-            text: `Push notification sent successfully to device "${deviceId}". APNS ID: ${result.apnsId ?? "N/A"}`,
+            text: `Push notification sent successfully to device "${deviceId}". Message ID: ${result.messageId ?? "N/A"}`,
           },
         ],
       };
@@ -101,7 +109,7 @@ export const sendPushNotificationTool = {
         content: [
           {
             type: "text" as const,
-            text: `Error sending push notification: ${error instanceof Error ? error.message : "Unknown error"}. Check that APNS environment variables are configured (APNS_KEY_ID, APNS_TEAM_ID, APNS_KEY_P8, APNS_BUNDLE_ID).`,
+            text: `Error sending push notification: ${error instanceof Error ? error.message : "Unknown error"}. Check that the push environment variables are configured (APNS_KEY_ID, APNS_TEAM_ID, APNS_KEY_P8, APNS_BUNDLE_ID for iOS; FCM_PROJECT_ID, FCM_CLIENT_EMAIL, FCM_PRIVATE_KEY for Android).`,
           },
         ],
         isError: true,
