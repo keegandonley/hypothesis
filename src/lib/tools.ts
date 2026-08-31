@@ -847,6 +847,16 @@ export const tools: ToolItem[] = [
     suppressMobile: true,
     allowMultipleInstances: true,
   },
+  {
+    kind: "tool",
+    name: "placeholder photos",
+    description:
+      "Placeholder images at any size — build a hotlinkable URL with a seed, grayscale, and blur, and preview it live.",
+    href: "/photo",
+    docsHref: "/docs/photo",
+    tags: ["media", "web"],
+    allowMultipleInstances: true,
+  },
 ];
 
 export const allItems: AnyItem[] = [...tools, ...experiments, ...references];

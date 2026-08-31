@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   rewrites: async () => [
     { source: "/sitemap.xml", destination: "/api/sitemap" },
+    { source: "/photo/:path+", destination: "/api/photo/:path+" },
   ],
   images: {
     remotePatterns: [{ hostname: "static.donley.xyz" }],

@@ -16,6 +16,7 @@ export default tseslint.config(
       "node_modules/**",
       "eslint.config.mjs",
       "next.config.mjs",
+      "scripts/**/*.mjs",
     ],
   },
   ...nextVitals,

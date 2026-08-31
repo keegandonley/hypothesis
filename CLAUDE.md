@@ -10,7 +10,7 @@ pnpm build    # Production build (also runs TypeScript type checking)
 pnpm start    # Run production server
 ```
 
-There are no separate lint or test scripts — TypeScript strict mode checking happens during `pnpm build`.
+TypeScript strict mode checking happens during `pnpm build`; `pnpm lint` (eslint), `pnpm test` (vitest), and `pnpm format` / `format:check` (prettier) also exist.
 
 ## Architecture
 
@@ -25,7 +25,7 @@ Next.js app with file-based routing. Each tool lives at `src/pages/[tool-name]/i
 1. **Page:** `src/pages/[tool-name]/index.tsx` — follow the pattern in any existing tool (e.g. `base64`, `color`)
 2. **Styles:** `src/styles/[tool-name].module.css`
 3. **Docs:** `src/content/docs/[tool-name].md` — auto-served at `/docs/[tool-name]` via dynamic route
-4. **Index listing:** Add an entry to the `tools` or `experiments` array in `src/pages/index.tsx`
+4. **Index listing:** Add an entry to the `tools` or `experiments` array in `src/lib/tools.ts` (imported by `src/pages/index.tsx`)
 
 ## Key Patterns
 
