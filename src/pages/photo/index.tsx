@@ -9,6 +9,12 @@ import {
 } from "@/components/ui";
 import { useBranding } from "@/lib/branding";
 import {
+  DEFAULT_PATTERN_STYLE,
+  PATTERN_STYLES,
+  type PatternStyle,
+  isPatternStyle,
+} from "@/lib/photo-pattern";
+import {
   MAX_BLUR,
   MAX_SEED_LENGTH,
   MAX_SIZE,
@@ -18,22 +24,33 @@ import {
 } from "@/lib/photo-url";
 import { useUrlSync } from "@/lib/useUrlSync";
 
+/**
+ * `photo` crops the AI-generated photo library; `gen` builds an SVG from the
+ * seed. They share every control except style, and each has its own default
+ * format and seed rule — see `normalize`.
+ */
+type PhotoMode = "photo" | "gen";
+
 interface Settings {
+  mode: PhotoMode;
   width: number;
   height: number;
   seed: string;
   grayscale: boolean;
   blur: number;
   format: PhotoFormat;
+  style: PatternStyle;
 }
 
 const DEFAULT: Settings = {
+  mode: "photo",
   width: 600,
   height: 400,
   seed: "",
   grayscale: false,
   blur: 0,
   format: "jpeg",
+  style: DEFAULT_PATTERN_STYLE,
 };
 
 const clampSize = (n: number): number =>
@@ -68,18 +85,80 @@ function sanitizeSeed(raw: string): string {
 }
 
 /**
+ * Short alphanumeric seed for the Shuffle button, and for the seed procedural
+ * mode requires.
+ */
+function randomSeed(): string {
+  const bytes = new Uint8Array(6);
+
+  crypto.getRandomValues(bytes);
+
+  return Array.from(bytes, (byte) => byte.toString(36).padStart(2, "0")).join(
+    "",
+  );
+}
+
+/**
+ * Repair the two combinations the URL grammar has no spelling for. Every
+ * settings change funnels through here, so no sequence of toggles and no
+ * hand-edited permalink can leave the page emitting a URL that 400s.
+ *
+ * - `.svg` exists only in procedural mode: the photo library is rasterized by
+ *   sharp, and `/photo/id/5/300.svg` is a 400. Falling back to jpg keeps the
+ *   toggle honest when the source switches back.
+ * - Procedural mode has no random form — every pattern is a pure function of
+ *   its seed — so an empty seed field gets one generated for it.
+ */
+function normalize(s: Settings, prev?: Settings): Settings {
+  const next = { ...s };
+
+  // Mode switch: sitting on the outgoing mode's implicit format means the user
+  // never picked it, so adopt the incoming mode's default — svg for
+  // procedural, jpg for the library. An explicit webp carries across. Needs
+  // the previous settings, which is why `prev` exists; a restore has none.
+  if (
+    prev &&
+    prev.mode !== next.mode &&
+    next.format === implicitFormat(prev.mode)
+  ) {
+    next.format = implicitFormat(next.mode);
+  }
+
+  if (next.mode === "photo") {
+    if (next.format === "svg") next.format = "jpeg";
+  } else if (!next.seed.trim()) {
+    next.seed = randomSeed();
+  }
+
+  return next;
+}
+
+/** The extension the server assumes when the path omits one. */
+const implicitFormat = (mode: PhotoMode): PhotoFormat =>
+  mode === "gen" ? "svg" : "jpeg";
+
+/**
  * Path-only so the preview `<img>` loads from whatever origin the page is
  * served from (localhost, a preview deploy) while the displayed URL uses the
  * branded domain.
  */
 function buildPhotoPath(s: Settings): string {
   const segments = ["/photo"];
+  const seed = s.seed.trim();
 
-  if (s.seed.trim()) segments.push("seed", encodeURIComponent(s.seed.trim()));
+  // Procedural mode has no catalog and no random form, so its seed is both
+  // the only selector and a required one — `normalize` guarantees it. The
+  // photo library's seed is optional; without one the request is random.
+  if (s.mode === "gen") segments.push("gen", encodeURIComponent(seed));
+  else if (seed) segments.push("seed", encodeURIComponent(seed));
 
-  // jpg is the server's default, so only a non-default format needs the
-  // extension spelled out. The string itself comes from the parser's own map.
-  const ext = s.format === "jpeg" ? "" : `.${extensionForFormat(s.format)}`;
+  // The mode's implicit format is the server's default, so only a non-default
+  // format needs the extension spelled out. The string itself comes from the
+  // parser's own map.
+  const ext =
+    s.format === implicitFormat(s.mode)
+      ? ""
+      : `.${extensionForFormat(s.format)}`;
 
   // A square collapses to the single-segment `/photo/{size}` form.
   if (s.width === s.height) segments.push(`${s.width}${ext}`);
@@ -87,6 +166,9 @@ function buildPhotoPath(s: Settings): string {
 
   const query: string[] = [];
 
+  // `style` is procedural-only, and gradient is the server's default.
+  if (s.mode === "gen" && s.style !== DEFAULT_PATTERN_STYLE)
+    query.push(`style=${s.style}`);
   if (s.grayscale) query.push("grayscale");
   if (s.blur > 0) query.push(`blur=${s.blur}`);
 
@@ -100,7 +182,11 @@ function buildPageUrl(s: Settings): string {
     fmt: extensionForFormat(s.format),
   });
 
+  if (s.mode !== DEFAULT.mode) params.set("mode", s.mode);
   if (s.seed.trim()) params.set("seed", s.seed.trim());
+  // Mirrors the image URL: style only means something in procedural mode.
+  if (s.mode === "gen" && s.style !== DEFAULT_PATTERN_STYLE)
+    params.set("style", s.style);
   if (s.grayscale) params.set("gray", "1");
   if (s.blur > 0) params.set("blur", String(s.blur));
 
@@ -116,29 +202,51 @@ function parseSettings(params: URLSearchParams): Settings {
   };
 
   const fmt = params.get("fmt");
+  const style = params.get("style");
 
-  return {
+  return normalize({
+    mode: params.get("mode") === "gen" ? "gen" : "photo",
     width: clampSize(num("w", DEFAULT.width)),
     height: clampSize(num("h", DEFAULT.height)),
     seed: sanitizeSeed(params.get("seed") ?? DEFAULT.seed),
     grayscale: params.get("gray") === "1",
     blur: clampBlur(num("blur", DEFAULT.blur)),
-    format: fmt === "webp" ? "webp" : "jpeg",
-  };
+    format: fmt === "webp" ? "webp" : fmt === "svg" ? "svg" : "jpeg",
+    style: style !== null && isPatternStyle(style) ? style : DEFAULT.style,
+  });
 }
 
-/** Short alphanumeric seed for the Shuffle button. */
-function randomSeed(): string {
-  const bytes = new Uint8Array(6);
+const MODES: { value: PhotoMode; label: string; hint: string }[] = [
+  {
+    value: "photo",
+    label: "photo library",
+    hint: "cropped and resized from the photo library",
+  },
+  {
+    value: "gen",
+    label: "procedural",
+    hint: "an SVG generated from the seed — no photo",
+  },
+];
 
-  crypto.getRandomValues(bytes);
+const STYLES: Record<PatternStyle, { label: string; hint: string }> = {
+  gradient: {
+    label: "gradient",
+    hint: "soft seeded gradient with blurred blobs",
+  },
+  label: {
+    label: "dimensions",
+    hint: "flat box with the pixel size printed on it",
+  },
+  bauhaus: { label: "bauhaus", hint: "seeded circles, arcs, and bars" },
+  noise: { label: "noise", hint: "seeded fractal-noise field" },
+};
 
-  return Array.from(bytes, (byte) => byte.toString(36).padStart(2, "0")).join(
-    "",
-  );
-}
-
-const FORMATS: PhotoFormat[] = ["jpeg", "webp"];
+/** svg is procedural-only; jpg stays first in the photo library's list. */
+const FORMATS: Record<PhotoMode, PhotoFormat[]> = {
+  photo: ["jpeg", "webp"],
+  gen: ["svg", "jpeg", "webp"],
+};
 
 export default function PhotoPage(): React.ReactNode {
   const branding = useBranding();
@@ -152,6 +260,7 @@ export default function PhotoPage(): React.ReactNode {
 
   const photoPath = buildPhotoPath(settings);
   const photoUrl = `https://${branding.domain}${photoPath}`;
+  const isGen = settings.mode === "gen";
   const status =
     failedSrc === photoPath
       ? "error"
@@ -170,7 +279,7 @@ export default function PhotoPage(): React.ReactNode {
   }, [replaceUrlNow]);
 
   const update = (patch: Partial<Settings>, immediate = false): void => {
-    const next = { ...settings, ...patch };
+    const next = normalize({ ...settings, ...patch }, settings);
 
     setSettings(next);
     const newUrl = buildPageUrl(next);
@@ -192,13 +301,57 @@ export default function PhotoPage(): React.ReactNode {
     <div className={styles.page}>
       <PageLayout
         metaTitle="Placeholder Photos"
-        metaDescription="Placeholder images at any size, addressed by URL. Set width, height, seed, grayscale, and blur, then drop the URL straight into an img tag — no account or API key."
+        metaDescription="Placeholder images at any size, addressed by URL. Crop the photo library or generate a seeded SVG pattern, set width, height, grayscale, and blur, then drop the URL straight into an img tag — no account or API key."
         path="/photo"
         h1="Placeholder Photos"
-        tagline="Placeholder images at any size — seeded, grayscale, blur, hotlinkable"
+        tagline="Placeholder images at any size — photos or generated patterns, seeded and hotlinkable"
       >
         <div className={styles.body}>
           <div className={styles.controls}>
+            <div className={styles.controlRow}>
+              <span className={styles.controlLabel}>Source</span>
+              <div className={styles.toggleGroup}>
+                {MODES.map((m) => (
+                  <Button
+                    key={m.value}
+                    variant="toggle"
+                    active={settings.mode === m.value}
+                    onClick={() => {
+                      update({ mode: m.value }, true);
+                    }}
+                  >
+                    {m.label}
+                  </Button>
+                ))}
+              </div>
+              <span className={styles.hint}>
+                {MODES.find((m) => m.value === settings.mode)?.hint}
+              </span>
+            </div>
+
+            {isGen && (
+              <div className={styles.controlRow}>
+                <span className={styles.controlLabel}>Style</span>
+                <div className={styles.toggleGroup}>
+                  {PATTERN_STYLES.map((s) => (
+                    <Button
+                      key={s}
+                      variant="toggle"
+                      active={settings.style === s}
+                      onClick={() => {
+                        update({ style: s }, true);
+                      }}
+                    >
+                      {STYLES[s].label}
+                    </Button>
+                  ))}
+                </div>
+                <span className={styles.hint}>
+                  {STYLES[settings.style].hint}
+                </span>
+              </div>
+            )}
+
             <div className={styles.controlRow}>
               <span className={styles.controlLabel}>Size</span>
               <input
@@ -239,7 +392,7 @@ export default function PhotoPage(): React.ReactNode {
                 className={styles.textInput}
                 type="text"
                 value={settings.seed}
-                placeholder="empty = random each request"
+                placeholder={isGen ? "required" : "empty = random each request"}
                 autoComplete="off"
                 spellCheck={false}
                 aria-label="Seed"
@@ -247,7 +400,14 @@ export default function PhotoPage(): React.ReactNode {
                   // Length is capped in sanitizeSeed rather than by
                   // maxLength, which also counts UTF-16 units and so can
                   // split a pasted emoji.
-                  update({ seed: sanitizeSeed(e.target.value) });
+                  const seed = sanitizeSeed(e.target.value);
+
+                  // Procedural mode has no random form, so clearing the field
+                  // is refused rather than silently swapped for a fresh seed
+                  // mid-keystroke — select-all-and-retype still works.
+                  if (isGen && !seed.trim()) return;
+
+                  update({ seed });
                 }}
               />
               <Button
@@ -264,7 +424,7 @@ export default function PhotoPage(): React.ReactNode {
             <div className={styles.controlRow}>
               <span className={styles.controlLabel}>Format</span>
               <div className={styles.toggleGroup}>
-                {FORMATS.map((f) => (
+                {FORMATS[settings.mode].map((f) => (
                   <Button
                     key={f}
                     variant="toggle"
@@ -316,7 +476,9 @@ export default function PhotoPage(): React.ReactNode {
                   update({ blur: clampBlur(parseInt(e.target.value, 10)) });
                 }}
               />
-              <span className={styles.hint}>0 = off</span>
+              <span className={styles.hint}>
+                {isGen ? "0 = off · SVG filter" : "0 = off"}
+              </span>
             </div>
 
             <div className={styles.urlPanel}>
@@ -344,7 +506,11 @@ export default function PhotoPage(): React.ReactNode {
                 key={photoPath}
                 className={styles.previewImg}
                 src={photoPath}
-                alt={`Placeholder photo, ${settings.width} by ${settings.height}`}
+                alt={
+                  isGen
+                    ? `Generated ${STYLES[settings.style].label} pattern, ${settings.width} by ${settings.height}`
+                    : `Placeholder photo, ${settings.width} by ${settings.height}`
+                }
                 data-loaded={status === "ready"}
                 onLoad={() => {
                   setLoadedSrc(photoPath);

@@ -8,12 +8,30 @@
  *   /photo/id/{n}/{width}/{height}
  *   /photo/seed/{seed}/{size}
  *   /photo/seed/{seed}/{width}/{height}
+ *   /photo/gen/{seed}/{size}             procedural, always seeded
+ *   /photo/gen/{seed}/{width}/{height}
  *
- * The last numeric segment may carry an extension (`300.jpg`, `300.webp`).
- * Query params: `grayscale` (presence = on) and `blur` (bare = 1, else 1-10).
+ * The last numeric segment may carry an extension (`300.jpg`, `300.webp`, and
+ * `300.svg` in gen mode only).
+ * Query params: `grayscale` (presence = on), `blur` (bare = 1, else 1-10), and
+ * `style` (gen mode only; see photo-pattern.ts).
+ *
+ * Gen mode has no random form on purpose. A random photo needs a redirect
+ * because you cannot name a photo, but every string is already a valid gen
+ * seed, so `/photo/gen/600/400` would be ambiguous — seed "600" at size 400,
+ * or a random 600x400? Requiring a seed removes the ambiguity and keeps every
+ * gen URL a pure function of its seed.
  */
 
-export type PhotoFormat = "jpeg" | "webp";
+import {
+  DEFAULT_PATTERN_STYLE,
+  isPatternStyle,
+  PATTERN_STYLES,
+  type PatternStyle,
+} from "@/lib/photo-pattern";
+
+/** `svg` is reachable only through a `gen` selector — see `parseSizes`. */
+export type PhotoFormat = "jpeg" | "webp" | "svg";
 
 export type PhotoQuery = Record<string, string | string[] | undefined>;
 
@@ -23,7 +41,8 @@ export type PhotoQuery = Record<string, string | string[] | undefined>;
  */
 export type PhotoSelector =
   | { type: "id"; id: number }
-  | { type: "seed"; seed: string };
+  | { type: "seed"; seed: string }
+  | { type: "gen"; seed: string; style: PatternStyle };
 
 export interface PhotoRenderOptions {
   width: number;
@@ -61,7 +80,8 @@ export const MAX_BLUR = 10;
 export const USAGE_MESSAGE =
   "Usage: /photo/{size}, /photo/{width}/{height}, " +
   "/photo/id/{n}/{size}, /photo/id/{n}/{width}/{height}, " +
-  "/photo/seed/{seed}/{size}, or /photo/seed/{seed}/{width}/{height}";
+  "/photo/seed/{seed}/{size}, /photo/seed/{seed}/{width}/{height}, " +
+  "/photo/gen/{seed}/{size}, or /photo/gen/{seed}/{width}/{height}";
 
 const SIZE_MESSAGE = `Size must be an integer between ${MIN_SIZE} and ${MAX_SIZE}. ${USAGE_MESSAGE}`;
 
@@ -71,13 +91,18 @@ const EXTENSIONS: Record<string, PhotoFormat> = {
   jpg: "jpeg",
   jpeg: "jpeg",
   webp: "webp",
+  svg: "svg",
 };
 
 /**
  * File extension used when building a canonical URL for a format.
  */
 export function extensionForFormat(format: PhotoFormat): string {
-  return format === "webp" ? "webp" : "jpg";
+  if (format === "webp") {
+    return "webp";
+  }
+
+  return format === "svg" ? "svg" : "jpg";
 }
 
 function error(status: number, message: string): ParsedPhotoRequest {
@@ -129,13 +154,22 @@ function firstValue(value: string | string[] | undefined): string | undefined {
   return value;
 }
 
-function parseSizes(segments: string[]): PhotoTarget | ParsedPhotoRequest {
+/**
+ * `isGen` does double duty: SVG is a procedural-only output, so `.svg` on a
+ * photo URL is a 400 rather than a silently-wrong format — and gen mode
+ * *defaults* to SVG when no extension is given, because serving the string is
+ * the cheap path and rasterizing is the opt-in.
+ */
+function parseSizes(
+  segments: string[],
+  isGen: boolean,
+): PhotoTarget | ParsedPhotoRequest {
   if (segments.length !== 1 && segments.length !== 2) {
     return error(400, USAGE_MESSAGE);
   }
 
   const sizes: number[] = [];
-  let format: PhotoFormat = "jpeg";
+  let format: PhotoFormat = isGen ? "svg" : "jpeg";
 
   for (let i = 0; i < segments.length; i++) {
     const isLast = i === segments.length - 1;
@@ -158,7 +192,16 @@ function parseSizes(segments: string[]): PhotoTarget | ParsedPhotoRequest {
       if (!resolved) {
         return error(
           400,
-          `Unsupported extension ".${extension}". Use .jpg or .webp`,
+          `Unsupported extension ".${extension}". Use .jpg or .webp${
+            isGen ? " or .svg" : ""
+          }`,
+        );
+      }
+
+      if (resolved === "svg" && !isGen) {
+        return error(
+          400,
+          "The .svg extension is only available in procedural mode (/photo/gen/{seed}/...)",
         );
       }
 
@@ -207,12 +250,54 @@ function parseBlur(
 }
 
 /**
- * Parse the selector prefix (`/id/{n}` or `/seed/{seed}`) from the leading
- * segments. Returns null when the path has no selector prefix, meaning it is
- * a random request.
+ * Read `?style=`. Only gen selectors call this: on a photo URL, `style` joins
+ * the other unrecognized params and is ignored rather than erroring, matching
+ * how this parser already treats cache busters.
+ *
+ * The offending value is deliberately not echoed back — it is user input on a
+ * path that also serves SVG, and the valid set is short enough to just list.
+ */
+function parseStyle(query: PhotoQuery): PatternStyle | ParsedPhotoRequest {
+  const raw = firstValue(query.style);
+
+  if (raw === undefined || raw.trim() === "") {
+    return DEFAULT_PATTERN_STYLE;
+  }
+
+  const value = raw.trim().toLowerCase();
+
+  if (!isPatternStyle(value)) {
+    return error(
+      400,
+      `Unknown style. Use one of: ${PATTERN_STYLES.join(", ")}`,
+    );
+  }
+
+  return value;
+}
+
+/**
+ * Read the seed segment for a seeded selector. A seed of nothing but lone
+ * surrogates sanitizes down to "", which is treated the same as not supplying
+ * one — the two callers differ only in what they call that.
+ */
+function readSeed(
+  segments: string[],
+  missingMessage: string,
+): string | ParsedPhotoRequest {
+  const seed = sanitizeSeed(segments[1] ?? "");
+
+  return seed === "" ? error(400, missingMessage) : seed;
+}
+
+/**
+ * Parse the selector prefix (`/id/{n}`, `/seed/{seed}` or `/gen/{seed}`) from
+ * the leading segments. Returns null when the path has no selector prefix,
+ * meaning it is a random request.
  */
 function parseSelector(
   segments: string[],
+  query: PhotoQuery,
 ): { selector: PhotoSelector; rest: string[] } | ParsedPhotoRequest | null {
   const prefix = segments[0].toLowerCase();
 
@@ -233,16 +318,38 @@ function parseSelector(
   }
 
   if (prefix === "seed") {
-    // A seed of nothing but lone surrogates sanitizes down to "", which is
-    // the same as not supplying one.
-    const seed = sanitizeSeed(segments[1] ?? "");
+    const seed = readSeed(segments, `Missing seed. ${USAGE_MESSAGE}`);
 
-    if (seed === "") {
-      return error(400, `Missing seed. ${USAGE_MESSAGE}`);
+    if (typeof seed !== "string") {
+      return seed;
     }
 
     return {
       selector: { type: "seed", seed },
+      rest: segments.slice(2),
+    };
+  }
+
+  if (prefix === "gen") {
+    // Unlike photo mode there is no unseeded fallback to redirect to, so an
+    // absent seed is a hard error rather than a random request.
+    const seed = readSeed(
+      segments,
+      `Procedural mode needs a seed: /photo/gen/{seed}/{size}. ${USAGE_MESSAGE}`,
+    );
+
+    if (typeof seed !== "string") {
+      return seed;
+    }
+
+    const style = parseStyle(query);
+
+    if (typeof style !== "string") {
+      return style;
+    }
+
+    return {
+      selector: { type: "gen", seed, style },
       rest: segments.slice(2),
     };
   }
@@ -273,10 +380,10 @@ export function parsePhotoRequest(
 
   const { blur } = blurResult;
   const grayscale = query.grayscale !== undefined;
-  const selectorResult = parseSelector(segments);
+  const selectorResult = parseSelector(segments, query);
 
   if (selectorResult === null) {
-    const target = parseSizes(segments);
+    const target = parseSizes(segments, false);
 
     if ("kind" in target) {
       return target;
@@ -289,7 +396,10 @@ export function parsePhotoRequest(
     return selectorResult;
   }
 
-  const target = parseSizes(selectorResult.rest);
+  const target = parseSizes(
+    selectorResult.rest,
+    selectorResult.selector.type === "gen",
+  );
 
   if ("kind" in target) {
     return target;
@@ -355,6 +465,19 @@ export function buildSeededPhotoPath(
   query: PhotoQuery = {},
 ): string {
   return buildPhotoPath(`seed/${encodeURIComponent(seed)}`, options, query);
+}
+
+/**
+ * Build the canonical `/photo/gen/{seed}/...` URL for a procedural pattern.
+ * There is no random gen form, so nothing redirects here — this exists for the
+ * explorer page and for docs examples.
+ */
+export function buildGenPhotoPath(
+  seed: string,
+  options: PhotoTarget,
+  query: PhotoQuery = {},
+): string {
+  return buildPhotoPath(`gen/${encodeURIComponent(seed)}`, options, query);
 }
 
 /**

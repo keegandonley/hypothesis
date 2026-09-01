@@ -851,7 +851,7 @@ export const tools: ToolItem[] = [
     kind: "tool",
     name: "placeholder photos",
     description:
-      "Placeholder images at any size — build a hotlinkable URL with a seed, grayscale, and blur, and preview it live.",
+      "Placeholder images at any size — crop the photo library or generate a seeded SVG pattern, then preview the hotlinkable URL live.",
     href: "/photo",
     docsHref: "/docs/photo",
     tags: ["media", "web"],
