@@ -3,6 +3,7 @@ import {
   DEFAULT_PATTERN_STYLE,
   isPatternStyle,
   PATTERN_STYLES,
+  READOUT_GLYPHS,
   renderPatternSvg,
   type PatternOptions,
   type PatternStyle,
@@ -264,44 +265,110 @@ describe("renderPatternSvg (gradient)", () => {
 });
 
 describe("renderPatternSvg (label)", () => {
-  it("centers the real dimensions with a multiplication sign", () => {
+  /**
+   * The readout is the only path that rounds its ends, which makes
+   * `stroke-linecap` a stable marker for it without inventing an attribute.
+   */
+  function readout(svg: string): string | undefined {
+    return /<path d="([^"]+)"[^>]*stroke-linecap="round"/.exec(svg)?.[1];
+  }
+
+  /** Bounding box of a readout path's control points. */
+  function bounds(d: string): { width: number; height: number } {
+    const points = [...d.matchAll(/[ML](-?[\d.]+) (-?[\d.]+)/g)].map(
+      (match) => [Number(match[1]), Number(match[2])],
+    );
+    const xs = points.map((point) => point[0]);
+    const ys = points.map((point) => point[1]);
+
+    return {
+      width: Math.max(...xs) - Math.min(...xs),
+      height: Math.max(...ys) - Math.min(...ys),
+    };
+  }
+
+  it("draws the readout as stroked geometry, never as text", () => {
     const svg = render({ style: "label", width: 600, height: 400 });
 
-    expect(svg).toContain(">600 × 400<");
-    expect(svg).toContain('text-anchor="middle"');
-    expect(svg).toContain('dominant-baseline="central"');
-    expect(svg).toContain("monospace");
+    // librsvg in a serverless runtime has no fonts, so a <text> readout
+    // rasterizes to tofu or to nothing at all.
+    expect(svg).not.toContain("<text");
+    expect(svg).not.toContain("font-");
+    expect(svg).not.toContain("×");
+    expect(readout(svg)).toBeDefined();
   });
 
-  it("keeps the font readable on a short banner and sane at 1600px", () => {
-    const size = (width: number, height: number): number =>
-      Number(
-        /font-size="([\d.]+)"/.exec(
-          render({ style: "label", width, height }),
-        )?.[1],
-      );
+  it("defines a line glyph for every character a readout can hold", () => {
+    for (const char of "0123456789×") {
+      const glyph = READOUT_GLYPHS[char];
 
-    expect(size(320, 32)).toBeGreaterThanOrEqual(9);
-    expect(size(1600, 1600)).toBeLessThanOrEqual(72);
-    expect(size(600, 400)).toBeGreaterThan(12);
+      expect(glyph, char).toBeDefined();
+      expect(glyph.length).toBeGreaterThan(0);
+
+      for (const polyline of glyph) {
+        // Flat [x0, y0, x1, y1, ...] pairs, at least one segment, all on the
+        // unit cell.
+        expect(polyline.length % 2).toBe(0);
+        expect(polyline.length).toBeGreaterThanOrEqual(4);
+
+        for (const coordinate of polyline) {
+          expect(coordinate).toBeGreaterThanOrEqual(0);
+          expect(coordinate).toBeLessThanOrEqual(1);
+        }
+      }
+    }
   });
 
-  it("still reads as a placeholder when the text cannot render", () => {
-    // librsvg in a serverless runtime may have no fonts, so the box, border
-    // and ground have to carry the design on their own.
+  it("emits one subpath per glyph stroke, and none for the spaces", () => {
+    const d =
+      readout(render({ style: "label", width: 600, height: 400 })) ?? "";
+    // "600 × 400": 6 + 0 + 0 + × (2) + 4 (2) + 0 + 0, spaces contribute none.
+    const expected = ["6", "0", "0", "×", "4", "0", "0"].reduce(
+      (total, char) => total + READOUT_GLYPHS[char].length,
+      0,
+    );
+
+    expect((d.match(/M/g) ?? []).length).toBe(expected);
+  });
+
+  it("keeps the readout readable on a short banner and sane at 1600px", () => {
+    const glyphHeight = (width: number, height: number): number =>
+      bounds(readout(render({ style: "label", width, height })) ?? "").height;
+
+    expect(glyphHeight(320, 32)).toBeGreaterThanOrEqual(9);
+    expect(glyphHeight(1600, 1600)).toBeLessThanOrEqual(72);
+    expect(glyphHeight(600, 400)).toBeGreaterThan(12);
+  });
+
+  it("keeps the readout inside the panel", () => {
     const svg = render({ style: "label", width: 600, height: 400 });
-    const withoutText = svg.replace(/<text[\s\S]*?<\/text>/, "");
+    const { width, height } = bounds(readout(svg) ?? "");
 
-    expect(withoutText).toMatch(/<rect[^>]*stroke="#[0-9a-f]{6}"/);
-    expect((withoutText.match(/<rect /g) ?? []).length).toBeGreaterThanOrEqual(
-      2,
-    );
+    // Panel is inset by 10% of the short side: 520 x 320.
+    expect(width).toBeLessThan(520);
+    expect(width).toBeGreaterThan(200);
+    expect(height).toBeLessThan(320);
   });
 
-  it("omits the text when the box is far too small for it", () => {
-    expect(render({ style: "label", width: 1, height: 1 })).not.toContain(
-      "<text",
+  it("still reads as a placeholder with the readout stripped out", () => {
+    const svg = render({ style: "label", width: 600, height: 400 });
+    const withoutReadout = svg.replace(
+      /<path[^>]*stroke-linecap="round"[^>]*\/>/,
+      "",
     );
+
+    expect(withoutReadout).not.toContain("stroke-linecap");
+    expect(withoutReadout).toMatch(/<rect[^>]*stroke="#[0-9a-f]{6}"/);
+    expect(
+      (withoutReadout.match(/<rect /g) ?? []).length,
+    ).toBeGreaterThanOrEqual(2);
+  });
+
+  it("omits the readout when the box is far too small for it", () => {
+    const svg = render({ style: "label", width: 1, height: 1 });
+
+    expect(svg).not.toContain("<text");
+    expect(readout(svg)).toBeUndefined();
   });
 });
 

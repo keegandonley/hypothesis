@@ -418,18 +418,154 @@ function renderGradient(ctx: PatternContext, defs: string[]): string {
 }
 
 /**
+ * Stroked line glyphs for the label readout, hand-authored on a unit cell:
+ * `x` runs 0..1 across the ink width, `y` runs 0..1 from cap line to baseline
+ * (SVG's downward axis). Each glyph is a list of polylines, each polyline a
+ * flat `[x0, y0, x1, y1, ...]` run.
+ *
+ * Only the characters a readout can contain are defined — digits and `×`. A
+ * space has no entry: it only advances the pen.
+ */
+export const READOUT_GLYPHS: Record<string, readonly (readonly number[])[]> = {
+  "0": [
+    [
+      0, 0.17, 0.28, 0, 0.72, 0, 1, 0.17, 1, 0.83, 0.72, 1, 0.28, 1, 0, 0.83, 0,
+      0.17,
+    ],
+  ],
+  "1": [
+    [0.15, 0.25, 0.5, 0, 0.5, 1],
+    [0.12, 1, 0.88, 1],
+  ],
+  "2": [[0, 0.25, 0.28, 0, 0.72, 0, 1, 0.25, 1, 0.42, 0.06, 1, 1, 1]],
+  "3": [
+    [
+      0, 0.22, 0.28, 0, 0.72, 0, 1, 0.22, 1, 0.34, 0.66, 0.5, 1, 0.66, 1, 0.78,
+      0.72, 1, 0.28, 1, 0, 0.78,
+    ],
+    [0.66, 0.5, 0.3, 0.5],
+  ],
+  "4": [
+    [0.68, 0, 0.04, 0.7, 0.98, 0.7],
+    [0.68, 0, 0.68, 1],
+  ],
+  "5": [
+    [
+      1, 0, 0.15, 0, 0.08, 0.42, 0.7, 0.42, 1, 0.6, 1, 0.78, 0.72, 1, 0.28, 1,
+      0, 0.78,
+    ],
+  ],
+  "6": [
+    [
+      0.82, 0.08, 0.55, 0, 0.28, 0, 0, 0.28, 0, 0.78, 0.28, 1, 0.72, 1, 1, 0.78,
+      1, 0.62, 0.72, 0.44, 0.28, 0.44, 0, 0.62,
+    ],
+  ],
+  "7": [[0, 0, 1, 0, 0.35, 1]],
+  "8": [
+    [
+      0.28, 0, 0.72, 0, 1, 0.18, 1, 0.32, 0.72, 0.5, 1, 0.68, 1, 0.82, 0.72, 1,
+      0.28, 1, 0, 0.82, 0, 0.68, 0.28, 0.5, 0, 0.32, 0, 0.18, 0.28, 0,
+    ],
+    [0.28, 0.5, 0.72, 0.5],
+  ],
+  "9": [
+    [
+      0.18, 0.92, 0.45, 1, 0.72, 1, 1, 0.72, 1, 0.22, 0.72, 0, 0.28, 0, 0, 0.22,
+      0, 0.38, 0.28, 0.56, 0.72, 0.56, 1, 0.38,
+    ],
+  ],
+  "×": [
+    [0.16, 0.27, 0.84, 0.73],
+    [0.84, 0.27, 0.16, 0.73],
+  ],
+};
+
+/** Ink width of one glyph, as a fraction of the glyph height. */
+const GLYPH_WIDTH = 0.6;
+/** Pen advance from one glyph cell to the next — monospaced, so this is fixed. */
+const GLYPH_ADVANCE = 0.81;
+/** A space carries no ink and advances less than a glyph, as it did before. */
+const SPACE_ADVANCE = 0.5;
+
+/**
+ * Width of a laid-out readout, in multiples of the glyph height. Callers use
+ * it for the fit math before a glyph height has been chosen.
+ */
+function readoutWidth(label: string): number {
+  let advance = 0;
+
+  for (const char of label) {
+    advance += char === " " ? SPACE_ADVANCE : GLYPH_ADVANCE;
+  }
+
+  return advance;
+}
+
+/**
+ * The readout, laid out left-to-right on a fixed advance and centred on
+ * (`centerX`, `centerY`), as ONE stroked path. Consumes no randomness, so the
+ * output stays a pure function of the label and the geometry.
+ */
+function renderReadout(
+  label: string,
+  centerX: number,
+  centerY: number,
+  glyphHeight: number,
+  ink: string,
+  minStroke: number,
+): string {
+  const advance = glyphHeight * GLYPH_ADVANCE;
+  const inkWidth = glyphHeight * GLYPH_WIDTH;
+  const top = centerY - glyphHeight / 2;
+  const strokeWidth = Math.max(minStroke, glyphHeight * 0.09);
+
+  let cursor = centerX - (readoutWidth(label) * glyphHeight) / 2;
+  let d = "";
+
+  for (const char of label) {
+    if (char === " ") {
+      cursor += glyphHeight * SPACE_ADVANCE;
+
+      continue;
+    }
+
+    // Ink sits centred in its advance cell, so the side bearings match.
+    const left = cursor + (advance - inkWidth) / 2;
+
+    for (const polyline of READOUT_GLYPHS[char] ?? []) {
+      for (let i = 0; i < polyline.length; i += 2) {
+        const x = num(left + polyline[i] * inkWidth);
+        const y = num(top + polyline[i + 1] * glyphHeight);
+
+        d += `${i === 0 ? "M" : "L"}${x} ${y}`;
+      }
+    }
+
+    cursor += advance;
+  }
+
+  if (d === "") {
+    return "";
+  }
+
+  return `<path d="${d}" fill="none" stroke="${ink}" stroke-width="${num(strokeWidth)}" stroke-linecap="round" stroke-linejoin="round"/>`;
+}
+
+/**
  * A drafting-style dimension card: sharp inset panel, corner registration
  * marks, dimension lines with end ticks in the margins, a ruler scale stepped
  * along two edges, and the pixel size called out on a plate in the middle.
  *
- * IMPORTANT: on the raster path librsvg may be running in a serverless image
- * with no fonts installed, in which case the `<text>` silently disappears.
- * Everything except the readout is geometry for exactly that reason — a
- * text-less render still reads as a deliberate technical placeholder rather
- * than a broken one. Do not move any load-bearing detail into the text.
+ * IMPORTANT: the readout is stroked geometry (`READOUT_GLYPHS`), not `<text>`.
+ * On the raster path librsvg runs in a serverless image with no fonts
+ * installed, where `<text>` renders as tofu boxes or vanishes outright — and
+ * the readout is the whole point of this style. Drawing it as paths makes it
+ * font-independent, so the JPEG and WebP renders match the SVG exactly. Do not
+ * reintroduce `<text>` or any `font-*` attribute here.
  *
- * The width and height numbers are the only user-influenced values that appear
- * as text, and they are clamped integers, so there is nothing to escape.
+ * The width and height numbers are the only user-influenced values in the
+ * readout, and they are clamped integers, so there is nothing to escape.
  */
 function renderLabel(ctx: PatternContext): string {
   const { width, height, palette } = ctx;
@@ -510,14 +646,13 @@ function renderLabel(ctx: PatternContext): string {
   }
 
   const label = `${width} × ${height}`;
-  // Monospace advance is ~0.62em, so this is the widest the string can be.
-  const fitted = Math.min(
-    height * 0.15,
-    (width * 0.58) / (0.62 * label.length),
-  );
-  const fontSize = Math.max(9, Math.min(64, fitted));
-  const textWidth = fontSize * 0.62 * label.length;
-  const textHeight = fontSize * 1.6;
+  // Real glyph metrics, not a font estimate: `run` is the laid-out width in
+  // multiples of the glyph height, so dividing by it fits the string exactly.
+  const run = readoutWidth(label);
+  const fitted = Math.min(height * 0.13, (width * 0.58) / run);
+  const glyphHeight = Math.max(9, Math.min(56, fitted));
+  const textWidth = run * glyphHeight;
+  const textHeight = glyphHeight * 1.85;
 
   if (
     innerWidth > textWidth &&
@@ -527,7 +662,9 @@ function renderLabel(ctx: PatternContext): string {
   ) {
     // A plate behind the readout so it stays legible where the diagonals cross.
     if (detailed) {
-      const plateWidth = textWidth + fontSize * 1.1;
+      // The gate above guarantees the readout fits, but the plate's breathing
+      // room can still overrun a narrow panel — clamp rather than overhang.
+      const plateWidth = Math.min(innerWidth, textWidth + glyphHeight * 1.1);
       const plateHeight = textHeight;
 
       parts.push(
@@ -542,7 +679,14 @@ function renderLabel(ctx: PatternContext): string {
     }
 
     parts.push(
-      `<text x="${num(width / 2)}" y="${num(height / 2)}" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="${num(fontSize)}" fill="${palette.ink}" text-anchor="middle" dominant-baseline="central" letter-spacing="${num(fontSize * 0.06)}">${label}</text>`,
+      renderReadout(
+        label,
+        width / 2,
+        height / 2,
+        glyphHeight,
+        palette.ink,
+        hair,
+      ),
     );
   }
 

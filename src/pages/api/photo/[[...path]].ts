@@ -210,8 +210,8 @@ export default async function handler(
     if (parsed.format === "svg") {
       res.setHeader("Content-Type", CONTENT_TYPES.svg);
       res.setHeader("Content-Security-Policy", SVG_CSP);
-      // No Content-Length: the label style emits a multi-byte U+00D7, so a
-      // naive string length would be wrong. Next sizes the body itself.
+      // No Content-Length: Next sizes the body itself, and a naive string
+      // length would be wrong the moment the document holds multi-byte text.
       res.status(200).send(svg);
 
       return;
