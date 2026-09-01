@@ -137,9 +137,7 @@ In procedural mode they are SVG filter primitives written into the document, whi
 
 The same seed always resolves to the same image, at any size, in any format, with any filter. That makes seeded URLs safe in snapshot tests, design mockups, and fixtures — the layout will not shuffle under you between runs.
 
-Procedural URLs go further: a pattern is a pure function of its seed. Nothing is looked up, so there is no library whose growth could re-point it. `/photo/gen/checkout-hero/1200/630` renders the same image today, after the next deploy, and after every deploy after that. For fixtures and snapshot tests, that is the reason to prefer `/photo/gen/` over the photo library.
-
-The photo library carries one caveat instead: a seed maps onto the library by its size, so a deploy that adds photos re-points existing seeds at different images. That can only happen when the library grows — never between requests, and never mid-deploy. If you need a photo URL pinned to one exact image for good, use its `/photo/id/{n}` form: ids are only ever appended, so an existing id keeps its image.
+Procedural URLs are deterministic by construction: a pattern is a pure function of its seed, with nothing looked up at all. `/photo/gen/checkout-hero/1200/630` renders the same image today, after the next deploy, and after every deploy after that.
 
 Requests without a seed pick a photo at random per request, so they are useful for demos and unsuitable for anything that compares pixels. Procedural mode has no such form — its seed is required.
 
