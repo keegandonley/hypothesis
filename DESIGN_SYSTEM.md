@@ -1,7 +1,17 @@
 # Design system
 
-The consolidation pass preserves the existing visual values. Typography,
-contrast, spacing, and layout changes can be reviewed separately.
+The interface keeps its monospace identity and domain accent colors. Shared
+controls use restrained typography, visible boundaries, and compact spacing.
+
+The first visual pass uses 13px editor/body text, 11px labels, and 22px tool
+headings. Headings and buttons retain their written casing; secondary labels
+remain uppercase with tighter tracking. Panel borders and background dots have
+separate tokens so stronger boundaries do not brighten the grid. Shared panel
+headers wrap their controls, and permalink rows stack their label below 480px.
+
+Preserve the global coarse-pointer rule setting inputs, textareas, and selects
+to `16px !important`. It prevents mobile focus zoom and intentionally overrides
+the smaller desktop typography tokens.
 
 ## Shared components
 

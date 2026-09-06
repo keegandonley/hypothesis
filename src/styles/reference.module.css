@@ -22,8 +22,8 @@
 }
 
 .backLink {
-  font-size: 11px;
-  letter-spacing: 0.15em;
+  font-size: var(--font-size-small);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--muted);
   transition: color 0.15s;
@@ -37,8 +37,8 @@
 }
 
 .refBadge {
-  font-size: 10px;
-  letter-spacing: 0.12em;
+  font-size: var(--font-size-label);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--muted);
   border: 1px solid var(--border);
@@ -61,19 +61,17 @@
 .title {
   margin: 0 0 8px;
   font-size: clamp(22px, 5vw, 34px);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   color: var(--text);
-  line-height: 1;
+  line-height: 1.2;
 }
 
 .tagline {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--font-size-body);
   color: var(--muted);
   line-height: 1.6;
-  letter-spacing: 0.01em;
 }
 
 /* ── Controls ────────────────────────────────────────────────────────────── */
@@ -99,15 +97,14 @@
 
 .classBtn {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--font-size-label);
   font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
   color: var(--muted);
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
   cursor: pointer;
   transition:
     color 0.15s,
@@ -133,8 +130,8 @@
 .classBtnLabel {
   opacity: 0.7;
   font-weight: 400;
-  font-size: 9px;
-  letter-spacing: 0.08em;
+  font-size: var(--font-size-label);
+  letter-spacing: normal;
 }
 
 /* ── Content ─────────────────────────────────────────────────────────────── */
@@ -457,4 +454,10 @@
     grid-template-columns: 48px 1fr;
     gap: 10px;
   }
+}
+
+.classBtn:focus-visible,
+.backLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }

@@ -2,7 +2,71 @@
 
 # hypothesis.sh
 
-A collection of small, focused developer tools. No accounts, no tracking.
+[![Tests](https://github.com/keegandonley/hypothesis/actions/workflows/tests.yml/badge.svg)](https://github.com/keegandonley/hypothesis/actions/workflows/tests.yml)
+
+A collection of developer tools, experiments, and searchable references at
+[hypothesis.sh](https://hypothesis.sh). Most tools run in the browser and support
+shareable permalinks. Server-backed features include image processing, placeholder
+photos, webhooks, and HTTP request testing.
+
+## Development
+
+Use Node.js 24 and pnpm 10.33.0 (the exact version is pinned in `package.json`).
+
+```sh
+corepack enable
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+Open [localhost:3000](http://localhost:3000). Browser-only tools work without
+service credentials; server-backed integrations may require their own environment
+variables in `.env.local`. Never commit that file.
+
+| Command             | Purpose                                   |
+| ------------------- | ----------------------------------------- |
+| `pnpm dev`          | Start the development server              |
+| `pnpm build`        | Build for production and check TypeScript |
+| `pnpm start`        | Serve the production build                |
+| `pnpm test`         | Run the Vitest suite once                 |
+| `pnpm test:watch`   | Rerun tests while developing              |
+| `pnpm lint`         | Run ESLint                                |
+| `pnpm format:check` | Check formatting with Prettier            |
+| `pnpm format`       | Format the project                        |
+
+## Tests and CI
+
+Tests live in `src/__tests__` and run in Vitest's Node environment. Run the full
+suite with `pnpm test`, or a single file with
+`pnpm test src/__tests__/lib/regex.test.ts`.
+
+The [Tests workflow](.github/workflows/tests.yml) runs on pushes, pull requests,
+and manual dispatch. It installs the pinned pnpm version, uses Node.js 24, caches
+the pnpm store, installs from the frozen lockfile, and runs `pnpm test`. The test
+job needs no service credentials. Older runs for the same ref are cancelled when
+new commits arrive.
+
+CI currently gates tests only. Build, lint, and formatting checks are available
+locally; ESLint has existing violations that need cleanup before it becomes a
+required CI check.
+
+## Project structure and design
+
+- `src/pages`: Next.js Pages Router screens and API routes.
+- `src/lib`: tool logic, shared hooks, branding, and the tool catalog.
+- `src/components/ui`: shared buttons, panels, page headers, search, and permalink controls.
+- `src/styles`: global tokens, shared CSS Module primitives, and page styles.
+- `src/content/docs`: tool documentation served at `/docs/[slug]`.
+- `src/data`: reference datasets.
+- `migrations`: database migrations for server-backed features.
+
+See [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) for component and token conventions,
+responsive behavior, and the CSS composition constraint. Preserve the mobile
+`16px !important` input rule that prevents focus zoom. Shared UI uses the active
+domain's accent colors through `src/lib/branding.ts`.
+
+When adding a tool, add its page, documentation, and catalog entry in
+`src/lib/tools.ts`, reuse shared UI where it fits, and update the listings below.
 
 ## Tools
 
@@ -21,6 +85,7 @@ A collection of small, focused developer tools. No accounts, no tracking.
 | [compress](https://hypothesis.sh/compress)                         | Compress PNG, JPEG, and WebP images server-side; convert to WebP or AVIF for maximum file size reduction                                        | [docs](https://hypothesis.sh/docs/compress)             |
 | [cron](https://hypothesis.sh/cron)                                 | Parse cron expressions into plain English and preview the next 10 scheduled run times                                                           | [docs](https://hypothesis.sh/docs/cron)                 |
 | [css unit](https://hypothesis.sh/css-unit)                         | Convert between CSS units: px, rem, em, %, vh, vw, pt, cm, mm, in with adjustable context                                                       | [docs](https://hypothesis.sh/docs/css-unit)             |
+| [csp analyzer](https://hypothesis.sh/csp)                          | Inspect Content-Security-Policy directives, warnings, and missing protections                                                                   | [docs](https://hypothesis.sh/docs/csp)                  |
 | [datetime](https://hypothesis.sh/datetime)                         | Convert timestamps and dates between many formats at once with live sync and shareable permalinks                                               | [docs](https://hypothesis.sh/docs/datetime)             |
 | [hash](https://hypothesis.sh/hash)                                 | Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text input                                                                   | [docs](https://hypothesis.sh/docs/hash)                 |
 | [html entity](https://hypothesis.sh/html-entity)                   | Encode and decode HTML entities for safe display in web pages with multiple encoding modes                                                      | [docs](https://hypothesis.sh/docs/html-entity)          |
@@ -35,6 +100,7 @@ A collection of small, focused developer tools. No accounts, no tracking.
 | [number base](https://hypothesis.sh/numbase)                       | Convert integers between binary, octal, decimal, and hex with live sync and shareable permalinks                                                | [docs](https://hypothesis.sh/docs/numbase)              |
 | [og tags](https://hypothesis.sh/og)                                | Generate Open Graph and Twitter Card meta tags with a live social preview                                                                       | [docs](https://hypothesis.sh/docs/og)                   |
 | [password](https://hypothesis.sh/password)                         | Generate cryptographically secure passwords with configurable length, character sets, and count                                                 | [docs](https://hypothesis.sh/docs/password)             |
+| [placeholder photos](https://hypothesis.sh/photo)                  | Create hotlinkable placeholder photos and seeded SVG patterns at custom sizes                                                                   | [docs](https://hypothesis.sh/docs/photo)                |
 | [pretty print](https://hypothesis.sh/pretty-print)                 | Format and validate JSON with live pretty-printing and shareable permalinks                                                                     | [docs](https://hypothesis.sh/docs/pretty-print)         |
 | [qr code](https://hypothesis.sh/qr)                                | Generate QR codes from any text or URL and download as SVG or PNG                                                                               | [docs](https://hypothesis.sh/docs/qr)                   |
 | [qr decoder](https://hypothesis.sh/qr-decoder)                     | Decode QR codes using your device camera _(mobile only)_                                                                                        | [docs](https://hypothesis.sh/docs/qr-decoder)           |
@@ -63,6 +129,8 @@ A collection of small, focused developer tools. No accounts, no tracking.
 | EXP-008 | [video streaming](https://hypothesis.sh/video-streaming)      | Test and inspect HTML video element behavior - buffering, events, and playback state - with full telemetry | [docs](https://hypothesis.sh/docs/video-streaming) |
 | EXP-009 | [push test](https://hypothesis.sh/push-test)                  | Send a test push notification to a registered mobile device                                                | [docs](https://hypothesis.sh/docs/push-test)       |
 | EXP-010 | [audio streaming](https://hypothesis.sh/audio-streaming)      | Test and inspect HTML audio element behavior - buffering, events, and playback state - with full telemetry | [docs](https://hypothesis.sh/docs/audio-streaming) |
+| EXP-011 | [delay loading](https://hypothesis.sh/delay-loading)          | Defer the page load event to test iframe load handling                                                     | [docs](https://hypothesis.sh/docs/delay-loading)   |
+| EXP-012 | [httptest](https://hypothesis.sh/httptest)                    | Inspect requests and test status codes, authentication, redirects, cookies, and delays                     | [docs](https://hypothesis.sh/docs/httptest)        |
 
 ## References
 
@@ -91,4 +159,4 @@ A collection of small, focused developer tools. No accounts, no tracking.
 
 ## Stack
 
-Next.js · TypeScript · React · Postgres · Vercel
+Next.js · TypeScript · React · CSS Modules · Vitest · pnpm · Postgres · Vercel

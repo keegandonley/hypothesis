@@ -4,9 +4,9 @@
   border-radius: var(--radius-sm);
   font-family: var(--font-mono);
   font-size: var(--font-size-label);
-  font-weight: 700;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
   cursor: pointer;
   transition:
     background-color var(--duration-fast),
@@ -15,7 +15,7 @@
 }
 
 .btn:disabled {
-  opacity: 0.35;
+  opacity: 0.5;
   cursor: default;
 }
 
@@ -68,14 +68,17 @@
 }
 
 .xs {
+  min-height: 24px;
   padding: 3px var(--space-2);
 }
 
 .sm {
+  min-height: 28px;
   padding: var(--space-1) 10px;
 }
 
 .md {
+  min-height: 32px;
   padding: 6px 14px;
 }
 
@@ -118,6 +121,7 @@
 }
 
 .tab {
+  min-height: 28px;
   padding: var(--space-1) 14px;
   background: transparent;
   border: 1px solid var(--border);
@@ -142,6 +146,7 @@
 }
 
 .toggle {
+  min-height: 28px;
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -150,7 +155,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
   color: var(--muted);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.02em;
 }
 
 .toggle::before {

@@ -16,6 +16,7 @@
 
 .url {
   flex: 1;
+  min-width: 0;
   font-size: var(--font-size-small);
   color: var(--text);
   background-color: var(--bg);
@@ -26,10 +27,21 @@
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: var(--font-mono);
+  line-height: 1.5;
 }
 
 .urlTooLong {
   color: var(--muted);
   font-style: italic;
-  opacity: 0.6;
+}
+
+@media (max-width: 480px) {
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .label {
+    grid-column: 1 / -1;
+  }
 }

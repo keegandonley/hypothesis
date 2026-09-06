@@ -16,8 +16,9 @@
 }
 
 .input {
+  min-height: 40px;
   width: 100%;
-  padding: 9px 36px 9px 34px;
+  padding: 9px 42px 9px 34px;
   background-color: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -34,6 +35,7 @@
 
 .input:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
 }
 
 .clear {
@@ -44,6 +46,8 @@
   color: var(--muted);
   font-size: var(--font-size-small);
   cursor: pointer;
+  min-width: 28px;
+  min-height: 28px;
   padding: var(--space-1) 6px;
   line-height: 1;
   border-radius: 3px;
@@ -55,4 +59,9 @@
 .clear:hover {
   color: var(--text);
   background-color: var(--border);
+}
+
+.clear:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }

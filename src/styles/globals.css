@@ -5,17 +5,18 @@
   --space-3: 12px;
   --space-4: 16px;
   --space-5: 20px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
   --radius-pill: 100px;
-  --font-size-label: 10px;
-  --font-size-small: 11px;
-  --font-size-body: 12px;
+  --font-size-label: 11px;
+  --font-size-small: 12px;
+  --font-size-body: 13px;
+  --font-size-editor: 13px;
   --font-size-icon: 13px;
-  --font-size-title: 20px;
+  --font-size-title: 22px;
   --line-height-body: 1.6;
-  --tracking-label: 0.12em;
+  --tracking-label: 0.06em;
   --duration-fast: 0.15s;
   --page-padding: var(--space-5);
   --page-grid-size: 28px 28px;
@@ -37,7 +38,8 @@
   --content-width: 720px;
   --bg: #0c0c10;
   --card-bg: #13131a;
-  --border: #1e1e2e;
+  --border: #2b2b3c;
+  --grid-dot: #1b1b26;
   --text: #f0ede8;
   /* Same desaturated-violet family, lightened from #5a5a6e (~2.9:1 on --bg,
      below WCAG AA) to clear 4.5:1 for the labels/taglines/hints it styles. */
@@ -68,6 +70,8 @@ a {
   text-decoration: none;
 }
 
+/* Keep editable controls at 16px on touch devices to prevent focus zoom.
+   This must override the smaller desktop typography tokens and page styles. */
 @media (pointer: coarse) {
   input,
   textarea,
