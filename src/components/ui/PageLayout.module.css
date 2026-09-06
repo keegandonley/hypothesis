@@ -1,22 +1,22 @@
 .header {
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
   flex-shrink: 0;
 }
 
 .eyebrow {
-  font-size: 10px;
+  font-size: var(--font-size-label);
   letter-spacing: 0.2em;
   color: var(--accent);
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
   display: flex;
   gap: 0.4em;
   align-items: center;
 }
 
 .title {
-  margin: 0 0 4px;
-  font-size: 20px;
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-title);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -25,27 +25,25 @@
 
 .tagline {
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--font-size-body);
   margin: 0;
   letter-spacing: 0.02em;
 }
 
 .divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 0 0 16px;
+  composes: divider from "../../styles/primitives.module.css";
   flex-shrink: 0;
 }
 
 .icon {
-  margin-right: 4px;
+  margin-right: var(--space-1);
 }
 
 .docsLink {
   display: flex;
   align-items: center;
   color: var(--muted);
-  transition: color 0.15s ease;
+  transition: color var(--duration-fast) ease;
 }
 
 .docsLink:hover {
@@ -56,5 +54,5 @@
   display: flex;
   align-items: center;
   color: var(--accent);
-  transition: color 0.15s ease;
+  transition: color var(--duration-fast) ease;
 }

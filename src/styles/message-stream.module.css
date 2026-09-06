@@ -1,17 +1,11 @@
 .page {
+  composes: pageSurface from "./primitives.module.css";
   min-height: 100dvh;
-  background-color: var(--bg);
-  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
-  background-size: 28px 28px;
-  font-family: var(--font-mono);
-  color: var(--text);
   padding: 20px;
 }
 
 .divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 0 0 16px;
+  composes: divider from "./primitives.module.css";
 }
 
 .list {
@@ -43,19 +37,15 @@
 }
 
 .cardSent {
-  border-color: #fbbf2433;
+  border-color: var(--warning-border);
 }
 
 .cardSent .cardHeader {
-  background-color: #fbbf2408;
+  background-color: var(--warning-tint);
 }
 
 .cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--border);
+  composes: panelHeader from "./primitives.module.css";
 }
 
 .cardHeaderLeft {
@@ -74,15 +64,15 @@
 }
 
 .directionReceived {
-  color: #60a5fa;
-  background-color: #60a5fa18;
-  border: 1px solid #60a5fa33;
+  color: var(--info);
+  background-color: var(--info-subtle);
+  border: 1px solid var(--info-border);
 }
 
 .directionSent {
-  color: #fbbf24;
-  background-color: #fbbf2418;
-  border: 1px solid #fbbf2433;
+  color: var(--warning);
+  background-color: var(--warning-subtle);
+  border: 1px solid var(--warning-border);
 }
 
 .cardIndex {
@@ -185,11 +175,7 @@
 }
 
 .listMeta {
-  font-size: 10px;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: var(--muted);
-  letter-spacing: 0.12em;
+  composes: label from "./primitives.module.css";
 }
 
 .listControls {
@@ -214,5 +200,3 @@
   color: var(--danger);
   letter-spacing: 0.04em;
 }
-
-

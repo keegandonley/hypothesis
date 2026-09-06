@@ -4,3 +4,4 @@ export { CopyButton } from "./CopyButton";
 export { PageLayout } from "./PageLayout";
 export { Panel, PanelHeader, PanelLabel, PanelBody } from "./Panel";
 export { PermalinkRow } from "./PermalinkRow";
+export { SearchField } from "./SearchField";

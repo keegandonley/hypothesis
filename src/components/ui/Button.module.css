@@ -1,17 +1,17 @@
 .btn {
   position: relative;
   flex-shrink: 0;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--font-size-label);
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   cursor: pointer;
   transition:
-    background-color 0.15s,
-    border-color 0.15s,
-    color 0.15s;
+    background-color var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
 }
 
 .btn:disabled {
@@ -43,7 +43,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .spinner {
@@ -56,21 +58,21 @@
 }
 
 .successIcon {
-  font-size: 13px;
+  font-size: var(--font-size-icon);
   line-height: 1;
 }
 
 .errorIcon {
-  font-size: 13px;
+  font-size: var(--font-size-icon);
   line-height: 1;
 }
 
 .xs {
-  padding: 3px 8px;
+  padding: 3px var(--space-2);
 }
 
 .sm {
-  padding: 4px 10px;
+  padding: var(--space-1) 10px;
 }
 
 .md {
@@ -116,10 +118,10 @@
 }
 
 .tab {
-  padding: 4px 14px;
+  padding: var(--space-1) 14px;
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 100px;
+  border-radius: var(--radius-pill);
   color: var(--muted);
 }
 
@@ -136,17 +138,17 @@
 
 .tabGroup {
   display: flex;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .toggle {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 8px 3px 5px;
+  padding: 3px var(--space-2) 3px 5px;
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 100px;
+  border-radius: var(--radius-pill);
   color: var(--muted);
   letter-spacing: 0.1em;
 }
@@ -158,7 +160,7 @@
   border-radius: 50%;
   background: var(--border);
   flex-shrink: 0;
-  transition: background 0.15s;
+  transition: background var(--duration-fast);
 }
 
 .toggle.active {

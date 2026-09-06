@@ -1,19 +1,9 @@
 .page {
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--bg);
-  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
-  background-size: 28px 28px;
-  font-family: var(--font-mono);
-  color: var(--text);
-  padding: 20px;
+  composes: toolPage from "./primitives.module.css";
 }
 
 .divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 0 0 16px;
+  composes: divider from "./primitives.module.css";
 }
 
 /* Controls card */

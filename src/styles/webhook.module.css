@@ -1,4 +1,5 @@
 .page {
+  composes: pageSurface from "./primitives.module.css";
   height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -6,11 +7,6 @@
      shrink (small embed iframes) — see .eventsPanel's min-height floor. */
   overflow-y: auto;
   overflow-x: hidden;
-  background-color: var(--bg);
-  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
-  background-size: 28px 28px;
-  font-family: var(--font-mono);
-  color: var(--text);
   padding: 20px;
 }
 
@@ -297,5 +293,3 @@
   line-height: 1.6;
   letter-spacing: 0.02em;
 }
-
-

@@ -1,10 +1,6 @@
 .page {
+  composes: pageSurface from "./primitives.module.css";
   min-height: 100dvh;
-  background-color: var(--bg);
-  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
-  background-size: 28px 28px;
-  font-family: var(--font-mono);
-  color: var(--text);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -93,65 +89,6 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.searchWrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.searchIcon {
-  position: absolute;
-  left: 11px;
-  font-size: 17px;
-  color: var(--muted);
-  pointer-events: none;
-  line-height: 1;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.searchInput {
-  width: 100%;
-  padding: 9px 36px 9px 34px;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-.searchInput::placeholder {
-  color: var(--muted);
-}
-
-.searchInput:focus {
-  border-color: var(--accent);
-}
-
-.clearBtn {
-  position: absolute;
-  right: 10px;
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: 11px;
-  cursor: pointer;
-  padding: 4px 6px;
-  line-height: 1;
-  border-radius: 3px;
-  transition:
-    color 0.15s,
-    background-color 0.15s;
-}
-
-.clearBtn:hover {
-  color: var(--text);
-  background-color: var(--border);
 }
 
 .classFilters {

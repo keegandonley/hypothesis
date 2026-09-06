@@ -3,12 +3,10 @@ import { Button } from "./Button";
 import { copyToClipboard } from "@/lib/copyToClipboard";
 import { useCanCopy } from "@/lib/useCanCopy";
 
-type ButtonVariant = "copy" | "reset" | "tab" | "toggle" | "ghost";
-
 interface CopyButtonProps {
   value: string;
-  variant?: ButtonVariant;
-  size?: "xs" | "sm" | "md";
+  variant?: Exclude<React.ComponentProps<typeof Button>["variant"], "primary">;
+  size?: React.ComponentProps<typeof Button>["size"];
   className?: string;
   disabled?: boolean;
 }

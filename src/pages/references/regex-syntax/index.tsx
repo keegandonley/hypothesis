@@ -1,3 +1,4 @@
+import { SearchField } from "@/components/ui";
 import Head from "next/head";
 import Link from "next/link";
 import React, { useState, useMemo } from "react";
@@ -119,31 +120,11 @@ export default function RegexSyntaxPage({
         </div>
 
         <div className={styles.controls}>
-          <div className={styles.searchWrap}>
-            <span className={styles.searchIcon}>⌕</span>
-            <input
-              className={styles.searchInput}
-              type="text"
-              placeholder="Search by token, description, or example..."
-              value={search}
-              onChange={(e) => {
-                handleSearch(e.target.value);
-              }}
-              autoComplete="off"
-              spellCheck={false}
-            />
-            {search && (
-              <button
-                className={styles.clearBtn}
-                onClick={() => {
-                  handleSearch("");
-                }}
-                aria-label="Clear search"
-              >
-                ✕
-              </button>
-            )}
-          </div>
+          <SearchField
+            placeholder="Search by token, description, or example..."
+            value={search}
+            onValueChange={handleSearch}
+          />
 
           <div className={styles.classFilters}>
             <button

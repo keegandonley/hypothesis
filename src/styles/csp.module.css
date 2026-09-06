@@ -1,19 +1,9 @@
 .page {
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--bg);
-  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
-  background-size: 28px 28px;
-  font-family: var(--font-mono);
-  color: var(--text);
-  padding: 20px;
+  composes: toolPage from "./primitives.module.css";
 }
 
 .divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 0 0 16px;
+  composes: divider from "./primitives.module.css";
 }
 
 /* --- input --- */
@@ -108,15 +98,15 @@
 }
 
 .count.medium {
-  color: #fbbf24;
-  background-color: #fbbf2418;
-  border: 1px solid #fbbf2433;
+  color: var(--warning);
+  background-color: var(--warning-subtle);
+  border: 1px solid var(--warning-border);
 }
 
 .count.low {
-  color: #60a5fa;
-  background-color: #60a5fa18;
-  border: 1px solid #60a5fa33;
+  color: var(--info);
+  background-color: var(--info-subtle);
+  border: 1px solid var(--info-border);
 }
 
 /* --- findings --- */
@@ -158,15 +148,15 @@
 }
 
 .sev.medium {
-  color: #fbbf24;
-  background-color: #fbbf2418;
-  border: 1px solid #fbbf2440;
+  color: var(--warning);
+  background-color: var(--warning-subtle);
+  border: 1px solid var(--warning-border-strong);
 }
 
 .sev.low {
-  color: #60a5fa;
-  background-color: #60a5fa18;
-  border: 1px solid #60a5fa40;
+  color: var(--info);
+  background-color: var(--info-subtle);
+  border: 1px solid var(--info-border-strong);
 }
 
 .sev.info {
@@ -273,7 +263,7 @@
 }
 
 .viaFallback {
-  color: #fbbf24;
+  color: var(--warning);
 }
 
 @media (max-width: 600px) {

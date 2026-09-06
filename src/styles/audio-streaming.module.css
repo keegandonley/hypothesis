@@ -1,15 +1,11 @@
 .page {
+  composes: pageSurface from "./primitives.module.css";
   height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background-color: var(--bg);
-  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
-  background-size: 28px 28px;
-  font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1.45;
-  color: var(--text);
   padding: 16px;
   gap: 0;
 }

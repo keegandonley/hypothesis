@@ -1,3 +1,4 @@
+import { SearchField } from "@/components/ui";
 import Head from "next/head";
 import Link from "next/link";
 import React, { useState, useMemo } from "react";
@@ -131,31 +132,11 @@ export default function IoniconsPage(): React.ReactNode {
         </div>
 
         <div className={styles.controls}>
-          <div className={styles.searchWrap}>
-            <span className={styles.searchIcon}>⌕</span>
-            <input
-              className={styles.searchInput}
-              type="text"
-              placeholder="Search icon names..."
-              value={search}
-              onChange={(e) => {
-                handleSearch(e.target.value);
-              }}
-              autoComplete="off"
-              spellCheck={false}
-            />
-            {search && (
-              <button
-                className={styles.clearBtn}
-                onClick={() => {
-                  handleSearch("");
-                }}
-                aria-label="Clear search"
-              >
-                ✕
-              </button>
-            )}
-          </div>
+          <SearchField
+            placeholder="Search icon names..."
+            value={search}
+            onValueChange={handleSearch}
+          />
 
           <div className={styles.classFilters}>
             <button

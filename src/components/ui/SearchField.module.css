@@ -1,0 +1,58 @@
+.root {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  position: absolute;
+  left: 11px;
+  font-size: 17px;
+  color: var(--muted);
+  pointer-events: none;
+  line-height: 1;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.input {
+  width: 100%;
+  padding: 9px 36px 9px 34px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-body);
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--duration-fast);
+}
+
+.input::placeholder {
+  color: var(--muted);
+}
+
+.input:focus {
+  border-color: var(--accent);
+}
+
+.clear {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: var(--font-size-small);
+  cursor: pointer;
+  padding: var(--space-1) 6px;
+  line-height: 1;
+  border-radius: 3px;
+  transition:
+    color var(--duration-fast),
+    background-color var(--duration-fast);
+}
+
+.clear:hover {
+  color: var(--text);
+  background-color: var(--border);
+}
