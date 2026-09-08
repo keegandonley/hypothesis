@@ -236,7 +236,7 @@ const STYLES: Record<PatternStyle, { label: string; hint: string }> = {
   },
   label: {
     label: "dimensions",
-    hint: "flat box with the pixel size printed on it",
+    hint: "centered pixel ruler with the size printed on it",
   },
   bauhaus: { label: "bauhaus", hint: "seeded circles, arcs, and bars" },
   noise: { label: "noise", hint: "seeded fractal-noise field" },

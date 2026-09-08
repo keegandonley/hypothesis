@@ -554,8 +554,14 @@ function renderReadout(
 
 /**
  * A drafting-style dimension card: sharp inset panel, corner registration
- * marks, dimension lines with end ticks in the margins, a ruler scale stepped
- * along two edges, and the pixel size called out on a plate in the middle.
+ * marks, dimension lines with end ticks in all four margins, a pixel ruler
+ * graduated outward from the midpoint of every panel edge, a centre reticle,
+ * and the pixel size called out on a plate in the middle.
+ *
+ * The ruler is a real scale rather than decoration: minor graduations every
+ * 10px, medium every 50px and numbered majors every 100px, measured from the
+ * midpoint of the edge they sit on. Every mark is mirrored across both centre
+ * lines, so the composition stays symmetrical at any aspect ratio.
  *
  * IMPORTANT: the readout is stroked geometry (`READOUT_GLYPHS`), not `<text>`.
  * On the raster path librsvg runs in a serverless image with no fonts
@@ -577,11 +583,31 @@ function renderLabel(ctx: PatternContext): string {
   const innerHeight = height - pad * 2;
   const right = pad + innerWidth;
   const bottom = pad + innerHeight;
+  const centerX = width / 2;
+  const centerY = height / 2;
   const stroke = Math.max(0.5, Math.min(2, min / 500));
   const hair = Math.max(0.35, stroke * 0.7);
   // Below this the drafting furniture turns to mush, so only the panel and the
   // readout survive.
   const detailed = innerWidth > 48 && innerHeight > 48;
+
+  const label = `${width} × ${height}`;
+  // Real glyph metrics, not a font estimate: `run` is the laid-out width in
+  // multiples of the glyph height, so dividing by it fits the string exactly.
+  const run = readoutWidth(label);
+  const fitted = Math.min(height * 0.13, (width * 0.58) / run);
+  const glyphHeight = Math.max(9, Math.min(56, fitted));
+  const textWidth = run * glyphHeight;
+  const textHeight = glyphHeight * 1.85;
+  const readable =
+    innerWidth > textWidth &&
+    innerHeight > textHeight &&
+    innerWidth > 2 &&
+    innerHeight > 2;
+  // The gate above guarantees the readout fits, but the plate's breathing room
+  // can still overrun a narrow panel — clamp rather than overhang.
+  const plateWidth = Math.min(innerWidth, textWidth + glyphHeight * 1.1);
+  const plated = readable && detailed;
 
   if (innerWidth > 2 && innerHeight > 2) {
     parts.push(
@@ -595,6 +621,8 @@ function renderLabel(ctx: PatternContext): string {
     );
   }
 
+  let numeralPath = "";
+
   if (detailed) {
     // Construction diagonals: the "nothing here yet" cross, kept faint so the
     // readout stays dominant.
@@ -602,93 +630,157 @@ function renderLabel(ctx: PatternContext): string {
       `<path d="M${num(pad)} ${num(pad)}L${num(right)} ${num(bottom)}M${num(right)} ${num(pad)}L${num(pad)} ${num(bottom)}" fill="none" stroke="${palette.ink}" stroke-width="${num(hair)}" opacity="0.16"/>`,
     );
 
-    // Ruler scale stepped along the inside of the top and left edges. Every
-    // fifth division gets a long tick, the way a real scale is graduated.
-    const tick = Math.max(2, Math.min(12, min * 0.028));
-    const columns = Math.max(4, Math.min(20, Math.round(innerWidth / 56)));
-    const rows = Math.max(4, Math.min(20, Math.round(innerHeight / 56)));
-    let scale = "";
+    const tick = Math.max(2, Math.round(Math.min(12, min * 0.028)));
+    const medium = Math.round(tick * 1.6);
+    const major = Math.round(tick * 2.4);
+    const mark = Math.max(4, Math.min(26, min * 0.06));
 
-    for (let i = 1; i < columns; i++) {
-      const x = pad + (innerWidth / columns) * i;
+    const sightX = Math.min(300, Math.floor((centerX - pad) / 50) * 50);
+    const sightY = Math.min(300, Math.floor((centerY - pad) / 50) * 50);
+    let reticle = `M${num(pad)} ${num(centerY)}H${num(right)}M${num(centerX)} ${num(pad)}V${num(bottom)}`;
 
-      scale += `M${num(x)} ${num(pad)}V${num(pad + (i % 5 === 0 ? tick * 1.9 : tick))}`;
+    for (let d = 50; d <= sightX; d += 50) {
+      const arm = d % 100 === 0 ? tick : Math.max(1, Math.round(tick * 0.5));
+      const span = num(arm * 2);
+      const top = num(centerY - arm);
+
+      reticle += `M${num(centerX - d)} ${top}v${span}M${num(centerX + d)} ${top}v${span}`;
     }
 
-    for (let i = 1; i < rows; i++) {
-      const y = pad + (innerHeight / rows) * i;
+    for (let d = 50; d <= sightY; d += 50) {
+      const arm = d % 100 === 0 ? tick : Math.max(1, Math.round(tick * 0.5));
+      const span = num(arm * 2);
+      const left = num(centerX - arm);
 
-      scale += `M${num(pad)} ${num(y)}H${num(pad + (i % 5 === 0 ? tick * 1.9 : tick))}`;
+      reticle += `M${left} ${num(centerY - d)}h${span}M${left} ${num(centerY + d)}h${span}`;
     }
 
     parts.push(
-      `<path d="${scale}" fill="none" stroke="${palette.ink}" stroke-width="${num(hair)}" opacity="0.5"/>`,
+      `<path d="${reticle}" fill="none" stroke="${palette.ink}" stroke-width="${num(hair)}" opacity="0.22"/>`,
     );
 
-    // Corner registration marks, in the accent so the seeded colour reads.
-    const mark = Math.max(4, Math.min(26, min * 0.06));
+    const glyphs = Math.min(14, Math.round(major * 0.9));
+    const numbered = glyphs >= 6;
+    const gap = Math.max(2, Math.round(glyphs * 0.4));
+    const spanX = Math.floor((centerX - pad - mark) / 10) * 10;
+    const spanY = Math.floor((centerY - pad - mark) / 10) * 10;
+    let ticks = "";
+    let numerals = "";
 
+    const numeral = (text: string, x: number, y: number): void => {
+      const halfWidth = (readoutWidth(text) * glyphs) / 2;
+      const halfHeight = glyphs / 2;
+      const outside =
+        x - halfWidth < pad ||
+        x + halfWidth > right ||
+        y - halfHeight < pad ||
+        y + halfHeight > bottom;
+      const cornered =
+        (x - halfWidth < pad + mark || x + halfWidth > right - mark) &&
+        (y - halfHeight < pad + mark || y + halfHeight > bottom - mark);
+      const onPlate =
+        plated &&
+        Math.abs(x - centerX) < plateWidth / 2 + halfWidth &&
+        Math.abs(y - centerY) < textHeight / 2 + halfHeight;
+
+      if (outside || cornered || onPlate) {
+        return;
+      }
+
+      numerals +=
+        / d="([^"]+)"/.exec(
+          renderReadout(text, x, y, glyphs, palette.ink, hair),
+        )?.[1] ?? "";
+    };
+
+    for (let d = -spanX; d <= spanX; d += 10) {
+      const x = num(centerX + d);
+      const arm = num(d % 100 === 0 ? major : d % 50 === 0 ? medium : tick);
+
+      ticks += `M${x} ${num(pad)}v${arm}M${x} ${num(bottom)}v-${arm}`;
+
+      if (numbered && d !== 0 && d % 100 === 0 && Math.abs(d) <= 200) {
+        const text = String(Math.abs(d));
+
+        numeral(text, centerX + d, pad + major + gap + glyphs / 2);
+        numeral(text, centerX + d, bottom - major - gap - glyphs / 2);
+      }
+    }
+
+    for (let d = -spanY; d <= spanY; d += 10) {
+      const y = num(centerY + d);
+      const arm = num(d % 100 === 0 ? major : d % 50 === 0 ? medium : tick);
+
+      ticks += `M${num(pad)} ${y}h${arm}M${num(right)} ${y}h-${arm}`;
+
+      if (numbered && d !== 0 && d % 100 === 0 && Math.abs(d) <= 200) {
+        const text = String(Math.abs(d));
+        const reach = (readoutWidth(text) * glyphs) / 2;
+
+        numeral(text, pad + major + gap + reach, centerY + d);
+        numeral(text, right - major - gap - reach, centerY + d);
+      }
+    }
+
+    if (ticks !== "") {
+      parts.push(
+        `<path d="${ticks}" fill="none" stroke="${palette.ink}" stroke-width="${num(hair)}" opacity="0.5"/>`,
+      );
+    }
+
+    if (numerals !== "") {
+      numeralPath = `<path d="${numerals}" fill="none" stroke="${palette.ink}" stroke-width="${num(Math.max(hair, glyphs * 0.09))}" stroke-linejoin="round" opacity="0.55"/>`;
+    }
+
+    // Corner registration marks, in the accent so the seeded colour reads.
     parts.push(
       `<path d="M${num(pad)} ${num(pad + mark)}V${num(pad)}H${num(pad + mark)}M${num(right - mark)} ${num(pad)}H${num(right)}V${num(pad + mark)}M${num(right)} ${num(bottom - mark)}V${num(bottom)}H${num(right - mark)}M${num(pad + mark)} ${num(bottom)}H${num(pad)}V${num(bottom - mark)}" fill="none" stroke="${palette.accent}" stroke-width="${num(stroke * 1.8)}"/>`,
     );
 
-    // Dimension lines with end ticks, in the margin outside the panel — the
+    // Dimension lines with end ticks, in every margin outside the panel — the
     // detail that makes it read as a measured drawing rather than a frame.
     if (pad >= 9) {
       const end = Math.min(pad * 0.3, 7);
-      const midX = pad / 2;
-      const midY = pad / 2;
+      const nearX = pad / 2;
+      const nearY = pad / 2;
+      const farX = width - nearX;
+      const farY = height - nearY;
+      let rails = "";
+
+      for (const y of [nearY, farY]) {
+        rails += `M${num(pad)} ${num(y)}H${num(right)}M${num(pad)} ${num(y - end)}V${num(y + end)}M${num(right)} ${num(y - end)}V${num(y + end)}`;
+      }
+
+      for (const x of [nearX, farX]) {
+        rails += `M${num(x)} ${num(pad)}V${num(bottom)}M${num(x - end)} ${num(pad)}H${num(x + end)}M${num(x - end)} ${num(bottom)}H${num(x + end)}`;
+      }
 
       parts.push(
-        `<path d="M${num(pad)} ${num(midY)}H${num(right)}M${num(pad)} ${num(midY - end)}V${num(midY + end)}M${num(right)} ${num(midY - end)}V${num(midY + end)}M${num(midX)} ${num(pad)}V${num(bottom)}M${num(midX - end)} ${num(pad)}H${num(midX + end)}M${num(midX - end)} ${num(bottom)}H${num(midX + end)}" fill="none" stroke="${palette.accent}" stroke-width="${num(hair * 1.6)}"/>`,
+        `<path d="${rails}" fill="none" stroke="${palette.accent}" stroke-width="${num(hair * 1.6)}"/>`,
       );
     }
   }
 
-  const label = `${width} × ${height}`;
-  // Real glyph metrics, not a font estimate: `run` is the laid-out width in
-  // multiples of the glyph height, so dividing by it fits the string exactly.
-  const run = readoutWidth(label);
-  const fitted = Math.min(height * 0.13, (width * 0.58) / run);
-  const glyphHeight = Math.max(9, Math.min(56, fitted));
-  const textWidth = run * glyphHeight;
-  const textHeight = glyphHeight * 1.85;
-
-  if (
-    innerWidth > textWidth &&
-    innerHeight > textHeight &&
-    innerWidth > 2 &&
-    innerHeight > 2
-  ) {
+  if (readable) {
     // A plate behind the readout so it stays legible where the diagonals cross.
     if (detailed) {
-      // The gate above guarantees the readout fits, but the plate's breathing
-      // room can still overrun a narrow panel — clamp rather than overhang.
-      const plateWidth = Math.min(innerWidth, textWidth + glyphHeight * 1.1);
-      const plateHeight = textHeight;
-
       parts.push(
         rect(
-          width / 2 - plateWidth / 2,
-          height / 2 - plateHeight / 2,
+          centerX - plateWidth / 2,
+          centerY - textHeight / 2,
           plateWidth,
-          plateHeight,
+          textHeight,
           `fill="${palette.surface}" stroke="${palette.ink}" stroke-opacity="0.28" stroke-width="${num(hair)}"`,
         ),
       );
     }
 
     parts.push(
-      renderReadout(
-        label,
-        width / 2,
-        height / 2,
-        glyphHeight,
-        palette.ink,
-        hair,
-      ),
+      renderReadout(label, centerX, centerY, glyphHeight, palette.ink, hair),
     );
   }
+
+  parts.push(numeralPath);
 
   return parts.join("");
 }

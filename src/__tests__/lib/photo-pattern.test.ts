@@ -30,6 +30,13 @@ function ids(svg: string): string[] {
   return [...svg.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
 }
 
+const BUDGET: Record<PatternStyle, { typical: number; extreme: number }> = {
+  gradient: { typical: 3072, extreme: 6144 },
+  label: { typical: 8192, extreme: 20480 },
+  bauhaus: { typical: 3072, extreme: 6144 },
+  noise: { typical: 3072, extreme: 6144 },
+};
+
 describe("PATTERN_STYLES", () => {
   it("lists the four styles in order", () => {
     expect(PATTERN_STYLES).toEqual(["gradient", "label", "bauhaus", "noise"]);
@@ -128,8 +135,8 @@ describe.each(PATTERN_STYLES)("renderPatternSvg (%s)", (style) => {
     expect(svg).not.toContain("undefined");
   });
 
-  it("stays under ~3 KB at a typical 600x400", () => {
-    expect(render({ style }).length).toBeLessThan(3072);
+  it("stays inside its byte budget at a typical 600x400", () => {
+    expect(render({ style }).length).toBeLessThan(BUDGET[style].typical);
   });
 
   it("applies grayscale as an SVG filter primitive", () => {
@@ -187,7 +194,7 @@ describe.each(PATTERN_STYLES)("renderPatternSvg (%s)", (style) => {
     // No negative or zero-sized geometry, which is an error in SVG.
     expect(svg).not.toMatch(/\s(width|height|r|rx|ry)="-/);
     expect(svg).not.toContain("NaN");
-    expect(svg.length).toBeLessThan(6144);
+    expect(svg.length).toBeLessThan(BUDGET[style].extreme);
   });
 
   it("never interpolates the seed into the document", () => {
@@ -271,6 +278,19 @@ describe("renderPatternSvg (label)", () => {
    */
   function readout(svg: string): string | undefined {
     return /<path d="([^"]+)"[^>]*stroke-linecap="round"/.exec(svg)?.[1];
+  }
+
+  function layer(svg: string, opacity: string): string | undefined {
+    return new RegExp(`<path d="([^"]+)"[^>]* opacity="${opacity}"`).exec(
+      svg,
+    )?.[1];
+  }
+
+  function starts(d: string): [number, number][] {
+    return [...d.matchAll(/M(-?[\d.]+) (-?[\d.]+)/g)].map((match) => [
+      Number(match[1]),
+      Number(match[2]),
+    ]);
   }
 
   /** Bounding box of a readout path's control points. */
@@ -369,6 +389,89 @@ describe("renderPatternSvg (label)", () => {
 
     expect(svg).not.toContain("<text");
     expect(readout(svg)).toBeUndefined();
+  });
+
+  it("rules all four inside edges of the panel", () => {
+    const svg = render({ style: "label", width: 600, height: 400 });
+    const points = starts(layer(svg, "0.5") ?? "");
+
+    expect(points.some(([, y]) => y === 40)).toBe(true);
+    expect(points.some(([, y]) => y === 360)).toBe(true);
+    expect(points.some(([x]) => x === 40)).toBe(true);
+    expect(points.some(([x]) => x === 560)).toBe(true);
+  });
+
+  it("mirrors every graduation across both centre lines", () => {
+    const points = starts(
+      layer(render({ style: "label", width: 600, height: 400 }), "0.5") ?? "",
+    );
+    const key = (x: number, y: number): string =>
+      `${x.toFixed(2)}:${y.toFixed(2)}`;
+    const seen = new Set(points.map(([x, y]) => key(x, y)));
+
+    expect(points.length).toBeGreaterThan(40);
+
+    for (const [x, y] of points) {
+      expect(seen.has(key(600 - x, y)), `${x},${y} across x`).toBe(true);
+      expect(seen.has(key(x, 400 - y)), `${x},${y} across y`).toBe(true);
+      expect(seen.has(key(600 - x, 400 - y)), `${x},${y} through`).toBe(true);
+    }
+  });
+
+  it("graduates the scale in real pixels from the edge midpoint", () => {
+    const d = layer(render({ style: "label", width: 600, height: 400 }), "0.5");
+    const top = [...(d ?? "").matchAll(/M([\d.]+) 40v([\d.]+)/g)].map(
+      (match) => [Number(match[1]), Number(match[2])],
+    );
+    const xs = top.map(([x]) => x).sort((a, b) => a - b);
+    const armAt = (x: number): number =>
+      top.find((entry) => entry[0] === x)?.[1] ?? 0;
+
+    expect(xs).toContain(300);
+    expect(xs).toContain(290);
+    expect(xs).toContain(310);
+
+    for (let i = 1; i < xs.length; i++) {
+      expect(xs[i] - xs[i - 1]).toBe(10);
+    }
+
+    for (const x of xs) {
+      expect(Math.abs(x - 300) % 10).toBe(0);
+    }
+
+    expect(armAt(310)).toBe(armAt(290));
+    expect(armAt(350)).toBeGreaterThan(armAt(310));
+    expect(armAt(400)).toBeGreaterThan(armAt(350));
+    expect(armAt(400)).toBe(armAt(200));
+  });
+
+  it("numbers the major graduations with the distance from centre", () => {
+    const svg = render({ style: "label", width: 600, height: 400 });
+    const strokes = (chars: readonly string[]): number =>
+      chars.reduce((total, char) => total + READOUT_GLYPHS[char].length, 0);
+    const expected =
+      strokes(["1", "0", "0"]) * 8 + strokes(["2", "0", "0"]) * 4;
+
+    expect((layer(svg, "0.55")?.match(/M/g) ?? []).length).toBe(expected);
+    expect(svg).not.toContain("<text");
+    expect((svg.match(/stroke-linecap/g) ?? []).length).toBe(1);
+  });
+
+  it("leaves the majors unnumbered when none are far enough from centre", () => {
+    const svg = render({ style: "label", width: 200, height: 200 });
+
+    expect(layer(svg, "0.5")).toBeDefined();
+    expect(layer(svg, "0.55")).toBeUndefined();
+  });
+
+  it("centres a reticle on the frame, under the readout plate", () => {
+    const svg = render({ style: "label", width: 600, height: 400 });
+    const reticle = layer(svg, "0.22") ?? "";
+
+    expect(reticle.startsWith("M40 200H560M300 40V360")).toBe(true);
+    expect(reticle).toContain("M250 ");
+    expect(reticle).toContain("M350 ");
+    expect(svg.indexOf(reticle)).toBeLessThan(svg.lastIndexOf("<rect"));
   });
 });
 

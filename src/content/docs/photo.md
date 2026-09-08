@@ -61,12 +61,12 @@ A seed is always required. Every string is a valid seed, so a shorter form would
 
 Pick one with `?style=`. The default is `gradient`.
 
-| Style      | Looks like                                                                                                   | Good for                                          |
-| ---------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
-| `gradient` | Soft two-tone gradient with a few blurred blobs                                                              | Hero and card art that needs color but no subject |
-| `label`    | Drafting card: dimension lines, ruler ticks, registration marks, and the pixel size called out in the middle | Layout debugging — the image states its own size  |
-| `bauhaus`  | Seeded circles, arcs, and bars on a flat ground                                                              | Avatars and tiles, where per-seed variety shows   |
-| `noise`    | Seeded fractal-noise field                                                                                   | Textures and backgrounds that should read as busy |
+| Style      | Looks like                                                                                                  | Good for                                          |
+| ---------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `gradient` | Soft two-tone gradient with a few blurred blobs                                                             | Hero and card art that needs color but no subject |
+| `label`    | Drafting card: a pixel ruler on every edge measured out from the center, a reticle, and the size called out | Layout debugging — the image measures itself      |
+| `bauhaus`  | Seeded circles, arcs, and bars on a flat ground                                                             | Avatars and tiles, where per-seed variety shows   |
+| `noise`    | Seeded fractal-noise field                                                                                  | Textures and backgrounds that should read as busy |
 
 ```
 /photo/gen/hero/1200/630
