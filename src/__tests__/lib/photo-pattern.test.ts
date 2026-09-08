@@ -32,7 +32,7 @@ function ids(svg: string): string[] {
 
 const BUDGET: Record<PatternStyle, { typical: number; extreme: number }> = {
   gradient: { typical: 3072, extreme: 6144 },
-  label: { typical: 8192, extreme: 20480 },
+  label: { typical: 4096, extreme: 12288 },
   bauhaus: { typical: 3072, extreme: 6144 },
   noise: { typical: 3072, extreme: 6144 },
 };
@@ -445,23 +445,18 @@ describe("renderPatternSvg (label)", () => {
     expect(armAt(400)).toBe(armAt(200));
   });
 
-  it("numbers the major graduations with the distance from centre", () => {
-    const svg = render({ style: "label", width: 600, height: 400 });
-    const strokes = (chars: readonly string[]): number =>
-      chars.reduce((total, char) => total + READOUT_GLYPHS[char].length, 0);
-    const expected =
-      strokes(["1", "0", "0"]) * 8 + strokes(["2", "0", "0"]) * 4;
+  it("draws no glyphs other than the size readout in the middle", () => {
+    for (const [width, height] of [
+      [600, 400],
+      [1200, 630],
+      [1600, 1600],
+    ]) {
+      const svg = render({ style: "label", width, height });
+      const readouts = [...svg.matchAll(/stroke-linecap="round"/g)];
 
-    expect((layer(svg, "0.55")?.match(/M/g) ?? []).length).toBe(expected);
-    expect(svg).not.toContain("<text");
-    expect((svg.match(/stroke-linecap/g) ?? []).length).toBe(1);
-  });
-
-  it("leaves the majors unnumbered when none are far enough from centre", () => {
-    const svg = render({ style: "label", width: 200, height: 200 });
-
-    expect(layer(svg, "0.5")).toBeDefined();
-    expect(layer(svg, "0.55")).toBeUndefined();
+      expect(readouts, `${width}x${height}`).toHaveLength(1);
+      expect(layer(svg, "0.55"), `${width}x${height}`).toBeUndefined();
+    }
   });
 
   it("centres a reticle on the frame, under the readout plate", () => {

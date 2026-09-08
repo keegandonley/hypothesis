@@ -559,7 +559,7 @@ function renderReadout(
  * and the pixel size called out on a plate in the middle.
  *
  * The ruler is a real scale rather than decoration: minor graduations every
- * 10px, medium every 50px and numbered majors every 100px, measured from the
+ * 10px, medium every 50px and major every 100px, measured from the
  * midpoint of the edge they sit on. Every mark is mirrored across both centre
  * lines, so the composition stays symmetrical at any aspect ratio.
  *
@@ -607,7 +607,6 @@ function renderLabel(ctx: PatternContext): string {
   // The gate above guarantees the readout fits, but the plate's breathing room
   // can still overrun a narrow panel — clamp rather than overhang.
   const plateWidth = Math.min(innerWidth, textWidth + glyphHeight * 1.1);
-  const plated = readable && detailed;
 
   if (innerWidth > 2 && innerHeight > 2) {
     parts.push(
@@ -620,8 +619,6 @@ function renderLabel(ctx: PatternContext): string {
       ),
     );
   }
-
-  let numeralPath = "";
 
   if (detailed) {
     // Construction diagonals: the "nothing here yet" cross, kept faint so the
@@ -659,52 +656,15 @@ function renderLabel(ctx: PatternContext): string {
       `<path d="${reticle}" fill="none" stroke="${palette.ink}" stroke-width="${num(hair)}" opacity="0.22"/>`,
     );
 
-    const glyphs = Math.min(14, Math.round(major * 0.9));
-    const numbered = glyphs >= 6;
-    const gap = Math.max(2, Math.round(glyphs * 0.4));
     const spanX = Math.floor((centerX - pad - mark) / 10) * 10;
     const spanY = Math.floor((centerY - pad - mark) / 10) * 10;
     let ticks = "";
-    let numerals = "";
-
-    const numeral = (text: string, x: number, y: number): void => {
-      const halfWidth = (readoutWidth(text) * glyphs) / 2;
-      const halfHeight = glyphs / 2;
-      const outside =
-        x - halfWidth < pad ||
-        x + halfWidth > right ||
-        y - halfHeight < pad ||
-        y + halfHeight > bottom;
-      const cornered =
-        (x - halfWidth < pad + mark || x + halfWidth > right - mark) &&
-        (y - halfHeight < pad + mark || y + halfHeight > bottom - mark);
-      const onPlate =
-        plated &&
-        Math.abs(x - centerX) < plateWidth / 2 + halfWidth &&
-        Math.abs(y - centerY) < textHeight / 2 + halfHeight;
-
-      if (outside || cornered || onPlate) {
-        return;
-      }
-
-      numerals +=
-        / d="([^"]+)"/.exec(
-          renderReadout(text, x, y, glyphs, palette.ink, hair),
-        )?.[1] ?? "";
-    };
 
     for (let d = -spanX; d <= spanX; d += 10) {
       const x = num(centerX + d);
       const arm = num(d % 100 === 0 ? major : d % 50 === 0 ? medium : tick);
 
       ticks += `M${x} ${num(pad)}v${arm}M${x} ${num(bottom)}v-${arm}`;
-
-      if (numbered && d !== 0 && d % 100 === 0 && Math.abs(d) <= 200) {
-        const text = String(Math.abs(d));
-
-        numeral(text, centerX + d, pad + major + gap + glyphs / 2);
-        numeral(text, centerX + d, bottom - major - gap - glyphs / 2);
-      }
     }
 
     for (let d = -spanY; d <= spanY; d += 10) {
@@ -712,24 +672,12 @@ function renderLabel(ctx: PatternContext): string {
       const arm = num(d % 100 === 0 ? major : d % 50 === 0 ? medium : tick);
 
       ticks += `M${num(pad)} ${y}h${arm}M${num(right)} ${y}h-${arm}`;
-
-      if (numbered && d !== 0 && d % 100 === 0 && Math.abs(d) <= 200) {
-        const text = String(Math.abs(d));
-        const reach = (readoutWidth(text) * glyphs) / 2;
-
-        numeral(text, pad + major + gap + reach, centerY + d);
-        numeral(text, right - major - gap - reach, centerY + d);
-      }
     }
 
     if (ticks !== "") {
       parts.push(
         `<path d="${ticks}" fill="none" stroke="${palette.ink}" stroke-width="${num(hair)}" opacity="0.5"/>`,
       );
-    }
-
-    if (numerals !== "") {
-      numeralPath = `<path d="${numerals}" fill="none" stroke="${palette.ink}" stroke-width="${num(Math.max(hair, glyphs * 0.09))}" stroke-linejoin="round" opacity="0.55"/>`;
     }
 
     // Corner registration marks, in the accent so the seeded colour reads.
@@ -779,8 +727,6 @@ function renderLabel(ctx: PatternContext): string {
       renderReadout(label, centerX, centerY, glyphHeight, palette.ink, hair),
     );
   }
-
-  parts.push(numeralPath);
 
   return parts.join("");
 }
