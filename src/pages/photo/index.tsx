@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import styles from "@/styles/photo.module.css";
 import {
   Button,
@@ -305,6 +306,14 @@ export default function PhotoPage(): React.ReactNode {
         path="/photo"
         h1="Placeholder Photos"
         tagline="Placeholder images at any size — photos or generated patterns, seeded and hotlinkable"
+        badge={
+          <>
+            {"·"}
+            <Link href="/photo/demo" className={styles.demoLink}>
+              grid demo
+            </Link>
+          </>
+        }
       >
         <div className={styles.body}>
           <div className={styles.controls}>

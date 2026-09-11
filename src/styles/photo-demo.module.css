@@ -1,0 +1,159 @@
+.page {
+  composes: toolPage from "./primitives.module.css";
+}
+
+/* Header controls */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+.hint {
+  color: var(--muted);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-body);
+}
+
+.counts {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: var(--font-size-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .counts {
+    margin-left: 0;
+  }
+}
+
+/* Full bleed: cancel the tool shell's padding on three sides so the grid
+   reaches the left, right, and bottom edges of the viewport. The cell is
+   rounded up, so the wall is up to GRID_COLS - 1 pixels wider than this frame
+   — clipped here, which is invisible, where a rounded-down cell would leave a
+   strip of page background down the right edge, which is not. */
+
+.bleed {
+  margin-right: calc(-1 * var(--page-padding));
+  margin-bottom: calc(-1 * var(--page-padding));
+  margin-left: calc(-1 * var(--page-padding));
+  overflow: hidden;
+}
+
+/* Mosaic */
+
+.grid {
+  display: grid;
+  /* Both track lists are the same measured whole-pixel cell, so cells are
+     exactly square, adjacent tiles share a track line with no sub-pixel seam,
+     and a tile's box is exactly the size it asked the service for. */
+  grid-template-columns: repeat(var(--cols), var(--cell));
+  grid-template-rows: repeat(var(--rows), var(--cell));
+  gap: 0;
+  background-color: var(--card-bg);
+}
+
+.tile {
+  position: relative;
+  display: block;
+  background-color: var(--card-bg);
+}
+
+.img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.label {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  max-width: 100%;
+  padding: 3px 5px;
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--bg) 88%, transparent);
+  color: var(--text);
+  font-size: 10px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-fast) ease;
+}
+
+.grid[data-labels="true"] .label {
+  opacity: 1;
+}
+
+/* A chip on the last column grows leftward, away from the frame's clip. */
+
+.tile[data-edge="right"] .label {
+  right: 0;
+  left: auto;
+  border-right: none;
+  border-left: 1px solid var(--border);
+}
+
+/* Tabular figures so a column of sizes lines up when they are all shown. */
+
+.size {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Visually hidden rather than removed: the detail stays part of the link's
+   accessible name at all times, while the visible chip only has to fit the
+   size — which is what makes it readable on a one-cell tile. */
+
+.detail {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Hover or focus lifts the tile above its neighbours so its chip can escape
+   the tile box — a one-cell tile is far too narrow to read it inside. */
+
+.tile:hover {
+  z-index: 2;
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.tile:focus-visible {
+  z-index: 3;
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.tile:hover .label,
+.tile:focus-visible .label {
+  max-width: none;
+  opacity: 1;
+}
+
+.tile:hover .detail,
+.tile:focus-visible .detail {
+  position: static;
+  width: auto;
+  height: auto;
+  clip-path: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .label {
+    transition: none;
+  }
+}

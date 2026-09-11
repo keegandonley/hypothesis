@@ -199,3 +199,22 @@
 .previewImg[data-loaded="true"] {
   opacity: 1;
 }
+
+/* Eyebrow link to the full-bleed grid demo, matching PageLayout's docs link */
+
+.demoLink {
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  transition: color var(--duration-fast) ease;
+}
+
+.demoLink:hover {
+  color: var(--accent);
+}
+
+.demoLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
