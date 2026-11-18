@@ -9,6 +9,7 @@
     "test": "vitest run",
     "photos:generate": "node --env-file-if-exists=.env.local scripts/generate-photos.mjs",
     "photos:append": "node --env-file-if-exists=.env.local scripts/generate-photos.mjs --append",
+    "datasets:build": "node scripts/build-datasets.mjs && prettier --write src/data/datasets",
     "test:watch": "vitest",
     "lint": "eslint",
     "lint:fix": "eslint --fix",

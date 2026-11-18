@@ -4,6 +4,7 @@ const nextConfig = {
   rewrites: async () => [
     { source: "/sitemap.xml", destination: "/api/sitemap" },
     { source: "/photo/:path+", destination: "/api/photo/:path+" },
+    { source: "/datasets/:path*", destination: "/api/datasets/:path*" },
   ],
   images: {
     remotePatterns: [{ hostname: "static.donley.xyz" }],
