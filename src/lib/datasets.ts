@@ -27,10 +27,10 @@ export interface DatasetField {
 /** Where the data came from. Provenance only; the license is our own. */
 export interface DatasetSource {
   name: string;
-  url: string;
+  url: string | null;
   /** The upstream's license, which is what allows us to relicense. */
-  license: string;
-  retrieved_at: string;
+  license: string | null;
+  retrieved_at: string | null;
 }
 
 export interface DatasetLicense {
@@ -249,9 +249,68 @@ const PERIODIC_TABLE: Dataset = {
   lookup: (key) => periodicTableIndex.get(key.toLowerCase()),
 };
 
+// ── FIT activities ───────────────────────────────────────────────────────────
+
+/**
+ * Activity recordings served unmodified from public/datasets/fit_activities/.
+ * file_size is checked against the files by the tests.
+ */
+const fitActivities: DatasetRecord[] = [
+  {
+    id: "fort-worth-trek-100-texas-2025-09-20",
+    title: "Fort Worth - Trek 100 Texas 2025-09-20 0721",
+    file_size: 1210900,
+  },
+  {
+    id: "friday-ski-2026-01-16",
+    title: "Friday Ski 2026-01-16 1027",
+    file_size: 313964,
+  },
+  {
+    id: "halfway-house-morses-mill-2026-06-21",
+    title: "Halfway House - Morses Mill 2026-06-21 1220",
+    file_size: 447844,
+  },
+  {
+    id: "old-west-austin-deep-eddy-2026-05-03",
+    title: "Old West Austin - Deep Eddy 2026-05-03 1155",
+    file_size: 96936,
+  },
+].map(({ id, title, file_size }) => ({
+  id,
+  title,
+  file_url: `/datasets/fit_activities/${id}.fit`,
+  file_size,
+}));
+
+const FIT_ACTIVITIES: Dataset = {
+  name: "fit_activities",
+  title: "FIT activity recordings",
+  description:
+    "Real activity recordings in Garmin's FIT format: a road ride, a ski day, a hike, and a run.",
+  license: ccBy("FIT activity recordings", "fit_activities"),
+  source: {
+    name: "Recorded by hypothesis.sh",
+    url: null,
+    license: null,
+    retrieved_at: null,
+  },
+  primaryKey: "id",
+  lookupDescription: "file id (friday-ski-2026-01-16)",
+  fields: [
+    f("id", "string", null, "Identifier; the file is {id}.fit.", false),
+    f("title", "string", null, "Original recording name.", false),
+    f("file_url", "string", null, "Download path of the .fit file.", false),
+    f("file_size", "integer", "bytes", "Size of the .fit file.", false),
+  ],
+  notes: ["Files are served exactly as recorded."],
+  records: fitActivities,
+  lookup: (key) => fitActivities.find((r) => r.id === key.toLowerCase()),
+};
+
 // ── Registry ─────────────────────────────────────────────────────────────────
 
-export const DATASETS: Dataset[] = [PERIODIC_TABLE];
+export const DATASETS: Dataset[] = [PERIODIC_TABLE, FIT_ACTIVITIES];
 
 export function getDataset(name: string): Dataset | undefined {
   return DATASETS.find((d) => d.name === name);

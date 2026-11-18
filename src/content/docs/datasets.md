@@ -122,6 +122,26 @@ The upshot: **a value that's present has passed every check, and a value that's 
 - Atomic and covalent radii depend on how they're defined. Wikidata doesn't record which definition each value uses, and where its values conflict, the field is `null`.
 - Specific heat, thermal and electrical conductivity, speed of sound, and Mohs hardness have no independent reference, so only the majority and plausibility rules check them.
 
+## fit_activities
+
+Four real activity recordings in Garmin's FIT format, served exactly as recorded:
+
+| File                                       | Activity               |
+| ------------------------------------------ | ---------------------- |
+| `fort-worth-trek-100-texas-2025-09-20.fit` | Road ride, Garmin Edge |
+| `friday-ski-2026-01-16.fit`                | Alpine skiing          |
+| `halfway-house-morses-mill-2026-06-21.fit` | Hike                   |
+| `old-west-austin-deep-eddy-2026-05-03.fit` | Run                    |
+
+`/datasets/fit_activities` lists them with the license, and each file downloads from its `file_url`:
+
+```
+https://hypothesis.sh/datasets/fit_activities
+https://hypothesis.sh/datasets/fit_activities/friday-ski-2026-01-16.fit
+```
+
+Downloads are `application/octet-stream` (FIT has no registered media type). They're readable from any origin and carry the license in a `Link: <…>; rel="license"` header.
+
 ## Caching and CORS
 
 Every response sends `Access-Control-Allow-Origin: *`, so `fetch()` works from any page. Datasets only change with a deploy, so responses are cached at the CDN for a day and in browsers for an hour.

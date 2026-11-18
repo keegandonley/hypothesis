@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import fs from "fs";
+import path from "path";
 import exclusionsFile from "../../../scripts/datasets/sources/periodic_table.exclusions.json";
 import {
   DATASETS,
@@ -249,6 +251,30 @@ describe("periodic_table", () => {
       expect(record[field], `${String(record.symbol)}.${field}`).not.toBe(
         value,
       );
+    }
+  });
+});
+
+describe("fit_activities", () => {
+  const dataset = defined(getDataset("fit_activities"), "fit_activities");
+  const dir = path.join(process.cwd(), "public/datasets/fit_activities");
+
+  it("lists every hosted file with its real size", () => {
+    const onDisk = fs.readdirSync(dir).filter((name) => name.endsWith(".fit"));
+
+    expect(onDisk.sort()).toEqual(
+      dataset.records.map((r) => `${String(r.id)}.fit`).sort(),
+    );
+
+    for (const record of dataset.records) {
+      const file = path.join(dir, `${String(record.id)}.fit`);
+
+      expect(record.file_url).toBe(
+        `/datasets/fit_activities/${String(record.id)}.fit`,
+      );
+      expect(fs.statSync(file).size).toBe(record.file_size);
+      // FIT header: ".FIT" signature at bytes 8–11.
+      expect(fs.readFileSync(file).subarray(8, 12).toString()).toBe(".FIT");
     }
   });
 });
