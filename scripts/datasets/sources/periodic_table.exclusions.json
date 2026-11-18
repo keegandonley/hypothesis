@@ -1,0 +1,321 @@
+{
+  "checked_at": "2026-11-18T16:11:37.619Z",
+  "reference": "PubChem periodic table (NIH/NLM), used for comparison only",
+  "tolerances": {
+    "melting_point": 0.03,
+    "boiling_point": 0.05,
+    "density": 0.05,
+    "electronegativity": 0.05,
+    "ionization_energy": 0.05
+  },
+  "exclusions": [
+    {
+      "atomic_number": 2,
+      "symbol": "He",
+      "field": "melting_point",
+      "value": 1.1,
+      "reason": "differs from an independent reference by 16%"
+    },
+    {
+      "atomic_number": 4,
+      "symbol": "Be",
+      "field": "electronegativity",
+      "value": 2,
+      "reason": "differs from an independent reference by 27%"
+    },
+    {
+      "atomic_number": 9,
+      "symbol": "F",
+      "field": "ionization_energy",
+      "value": 15.7,
+      "reason": "differs from an independent reference by 10%"
+    },
+    {
+      "atomic_number": 11,
+      "symbol": "Na",
+      "field": "electronegativity",
+      "value": 1,
+      "reason": "differs from an independent reference by 8%"
+    },
+    {
+      "atomic_number": 12,
+      "symbol": "Mg",
+      "field": "electronegativity",
+      "value": 1,
+      "reason": "differs from an independent reference by 24%"
+    },
+    {
+      "atomic_number": 13,
+      "symbol": "Al",
+      "field": "boiling_point",
+      "value": 2600.37,
+      "reason": "differs from an independent reference by 7%"
+    },
+    {
+      "atomic_number": 14,
+      "symbol": "Si",
+      "field": "boiling_point",
+      "value": 2628.15,
+      "reason": "differs from an independent reference by 26%"
+    },
+    {
+      "atomic_number": 17,
+      "symbol": "Cl",
+      "field": "electronegativity",
+      "value": 3,
+      "reason": "differs from an independent reference by 5%"
+    },
+    {
+      "atomic_number": 17,
+      "symbol": "Cl",
+      "field": "ionization_energy",
+      "value": 11.48,
+      "reason": "differs from an independent reference by 11%"
+    },
+    {
+      "atomic_number": 31,
+      "symbol": "Ga",
+      "field": "boiling_point",
+      "value": 2673,
+      "reason": "differs from an independent reference by 8%"
+    },
+    {
+      "atomic_number": 33,
+      "symbol": "As",
+      "field": "melting_point",
+      "value": 885.93,
+      "reason": "differs from an independent reference by 19%"
+    },
+    {
+      "atomic_number": 34,
+      "symbol": "Se",
+      "field": "melting_point",
+      "value": 473.15,
+      "reason": "differs from an independent reference by 4%"
+    },
+    {
+      "atomic_number": 34,
+      "symbol": "Se",
+      "field": "density",
+      "value": 4280,
+      "reason": "differs from an independent reference by 11%"
+    },
+    {
+      "atomic_number": 35,
+      "symbol": "Br",
+      "field": "ionization_energy",
+      "value": 10.55,
+      "reason": "differs from an independent reference by 11%"
+    },
+    {
+      "atomic_number": 37,
+      "symbol": "Rb",
+      "field": "electronegativity",
+      "value": 1,
+      "reason": "differs from an independent reference by 22%"
+    },
+    {
+      "atomic_number": 38,
+      "symbol": "Sr",
+      "field": "electronegativity",
+      "value": 1,
+      "reason": "differs from an independent reference by 5%"
+    },
+    {
+      "atomic_number": 39,
+      "symbol": "Y",
+      "field": "boiling_point",
+      "value": 3200.37,
+      "reason": "differs from an independent reference by 12%"
+    },
+    {
+      "atomic_number": 39,
+      "symbol": "Y",
+      "field": "electronegativity",
+      "value": 1,
+      "reason": "differs from an independent reference by 18%"
+    },
+    {
+      "atomic_number": 40,
+      "symbol": "Zr",
+      "field": "boiling_point",
+      "value": 3850.37,
+      "reason": "differs from an independent reference by 18%"
+    },
+    {
+      "atomic_number": 40,
+      "symbol": "Zr",
+      "field": "electronegativity",
+      "value": 1,
+      "reason": "differs from an independent reference by 25%"
+    },
+    {
+      "atomic_number": 41,
+      "symbol": "Nb",
+      "field": "electronegativity",
+      "value": 2,
+      "reason": "differs from an independent reference by 25%"
+    },
+    {
+      "atomic_number": 42,
+      "symbol": "Mo",
+      "field": "electronegativity",
+      "value": 2,
+      "reason": "differs from an independent reference by 7%"
+    },
+    {
+      "atomic_number": 53,
+      "symbol": "I",
+      "field": "electronegativity",
+      "value": 3,
+      "reason": "differs from an independent reference by 13%"
+    },
+    {
+      "atomic_number": 53,
+      "symbol": "I",
+      "field": "ionization_energy",
+      "value": 9.31,
+      "reason": "differs from an independent reference by 11%"
+    },
+    {
+      "atomic_number": 59,
+      "symbol": "Pr",
+      "field": "boiling_point",
+      "value": 3403,
+      "reason": "differs from an independent reference by 10%"
+    },
+    {
+      "atomic_number": 62,
+      "symbol": "Sm",
+      "field": "boiling_point",
+      "value": 2173,
+      "reason": "differs from an independent reference by 5%"
+    },
+    {
+      "atomic_number": 64,
+      "symbol": "Gd",
+      "field": "boiling_point",
+      "value": 3273,
+      "reason": "differs from an independent reference by 8%"
+    },
+    {
+      "atomic_number": 68,
+      "symbol": "Er",
+      "field": "electronegativity",
+      "value": 1,
+      "reason": "differs from an independent reference by 19%"
+    },
+    {
+      "atomic_number": 69,
+      "symbol": "Tm",
+      "field": "electronegativity",
+      "value": 1,
+      "reason": "differs from an independent reference by 20%"
+    },
+    {
+      "atomic_number": 70,
+      "symbol": "Yb",
+      "field": "boiling_point",
+      "value": 1703,
+      "reason": "differs from an independent reference by 16%"
+    },
+    {
+      "atomic_number": 71,
+      "symbol": "Lu",
+      "field": "electronegativity",
+      "value": 1,
+      "reason": "differs from an independent reference by 21%"
+    },
+    {
+      "atomic_number": 72,
+      "symbol": "Hf",
+      "field": "electronegativity",
+      "value": 1,
+      "reason": "differs from an independent reference by 23%"
+    },
+    {
+      "atomic_number": 74,
+      "symbol": "W",
+      "field": "boiling_point",
+      "value": 6200.37,
+      "reason": "differs from an independent reference by 6%"
+    },
+    {
+      "atomic_number": 77,
+      "symbol": "Ir",
+      "field": "boiling_point",
+      "value": 4403,
+      "reason": "differs from an independent reference by 6%"
+    },
+    {
+      "atomic_number": 82,
+      "symbol": "Pb",
+      "field": "electronegativity",
+      "value": 2,
+      "reason": "differs from an independent reference by 14%"
+    },
+    {
+      "atomic_number": 88,
+      "symbol": "Ra",
+      "field": "boiling_point",
+      "value": 2010,
+      "reason": "differs from an independent reference by 42%"
+    },
+    {
+      "atomic_number": 88,
+      "symbol": "Ra",
+      "field": "density",
+      "value": 5500,
+      "reason": "differs from an independent reference by 10%"
+    },
+    {
+      "atomic_number": 89,
+      "symbol": "Ac",
+      "field": "melting_point",
+      "value": 1500,
+      "reason": "differs from an independent reference by 13%"
+    },
+    {
+      "atomic_number": 90,
+      "symbol": "Th",
+      "field": "electronegativity",
+      "value": 1,
+      "reason": "differs from an independent reference by 23%"
+    },
+    {
+      "atomic_number": 91,
+      "symbol": "Pa",
+      "field": "electronegativity",
+      "value": 2,
+      "reason": "differs from an independent reference by 33%"
+    },
+    {
+      "atomic_number": 95,
+      "symbol": "Am",
+      "field": "boiling_point",
+      "value": 2880,
+      "reason": "differs from an independent reference by 26%"
+    },
+    {
+      "atomic_number": 95,
+      "symbol": "Am",
+      "field": "electronegativity",
+      "value": 1.13,
+      "reason": "differs from an independent reference by 13%"
+    },
+    {
+      "atomic_number": 97,
+      "symbol": "Bk",
+      "field": "density",
+      "value": 14780,
+      "reason": "differs from an independent reference by 6%"
+    },
+    {
+      "atomic_number": 100,
+      "symbol": "Fm",
+      "field": "melting_point",
+      "value": 1125,
+      "reason": "differs from an independent reference by 38%"
+    }
+  ]
+}
