@@ -1,460 +1,666 @@
 /**
- * Builds the JSON served under /datasets from the raw sources committed in
- * scripts/datasets/sources/. The sources are kept byte-identical to what was
- * downloaded so every correction below is visible in code review, not hidden
- * in a hand-edited data file.
+ * Builds the JSON served under /datasets from the snapshots committed in
+ * scripts/datasets/sources/ (refresh those with `pnpm datasets:fetch`).
  *
  *   pnpm datasets:build
  *
- * Output goes to src/data/datasets/{name}.json. The build fails loudly when a
- * source stops looking the way the corrections assume, rather than emitting a
- * quietly wrong file.
+ * Output goes to src/data/datasets/{name}.json. Every value the build drops or
+ * resolves is reported on stdout, and the build fails outright when a source
+ * stops looking the way the rules below assume, rather than emitting a quietly
+ * wrong file.
  */
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SOURCES = path.join(ROOT, "scripts/datasets/sources");
 const OUT = path.join(ROOT, "src/data/datasets");
 
-// ── CSV ──────────────────────────────────────────────────────────────────────
+// ── Periodic table: layout ───────────────────────────────────────────────────
 
-/** RFC 4180 parser. Quoted fields may contain commas, quotes, and newlines. */
-function parseCsv(text) {
-  const rows = [];
-  let row = [];
-  let field = "";
-  let quoted = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-
-    if (quoted) {
-      if (ch === '"' && text[i + 1] === '"') {
-        field += '"';
-        i++;
-      } else if (ch === '"') {
-        quoted = false;
-      } else {
-        field += ch;
-      }
-    } else if (ch === '"') {
-      quoted = true;
-    } else if (ch === ",") {
-      row.push(field);
-      field = "";
-    } else if (ch === "\n" || ch === "\r") {
-      if (ch === "\r" && text[i + 1] === "\n") i++;
-      row.push(field);
-      rows.push(row);
-      row = [];
-      field = "";
-    } else {
-      field += ch;
-    }
-  }
-
-  if (field !== "" || row.length > 0) {
-    row.push(field);
-    rows.push(row);
-  }
-
-  const [header, ...body] = rows;
-
-  return body.map((cells) => {
-    if (cells.length !== header.length) {
-      throw new Error(
-        `CSV row has ${cells.length} cells, header has ${header.length}`,
-      );
-    }
-
-    return Object.fromEntries(header.map((h, i) => [h, cells[i]]));
-  });
-}
-
-// ── Cell parsers ─────────────────────────────────────────────────────────────
-
-function fail(row, column, message) {
-  throw new Error(`${row.Symbol} ${column}: ${message} (got ${row[column]})`);
-}
-
-function str(row, column) {
-  const v = row[column].trim();
-
-  return v === "" ? null : v;
-}
-
-function num(row, column) {
-  const v = str(row, column);
-
-  if (v === null) return null;
-
-  const n = Number(v);
-
-  if (!Number.isFinite(n)) fail(row, column, "not a finite number");
-
-  return n;
-}
-
-function int(row, column) {
-  const n = num(row, column);
-
-  if (n !== null && !Number.isInteger(n)) fail(row, column, "not an integer");
-
-  return n;
-}
-
-/** Strips a fixed prefix the source glued onto identifiers ("CAS1333-74-0"). */
-function prefixed(row, column, prefix) {
-  const v = str(row, column);
-
-  if (v === null) return null;
-  if (!v.startsWith(prefix)) fail(row, column, `missing "${prefix}" prefix`);
-
-  return v.slice(prefix.length);
-}
-
-function prefixedInt(row, column, prefix) {
-  const v = prefixed(row, column, prefix);
-
-  if (v === null) return null;
-  if (!/^\d+$/.test(v)) fail(row, column, "identifier is not numeric");
-
-  return Number(v);
-}
-
-// ── Periodic table corrections ───────────────────────────────────────────────
+/** Last atomic number of each period. */
+const PERIOD_ENDS = [2, 10, 18, 36, 54, 86, 118];
 
 /**
- * IUPAC names adopted after the source was published (112 in 2010, 113–118 in
- * 2016). The source still carries the systematic placeholders, which move to
- * alternate_names so lookups by the old symbol keep a paper trail.
+ * Period, group, block, and position in the conventional 18-column layout are
+ * fixed by atomic number, so they are derived rather than read from Wikidata.
+ * Group 3 follows the IUPAC 2021 recommendation (Sc, Y, Lu, Lr): La–Yb and
+ * Ac–No form the f-block, have no group, and sit on grid rows 9 and 10.
  */
-const RENAMED = {
-  112: { name: "Copernicium", symbol: "Cn", was: "Ununbium" },
-  113: { name: "Nihonium", symbol: "Nh", was: "Ununtrium" },
-  114: { name: "Flerovium", symbol: "Fl", was: "Ununquadium" },
-  115: { name: "Moscovium", symbol: "Mc", was: "Ununpentium" },
-  116: { name: "Livermorium", symbol: "Lv", was: "Ununhexium" },
-  117: { name: "Tennessine", symbol: "Ts", was: "Ununseptium" },
-  118: { name: "Oganesson", symbol: "Og", was: "Ununoctium" },
+function layout(z) {
+  const period = PERIOD_ENDS.findIndex((end) => z <= end) + 1;
+  const start = period === 1 ? 1 : PERIOD_ENDS[period - 2] + 1;
+  const length = PERIOD_ENDS[period - 1] - start + 1;
+  const pos = z - start + 1;
+  const main = (group, block) => ({
+    period,
+    group,
+    block,
+    grid_row: period,
+    grid_column: group,
+  });
+
+  if (period === 1) return main(pos === 1 ? 1 : 18, "s");
+  if (pos <= 2) return main(pos, "s");
+
+  if (length === 8) return main(pos + 10, "p");
+  if (length === 18) return main(pos, pos <= 12 ? "d" : "p");
+
+  // 32-element periods: 14 f-block elements after the s-block.
+  if (pos <= 16) {
+    return {
+      period,
+      group: null,
+      block: "f",
+      grid_row: period + 3,
+      grid_column: pos,
+    };
+  }
+
+  const group = pos - 14;
+
+  return main(group, group <= 12 ? "d" : "p");
+}
+
+// ── Periodic table: electron configurations ─────────────────────────────────
+
+const NOBLE_GASES = [
+  ["He", 2],
+  ["Ne", 10],
+  ["Ar", 18],
+  ["Kr", 36],
+  ["Xe", 54],
+  ["Rn", 86],
+];
+const L_ORDER = "spdf";
+const SUPERSCRIPTS = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+
+/**
+ * Aufbau (Madelung) filling order, which is how noble-gas cores fill: by n + l,
+ * then by n (1s 2s 2p 3s 3p 4s 3d 4p …).
+ */
+const AUFBAU = [];
+
+for (let sum = 1; sum <= 8; sum++) {
+  for (let n = 1; n <= sum; n++) {
+    const l = sum - n;
+
+    if (l < n && l < 4) AUFBAU.push(`${n}${L_ORDER[l]}`);
+  }
+}
+
+function capacity(subshell) {
+  return 4 * L_ORDER.indexOf(subshell[1]) + 2;
+}
+
+/** Full subshell occupancy of a noble gas, e.g. Ne → {1s:2, 2s:2, 2p:6}. */
+function nobleCore(electrons) {
+  const core = new Map();
+  let left = electrons;
+
+  for (const subshell of AUFBAU) {
+    if (left === 0) break;
+
+    const take = Math.min(capacity(subshell), left);
+
+    core.set(subshell, take);
+    left -= take;
+  }
+
+  return core;
+}
+
+/**
+ * Parses a Wikidata configuration — either full ("1s² 2s² 2p⁶ 3s¹") or with
+ * a noble-gas core ("[Ne] 3s¹"), in any subshell order — into occupancies.
+ */
+function parseConfiguration(raw) {
+  // ¹²³ are Latin-1 (U+00B9, U+00B2, U+00B3), not in the U+2070 block, so
+  // map by lookup rather than by code point range.
+  const text = [...raw]
+    .map((c) => (SUPERSCRIPTS.includes(c) ? SUPERSCRIPTS.indexOf(c) : c))
+    .join("");
+  const occupancy = new Map();
+
+  for (const token of text.trim().split(/\s+/)) {
+    const core = /^\[(\w+)\]$/.exec(token);
+
+    if (core) {
+      const gas = NOBLE_GASES.find(([symbol]) => symbol === core[1]);
+
+      if (!gas) return null;
+
+      for (const [subshell, count] of nobleCore(gas[1])) {
+        occupancy.set(subshell, count);
+      }
+
+      continue;
+    }
+
+    const m = /^([1-7][spdf])(\d+)$/.exec(token);
+
+    if (!m || occupancy.has(m[1]) || Number(m[2]) > capacity(m[1])) {
+      return null;
+    }
+
+    occupancy.set(m[1], Number(m[2]));
+  }
+
+  return occupancy;
+}
+
+/**
+ * Canonical form: the largest noble-gas core the configuration contains, then
+ * the remaining subshells ordered by n and then l, the way NIST writes them
+ * ("[Ar] 3d6 4s2", "[Xe] 4f14 5d10 6s1").
+ */
+function formatConfiguration(occupancy) {
+  const total = [...occupancy.values()].reduce((a, b) => a + b, 0);
+  let core = null;
+
+  for (const [symbol, electrons] of NOBLE_GASES) {
+    const subshells = nobleCore(electrons);
+
+    // A noble gas is written out in full, not as its own core ("[Ne]").
+    if (electrons >= total) break;
+
+    if ([...subshells].every(([s, n]) => occupancy.get(s) === n)) {
+      core = { symbol, subshells };
+    }
+  }
+
+  const rest = [...occupancy]
+    .filter(([s]) => !core?.subshells.has(s))
+    .sort(
+      ([a], [b]) =>
+        a[0] - b[0] || L_ORDER.indexOf(a[1]) - L_ORDER.indexOf(b[1]),
+    )
+    .map(([s, n]) => `${s}${n}`);
+
+  return [...(core ? [`[${core.symbol}]`] : []), ...rest].join(" ");
+}
+
+// ── Periodic table: reading Wikidata statements ─────────────────────────────
+
+/** Units the build accepts per kind of quantity, converted to the output unit. */
+const TO_KELVIN = {
+  Q11579: (v) => v, // kelvin
+  Q25267: (v) => v + 273.15, // degree Celsius
+  Q42289: (v) => ((v - 32) * 5) / 9 + 273.15, // degree Fahrenheit
+};
+const UNITS = {
+  temperature: TO_KELVIN,
+  mass: { Q483261: (v) => v }, // dalton
+  density: {
+    Q844211: (v) => v, // kg/m³
+    Q13147228: (v) => v * 1000, // g/cm³
+  },
+  energy: {
+    Q83327: (v) => v, // electronvolt
+    Q752197: (v) => v / 96.48533212, // kJ/mol → eV per atom
+  },
+  length: { Q192274: (v) => v }, // picometre
+  thermalConductivity: { Q1463969: (v) => v }, // W/(m·K)
+  electricalConductivity: {
+    Q80842107: (v) => v, // siemens per metre
+    Q20966435: (v) => v, // ampere per volt metre (identical)
+  },
+  specificHeat: {
+    Q3085309: (v) => v, // J/(kg·K)
+    Q69423273: (v) => v, // J/(kg·K) "difference" (identical)
+  },
+  speed: { Q182429: (v) => v }, // m/s
+  dimensionless: { 1: (v) => v },
 };
 
-const NOBLE_CORE = { He: 2, Ne: 10, Ar: 18, Kr: 36, Xe: 54, Rn: 86 };
-const SUBSHELL_CAPACITY = { s: 2, p: 6, d: 10, f: 14 };
+/**
+ * Physically plausible bounds per field, in output units. Wikidata has a few
+ * entry errors (Oganesson's ionization energy entered as 860100 kJ/mol rather
+ * than 860.1, Americium's specific heat in J/(g·K) labelled J/(kg·K)); values
+ * outside these bounds are dropped rather than served.
+ */
+const BOUNDS = {
+  atomic_weight: [1, 300],
+  melting_point: [0.5, 4500],
+  boiling_point: [3, 7000],
+  density: [0.05, 25000],
+  electronegativity: [0.6, 4], // Pauling: Fr 0.7 … F 3.98
+  ionization_energy: [3, 30], // eV: Cs 3.89 … He 24.6
+  atomic_radius: [20, 400],
+  covalent_radius: [20, 400],
+  thermal_conductivity: [1e-3, 3000],
+  electrical_conductivity: [1e-12, 1e9],
+  specific_heat: [50, 20000],
+  speed_of_sound: [100, 20000],
+  mohs_hardness: [0.1, 10],
+};
 
 /**
- * Splits "[He]2s22p3" into its core and subshells. The source concatenates
- * occupancies with the next shell number, so "2s22p3" is read greedily against
- * subshell capacity: an s holds at most 2, so "2s2" ends before the "2p".
+ * Determination method for values computed by density functional theory
+ * rather than measured. Wikidata's elastic moduli are all DFT (so they aren't
+ * served at all), as are many of its densities — 0 K crystal values that
+ * disagree with measured bulk densities and give gases solid densities.
  */
-function parseConfiguration(config) {
-  const match = /^(?:\[(\w+)\])?(.*)$/.exec(config);
-  const core = match[1] ?? null;
-  const subshells = [];
-  let rest = match[2];
+const COMPUTED_DFT = "Q1048589";
 
-  if (core !== null && !(core in NOBLE_CORE)) {
-    throw new Error(`Unknown core [${core}] in ${config}`);
+function isMeasured(statement) {
+  return !qualifierItems(statement, "P459").includes(COMPUTED_DFT);
+}
+
+/** Allotrope used when Wikidata gives several (the standard reference state). */
+const REFERENCE_ALLOTROPE = { 6: "Q5309" }; // carbon → graphite
+
+const PHASE_ITEMS = { Q11438: "solid", Q11435: "liquid", Q11432: "gas" };
+
+const EXCLUSIONS_FILE = path.join(SOURCES, "periodic_table.exclusions.json");
+
+class Report {
+  constructor() {
+    this.lines = [];
   }
 
-  while (rest.length > 0) {
-    const head = /^(\d)([spdf])/.exec(rest);
-
-    if (!head) throw new Error(`Unparseable configuration ${config}`);
-
-    const [, n, l] = head;
-    const digits = /^\d+/.exec(rest.slice(2))?.[0] ?? "";
-    // Prefer the longest occupancy that fits the subshell and leaves the
-    // remainder starting at a new subshell (or the end).
-    let count = null;
-
-    for (let len = Math.min(digits.length, 2); len >= 1; len--) {
-      const candidate = Number(digits.slice(0, len));
-      const after = rest.slice(2 + len);
-
-      if (
-        candidate >= 1 &&
-        candidate <= SUBSHELL_CAPACITY[l] &&
-        (after === "" || /^\d[spdf]/.test(after))
-      ) {
-        count = len;
-        break;
-      }
-    }
-
-    if (count === null) throw new Error(`Unparseable configuration ${config}`);
-
-    subshells.push(`${n}${l}${digits.slice(0, count)}`);
-    rest = rest.slice(2 + count);
+  add(element, field, message) {
+    this.lines.push(
+      `  ${element.symbol ?? element.atomic_number} ${field}: ${message}`,
+    );
   }
+}
 
-  const electrons =
-    (core ? NOBLE_CORE[core] : 0) +
-    subshells.reduce((sum, s) => sum + Number(s.slice(2)), 0);
+function statements(element, pid) {
+  return (element.claims[pid] ?? []).filter((s) => s.rank !== "deprecated");
+}
 
-  return {
-    electrons,
-    formatted: [core ? `[${core}]` : null, ...subshells]
-      .filter(Boolean)
-      .join(" "),
-  };
+/** Narrows to preferred-rank statements when there are any, per Wikidata. */
+function byRank(list) {
+  const preferred = list.filter((s) => s.rank === "preferred");
+
+  return preferred.length > 0 ? preferred : list;
+}
+
+function qualifierItems(statement, pid) {
+  return (statement.qualifiers?.[pid] ?? []).map((q) => q.item).filter(Boolean);
+}
+
+function round(value) {
+  return Number(value.toPrecision(10));
 }
 
 /**
- * Three upstream columns are scrambled: their values are correct but attached
- * to the wrong rows by an interleaved reshape bug in the 2015 export (Helium
- * carries Promethium's electron configuration, Lithium carries Beryllium's
- * specific heat and RTECS number). All three share one permutation, and every
- * other column is aligned — verified against PubChem and known reference
- * values when this dataset was added.
+ * Decimal places kept after unit conversion, so °F → K and kJ/mol → eV don't
+ * leak float noise (1220 °F is 933.15 K, not 933.1500000000001).
  */
-const SCRAMBLED_COLUMNS = [
-  "Electron_Configuration",
-  "Specific_Heat",
-  "RTECS_Number",
-];
+const DECIMALS = { temperature: 2, energy: 4 };
 
 /**
- * Recovers the permutation from the configurations themselves: a neutral
- * atom's electron count equals its atomic number, so counting the electrons in
- * the configuration on row i names the element row i's scrambled values belong
- * to. The bijection check makes it self-verifying — if the source is ever fixed
- * this degrades to the identity, and if it breaks differently it throws.
+ * Picks one number for a field. Preferred-rank statements win outright.
+ * Otherwise the value most statements agree on (within 1%) wins — the same
+ * fact is often entered in K, °C, and °F, and a typo in one copy is outvoted
+ * by the others. With no majority the field is null rather than a coin flip.
  */
-function unscramble(rows) {
-  const target = rows.map(
-    (row) => parseConfiguration(row.Electron_Configuration).electrons,
+function pickNumber(
+  element,
+  field,
+  pid,
+  unitKind,
+  report,
+  filter = () => true,
+) {
+  const converters = UNITS[unitKind];
+  const candidates = [];
+  const usable = statements(element, pid).filter(
+    (s) => isMeasured(s) && filter(s),
   );
-  const seen = new Set(target);
 
-  for (let z = 1; z <= rows.length; z++) {
-    if (!seen.has(z)) throw new Error(`No configuration has ${z} electrons`);
-  }
+  for (const statement of byRank(usable)) {
+    const { amount, unit } = statement.value;
 
-  const fixed = rows.map((row) => ({ ...row }));
+    if (amount === undefined) continue;
 
-  rows.forEach((row, i) => {
-    for (const column of SCRAMBLED_COLUMNS) {
-      fixed[target[i] - 1][column] = row[column];
-    }
-  });
+    const convert = converters[unit];
 
-  // Anchors: well-known values that only land here when the permutation is
-  // applied to the right columns.
-  const anchors = [
-    [2, "Specific_Heat", "5193.1"],
-    [26, "Specific_Heat", "449"],
-    [3, "RTECS_Number", "RTECSOJ5540000"],
-    [79, "RTECS_Number", "RTECSMD5070000"],
-    [6, "Electron_Configuration", "[He]2s22p2"],
-  ];
-
-  for (const [z, column, expected] of anchors) {
-    if (fixed[z - 1][column] !== expected) {
-      throw new Error(
-        `Unscramble anchor failed: element ${z} ${column} is ` +
-          `${fixed[z - 1][column]}, expected ${expected}`,
+    if (!convert) {
+      report.add(
+        element,
+        field,
+        `dropped ${amount} in unsupported unit ${unit}`,
       );
+      continue;
     }
+
+    const converted = convert(Number(amount));
+    const value =
+      unitKind in DECIMALS
+        ? Number(converted.toFixed(DECIMALS[unitKind]))
+        : converted;
+    const [min, max] = BOUNDS[field];
+
+    if (value < min || value > max) {
+      report.add(element, field, `dropped implausible ${round(value)}`);
+      continue;
+    }
+
+    candidates.push(value);
   }
 
-  return fixed;
+  if (candidates.length === 0) return null;
+
+  const close = (a, b) =>
+    Math.abs(a - b) <= 0.01 * Math.max(Math.abs(a), Math.abs(b));
+  const support = candidates.map(
+    (v) => candidates.filter((w) => close(v, w)).length,
+  );
+  const best = Math.max(...support);
+  const winners = candidates.filter((_, i) => support[i] === best);
+
+  if (!winners.every((v) => close(v, winners[0]))) {
+    report.add(
+      element,
+      field,
+      `no majority among ${candidates.map(round).join(", ")}; null`,
+    );
+
+    return null;
+  }
+
+  if (candidates.length > winners.length) {
+    report.add(
+      element,
+      field,
+      `chose ${round(winners[0])} over ${candidates
+        .filter((v) => !close(v, winners[0]))
+        .map(round)
+        .join(", ")}`,
+    );
+  }
+
+  return round(winners[0]);
+}
+
+function pickString(element, pid) {
+  const values = [
+    ...new Set(byRank(statements(element, pid)).map((s) => s.value.string)),
+  ].filter(Boolean);
+
+  return values.length === 1 ? values[0] : null;
+}
+
+/** Current symbol: preferred rank, else a non-deprecated one with no end date. */
+function pickSymbol(element) {
+  const current = statements(element, "P246").filter(
+    (s) => !s.qualifiers?.P582,
+  );
+  const values = [...new Set(byRank(current).map((s) => s.value.string))];
+
+  if (values.length !== 1) {
+    throw new Error(`Element ${element.atomic_number}: symbols ${values}`);
+  }
+
+  return values[0];
+}
+
+function pickConfiguration(element, report) {
+  const forms = statements(element, "P8000").map((s) => s.value.string);
+  const parsed = forms.map(parseConfiguration);
+
+  if (parsed.length === 0 || parsed.some((p) => p === null)) {
+    throw new Error(
+      `Element ${element.atomic_number}: unparseable configuration ${forms}`,
+    );
+  }
+
+  const formatted = [...new Set(parsed.map(formatConfiguration))];
+
+  if (formatted.length !== 1) {
+    throw new Error(
+      `Element ${element.atomic_number}: configurations disagree ${formatted}`,
+    );
+  }
+
+  const electrons = [...parsed[0].values()].reduce((a, b) => a + b, 0);
+
+  if (electrons !== element.atomic_number) {
+    throw new Error(
+      `Element ${element.atomic_number}: configuration ${formatted[0]} has ${electrons} electrons`,
+    );
+  }
+
+  return formatted[0];
 }
 
 /**
- * Space groups use Mathematica's overbar notation, which the export rendered
- * as an underscore plus a line break ("Fm_\n3m"). Hermann–Mauguin plain text
- * writes the bar as a minus: "Fm-3m".
+ * Standard state at 25 °C and 1 atm, from the melting and boiling points. Null
+ * when they can't decide it (e.g. no data for a superheavy element).
  */
-function spaceGroup(row) {
-  const v = str(row, "Space_Group_Name");
+function standardState(meltingPoint, boilingPoint) {
+  const ambient = 298.15;
 
-  return v === null ? null : v.replace(/_\s*\n\s*/g, "-");
+  if (meltingPoint !== null && meltingPoint > ambient) return "solid";
+  if (boilingPoint !== null && boilingPoint <= ambient) return "gas";
+  if (meltingPoint !== null && boilingPoint !== null) return "liquid";
+
+  return null;
 }
 
-/** "7/5" → 1.4. Only gases carry a value. */
-function fraction(row, column) {
-  const v = str(row, column);
+/**
+ * Density in the element's standard state. Wikidata often lists only the
+ * density of a condensed phase for gases (chlorine as a solid at 0 K), which
+ * would be wrong to serve as "the" density, so a value is only accepted when
+ * its phase qualifier matches the standard state.
+ */
+function pickDensity(element, state, report) {
+  if (state === null) return null;
 
-  if (v === null) return null;
+  const allotrope = REFERENCE_ALLOTROPE[element.atomic_number];
 
-  const m = /^(\d+)\/(\d+)$/.exec(v);
+  return pickNumber(element, "density", "P2054", "density", report, (s) => {
+    const phases = qualifierItems(s, "P515").map((id) => PHASE_ITEMS[id]);
+    const parts = qualifierItems(s, "P518");
 
-  if (!m) fail(row, column, "not a fraction");
+    if (allotrope && parts.length > 0 && !parts.includes(allotrope)) {
+      return false;
+    }
 
-  return Number(m[1]) / Number(m[2]);
+    if (phases.length > 0 ? !phases.includes(state) : state === "gas") {
+      return false;
+    }
+
+    // Phase qualifiers are sometimes wrong (a liquid density tagged as gas),
+    // so also require a magnitude that fits the phase. The densest gas at
+    // standard conditions (radon) is under 10 kg/m³; the lightest solid or
+    // liquid element (lithium) is over 500.
+    const { amount, unit } = s.value;
+    const kgPerM3 = UNITS.density[unit]?.(Number(amount));
+
+    return (
+      kgPerM3 === undefined || (state === "gas" ? kgPerM3 < 20 : kgPerM3 > 100)
+    );
+  });
 }
 
-/** HalfLife/Lifetime use "Inf" for stable elements. */
-function duration(row, column) {
-  const v = str(row, column);
-
-  if (v === "Inf") return null;
-
-  return num(row, column);
-}
-
-/** Graph.Period puts the f-block on half-rows (8.5, 9.5) under the table. */
-function gridRow(row) {
-  const v = num(row, "Graph.Period");
-
-  if (v === 8.5) return 9;
-  if (v === 9.5) return 10;
-  if (!Number.isInteger(v) || v < 1 || v > 7) {
-    fail(row, "Graph.Period", "unexpected layout row");
-  }
-
-  return v;
-}
-
-function buildPeriodicTable() {
-  const raw = parseCsv(
-    fs.readFileSync(path.join(SOURCES, "periodic_table.csv"), "utf-8"),
+function pickCrystalSystem(element, labels) {
+  const systems = new Set(
+    byRank(statements(element, "P556")).map((s) =>
+      labels[s.value.item]
+        ?.replace(/ crystal system$/, "")
+        .replace(/^(face|body)-centered /, ""),
+    ),
   );
 
-  if (raw.length !== 118) throw new Error(`Expected 118 rows, ${raw.length}`);
+  return systems.size === 1 ? [...systems][0] : null;
+}
 
-  raw.forEach((row, i) => {
-    if (Number(row.Atomic_Number) !== i + 1) {
-      throw new Error(`Row ${i + 1} is atomic number ${row.Atomic_Number}`);
+function oxidationStates(element, preferredOnly) {
+  const list = statements(element, "P1121").filter(
+    (s) => !preferredOnly || s.rank === "preferred",
+  );
+
+  return [...new Set(list.map((s) => Number(s.value.amount)))].sort(
+    (a, b) => a - b,
+  );
+}
+
+/** Year of discovery; preferred rank, else the earliest. Negative is BCE. */
+function discoveryYear(element) {
+  const years = byRank(statements(element, "P575"))
+    .map((s) => s.value.time)
+    .filter(Boolean)
+    .map((t) => Number(/^([+-]\d+)/.exec(t)[1]));
+
+  return years.length > 0 ? Math.min(...years) : null;
+}
+
+function discoverers(element, labels) {
+  return [
+    ...new Set(
+      statements(element, "P61")
+        .map((s) => (s.value.item ? labels[s.value.item] : null))
+        .filter(Boolean),
+    ),
+  ];
+}
+
+function capitalize(name) {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+/**
+ * Values excluded after cross-checking against an independent reference (see
+ * scripts/qa-datasets.mjs). Some Wikidata errors are entered only once, so the
+ * majority rule can't see them (fluorine's ionization energy is entered as
+ * 15.7 eV; it is 17.42). Excluded values become null.
+ */
+function loadExclusions() {
+  if (!fs.existsSync(EXCLUSIONS_FILE)) return [];
+
+  return JSON.parse(fs.readFileSync(EXCLUSIONS_FILE, "utf-8")).exclusions;
+}
+
+export function buildPeriodicTable(report, { applyExclusions = true } = {}) {
+  const exclusions = applyExclusions ? loadExclusions() : [];
+  const snapshot = JSON.parse(
+    fs.readFileSync(
+      path.join(SOURCES, "periodic_table.wikidata.json"),
+      "utf-8",
+    ),
+  );
+  const { elements, labels } = snapshot;
+
+  if (elements.length !== 118) {
+    throw new Error(`Expected 118 elements, got ${elements.length}`);
+  }
+
+  const records = elements.map((element, i) => {
+    const z = element.atomic_number;
+
+    if (z !== i + 1) throw new Error(`Element ${i + 1} is ${z}`);
+
+    element.symbol = pickSymbol(element);
+
+    const firstIonization = (s) =>
+      (s.qualifiers?.P1545 ?? []).some((q) => q.string === "1");
+    const num = (field, pid, unitKind, filter) =>
+      pickNumber(element, field, pid, unitKind, report, filter);
+    const meltingPoint = num("melting_point", "P2101", "temperature");
+    const boilingPoint = num("boiling_point", "P2102", "temperature");
+    const state = standardState(meltingPoint, boilingPoint);
+    const atomicWeight = num("atomic_weight", "P2067", "mass");
+
+    if (!element.label || atomicWeight === null) {
+      throw new Error(`Element ${z} is missing its name or atomic weight`);
     }
-  });
-
-  return unscramble(raw).map((row) => {
-    const z = int(row, "Atomic_Number");
-    const renamed = RENAMED[z];
-    const halfLife = duration(row, "HalfLife");
-    const alternateNames = [
-      ...(str(row, "Alternate_Names")?.split(/\s*,\s*/) ?? []),
-      ...(renamed ? [renamed.was] : []),
-    ];
-
-    if (renamed && row.Name !== renamed.was) {
-      fail(row, "Name", `expected placeholder ${renamed.was}`);
-    }
-
-    const mohs = num(row, "Mohs_Hardness");
 
     return {
       atomic_number: z,
-      symbol: renamed?.symbol ?? str(row, "Symbol"),
-      name: renamed?.name ?? str(row, "Name"),
-      alternate_names: alternateNames,
-      atomic_weight: num(row, "Atomic_Weight"),
-      period: int(row, "Period"),
-      group: int(row, "Group"),
-      block: str(row, "Block"),
-      grid_row: gridRow(row),
-      grid_column: int(row, "Graph.Group"),
-      electron_configuration: parseConfiguration(row.Electron_Configuration)
-        .formatted,
-      term_symbol: str(row, "Quantum_Numbers"),
-      valence: int(row, "Valence"),
-      phase: str(row, "Phase"),
-      color: str(row, "Color"),
-      gas_phase: str(row, "Gas_phase"),
-      radioactive: halfLife !== null,
-      half_life: halfLife,
-      lifetime: duration(row, "Lifetime"),
-      decay_mode: str(row, "Decay_Mode"),
+      symbol: element.symbol,
+      name: capitalize(element.label),
+      ...layout(z),
+      atomic_weight: atomicWeight,
+      electron_configuration: pickConfiguration(element, report),
+      oxidation_states: oxidationStates(element, false),
+      common_oxidation_states: oxidationStates(element, true),
+      standard_state: state,
+      crystal_system: pickCrystalSystem(element, labels),
 
-      // Melting_Point/Boiling_Point are the same Kelvin values round-tripped
-      // through Celsius (1560 → 1560.15, 4.22 → 4.21999999999997); the
-      // Absolute_ columns are the clean originals.
-      melting_point: num(row, "Absolute_Melting_Point"),
-      boiling_point: num(row, "Absolute_Boiling_Point"),
-      critical_pressure: num(row, "Critical_Pressure"),
-      critical_temperature: num(row, "Critical_Temperature"),
-      heat_of_fusion: num(row, "Heat_of_Fusion"),
-      heat_of_vaporization: num(row, "Heat_of_Vaporization"),
-      heat_of_combustion: num(row, "Heat_of_Combustion"),
-      specific_heat: num(row, "Specific_Heat"),
-      adiabatic_index: fraction(row, "Adiabatic_Index"),
-      thermal_conductivity: num(row, "Thermal_Conductivity"),
-      thermal_expansion: num(row, "Thermal_Expansion"),
-      neel_point: num(row, "Neel_Point"),
-      curie_point: num(row, "Curie_Point"),
-      superconducting_point: num(row, "Superconducting_Point"),
-
-      density: num(row, "Density"),
-      density_liquid: num(row, "Density_Liquid"),
-      molar_volume: num(row, "Molar_Volume"),
-      // Mohs is a dimensionless 1–10 scale; the export scaled it by 10^6 as if
-      // it were in pascals (Lithium 6e+05 → 0.6, Tungsten 7.5e+06 → 7.5).
-      mohs_hardness: mohs === null ? null : mohs / 1e6,
-      brinell_hardness: num(row, "Brinell_Hardness"),
-      vickers_hardness: num(row, "Vickers_Hardness"),
-      bulk_modulus: num(row, "Bulk_Modulus"),
-      shear_modulus: num(row, "Shear_Modulus"),
-      young_modulus: num(row, "Young_Modulus"),
-      poisson_ratio: num(row, "Poisson_Ratio"),
-      refractive_index: num(row, "Refractive_Index"),
-      speed_of_sound: num(row, "Speed_of_Sound"),
-
-      electronegativity: num(row, "Electronegativity"),
-      electron_affinity: num(row, "ElectronAffinity"),
-      atomic_radius: num(row, "Atomic_Radius"),
-      covalent_radius: num(row, "Covalent_Radius"),
-      van_der_waals_radius: num(row, "Van_der_Waals_Radius"),
-
-      electrical_type: str(row, "Electrical_Type"),
-      electrical_conductivity: num(row, "Electrical_Conductivity"),
-      resistivity: num(row, "Resistivity"),
-      magnetic_type: str(row, "Magnetic_Type"),
-      mass_magnetic_susceptibility: num(row, "Mass_Magnetic_Susceptibility"),
-      molar_magnetic_susceptibility: num(row, "Molar_Magnetic_Susceptibility"),
-      volume_magnetic_susceptibility: num(
-        row,
-        "Volume_Magnetic_Susceptibility",
+      melting_point: meltingPoint,
+      boiling_point: boilingPoint,
+      density: pickDensity(element, state, report),
+      specific_heat: num("specific_heat", "P2056", "specificHeat"),
+      thermal_conductivity: num(
+        "thermal_conductivity",
+        "P2068",
+        "thermalConductivity",
       ),
+      electrical_conductivity: num(
+        "electrical_conductivity",
+        "P2055",
+        "electricalConductivity",
+      ),
+      speed_of_sound: num("speed_of_sound", "P2075", "speed"),
 
-      space_group_name: spaceGroup(row),
-      space_group_number: int(row, "Space_Group_Number"),
+      electronegativity: num("electronegativity", "P1108", "dimensionless"),
+      ionization_energy: num(
+        "ionization_energy",
+        "P2260",
+        "energy",
+        firstIonization,
+      ),
+      atomic_radius: num("atomic_radius", "P14936", "length"),
+      covalent_radius: num("covalent_radius", "P14937", "length"),
 
-      percent_in_universe: num(row, "Percent_in_Universe"),
-      percent_in_sun: num(row, "Percent_in_Sun"),
-      percent_in_meteorites: num(row, "Percent_in_Meteorites"),
-      percent_in_earths_crust: num(row, "Percent_in_Earths_Crust"),
-      percent_in_oceans: num(row, "Percent_in_Oceans"),
-      percent_in_humans: num(row, "Percent_in_Humans"),
+      mohs_hardness: num("mohs_hardness", "P1088", "dimensionless"),
 
-      neutron_cross_section: num(row, "Neutron_Cross_Section"),
-      neutron_mass_absorption: num(row, "Neutron_Mass_Absorption"),
+      discovery_year: discoveryYear(element),
+      discovered_by: discoverers(element, labels),
 
-      autoignition_point: num(row, "Autoignition_Point"),
-      flashpoint: num(row, "Flashpoint"),
-      nfpa_fire_rating: int(row, "NFPA_Fire_Rating"),
-      nfpa_health_rating: int(row, "NFPA_Health_Rating"),
-      nfpa_reactivity_rating: int(row, "NFPA_Reactivity_Rating"),
-      dot_hazard_class: str(row, "DOT_Hazard_Class"),
-      dot_numbers: str(row, "DOT_Numbers"),
-
-      cas_number: prefixed(row, "CAS_Number", "CAS"),
-      pubchem_cid: prefixedInt(row, "CID_Number", "CID"),
-      eu_number: prefixed(row, "EU_Number", "EU"),
-      gmelin_number: prefixedInt(row, "Gmelin_Number", "Gmelin"),
-      nsc_number: prefixedInt(row, "NSC_Number", "NSC"),
-      rtecs_number: prefixed(row, "RTECS_Number", "RTECS"),
+      cas_number: pickString(element, "P231"),
+      pubchem_cid: Number(pickString(element, "P662")) || null,
+      ec_number: pickString(element, "P232"),
+      wikidata_id: element.id,
     };
   });
+
+  for (const { atomic_number: z, field, value, reason } of exclusions) {
+    const record = records[z - 1];
+
+    // An exclusion pins the exact value it rejected, so a corrected upstream
+    // value is served again instead of being dropped by a stale entry.
+    if (record[field] === value) {
+      record[field] = null;
+      report.add(record, field, `excluded ${value}: ${reason}`);
+    }
+  }
+
+  return { retrieved_at: snapshot.retrieved_at, records };
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
+
+export { Report };
 
 const BUILDERS = {
   periodic_table: buildPeriodicTable,
 };
 
-fs.mkdirSync(OUT, { recursive: true });
+function main() {
+  fs.mkdirSync(OUT, { recursive: true });
 
-for (const [name, build] of Object.entries(BUILDERS)) {
-  const records = build();
-  const file = path.join(OUT, `${name}.json`);
+  for (const [name, build] of Object.entries(BUILDERS)) {
+    const report = new Report();
+    const output = build(report);
+    const { records } = output;
+    const file = path.join(OUT, `${name}.json`);
 
-  fs.writeFileSync(file, `${JSON.stringify(records, null, 2)}\n`);
-  console.log(
-    `${name}: ${records.length} records → ${path.relative(ROOT, file)}`,
-  );
+    fs.writeFileSync(file, `${JSON.stringify(output, null, 2)}\n`);
+    console.log(
+      `${name}: ${records.length} records → ${path.relative(ROOT, file)}`,
+    );
+    if (report.lines.length > 0) {
+      console.log(
+        `${name}: resolved or dropped values\n${report.lines.join("\n")}`,
+      );
+    }
+  }
 }
+
+if (import.meta.url === pathToFileURL(process.argv[1]).href) main();

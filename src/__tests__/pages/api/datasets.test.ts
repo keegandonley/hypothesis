@@ -88,7 +88,7 @@ describe("/datasets", () => {
       expect(name).toBe("CC BY 4.0");
       expect(url).toBe("https://creativecommons.org/licenses/by/4.0/");
       expect(attribution).toMatch(
-        /Properties of the elements.*Taha Ahmed.*CC BY 4\.0.*Modified/,
+        /^Periodic table of elements by hypothesis\.sh \(https:\/\/hypothesis\.sh\/datasets\/periodic_table\), licensed under CC BY 4\.0/,
       );
     };
 
