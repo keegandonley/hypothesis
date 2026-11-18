@@ -106,7 +106,7 @@ export default function handler(
       ...summary(dataset),
       primary_key: dataset.primaryKey,
       lookup: `/datasets/${dataset.name}/{key} — ${dataset.lookupDescription}`,
-      corrections: dataset.corrections,
+      notes: dataset.notes,
       fields: dataset.fields,
       data: dataset.records,
     });

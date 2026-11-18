@@ -1,6 +1,6 @@
 # sample datasets
 
-Real-world datasets served as JSON, for prototypes, demos, tests, and anything else that needs believable data without a backend. No key, no rate-limit sign-up, readable from any origin.
+Real-world datasets served as JSON for prototypes, demos, tests, and anything else that needs believable data without a backend. There's no key and no sign-up, and any origin can read them.
 
 ```
 https://hypothesis.sh/datasets
@@ -15,23 +15,25 @@ https://hypothesis.sh/datasets/periodic_table/fe
 | ------------------------ | ---------------------------------------------------------- |
 | `/datasets`              | Every dataset: name, title, record count, license, source  |
 | `/datasets/{name}`       | One dataset: license, metadata, field definitions, records |
-| `/datasets/{name}/{key}` | A single record under `data`, with the dataset's license   |
+| `/datasets/{name}/{key}` | One record under `data`, with the dataset's license        |
 
-Anything else is a `404` with a JSON `error` and a list of the dataset URLs that do exist.
+Anything else returns a `404` with a JSON `error` and a list of the dataset URLs that do exist.
 
-## License in every response
+## License
 
-Every successful response body includes the dataset's `license`, and it always comes before `data`. That means anything reading the response gets the terms along with the data, including agents and clients that never look at headers. Each license comes with an `attribution` line you can paste as-is to give the credit it requires:
+The datasets are published by hypothesis.sh under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). You can use them for anything, commercial use included, as long as you credit hypothesis.sh.
+
+Every successful response body includes `license`, placed before `data`. A client that only reads the body still gets the terms, including agents that never look at headers. The license comes with an `attribution` line you can paste as-is:
 
 ```json
 "license": {
   "name": "CC BY 4.0",
   "url": "https://creativecommons.org/licenses/by/4.0/",
-  "attribution": "\"Properties of the elements\" by Taha Ahmed (https://doi.org/10.6084/m9.figshare.1295585.v1), licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Modified: misaligned values corrected, element names updated, units and formatting cleaned."
+  "attribution": "Periodic table of elements by hypothesis.sh (https://hypothesis.sh/datasets/periodic_table), licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)."
 }
 ```
 
-If you ship something built on a dataset (an app, a page, a generated file), include its `attribution` text where the data is shown or in your credits. The same license URL is also in a `Link: <…>; rel="license"` response header.
+If you ship something built on a dataset (an app, a page, a generated file), put its `attribution` text where the data appears or in your credits. Responses also carry a `Link: <…>; rel="license"` header pointing to the license.
 
 ## Response shape
 
@@ -42,14 +44,12 @@ A dataset response looks like this, with `data` holding the records:
   "name": "periodic_table",
   "title": "Periodic table of elements",
   "count": 118,
+  "license": { "name": "CC BY 4.0", "url": "…", "attribution": "…" },
   "source": {
-    "title": "Properties of the elements",
-    "author": "Taha Ahmed",
-    "url": "…"
-  },
-  "license": {
-    "name": "CC BY 4.0",
-    "url": "https://creativecommons.org/licenses/by/4.0/"
+    "name": "Wikidata",
+    "url": "https://www.wikidata.org",
+    "license": "CC0 1.0",
+    "retrieved_at": "…"
   },
   "primary_key": "atomic_number",
   "fields": [
@@ -61,7 +61,7 @@ A dataset response looks like this, with `data` holding the records:
       "description": "…"
     }
   ],
-  "corrections": ["…"],
+  "notes": ["…"],
   "data": [{ "atomic_number": 1, "symbol": "H", "name": "Hydrogen", "…": "…" }]
 }
 ```
@@ -78,41 +78,49 @@ A single record comes in the same wrapper, with the record itself under `data`:
 }
 ```
 
-`fields` describes every key in a record, in order: its type (`integer`, `number`, `string`, `boolean`, or `string[]`), whether it can be `null`, and its unit. Missing values are always `null`, never an empty string or `0`, and every record carries every key.
+`fields` describes every key in a record, in order: its type (`integer`, `number`, `string`, `boolean`, `string[]`, or `integer[]`), whether it can be `null`, and its unit. A missing value is always `null`, never an empty string or `0`, and every record carries every key. `notes` explains how values were chosen.
+
+`source` records where the data came from. It's provenance only; the license that applies is the one in `license`.
 
 ## periodic_table
 
-All 118 elements, 81 fields each: identity and table layout, thermal, mechanical, atomic, electrical and magnetic, crystal structure, abundance, nuclear, safety, and registry identifiers.
+All 118 elements, 32 fields each:
 
-Look up a single element by atomic number, symbol, or name, case-insensitive. Alternate names work too, including Latin roots and the placeholder names elements 112–118 had before they were named.
+- **Identity and layout**: number, symbol, name, period, group, block, and position in the 18-column table
+- **Chemistry**: atomic weight, electron configuration, oxidation states, electronegativity, first ionization energy, radii
+- **Physical properties**: standard state, crystal system, melting and boiling points, density, specific heat, thermal and electrical conductivity, speed of sound, Mohs hardness
+- **History**: discovery year and discoverers
+- **Identifiers**: CAS, PubChem, EC, Wikidata
+
+Look up a single element by atomic number, symbol, or name, ignoring case. Names use IUPAC spelling (Aluminium, Caesium, Sulfur), but `aluminum`, `cesium`, and `sulphur` also work.
 
 ```
 /datasets/periodic_table/26
 /datasets/periodic_table/fe
 /datasets/periodic_table/iron
-/datasets/periodic_table/ferrum
+/datasets/periodic_table/aluminum
 ```
 
-Values are in SI base units, as the source publishes them: temperatures in kelvin, pressures and hardness in pascals, densities in kg/m³, radii in metres, and half-lives in seconds. A field's `unit` says which. To render the table, `grid_row` and `grid_column` place every element on the conventional 18-column layout. The lanthanides and actinides go on rows 9 and 10, below an empty row 8.
+Units: temperatures in kelvin, density in kg/m³ (the same as g/L), energies in eV, radii in picometres. Each field's `unit` says which. To draw the table, use `grid_row` and `grid_column`, which follow the IUPAC 2021 layout: Lu and Lr in group 3, with La–Yb and Ac–No on rows 9 and 10 below an empty row 8.
 
-### Source and corrections
+### Where the data comes from
 
-The data comes from [Properties of the elements](https://doi.org/10.6084/m9.figshare.1295585.v1) by Taha Ahmed (2015), compiled from Wolfram ElementData and [mirrored on Kaggle](https://www.kaggle.com/datasets/mexwell/periodic-table-of-elements). It is licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). If you redistribute it, credit the source; the `attribution` line in every response does that for you.
+The records are built from [Wikidata](https://www.wikidata.org), whose data is released under CC0. That puts no conditions on reuse, which is why hypothesis.sh can publish the result under its own license. Wikidata is community-edited, so every value goes through these checks before it's served:
 
-The source has errors, and these are corrected rather than passed through. The dataset's `corrections` array lists each one:
+- **Derived, not looked up.** Period, group, block, and grid position are computed from the atomic number.
+- **Normalized.** Wikidata stores temperatures in K, °C, and °F. Every value is converted to one unit. Electron configurations come in several notations; they're rewritten in one canonical form, and all forms must agree with each other and have exactly as many electrons as the atomic number.
+- **Majority wins.** When Wikidata has several values for a property, a value Wikidata marks as preferred wins. Otherwise the value most entries agree on (within 1%) wins, so a typo in one copy gets outvoted by the correct ones. If there's no majority, the field is `null`.
+- **Measured, not computed.** Values computed by density functional theory are excluded. Wikidata's elastic moduli were all computed, so they aren't included at all.
+- **Plausibility bounds.** Physically impossible values are dropped, such as an ionization energy of 8914 eV, or a specific heat entered in the wrong unit.
+- **Cross-checked.** Melting points, boiling points, densities, electronegativities, and ionization energies are compared with an independent reference (PubChem). Values that differ beyond a set tolerance are excluded. The reference only judges values and never supplies them.
 
-- **Scrambled columns.** Electron configuration, specific heat, and RTECS number sit on the wrong rows in the source. Helium has Promethium's configuration, and Lithium has Beryllium's specific heat. All three share one row permutation, recovered from the configurations themselves: the electron count of a neutral atom's configuration is its atomic number. Every other column was checked against PubChem and reference values and is aligned.
-- **Renamed elements.** Elements 112–118 have their IUPAC names, Copernicium through Oganesson, not Ununbium through Ununoctium.
-- **Mohs hardness** is a 1–10 scale. The source stored it multiplied by 10⁶.
-- **Melting and boiling points** come from the source's exact Kelvin columns. The other copies had been round-tripped through Celsius (`4.21999999999997`).
-- **Formatting.** Space groups read `Fm-3m` instead of an underscore and a line break, and identifiers drop their `CAS`/`CID`/`EU`/… prefixes.
+The upshot: **a value that's present has passed every check, and a value that's uncertain is `null` rather than a guess.** That trades coverage for trust. Density and specific heat are present for about 45 elements, and boiling point for about 80.
 
 ### Known limitations
 
 - Values for superheavy elements are mostly predictions, and many are `null`.
-- Half-lives and lifetimes of short-lived elements are uneven. The source's own unit sheet marks a few as minutes, not seconds, without saying which ones. Francium's `21.7`, for example, matches its 22-minute half-life. Don't use these for anything that matters.
-- The data is a 2015 snapshot. Atomic weights of synthetic elements give the mass number of the isotope known then.
-- `neutron_mass_absorption` has no unit in the source, so its `unit` is `null`.
+- Atomic and covalent radii depend on how they're defined. Wikidata doesn't record which definition each value uses, and where its values conflict, the field is `null`.
+- Specific heat, thermal and electrical conductivity, speed of sound, and Mohs hardness have no independent reference, so only the majority and plausibility rules check them.
 
 ## Caching and CORS
 
@@ -122,5 +130,5 @@ Every response sends `Access-Control-Allow-Origin: *`, so `fetch()` works from a
 const res = await fetch("https://hypothesis.sh/datasets/periodic_table");
 const { data, license } = await res.json();
 console.log(license.attribution); // show this wherever the data appears
-const metals = data.filter((e) => e.electrical_type === "Conductor");
+const gases = data.filter((e) => e.standard_state === "gas");
 ```
