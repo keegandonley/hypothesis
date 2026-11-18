@@ -88,7 +88,7 @@ describe("/datasets", () => {
       expect(name).toBe("CC BY 4.0");
       expect(url).toBe("https://creativecommons.org/licenses/by/4.0/");
       expect(attribution).toMatch(
-        /^Periodic table of elements by hypothesis\.sh \(https:\/\/hypothesis\.sh\/datasets\/periodic_table\), licensed under CC BY 4\.0/,
+        /^.+ by hypothesis\.sh \(https:\/\/hypothesis\.sh\/datasets\/\w+\), licensed under CC BY 4\.0/,
       );
     };
 
@@ -141,5 +141,28 @@ describe("/datasets", () => {
     ).toBe("*");
     expect(call(["periodic_table"], "OPTIONS").status).toBe(204);
     expect(call(["periodic_table"], "POST").status).toBe(405);
+  });
+});
+
+describe("/datasets/fit_activities", () => {
+  it("lists the files with the license", () => {
+    const res = call(["fit_activities"]);
+    const body = res.body as {
+      license: { attribution: string };
+      data: { id: string; file_url: string }[];
+    };
+
+    expect(res.status).toBe(200);
+    expect(body.license.attribution).toContain("by hypothesis.sh");
+    expect(body.data.map((d) => d.file_url)).toContain(
+      "/datasets/fit_activities/friday-ski-2026-01-16.fit",
+    );
+  });
+
+  it("serves one file's entry by id", () => {
+    expect(
+      call(["fit_activities", "friday-ski-2026-01-16"]).body,
+    ).toMatchObject({ data: { file_size: 313964 } });
+    expect(call(["fit_activities", "nope"]).status).toBe(404);
   });
 });
