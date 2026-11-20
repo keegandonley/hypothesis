@@ -165,6 +165,28 @@ https://hypothesis.sh/datasets/space_images/moon-fleet.png
 
 Images are served inline as `image/png`. They're readable from any origin and carry the license in a `Link: <…>; rel="license"` header.
 
+## nature_images
+
+Six generated nature landscapes, each a 1536×1024 PNG:
+
+| File                         | What it shows                          |
+| ---------------------------- | -------------------------------------- |
+| `glacier-lagoon.png`         | Blue icebergs in front of a glacier    |
+| `desert-dunes-sunset.png`    | Sand dunes with shrubs at sunset       |
+| `autumn-river-valley.png`    | River through an autumn forest valley  |
+| `sea-cliff-waves.png`        | Waves breaking below grassy sea cliffs |
+| `alpine-lake-reflection.png` | Snowy peaks reflected in a clear lake  |
+| `redwood-forest-trail.png`   | Trail through a misty redwood forest   |
+
+`/datasets/nature_images` lists them with the license, and each image loads from its `file_url`:
+
+```
+https://hypothesis.sh/datasets/nature_images
+https://hypothesis.sh/datasets/nature_images/glacier-lagoon.png
+```
+
+Images are served the same way as `space_images`: inline as `image/png`, readable from any origin, with the license in a `Link` header.
+
 ## Caching and CORS
 
 Every response sends `Access-Control-Allow-Origin: *`, so `fetch()` works from any page. Datasets only change with a deploy, so responses are cached at the CDN for a day and in browsers for an hour.

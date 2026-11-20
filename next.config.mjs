@@ -42,7 +42,8 @@ const nextConfig = {
     {
       // Static .png images in public/, shown inline; the JSON API is served by
       // the /datasets rewrite, as for fit_activities above.
-      source: "/datasets/space_images/:file([a-z0-9-]+\\.png)",
+      source:
+        "/datasets/:dataset(space_images|nature_images)/:file([a-z0-9-]+\\.png)",
       headers: [
         { key: "Access-Control-Allow-Origin", value: "*" },
         { key: "Content-Type", value: "image/png" },

@@ -279,12 +279,12 @@ describe("fit_activities", () => {
   });
 });
 
-describe("space_images", () => {
-  const dataset = defined(getDataset("space_images"), "space_images");
-  const dir = path.join(process.cwd(), "public/datasets/space_images");
+describe.each(["space_images", "nature_images"])("%s", (name) => {
+  const dataset = defined(getDataset(name), name);
+  const dir = path.join(process.cwd(), `public/datasets/${name}`);
 
   it("lists every hosted image with its real size and dimensions", () => {
-    const onDisk = fs.readdirSync(dir).filter((name) => name.endsWith(".png"));
+    const onDisk = fs.readdirSync(dir).filter((file) => file.endsWith(".png"));
 
     expect(onDisk.sort()).toEqual(
       dataset.records.map((r) => `${String(r.id)}.png`).sort(),
@@ -295,7 +295,7 @@ describe("space_images", () => {
       const bytes = fs.readFileSync(file);
 
       expect(record.file_url).toBe(
-        `/datasets/space_images/${String(record.id)}.png`,
+        `/datasets/${name}/${String(record.id)}.png`,
       );
       expect(fs.statSync(file).size).toBe(record.file_size);
       // PNG signature at bytes 0–7.

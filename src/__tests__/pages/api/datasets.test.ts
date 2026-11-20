@@ -190,3 +190,27 @@ describe("/datasets/space_images", () => {
     expect(call(["space_images", "nope"]).status).toBe(404);
   });
 });
+
+describe("/datasets/nature_images", () => {
+  it("lists the images with the license", () => {
+    const res = call(["nature_images"]);
+    const body = res.body as {
+      license: { attribution: string };
+      data: { id: string; file_url: string }[];
+    };
+
+    expect(res.status).toBe(200);
+    expect(body.license.attribution).toContain("by hypothesis.sh");
+    expect(body.data.map((d) => d.file_url)).toContain(
+      "/datasets/nature_images/glacier-lagoon.png",
+    );
+  });
+
+  it("serves one image's entry by id", () => {
+    expect(call(["nature_images", "glacier-lagoon"]).body).toMatchObject({
+      data: { file_size: 2972660, width: 1536, height: 1024 },
+    });
+    expect(call(["nature_images", "GLACIER-LAGOON"]).status).toBe(200);
+    expect(call(["nature_images", "nope"]).status).toBe(404);
+  });
+});
