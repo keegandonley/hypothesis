@@ -166,3 +166,27 @@ describe("/datasets/fit_activities", () => {
     expect(call(["fit_activities", "nope"]).status).toBe(404);
   });
 });
+
+describe("/datasets/space_images", () => {
+  it("lists the images with the license", () => {
+    const res = call(["space_images"]);
+    const body = res.body as {
+      license: { attribution: string };
+      data: { id: string; file_url: string }[];
+    };
+
+    expect(res.status).toBe(200);
+    expect(body.license.attribution).toContain("by hypothesis.sh");
+    expect(body.data.map((d) => d.file_url)).toContain(
+      "/datasets/space_images/moon-fleet.png",
+    );
+  });
+
+  it("serves one image's entry by id", () => {
+    expect(call(["space_images", "moon-fleet"]).body).toMatchObject({
+      data: { file_size: 1883314, width: 1672, height: 941 },
+    });
+    expect(call(["space_images", "MOON-FLEET"]).status).toBe(200);
+    expect(call(["space_images", "nope"]).status).toBe(404);
+  });
+});

@@ -142,6 +142,29 @@ https://hypothesis.sh/datasets/fit_activities/friday-ski-2026-01-16.fit
 
 Downloads are `application/octet-stream` (FIT has no registered media type). They're readable from any origin and carry the license in a `Link: <…>; rel="license"` header.
 
+## space_images
+
+Seven generated sci-fi images of ships and stations in orbit, each a 1672×941 PNG:
+
+| File                      | What it shows                                   |
+| ------------------------- | ----------------------------------------------- |
+| `gas-giant-warship.png`   | Warship in front of a ringed orange gas giant   |
+| `night-side-liner.png`    | White liner over a planet's night side          |
+| `hurricane-freighter.png` | Container freighter over an ocean of hurricanes |
+| `mars-refinery-ship.png`  | Copper refinery ship over red canyons           |
+| `ring-station.png`        | Ring-shaped station beside a dark planet        |
+| `moon-fleet.png`          | Fleet of warships near a cratered moon          |
+| `ice-world-station.png`   | Cross-shaped station over a frozen planet       |
+
+`/datasets/space_images` lists them with the license, and each image loads from its `file_url`:
+
+```
+https://hypothesis.sh/datasets/space_images
+https://hypothesis.sh/datasets/space_images/moon-fleet.png
+```
+
+Images are served inline as `image/png`. They're readable from any origin and carry the license in a `Link: <…>; rel="license"` header.
+
 ## Caching and CORS
 
 Every response sends `Access-Control-Allow-Origin: *`, so `fetch()` works from any page. Datasets only change with a deploy, so responses are cached at the CDN for a day and in browsers for an hour.

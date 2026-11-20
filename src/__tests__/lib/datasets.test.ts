@@ -278,3 +278,33 @@ describe("fit_activities", () => {
     }
   });
 });
+
+describe("space_images", () => {
+  const dataset = defined(getDataset("space_images"), "space_images");
+  const dir = path.join(process.cwd(), "public/datasets/space_images");
+
+  it("lists every hosted image with its real size and dimensions", () => {
+    const onDisk = fs.readdirSync(dir).filter((name) => name.endsWith(".png"));
+
+    expect(onDisk.sort()).toEqual(
+      dataset.records.map((r) => `${String(r.id)}.png`).sort(),
+    );
+
+    for (const record of dataset.records) {
+      const file = path.join(dir, `${String(record.id)}.png`);
+      const bytes = fs.readFileSync(file);
+
+      expect(record.file_url).toBe(
+        `/datasets/space_images/${String(record.id)}.png`,
+      );
+      expect(fs.statSync(file).size).toBe(record.file_size);
+      // PNG signature at bytes 0–7.
+      expect([...bytes.subarray(0, 8)]).toEqual([
+        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+      ]);
+      // IHDR is always the first chunk: width and height at bytes 16 and 20.
+      expect(bytes.readUInt32BE(16)).toBe(record.width);
+      expect(bytes.readUInt32BE(20)).toBe(record.height);
+    }
+  });
+});

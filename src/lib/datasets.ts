@@ -308,9 +308,106 @@ const FIT_ACTIVITIES: Dataset = {
   lookup: (key) => fitActivities.find((r) => r.id === key.toLowerCase()),
 };
 
+// ── Space images ─────────────────────────────────────────────────────────────
+
+/**
+ * Generated images served unmodified from public/datasets/space_images/.
+ * file_size, width, and height are checked against the files by the tests.
+ */
+const spaceImages: DatasetRecord[] = [
+  {
+    id: "gas-giant-warship",
+    title: "Gas giant warship",
+    description:
+      "A dark armored warship in front of an orange, storm-banded ringed gas giant, with a small moon at top right.",
+    file_size: 2595367,
+  },
+  {
+    id: "night-side-liner",
+    title: "Night side liner",
+    description:
+      "A sleek white liner over the night side of an Earth-like planet with city lights.",
+    file_size: 2377841,
+  },
+  {
+    id: "hurricane-freighter",
+    title: "Hurricane freighter",
+    description:
+      "A container freighter over a blue ocean planet with hurricanes, with the sun on the horizon.",
+    file_size: 2713210,
+  },
+  {
+    id: "mars-refinery-ship",
+    title: "Mars refinery ship",
+    description:
+      "A copper refinery ship with tanks and pipes over red canyons and a dust storm.",
+    file_size: 2918103,
+  },
+  {
+    id: "ring-station",
+    title: "Ring station",
+    description: "A ring-shaped station beside a dark planet with a blue rim.",
+    file_size: 1829864,
+  },
+  {
+    id: "moon-fleet",
+    title: "Moon fleet",
+    description:
+      "A fleet of dark warships near a cratered moon, with a ring station at top right.",
+    file_size: 1883314,
+  },
+  {
+    id: "ice-world-station",
+    title: "Ice world station",
+    description:
+      "A cross-shaped station over a frozen planet with a green aurora.",
+    file_size: 3071453,
+  },
+].map(({ id, title, description, file_size }) => ({
+  id,
+  title,
+  description,
+  file_url: `/datasets/space_images/${id}.png`,
+  file_size,
+  width: 1672,
+  height: 941,
+}));
+
+const SPACE_IMAGES: Dataset = {
+  name: "space_images",
+  title: "Space images",
+  description:
+    "Generated sci-fi images of ships and stations in orbit, as 1672×941 PNGs.",
+  license: ccBy("Space images", "space_images"),
+  source: {
+    name: "Generated for hypothesis.sh",
+    url: null,
+    license: null,
+    retrieved_at: null,
+  },
+  primaryKey: "id",
+  lookupDescription: "file id (moon-fleet)",
+  fields: [
+    f("id", "string", null, "Identifier; the file is {id}.png.", false),
+    f("title", "string", null, "Short title.", false),
+    f("description", "string", null, "What the image shows.", false),
+    f("file_url", "string", null, "Path of the .png file.", false),
+    f("file_size", "integer", "bytes", "Size of the .png file.", false),
+    f("width", "integer", "px", "Image width.", false),
+    f("height", "integer", "px", "Image height.", false),
+  ],
+  notes: ["Files are served unmodified."],
+  records: spaceImages,
+  lookup: (key) => spaceImages.find((r) => r.id === key.toLowerCase()),
+};
+
 // ── Registry ─────────────────────────────────────────────────────────────────
 
-export const DATASETS: Dataset[] = [PERIODIC_TABLE, FIT_ACTIVITIES];
+export const DATASETS: Dataset[] = [
+  PERIODIC_TABLE,
+  FIT_ACTIVITIES,
+  SPACE_IMAGES,
+];
 
 export function getDataset(name: string): Dataset | undefined {
   return DATASETS.find((d) => d.name === name);
